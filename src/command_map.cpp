@@ -1,0 +1,147 @@
+#include "command_map.h"
+#include <emscripten/key_codes.h>
+
+namespace yutovo_web
+{
+
+void ShortcutsMap::Init(DocumentPtr _document)
+{
+    document = _document;
+
+    //caret moving
+    Add(KeySequence(DOM_VK_LEFT), "", std::function<void ()>(std::bind(&Document::MoveCaretLeft, document.get(), false, false)));
+    Add(KeySequence(DOM_VK_RIGHT), "", std::function<void ()>(std::bind(&Document::MoveCaretRight, document.get(), false, false)));
+    Add(KeySequence(DOM_VK_UP), "", std::function<void ()>(std::bind(&Document::MoveCaretUp, document.get(), false)));
+    Add(KeySequence(DOM_VK_DOWN), "", std::function<void ()>(std::bind(&Document::MoveCaretDown, document.get(), false)));
+
+    Add(KeySequence(DOM_VK_LEFT, true, false, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordLeft, document.get(), false)));
+    Add(KeySequence(DOM_VK_RIGHT, true, false, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordRight, document.get(), false)));
+
+    Add(KeySequence(DOM_VK_HOME), "", std::function<void ()>(std::bind(&Document::MoveCaretHome, document.get(), false)));
+    Add(KeySequence(DOM_VK_END), "", std::function<void ()>(std::bind(&Document::MoveCaretEnd, document.get(), false)));
+
+    Add(KeySequence(DOM_VK_PAGE_UP), "", std::function<void ()>(std::bind(&Document::MoveCaretPageUp, document.get(), false)));
+    Add(KeySequence(DOM_VK_PAGE_DOWN), "", std::function<void ()>(std::bind(&Document::MoveCaretPageDown, document.get(), false)));
+
+    Add(KeySequence(DOM_VK_HOME, true, false, false), "", std::function<void ()>(std::bind(&Document::MoveCaretToDocumentBegin, document.get(), false)));
+    Add(KeySequence(DOM_VK_END, true, false, false), "", std::function<void ()>(std::bind(&Document::MoveCaretToDocumentEnd, document.get(), false)));
+
+    //selection
+    Add(KeySequence(DOM_VK_LEFT, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretLeft, document.get(), true, true)));
+    Add(KeySequence(DOM_VK_RIGHT, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretRight, document.get(), true, true)));
+    Add(KeySequence(DOM_VK_HOME, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretHome, document.get(), true)));
+    Add(KeySequence(DOM_VK_END, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretEnd, document.get(), true)));
+    Add(KeySequence(DOM_VK_UP, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretUp, document.get(), true)));
+    Add(KeySequence(DOM_VK_END, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretDown, document.get(), true)));
+
+    Add(KeySequence(DOM_VK_LEFT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordLeft, document.get(), true)));
+    Add(KeySequence(DOM_VK_RIGHT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordRight, document.get(), true)));
+
+    //edit text
+    Add(KeySequence(DOM_VK_DELETE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), false, true, false)));
+    Add(KeySequence(DOM_VK_BACK_SPACE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), true, true, false)));
+    Add(KeySequence(DOM_VK_RETURN), "", std::function<void ()>(std::bind(&Document::InsertParagraph, document.get(), true, false)));
+
+    //edit code
+    Add(KeySequence(DOM_VK_C, true, true, false), "\\code", std::function<void ()>(std::bind(&Document::InsertCode, document.get(), false, true)));
+    Add(KeySequence(DOM_VK_D, true, true, false), "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document.get(), true)));
+    Add(KeySequence(), '+', "\\plus", std::function<void ()>(std::bind(&Document::InsertPlus, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), '-', "\\minus", std::function<void ()>(std::bind(&Document::InsertMinus, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), '*', "\\times", std::function<void ()>(std::bind(&Document::InsertMultiply, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), '/', "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), '^', "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(DOM_VK_N, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document.get(), true)));
+    Add(KeySequence(DOM_VK_S, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document.get(), true)));
+    Add(KeySequence(), '=', "\\equal", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::AUTO, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), "\\eq_real", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::REAL, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), "\\eq_int", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::INTEGER, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), "\\eq_rat", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::RATIONAL, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), "\\eq_comp", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::COMPLEX, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), '(', "\\open_fence", std::function<void ()>(std::bind(&Document::InsertOpenFence, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), ')', "\\close_fence", std::function<void ()>(std::bind(&Document::InsertCloseFence, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), ':', "\\assign", std::function<void ()>(std::bind(&Document::InsertAssignment, document.get(), true)), CommandContext::Formula);
+}
+
+bool ShortcutsMap::Call(const KeySequence& shortcut, char32_t symbol, const EditorState& editor_state)
+{
+    struct CommandMapsVisitor
+    {
+        CommandMapsVisitor(const KeySequence& _shortcut, char32_t _symbol, Document* _document, const EditorState& _editor_state, bool& _res) :
+            shortcut(_shortcut),
+            symbol(_symbol),
+            document(_document),
+            editor_state(_editor_state),
+            res(_res)
+        {
+        }
+
+        void operator()(CommandMapVoid& m)
+        {
+            if (m.shortcut == shortcut || (m.symbol != 0 && m.symbol == symbol))
+            {
+                switch (m.context)
+                {
+                case CommandContext::Formula:
+                    if (!document->FindParent(editor_state.caret_state.id, ElementType::CODE_BLOCK))
+                        return;
+                    break;
+                case CommandContext::Text:
+                    if (document->FindParent(editor_state.caret_state.id, ElementType::CODE_BLOCK))
+                        return;
+                    break;
+                case CommandContext::Everywhere:
+                    break;
+                }
+                m();
+                res = true;
+            }
+        }
+
+        void operator()(CommandMapString& m)
+        {
+        }
+
+        const KeySequence& shortcut;
+        char32_t symbol;
+        Document* document;
+        const EditorState& editor_state;
+        bool& res;
+    };
+
+    for (auto& c : command_maps)
+    {
+        bool res = false;
+        std::visit(CommandMapsVisitor{shortcut, symbol, document.get(), editor_state, res}, c);
+        if (res)
+            return true;
+    }
+
+    return false;
+}
+
+void ShortcutsMap::Add(KeySequence shortcut, std::string command, std::function<void (void)> func, CommandContext context)
+{
+    command_maps.push_back(CommandMapVoid{shortcut, 0, command, context, func});
+}
+
+void ShortcutsMap::Add(KeySequence shortcut, char32_t symbol, std::string command, std::function<void (void)> func, CommandContext context)
+{
+    command_maps.push_back(CommandMapVoid{shortcut, symbol, command, context, func});
+}
+
+void ShortcutsMap::Add(KeySequence shortcut, std::string command, std::function<void (const std::string&)> func, CommandContext context)
+{
+    command_maps.push_back(CommandMapString{shortcut, 0, command, context, func});
+}
+
+void ShortcutsMap::Add(KeySequence shortcut, char32_t symbol, std::string command, std::function<void (const std::string&)> func, CommandContext context)
+{
+    command_maps.push_back(CommandMapString{shortcut, symbol, command, context, func});
+}
+
+}

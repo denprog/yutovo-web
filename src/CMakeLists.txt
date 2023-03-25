@@ -31,20 +31,16 @@ set(CMAKE_EXECUTABLE_SUFFIX ".html")
 add_executable(${PROJECT_NAME}
     main.cpp
     web_window.cpp
-    task.cpp
     utils.cpp
     command_map.cpp
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ./)
 
-#find_library(SDL2TTF_LIBRARIES SDL_ttf)
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -oyutovo_web.html")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sWASM=1")
-#set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-sNO_EXIT_RUNTIME=1")
-#set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/../shell_minimal.html")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_EXIT_RUNTIME=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL_TTF=2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL_IMAGE=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_FREETYPE=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/../shell_minimal.html")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4")

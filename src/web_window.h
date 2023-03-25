@@ -4,8 +4,9 @@
 #include <yutovo_editor/window.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <emscripten.h>
+#include <emscripten/val.h>
 #include <vector>
-#include "task.h"
 
 namespace yutovo_web
 {
@@ -15,7 +16,7 @@ using namespace yutovo;
 class WebWindow : public Window
 {
 public:
-    WebWindow(emscripten::val& _canvas);
+    WebWindow();
 
     virtual void Init();
 
@@ -35,7 +36,7 @@ public:
     virtual void RestoreRect();
 
     virtual Size GetTextSize(const std::u32string& text, const StringFormatPtr format);
-    virtual int GetCharPos(const std::string& text, const StringFormatPtr format, int pos);
+    virtual int GetCharPos(const std::u32string& text, const StringFormatPtr format, int pos);
     virtual int GetFontAscent(const StringFormatPtr format);
 
     virtual void SetViewPort(const Rect _view_port);
@@ -50,27 +51,25 @@ public:
 
     virtual void OnCaretMoved(const EditorState editor_state);
 
-    void RunDrawTasks();
-    void RunHelpTasks();
+    void Draw(SDL_Renderer* _renderer, SDL_Surface* _surface);
 
 public:
-    std::atomic<bool> run_draw_tasks = false;
-    std::atomic<bool> run_help_tasks = false;
+    std::mutex draw_mutex;
+    std::atomic<bool> needs_update = false;
 
     EditorState current_editor_state;
 
 private:
-    emscripten::val& canvas;
-    emscripten::val context;
+    int width = 0, height = 0;
+    SDL_Renderer* renderer = nullptr;
+    SDL_Surface* surface = nullptr;
 
-    Rect view_port{0, 0, 0, 0};
+    SDL_Rect store_rect;
+    SDL_Texture* stored_texture = nullptr;
+
+    SDL_Rect view_port{0, 0, 0, 0};
 
     emscripten::val store_image;
-    Rect store_rect;
-
-    std::mutex tasks_mutex;
-    std::vector<TaskPtr> draw_tasks;
-    std::vector<TaskPtr> help_tasks;
 };
 
 }

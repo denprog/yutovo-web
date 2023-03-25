@@ -10,13 +10,10 @@ namespace yutovo_web
 
 using namespace yutovo;
 
-// TTF_Font* GetFont(const StringFormatPtr format);
-// SDL_Color GetColor(const Color color);
-
-std::string GetTextFont(const StringFormatPtr format);
-
-std::string GetRectColor(const Color color);
-std::string GetTextColor(const Color color);
+TTF_Font* GetFont(const StringFormatPtr format);
+SDL_Color GetColor(const Color color);
+SDL_Rect GetRect(const Rect& rect);
+Rect GetRect(const SDL_Rect& rect);
 
 std::string ToBasicString(const std::u32string& str);
 

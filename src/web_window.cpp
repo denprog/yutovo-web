@@ -1,5 +1,6 @@
 #include "web_window.h"
 #include "utils.h"
+#include <emscripten/em_js.h>
 #include <chrono>
 #include <thread>
 
@@ -7,47 +8,102 @@ namespace yutovo_web
 {
 
 using emscripten::val;
-using namespace std::chrono_literals;
 
 //WebWindow
 
-WebWindow::WebWindow(emscripten::val& _canvas) :
-    canvas(_canvas)
+WebWindow::WebWindow()
 {
-    printf("Start WebWindow\n");
-    context = canvas.call<val>("getContext", std::string("2d"));
+    //printf("Start WebWindow\n");
+    int f;
+    emscripten_get_canvas_size(&width, &height, &f);
 }
 
 void WebWindow::Init()
 {
+    SDL_Init(SDL_INIT_EVERYTHING);
+    int r = TTF_Init();
+    if (r < 0)
+    {
+        printf("TTF_Init error: %s\n", TTF_GetError());
+        return;
+    }
+
+    surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    renderer = SDL_CreateSoftwareRenderer(surface);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
 }
 
 void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color)
 {
     //printf("WebWindow::DrawText %s\n", text.c_str());
-    std::lock_guard<std::mutex> lock(tasks_mutex);
-    draw_tasks.emplace_back(new DrawTextTask(context, text, format, rect, color, draw_doc, view_port));
+    if (text.length() == 0)
+        return;
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    TTF_Font* font = GetFont(format);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), GetColor(color));
+    if (!text_surface)
+    {
+        printf("TTF_RenderText_Solid error: %s\n", TTF_GetError());
+        return;
+    }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+    if (!texture)
+    {
+        printf("SDL_CreateTextureFromSurface error: %s\n", TTF_GetError());
+        return;
+    }
+
+    int w, h;
+    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+
+    if (draw_doc)
+        SDL_RenderSetClipRect(renderer, &view_port);
+    else
+        SDL_RenderSetClipRect(renderer, nullptr);
+    SDL_Rect r{rect.left - document_point.x, rect.top - document_point.y, w, h};
+    SDL_RenderCopy(renderer, texture, NULL, &r);
+    SDL_FreeSurface(text_surface);
+    SDL_DestroyTexture(texture);
 }
 
 void WebWindow::DrawLine(const int x1, const int y1, const int x2, const int y2, const Color color)
 {
     //printf("WebWindow::DrawLine\n");
-    std::lock_guard<std::mutex> lock(tasks_mutex);
-    draw_tasks.emplace_back(new DrawLineTask(context, x1, y1, x2, y2, color, draw_doc, view_port));
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    if (draw_doc)
+        SDL_RenderSetClipRect(renderer, &view_port);
+    else
+        SDL_RenderSetClipRect(renderer, nullptr);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderDrawLine(renderer, x1 - document_point.x, y1 - document_point.y, x2 - document_point.x, y2 - document_point.y);
 }
 
 void WebWindow::DrawRect(const int x1, const int y1, const int width, const int height, const Color color)
 {
     //printf("WebWindow::DrawRect\n");
-    std::lock_guard<std::mutex> lock(tasks_mutex);
-    draw_tasks.emplace_back(new DrawRectTask(context, x1, y1, width, height, color, draw_doc, view_port));
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    if (draw_doc)
+        SDL_RenderSetClipRect(renderer, &view_port);
+    else
+        SDL_RenderSetClipRect(renderer, nullptr);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_Rect r{draw_doc ? x1 - document_point.x : x1, draw_doc ? y1 - document_point.y : y1, width, height};
+    SDL_RenderDrawRect(renderer, &r);
 }
 
 void WebWindow::DrawFillRect(const int x1, const int y1, const int width, const int height, const Color color)
 {
     //printf("WebWindow::DrawFillRect\n");
-    std::lock_guard<std::mutex> lock(tasks_mutex);
-    draw_tasks.emplace_back(new DrawFillRectTask(context, x1, y1, width, height, color, draw_doc, view_port));
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    if (draw_doc)
+        SDL_RenderSetClipRect(renderer, &view_port);
+    else
+        SDL_RenderSetClipRect(renderer, nullptr);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_Rect r{draw_doc ? x1 - document_point.x : x1, draw_doc ? y1 - document_point.y : y1, width, height};
+    SDL_RenderFillRect(renderer, &r);
 }
 
 void WebWindow::DrawFillEllipse(const int x1, const int y1, const int width, const int height, const Color color)
@@ -64,71 +120,88 @@ void WebWindow::DrawBezierPath(const std::list<Point>& path, const Color color)
 
 void WebWindow::ClearRect(const int x1, const int y1, const int width, const int height)
 {
-    //printf("WebWindow::ClearRect\n");
-    std::lock_guard<std::mutex> lock(tasks_mutex);
-    draw_tasks.emplace_back(new ClearTask(context, x1, y1, width, height, draw_doc, view_port));
+    DrawFillRect(x1, y1, width, height, Color::White());
 }
 
 void WebWindow::ClearSurface()
 {
-    //printf("WebWindow::ClearSurface\n");
+    DrawFillRect(0, 0, width, height, Color::White());
 }
 
 void WebWindow::StoreRect(const Rect& rect)
 {
     //printf("WebWindow::StoreRect\n");
-    Rect r{rect.left - 1, rect.top - 1, rect.width + 2, rect.height + 2};
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    Uint32 format;
+    int access;
+    int w, h;
+    SDL_QueryTexture(texture, &format, &access, &w, &h);
+    stored_texture = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, rect.width, rect.height);
+    if (!stored_texture)
     {
-        std::lock_guard<std::mutex> lock(tasks_mutex);
-        help_tasks.emplace_back(new StoreRectTask(context, r, store_image));
+        printf("SDL_CreateTexture error: %s\n", TTF_GetError());
+        SDL_DestroyTexture(texture);
+        return;
     }
-    run_help_tasks = true;
-    store_rect = r;
+    SDL_SetRenderTarget(renderer, stored_texture);
+    store_rect = yutovo_web::GetRect(rect);
+    store_rect.x -= document_point.x;
+    store_rect.y -= document_point.y;
+    SDL_RenderCopy(renderer, texture, &store_rect, 0);
+    SDL_SetRenderTarget(renderer, 0);
+    SDL_DestroyTexture(texture);
 }
 
 void WebWindow::RestoreRect()
 {
     //printf("WebWindow::RestoreRect\n");
-    {
-        std::lock_guard<std::mutex> lock(tasks_mutex);
-        help_tasks.emplace_back(new RestoreRectTask(context, store_rect.left, store_rect.top, store_image));
-    }
-    run_help_tasks = true;
+    if (!stored_texture)
+        return;
+    SDL_RenderCopy(renderer, stored_texture, nullptr, &store_rect);
 }
 
 Size WebWindow::GetTextSize(const std::u32string& text, const StringFormatPtr format)
 {
-    //("WebWindow::GetTextSize\n");
-    Size size;
-    std::atomic<bool> size_ready = false;
-    {
-        std::lock_guard<std::mutex> lock(tasks_mutex);
-        help_tasks.emplace_back(new TextMetricsTask(context, ToBasicString(text), format, size, size_ready));
-        run_help_tasks = true;
-    }
-    while (!size_ready)
-    {
-        std::this_thread::sleep_for(1ms);
-    }
-    return size;
+    //printf("WebWindow::GetTextSize\n");
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    TTF_Font* font = GetFont(format);
+    if (!font)
+        return Size{0, 0};
+
+    std::string s = boost::locale::conv::utf_to_utf<char>(text);
+    int w, h;
+    TTF_SizeText(font, s.c_str(), &w, &h);
+    //printf("Text size=%d,%d\n", w, h);
+    return Size{w, h};
 }
 
-int WebWindow::GetCharPos(const std::string& text, const StringFormatPtr format, int pos)
+int WebWindow::GetCharPos(const std::u32string& text, const StringFormatPtr format, int pos)
 {
-    //printf("WebWindow::GetCharPos\n");
-    return 0;
+    ////printf("WebWindow::GetCharPos\n");
+    Size s;
+    if (pos == text.length())
+        s = GetTextSize(text, format);
+    else
+    {
+        Size s1 = GetTextSize(text.substr(0, pos + 1), format);
+        Size s2 = GetTextSize(text.substr(pos, 1), format);
+        s.width = s1.width - s2.width;
+    }
+    return s.width;
 }
 
 int WebWindow::GetFontAscent(const StringFormatPtr format)
 {
-    //printf("WebWindow::GetFontAscent\n");
-    return 0;
+    ////printf("WebWindow::GetFontAscent\n");
+    TTF_Font* font = GetFont(format);
+    if (!font)
+        return 0;
+    return TTF_FontAscent(font);
 }
 
 void WebWindow::SetViewPort(const Rect _view_port)
 {
-    //printf("WebWindow::SetViewPort %d, %d, %d, %d\n", _view_port.left, _view_port.top, _view_port.width, _view_port.height);
-    view_port = _view_port;
+    view_port = yutovo_web::GetRect(_view_port);
 }
 
 void WebWindow::AddViewPort(const Rect view_port)
@@ -137,19 +210,19 @@ void WebWindow::AddViewPort(const Rect view_port)
 
 Rect WebWindow::GetViewPort(const int pos)
 {
-    //printf("WebWindow::GetViewPort\n");
-    return view_port;
+    return yutovo_web::GetRect(view_port);
 }
 
 void WebWindow::Update(const Rect& rect)
 {
     //printf("WebWindow::Update\n");
-    run_draw_tasks = true;
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    needs_update = true;
 }
 
 void WebWindow::Resize(uint width, uint height)
 {
-    //printf("WebWindow::Resize\n");
+    ////printf("WebWindow::Resize\n");
 }
 
 Rect WebWindow::GetRect()
@@ -162,36 +235,42 @@ Rect WebWindow::GetRect()
 
 void WebWindow::OnCaretMoved(const EditorState editor_state)
 {
-    std::unique_lock<std::mutex> lock(tasks_mutex);
+    std::lock_guard<std::mutex> lock(draw_mutex);
     current_editor_state = editor_state;
 }
 
-void WebWindow::RunDrawTasks()
+void WebWindow::Draw(SDL_Renderer* _renderer, SDL_Surface* _surface)
 {
-    std::vector<TaskPtr> temp_tasks;
-    run_draw_tasks = false;
+    //printf("WebWindow::Draw\n");
+    std::lock_guard<std::mutex> lock(draw_mutex);
+
+    SDL_RenderClear(_renderer);
+
+    if (SDL_MUSTLOCK(surface))
+        SDL_LockSurface(surface);
+    if (SDL_MUSTLOCK(_surface))
+        SDL_LockSurface(_surface);
+    
+    SDL_Rect rect{0, 0, 400, 400};
+    int r = SDL_BlitSurface(surface, &rect, _surface, &rect);
+    if (r < 0)
     {
-        std::unique_lock<std::mutex> lock(tasks_mutex);
-        temp_tasks = draw_tasks;
-        draw_tasks.clear();
+        printf("SDL_BlitSurface error: %s\n", TTF_GetError());
+        return;
     }
 
-    for (auto& t : temp_tasks)
-        t->Execute();
-}
+    SDL_UnlockSurface(_surface);
+    SDL_UnlockSurface(surface);
 
-void WebWindow::RunHelpTasks()
-{ 
-    std::vector<TaskPtr> temp_tasks;
-    run_help_tasks = false;
-    {
-        std::unique_lock<std::mutex> lock(tasks_mutex);
-        temp_tasks = help_tasks;
-        help_tasks.clear();
-    }
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, _surface);
 
-    for (auto& t : temp_tasks)
-        t->Execute();
+    SDL_RenderClear(_renderer);
+    SDL_RenderCopy(_renderer, texture, NULL, NULL);
+    SDL_RenderPresent(_renderer);
+
+    SDL_DestroyTexture(texture);
+
+    needs_update = false;
 }
 
 }

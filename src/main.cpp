@@ -9,13 +9,14 @@
 
 using emscripten::val;
 
+SDL_Renderer* renderer = nullptr;
+SDL_Surface* surface = nullptr;
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
-    if (window->run_draw_tasks)
-        window->RunDrawTasks();
-    if (window->run_help_tasks)
-        window->RunHelpTasks();
+    if (window->needs_update)
+        window->Draw(renderer, surface);
 }
 
 struct OnKeyDownArgs
@@ -61,13 +62,17 @@ yutovo::DocumentPtr document;
 int main(int argc, char* argv[])
 {
     printf("Start\n");
-    int w, h, f;
-    emscripten_get_canvas_size(&w, &h, &f);
+
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Window *w;
+    SDL_CreateWindowAndRenderer(400, 400, 0, &w, &renderer);
+    surface = SDL_CreateRGBSurface(0, 400, 400, 32, 0, 0, 0, 0);
+
     val doc = val::global("document");
     val canvas = doc.call<val>("getElementById", std::string("canvas"));
     canvas.call<void>("focus");
 
-    yutovo_web::WebWindow window(canvas);
+    yutovo_web::WebWindow window;
     document.reset(new yutovo::Document(&window));
     yutovo::Config config;
     document->Start(config);
@@ -81,7 +86,6 @@ int main(int argc, char* argv[])
     document->SetFontSize(24);
     document->InsertString("Text", true);
 
-    //Args args{document.get(), &window};
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);
 
     printf("Finish\n");

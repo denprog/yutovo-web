@@ -47,8 +47,11 @@ void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, 
     //printf("WebWindow::DrawText %s\n", text.c_str());
     if (text.length() == 0)
         return;
-    std::lock_guard<std::mutex> lock(draw_mutex);
     TTF_Font* font = fonts.Get(format);
+    if (!font)
+        return;
+    
+    std::lock_guard<std::mutex> lock(draw_mutex);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), GetColor(color));
     if (!text_surface)

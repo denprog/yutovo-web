@@ -7,6 +7,7 @@
 #include <emscripten.h>
 #include <emscripten/val.h>
 #include <vector>
+#include "fonts.h"
 
 namespace yutovo_web
 {
@@ -71,6 +72,8 @@ private:
     SDL_Rect view_port{0, 0, 0, 0};
 
     emscripten::val store_image;
+
+    Fonts fonts;
 };
 
 }

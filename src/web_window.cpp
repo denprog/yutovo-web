@@ -48,7 +48,7 @@ void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, 
     if (text.length() == 0)
         return;
     std::lock_guard<std::mutex> lock(draw_mutex);
-    TTF_Font* font = GetFont(format);
+    TTF_Font* font = fonts.Get(format);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), GetColor(color));
     if (!text_surface)
@@ -172,7 +172,7 @@ Size WebWindow::GetTextSize(const std::u32string& text, const StringFormatPtr fo
 {
     //printf("WebWindow::GetTextSize\n");
     std::lock_guard<std::mutex> lock(draw_mutex);
-    TTF_Font* font = GetFont(format);
+    TTF_Font* font = fonts.Get(format);
     if (!font)
         return Size{0, 0};
 
@@ -201,7 +201,7 @@ int WebWindow::GetCharPos(const std::u32string& text, const StringFormatPtr form
 int WebWindow::GetFontAscent(const StringFormatPtr format)
 {
     ////printf("WebWindow::GetFontAscent\n");
-    TTF_Font* font = GetFont(format);
+    TTF_Font* font = fonts.Get(format);
     if (!font)
         return 0;
     return TTF_FontAscent(font);

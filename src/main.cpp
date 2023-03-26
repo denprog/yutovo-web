@@ -128,6 +128,11 @@ int main(int argc, char* argv[])
     document->SetFontSize(34);
     document->InsertString("Text", true);
 
+    document->SetBold(true);
+    document->SetFontSize(14);
+    document->SetFontFamily("Courier New");
+    document->InsertString("Courier", true);
+
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);
 
     printf("Finish\n");

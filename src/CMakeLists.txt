@@ -6,9 +6,6 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 set(CMAKE_DEBUG_POSTFIX d)
 
-#set(CMAKE_FIND_ROOT_PATH ${INSTALL_PATH}/cmake/)
-#message("CMAKE_FIND_ROOT_PATH is ${CMAKE_FIND_ROOT_PATH}")
-#message("INSTALL_PATH is ${INSTALL_PATH}")
 set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
 
 find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
@@ -18,10 +15,6 @@ set(Boost_USE_MULTITHREADED ON)
 set(CMAKE_FIND_ROOT_PATH ${INSTALL_PATH}/wasm/cmake/)
 find_package(Boost 1.81.0 REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(Boost 1.81.0 COMPONENTS serialization PATHS ${INSTALL_PATH}/wasm/)
-
-#set(CMAKE_FIND_ROOT_PATH ${INSTALL_PATH}/cmake/)
-
-#set(shell-file shell_minimal.html)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
 
@@ -33,6 +26,7 @@ add_executable(${PROJECT_NAME}
     web_window.cpp
     utils.cpp
     command_map.cpp
+    fonts.cpp
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ./)
@@ -74,7 +68,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     yutovo_editor
     pthread
     ${Boost_SERIALIZATION_LIBRARY_RELEASE}
-    #SDL_ttf
 )
 
 install(

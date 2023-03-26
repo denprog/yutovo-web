@@ -19,7 +19,7 @@ void MainLoop(void* arg)
         window->Draw(renderer, surface);
 }
 
-struct OnKeyDownArgs
+struct EventArgs
 {
     yutovo_web::ShortcutsMap* shortcuts_map;
     yutovo::Document* document;
@@ -41,8 +41,7 @@ int CharsNumber(const char *str)
 
 EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void* user_data)
 {
-    //printf("Keydown %d %lu\n", event_type, key_event->keyCode);
-    OnKeyDownArgs* args = (OnKeyDownArgs*)user_data;
+    EventArgs* args = (EventArgs*)user_data;
     yutovo_web::KeySequence s(key_event->keyCode, key_event->ctrlKey, key_event->shiftKey, key_event->altKey);
     char32_t ch = 0;
     if (CharsNumber(key_event->key) == 1)
@@ -57,6 +56,27 @@ EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void
     return false;
 }
 
+EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_data)
+{
+    EventArgs* args = (EventArgs*)user_data;
+
+    int width = 0, height = 0, f = 0;
+    emscripten_get_canvas_size(&width, &height, &f);
+    printf("OnResize w=%d, h=%d\n", width, height);
+
+    if (surface)
+        SDL_FreeSurface(surface);
+    surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    if (!surface)
+    {
+        printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
+        return 0;
+    }
+
+    args->document->Resize(width, height);
+    return true;
+}
+
 yutovo::DocumentPtr document;
 
 int main(int argc, char* argv[])
@@ -64,12 +84,33 @@ int main(int argc, char* argv[])
     printf("Start\n");
 
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *w;
-    SDL_CreateWindowAndRenderer(400, 400, 0, &w, &renderer);
-    surface = SDL_CreateRGBSurface(0, 400, 400, 32, 0, 0, 0, 0);
 
     val doc = val::global("document");
     val canvas = doc.call<val>("getElementById", std::string("canvas"));
+    int width = 0, height = 0, f = 0;
+    emscripten_get_canvas_size(&width, &height, &f);
+
+    SDL_Window *w = SDL_CreateWindow("", 0, 0, width, height, 
+        SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_FOCUS);
+    if (!w)
+    {
+        printf("SDL_CreateWindow error: %s\n", TTF_GetError());
+        return 0;
+    }
+    renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_SOFTWARE);
+    if (!renderer)
+    {
+        printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
+        return 0;
+    }
+    emscripten_get_canvas_size(&width, &height, &f);
+    surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    if (!surface)
+    {
+        printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
+        return 0;
+    }
+
     canvas.call<void>("focus");
 
     yutovo_web::WebWindow window;
@@ -80,10 +121,11 @@ int main(int argc, char* argv[])
     yutovo_web::ShortcutsMap shortcuts_map;
     shortcuts_map.Init(document);
 
-    OnKeyDownArgs args{&shortcuts_map, document.get(), &window};
+    EventArgs args{&shortcuts_map, document.get(), &window};
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
+    emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
-    document->SetFontSize(24);
+    document->SetFontSize(34);
     document->InsertString("Text", true);
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);

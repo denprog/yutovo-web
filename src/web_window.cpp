@@ -18,6 +18,14 @@ WebWindow::WebWindow()
     emscripten_get_canvas_size(&width, &height, &f);
 }
 
+WebWindow::~WebWindow()
+{
+    if (surface)
+        SDL_FreeSurface(surface);
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
+}
+
 void WebWindow::Init()
 {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -220,9 +228,21 @@ void WebWindow::Update(const Rect& rect)
     needs_update = true;
 }
 
-void WebWindow::Resize(uint width, uint height)
+void WebWindow::Resize(uint _width, uint _height)
 {
-    ////printf("WebWindow::Resize\n");
+    printf("WebWindow::Resize width=%d height=%d\n", _width, _height);
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    width = _width;
+    height = _height;
+    if (surface)
+        SDL_FreeSurface(surface);
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
+    surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    renderer = SDL_CreateSoftwareRenderer(surface);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    needs_update = true;
 }
 
 Rect WebWindow::GetRect()
@@ -251,7 +271,7 @@ void WebWindow::Draw(SDL_Renderer* _renderer, SDL_Surface* _surface)
     if (SDL_MUSTLOCK(_surface))
         SDL_LockSurface(_surface);
     
-    SDL_Rect rect{0, 0, 400, 400};
+    SDL_Rect rect{0, 0, width, height};
     int r = SDL_BlitSurface(surface, &rect, _surface, &rect);
     if (r < 0)
     {

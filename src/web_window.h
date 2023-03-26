@@ -17,6 +17,7 @@ class WebWindow : public Window
 {
 public:
     WebWindow();
+    ~WebWindow();
 
     virtual void Init();
 

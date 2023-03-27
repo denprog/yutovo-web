@@ -9,14 +9,14 @@
 
 using emscripten::val;
 
+SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
-    if (window->needs_update)
-        window->Draw(renderer, surface);
+    window->Draw(renderer, surface);
 }
 
 struct EventArgs
@@ -62,7 +62,7 @@ EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_d
 
     int width = 0, height = 0, f = 0;
     emscripten_get_canvas_size(&width, &height, &f);
-    printf("OnResize w=%d, h=%d\n", width, height);
+    //printf("OnResize w=%d, h=%d\n", width, height);
 
     if (surface)
         SDL_FreeSurface(surface);
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
         printf("SDL_CreateWindow error: %s\n", TTF_GetError());
         return 0;
     }
-    renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_SOFTWARE);
+    renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer)
     {
         printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
@@ -127,11 +127,6 @@ int main(int argc, char* argv[])
 
     document->SetFontSize(34);
     document->InsertString("Text", true);
-
-    document->SetBold(true);
-    document->SetFontSize(14);
-    document->SetFontFamily("Courier New");
-    document->InsertString("Courier", true);
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);
 

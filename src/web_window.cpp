@@ -13,7 +13,7 @@ using emscripten::val;
 
 WebWindow::WebWindow()
 {
-    //printf("Start WebWindow\n");
+    printf("Start WebWindow\n");
     int f;
     emscripten_get_canvas_size(&width, &height, &f);
 }
@@ -38,83 +38,33 @@ void WebWindow::Init()
 
     surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
     renderer = SDL_CreateSoftwareRenderer(surface);
+    if (!renderer)
+    {
+        printf("SDL_CreateRenderer error: %s\n", TTF_GetError());
+        return;
+    }
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 }
 
 void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color)
 {
-    //printf("WebWindow::DrawText %s\n", text.c_str());
-    if (text.length() == 0)
-        return;
-    TTF_Font* font = fonts.Get(format);
-    if (!font)
-        return;
-    
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), GetColor(color));
-    if (!text_surface)
-    {
-        printf("TTF_RenderText_Solid error: %s\n", TTF_GetError());
-        return;
-    }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-    if (!texture)
-    {
-        printf("SDL_CreateTextureFromSurface error: %s\n", TTF_GetError());
-        return;
-    }
-
-    int w, h;
-    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-
-    if (draw_doc)
-        SDL_RenderSetClipRect(renderer, &view_port);
-    else
-        SDL_RenderSetClipRect(renderer, nullptr);
-    SDL_Rect r{rect.left - document_point.x, rect.top - document_point.y, w, h};
-    SDL_RenderCopy(renderer, texture, NULL, &r);
-    SDL_FreeSurface(text_surface);
-    SDL_DestroyTexture(texture);
+    tasks.emplace_back(new DrawTextTask(text, format, rect, color, fonts, this, draw_doc));
 }
 
 void WebWindow::DrawLine(const int x1, const int y1, const int x2, const int y2, const Color color)
 {
-    //printf("WebWindow::DrawLine\n");
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    if (draw_doc)
-        SDL_RenderSetClipRect(renderer, &view_port);
-    else
-        SDL_RenderSetClipRect(renderer, nullptr);
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderDrawLine(renderer, x1 - document_point.x, y1 - document_point.y, x2 - document_point.x, y2 - document_point.y);
+    tasks.emplace_back(new DrawLineTask(x1, y1, x2, y2, color, this, draw_doc));
 }
 
 void WebWindow::DrawRect(const int x1, const int y1, const int width, const int height, const Color color)
 {
-    //printf("WebWindow::DrawRect\n");
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    if (draw_doc)
-        SDL_RenderSetClipRect(renderer, &view_port);
-    else
-        SDL_RenderSetClipRect(renderer, nullptr);
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_Rect r{draw_doc ? x1 - document_point.x : x1, draw_doc ? y1 - document_point.y : y1, width, height};
-    SDL_RenderDrawRect(renderer, &r);
+    tasks.emplace_back(new DrawRectTask(x1, y1, width, height, color, this, draw_doc));
 }
 
 void WebWindow::DrawFillRect(const int x1, const int y1, const int width, const int height, const Color color)
 {
-    //printf("WebWindow::DrawFillRect\n");
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    if (draw_doc)
-        SDL_RenderSetClipRect(renderer, &view_port);
-    else
-        SDL_RenderSetClipRect(renderer, nullptr);
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_Rect r{draw_doc ? x1 - document_point.x : x1, draw_doc ? y1 - document_point.y : y1, width, height};
-    SDL_RenderFillRect(renderer, &r);
+    tasks.emplace_back(new DrawFillRectTask(x1, y1, width, height, color, this, draw_doc));
 }
 
 void WebWindow::DrawFillEllipse(const int x1, const int y1, const int width, const int height, const Color color)
@@ -129,46 +79,27 @@ void WebWindow::DrawBezierPath(const std::list<Point>& path, const Color color)
 {
 }
 
-void WebWindow::ClearRect(const int x1, const int y1, const int width, const int height)
+void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
 {
-    DrawFillRect(x1, y1, width, height, Color::White());
+    if (x1 == 0 && y1 == 0 && _width == width && _height == height)
+        ClearSurface(); //more efficient
+    else
+        DrawFillRect(x1, y1, width, height, Color::White());
 }
 
 void WebWindow::ClearSurface()
 {
-    DrawFillRect(0, 0, width, height, Color::White());
+    tasks.emplace_back(new ClearTask(this));
 }
 
 void WebWindow::StoreRect(const Rect& rect)
 {
-    //printf("WebWindow::StoreRect\n");
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    Uint32 format;
-    int access;
-    int w, h;
-    SDL_QueryTexture(texture, &format, &access, &w, &h);
-    stored_texture = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, rect.width, rect.height);
-    if (!stored_texture)
-    {
-        printf("SDL_CreateTexture error: %s\n", TTF_GetError());
-        SDL_DestroyTexture(texture);
-        return;
-    }
-    SDL_SetRenderTarget(renderer, stored_texture);
-    store_rect = yutovo_web::GetRect(rect);
-    store_rect.x -= document_point.x;
-    store_rect.y -= document_point.y;
-    SDL_RenderCopy(renderer, texture, &store_rect, 0);
-    SDL_SetRenderTarget(renderer, 0);
-    SDL_DestroyTexture(texture);
+    tasks.emplace_back(new StoreRectTask(rect, this));
 }
 
 void WebWindow::RestoreRect()
 {
-    //printf("WebWindow::RestoreRect\n");
-    if (!stored_texture)
-        return;
-    SDL_RenderCopy(renderer, stored_texture, nullptr, &store_rect);
+    tasks.emplace_back(new RestoreRectTask(this));
 }
 
 Size WebWindow::GetTextSize(const std::u32string& text, const StringFormatPtr format)
@@ -226,15 +157,18 @@ Rect WebWindow::GetViewPort(const int pos)
 
 void WebWindow::Update(const Rect& rect)
 {
-    //printf("WebWindow::Update\n");
     std::lock_guard<std::mutex> lock(draw_mutex);
-    needs_update = true;
+    //printf("WebWindow::Update rect={%d, %d, %d, %d}\n", rect.left, rect.top, rect.width, rect.height);
+    draw_rects.emplace_back(SDL_Rect{rect.left - document_point.x, rect.top - document_point.y, rect.width, rect.height});
+    for (auto& t : tasks) //execute all tasks before Draw
+        t->Execute();
+    tasks.clear();
 }
 
 void WebWindow::Resize(uint _width, uint _height)
 {
-    printf("WebWindow::Resize width=%d height=%d\n", _width, _height);
     std::lock_guard<std::mutex> lock(draw_mutex);
+    //printf("WebWindow::Resize width=%d height=%d\n", _width, _height);
     width = _width;
     height = _height;
     if (surface)
@@ -244,8 +178,9 @@ void WebWindow::Resize(uint _width, uint _height)
     surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
     renderer = SDL_CreateSoftwareRenderer(surface);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
-    needs_update = true;
+    ClearSurface();
+    // SDL_RenderClear(renderer);
+    // draw_rects.emplace_back(SDL_Rect{0, 0, width, height});
 }
 
 Rect WebWindow::GetRect()
@@ -262,38 +197,43 @@ void WebWindow::OnCaretMoved(const EditorState editor_state)
     current_editor_state = editor_state;
 }
 
-void WebWindow::Draw(SDL_Renderer* _renderer, SDL_Surface* _surface)
+void WebWindow::Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
 {
-    //printf("WebWindow::Draw\n");
     std::lock_guard<std::mutex> lock(draw_mutex);
-
-    SDL_RenderClear(_renderer);
-
-    if (SDL_MUSTLOCK(surface))
-        SDL_LockSurface(surface);
-    if (SDL_MUSTLOCK(_surface))
-        SDL_LockSurface(_surface);
-    
-    SDL_Rect rect{0, 0, width, height};
-    int r = SDL_BlitSurface(surface, &rect, _surface, &rect);
-    if (r < 0)
-    {
-        printf("SDL_BlitSurface error: %s\n", TTF_GetError());
+    if (draw_rects.empty())
         return;
+
+    SDL_RenderClear(dest_renderer);
+
+    for (auto& rect : draw_rects) //copy drawn rects on the dest surface
+    {
+        //printf("WebWindow::Draw rect={%d, %d, %d, %d}\n", rect.x, rect.y, rect.w, rect.h);
+        //SDL_RenderClear(dest_renderer);
+
+        if (SDL_MUSTLOCK(surface))
+            SDL_LockSurface(surface);
+        if (SDL_MUSTLOCK(dest_surface))
+            SDL_LockSurface(dest_surface);
+        
+        //int r = SDL_BlitSurface(surface, &rect, dest_surface, &rect);
+        int r = SDL_BlitSurface(surface, nullptr, dest_surface, nullptr);
+        if (r < 0)
+        {
+            printf("SDL_BlitSurface error: %s\n", TTF_GetError());
+            return;
+        }
+
+        SDL_UnlockSurface(dest_surface);
+        SDL_UnlockSurface(surface);
+
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(dest_renderer, dest_surface);
+        SDL_RenderCopy(dest_renderer, texture, NULL, NULL);
+        SDL_DestroyTexture(texture);
     }
 
-    SDL_UnlockSurface(_surface);
-    SDL_UnlockSurface(surface);
+    SDL_RenderPresent(dest_renderer);
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, _surface);
-
-    SDL_RenderClear(_renderer);
-    SDL_RenderCopy(_renderer, texture, NULL, NULL);
-    SDL_RenderPresent(_renderer);
-
-    SDL_DestroyTexture(texture);
-
-    needs_update = false;
+    draw_rects.clear();
 }
 
 }

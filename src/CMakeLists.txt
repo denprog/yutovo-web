@@ -27,6 +27,7 @@ add_executable(${PROJECT_NAME}
     utils.cpp
     command_map.cpp
     fonts.cpp
+    task.cpp
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ./)

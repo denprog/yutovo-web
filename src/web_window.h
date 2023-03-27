@@ -8,6 +8,7 @@
 #include <emscripten/val.h>
 #include <vector>
 #include "fonts.h"
+#include "task.h"
 
 namespace yutovo_web
 {
@@ -30,7 +31,7 @@ public:
     virtual void DrawFillPath(const std::list<Point>& path, const Color color);
     virtual void DrawBezierPath(const std::list<Point>& path, const Color color);
 
-    virtual void ClearRect(const int x1, const int y1, const int width, const int height);
+    virtual void ClearRect(const int x1, const int y1, const int _width, const int _height);
 
     virtual void ClearSurface();
 
@@ -53,15 +54,22 @@ public:
 
     virtual void OnCaretMoved(const EditorState editor_state);
 
-    void Draw(SDL_Renderer* _renderer, SDL_Surface* _surface);
+    void Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface);
 
 public:
     std::mutex draw_mutex;
-    std::atomic<bool> needs_update = false;
 
     EditorState current_editor_state;
 
 private:
+    friend struct DrawTextTask;
+    friend struct DrawLineTask;
+    friend struct DrawRectTask;
+    friend struct DrawFillRectTask;
+    friend struct StoreRectTask;
+    friend struct RestoreRectTask;
+    friend struct ClearTask;
+    
     int width = 0, height = 0;
     SDL_Renderer* renderer = nullptr;
     SDL_Surface* surface = nullptr;
@@ -69,11 +77,15 @@ private:
     SDL_Rect store_rect;
     SDL_Texture* stored_texture = nullptr;
 
+    std::vector<SDL_Rect> draw_rects; //draw rects to be copied on Draw
+
     SDL_Rect view_port{0, 0, 0, 0};
 
     emscripten::val store_image;
 
     Fonts fonts;
+
+    std::vector<TaskPtr> tasks; //draw tasks to be executed on Update
 };
 
 }

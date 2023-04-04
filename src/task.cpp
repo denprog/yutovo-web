@@ -195,4 +195,211 @@ void ClearTask::Execute()
     SDL_RenderClear(web_window->renderer);
 }
 
+//ConnectTask
+
+EM_JS(int, ConnectJs, (const char* addr),
+    {
+        let socket = new WebSocket(UTF8ToString(addr));
+        socket.last_message = "";
+        socket.onmessage = function(event)
+            {
+                socket.last_message = event.data;
+                socket.temp = 555;
+            };
+
+        const WaitForConnection = (s) => 
+            {
+                return new Promise((resolve, reject) =>
+                    {
+                        const attempts = 10;
+                        const interval_time = 200; //ms
+
+                        let cur_attempt = 0;
+                        const interval = setInterval(() =>
+                            {
+                                if (cur_attempt > attempts - 1)
+                                {
+                                    clearInterval(interval);
+                                    reject(new Error('Maximum number of attempts exceeded'));
+                                }
+                                else if (socket.readyState === socket.OPEN)
+                                {
+                                    clearInterval(interval);
+                                    resolve();
+                                }
+                                cur_attempt++;
+                            }, interval_time);
+                    });
+            };
+
+        try
+        {
+            WaitForConnection(socket);
+            window.sockets.set(window.socket_id, socket);
+        }
+        catch (err)
+        {
+            return 0;
+        }
+        return window.socket_id++;
+    });
+
+ConnectTask::ConnectTask(const std::string& _addr, std::atomic_int32_t& _socket_id) :
+    addr(_addr),
+    socket_id(_socket_id)
+{
+}
+
+void ConnectTask::Execute()
+{
+    socket_id = ConnectJs(addr.c_str());
+}
+
+//IsOpenTask
+
+EM_JS(int, IsOpenJs, (const int socket_id),
+    {
+        let socket = window.sockets.get(socket_id);
+        if (typeof socket === "undefined")
+            return 0;
+        return socket.readyState === socket.OPEN;
+    });
+
+IsOpenTask::IsOpenTask(const int _socket_id, std::atomic_int8_t& _is_open) :
+    socket_id(_socket_id),
+    is_open(_is_open)
+{
+}
+
+void IsOpenTask::Execute()
+{
+    is_open = IsOpenJs(socket_id);
+}
+
+//SendTask
+
+EM_JS(bool, SendJs, (const int socket_id, const char* message),
+    {
+        let socket = window.sockets.get(socket_id);
+        if (typeof socket === "undefined")
+            return 0;
+        try
+        {
+            socket.send(UTF8ToString(message));
+        }
+        catch (err)
+        {
+            return 0;
+        }
+        return 1;
+    });
+
+SendTask::SendTask(const int _socket_id, const std::string& _message, std::atomic_int8_t& _res) :
+    socket_id(_socket_id),
+    message(_message),
+    res(_res)
+{
+}
+
+void SendTask::Execute()
+{
+    res = SendJs(socket_id, message.c_str());
+}
+
+//ReceiveTask
+
+EM_JS(char*, ReceiveJs, (const int socket_id),
+    {
+        let socket = window.sockets.get(socket_id);
+        if (typeof socket === "undefined")
+            return 0;
+
+        const WaitForMessage = (s) => 
+            {
+                return new Promise((resolve, reject) =>
+                    {
+                        const attempts = 10;
+                        const interval_time = 200; //ms
+
+                        let cur_attempt = 0;
+                        const interval = setInterval(() =>
+                            {
+                                if (cur_attempt > attempts - 1)
+                                {
+                                    clearInterval(interval);
+                                    reject(new Error('Maximum number of attempts exceeded'));
+                                }
+                                else if (socket.last_message != "")
+                                {
+                                    clearInterval(interval);
+                                    resolve();
+                                }
+                                cur_attempt++;
+                            }, interval_time);
+                    });
+            };
+
+        try
+        {
+            if (socket.last_message == "")
+                WaitForMessage(socket);
+            var str = _malloc(socket.last_message.length + 1);
+            stringToUTF8(socket.last_message, str, socket.last_message.length + 1);
+            socket.last_message = "";
+            return str;
+        }
+        catch (err)
+        {
+            return 0;
+        }
+    });
+
+ReceiveTask::ReceiveTask(const int _socket_id, std::string& _message, std::atomic_int8_t& _res) :
+    socket_id(_socket_id),
+    message(_message),
+    res(_res)
+{
+}
+
+void ReceiveTask::Execute()
+{
+    char* str = ReceiveJs(socket_id);
+    if (!str)
+    {
+        res = 0;
+        return;
+    }
+    message = std::string(str);
+    res = 1;
+}
+
+//CloseTask
+
+EM_JS(bool, CloseJs, (const int socket_id),
+    {
+        let socket = window.sockets.get(socket_id);
+        if (typeof socket === "undefined")
+            return 0;
+        try
+        {
+            socket.close();
+        }
+        catch (err)
+        {
+            return 0;
+        }
+        return 1;
+    });
+
+CloseTask::CloseTask(const int _socket_id, std::atomic_int8_t& _res) :
+    socket_id(_socket_id),
+    res(_res)
+{
+}
+
+void CloseTask::Execute()
+{
+    res = CloseJs(socket_id);
+}
+
 }

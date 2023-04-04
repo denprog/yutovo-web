@@ -54,7 +54,15 @@ public:
 
     virtual void OnCaretMoved(const EditorState editor_state);
 
+    virtual int Connect(const std::string& addr);
+    virtual bool Send(const int socket_id, const std::string& message);
+    virtual bool Receive(const int socket_id, std::string& message);
+    virtual bool IsOpen(const int socket_id);
+    virtual bool Close(const int socket_id);
+
     void Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface);
+
+    void SocketTasks();
 
 public:
     std::mutex draw_mutex;
@@ -86,6 +94,9 @@ private:
     Fonts fonts;
 
     std::vector<TaskPtr> tasks; //draw tasks to be executed on Update
+
+    std::mutex socket_mutex;
+    std::vector<TaskPtr> socket_tasks;
 };
 
 }

@@ -8,6 +8,7 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
 
+find_package(PkgConfig REQUIRED)
 find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 
 set(Boost_USE_STATIC_LIBS ON)
@@ -19,7 +20,7 @@ find_package(Boost 1.81.0 COMPONENTS serialization PATHS ${INSTALL_PATH}/wasm/)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
 
 set(EMCC_DEBUG, 1)
-set(CMAKE_EXECUTABLE_SUFFIX ".html")
+set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
 add_executable(${PROJECT_NAME}
     main.cpp
@@ -31,17 +32,17 @@ add_executable(${PROJECT_NAME}
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ./)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ../site)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_EXIT_RUNTIME=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL_TTF=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL_IMAGE=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_FREETYPE=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/../shell_minimal.html")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --preload-file ./fonts")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexperimental-library")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_MEMORY_GROWTH")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_DISABLE_EXCEPTION_CATCHING")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind")
 
@@ -77,4 +78,17 @@ install(
     EXPORT ${PROJECT_NAME}
     DESTINATION ${INSTALL_PATH}/bin
     COMPONENT ${PROJECT_NAME}
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/yutovo_web.data ${CMAKE_CURRENT_SOURCE_DIR}/site
+)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/yutovo_web.js ${CMAKE_CURRENT_SOURCE_DIR}/site
+)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/yutovo_web.wasm ${CMAKE_CURRENT_SOURCE_DIR}/site
+)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/yutovo_web.worker.js ${CMAKE_CURRENT_SOURCE_DIR}/site
 )

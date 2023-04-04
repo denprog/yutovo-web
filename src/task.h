@@ -90,6 +90,58 @@ struct ClearTask : Task
     virtual void Execute();
 };
 
+struct ConnectTask : Task
+{
+    ConnectTask(const std::string& _addr, std::atomic_int32_t& _socket_id);
+
+    virtual void Execute();
+
+    std::string addr;
+    std::atomic_int32_t& socket_id;
+};
+
+struct IsOpenTask : Task
+{
+    IsOpenTask(const int _socket_id, std::atomic_int8_t& _is_open);
+
+    virtual void Execute();
+
+    const int socket_id;
+    std::atomic_int8_t& is_open;
+};
+
+struct SendTask : Task
+{
+    SendTask(const int _socket_id, const std::string& _message, std::atomic_int8_t& _res);
+
+    virtual void Execute();
+
+    const int socket_id;
+    const std::string message;
+    std::atomic_int8_t& res;
+};
+
+struct ReceiveTask : Task
+{
+    ReceiveTask(const int _socket_id, std::string& _message, std::atomic_int8_t& _res);
+
+    virtual void Execute();
+
+    const int socket_id;
+    std::string& message;
+    std::atomic_int8_t& res;
+};
+
+struct CloseTask : Task
+{
+    CloseTask(const int _socket_id, std::atomic_int8_t& _res);
+
+    virtual void Execute();
+
+    const int socket_id;
+    std::atomic_int8_t& res;
+};
+
 typedef std::shared_ptr<Task> TaskPtr;
 
 }

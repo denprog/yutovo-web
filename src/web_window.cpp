@@ -84,7 +84,7 @@ void WebWindow::ClearRect(const int x1, const int y1, const int _width, const in
     if (x1 == 0 && y1 == 0 && _width == width && _height == height)
         ClearSurface(); //more efficient
     else
-        DrawFillRect(x1, y1, width, height, Color::White());
+        DrawFillRect(x1, y1, _width, _height, Color::White());
 }
 
 void WebWindow::ClearSurface()
@@ -158,8 +158,8 @@ Rect WebWindow::GetViewPort(const int pos)
 void WebWindow::Update(const Rect& rect)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
-    //printf("WebWindow::Update rect={%d, %d, %d, %d}\n", rect.left, rect.top, rect.width, rect.height);
     draw_rects.emplace_back(SDL_Rect{rect.left - document_point.x, rect.top - document_point.y, rect.width, rect.height});
+    int t = SDL_GetTicks();
     for (auto& t : tasks) //execute all tasks before Draw
         t->Execute();
     tasks.clear();
@@ -168,7 +168,6 @@ void WebWindow::Update(const Rect& rect)
 void WebWindow::Resize(uint _width, uint _height)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
-    //printf("WebWindow::Resize width=%d height=%d\n", _width, _height);
     width = _width;
     height = _height;
     if (surface)
@@ -179,13 +178,10 @@ void WebWindow::Resize(uint _width, uint _height)
     renderer = SDL_CreateSoftwareRenderer(surface);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     ClearSurface();
-    // SDL_RenderClear(renderer);
-    // draw_rects.emplace_back(SDL_Rect{0, 0, width, height});
 }
 
 Rect WebWindow::GetRect()
 {
-    //printf("WebWindow::GetRect\n");
     int w, h, f;
     emscripten_get_canvas_size(&w, &h, &f);
     return Rect{0, 0, w, h};
@@ -195,6 +191,66 @@ void WebWindow::OnCaretMoved(const EditorState editor_state)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
     current_editor_state = editor_state;
+}
+
+int WebWindow::Connect(const std::string& addr)
+{
+    std::atomic_int32_t socket_id = -1;
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        socket_tasks.emplace_back(new ConnectTask("ws://" + addr, socket_id));
+    }
+    while (socket_id == -1)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return socket_id;
+}
+
+bool WebWindow::Send(const int socket_id, const std::string& message)
+{
+    std::atomic_int8_t res{-1};
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        socket_tasks.emplace_back(new SendTask(socket_id, message, res));
+    }
+    while (res == -1)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return res > 0;
+}
+
+bool WebWindow::Receive(const int socket_id, std::string& message)
+{
+    std::atomic_int8_t res{-1};
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        socket_tasks.emplace_back(new ReceiveTask(socket_id, message, res));
+    }
+    while (res == -1)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return res > 0;
+}
+
+bool WebWindow::IsOpen(const int socket_id)
+{
+    std::atomic_int8_t is_open{-1};
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        socket_tasks.emplace_back(new IsOpenTask(socket_id, is_open));
+    }
+    while (is_open == -1)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return is_open > 0;
+}
+
+bool WebWindow::Close(const int socket_id)
+{
+    std::atomic_int8_t res{-1};
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        socket_tasks.emplace_back(new CloseTask(socket_id, res));
+    }
+    while (res == -1)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return res > 0;
 }
 
 void WebWindow::Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
@@ -207,16 +263,12 @@ void WebWindow::Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
 
     for (auto& rect : draw_rects) //copy drawn rects on the dest surface
     {
-        //printf("WebWindow::Draw rect={%d, %d, %d, %d}\n", rect.x, rect.y, rect.w, rect.h);
-        //SDL_RenderClear(dest_renderer);
-
         if (SDL_MUSTLOCK(surface))
             SDL_LockSurface(surface);
         if (SDL_MUSTLOCK(dest_surface))
             SDL_LockSurface(dest_surface);
         
-        //int r = SDL_BlitSurface(surface, &rect, dest_surface, &rect);
-        int r = SDL_BlitSurface(surface, nullptr, dest_surface, nullptr);
+        int r = SDL_BlitSurface(surface, &rect, dest_surface, &rect);
         if (r < 0)
         {
             printf("SDL_BlitSurface error: %s\n", TTF_GetError());
@@ -234,6 +286,16 @@ void WebWindow::Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
     SDL_RenderPresent(dest_renderer);
 
     draw_rects.clear();
+}
+
+void WebWindow::SocketTasks()
+{
+    std::lock_guard<std::mutex> lock(socket_mutex);
+    for (auto& t : socket_tasks)
+    {
+        t->Execute();
+    }
+    socket_tasks.clear();
 }
 
 }

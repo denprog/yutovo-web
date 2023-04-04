@@ -17,6 +17,7 @@ void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
     window->Draw(renderer, surface);
+    window->SocketTasks();
 }
 
 struct EventArgs
@@ -62,7 +63,6 @@ EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_d
 
     int width = 0, height = 0, f = 0;
     emscripten_get_canvas_size(&width, &height, &f);
-    //printf("OnResize w=%d, h=%d\n", width, height);
 
     if (surface)
         SDL_FreeSurface(surface);

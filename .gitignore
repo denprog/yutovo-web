@@ -1,6 +1,7 @@
 .vscode
 build
-src/site/yutovo_web.data
-src/site/yutovo_web.js
-src/site/yutovo_web.wasm
-src/site/yutovo_web.worker.js
+src/site/public/yutovo_web.data
+src/site/public/yutovo_web.js
+src/site/public/yutovo_web.wasm
+src/site/public/yutovo_web.worker.js
+src/site/node_modules

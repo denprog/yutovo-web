@@ -158,11 +158,11 @@ Rect WebWindow::GetViewPort(const int pos)
 void WebWindow::Update(const Rect& rect)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
-    draw_rects.emplace_back(SDL_Rect{rect.left - document_point.x, rect.top - document_point.y, rect.width, rect.height});
     int t = SDL_GetTicks();
     for (auto& t : tasks) //execute all tasks before Draw
         t->Execute();
     tasks.clear();
+    needs_render = true;
 }
 
 void WebWindow::Resize(uint _width, uint _height)
@@ -253,39 +253,36 @@ bool WebWindow::Close(const int socket_id)
     return res > 0;
 }
 
-void WebWindow::Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
+void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    if (draw_rects.empty())
+    if (!needs_render)
         return;
+    
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    needs_render = false;
 
     SDL_RenderClear(dest_renderer);
 
-    for (auto& rect : draw_rects) //copy drawn rects on the dest surface
+    if (SDL_MUSTLOCK(surface))
+        SDL_LockSurface(surface);
+    if (SDL_MUSTLOCK(dest_surface))
+        SDL_LockSurface(dest_surface);
+    
+    int r = SDL_BlitSurface(surface, nullptr, dest_surface, nullptr);
+    if (r < 0)
     {
-        if (SDL_MUSTLOCK(surface))
-            SDL_LockSurface(surface);
-        if (SDL_MUSTLOCK(dest_surface))
-            SDL_LockSurface(dest_surface);
-        
-        int r = SDL_BlitSurface(surface, &rect, dest_surface, &rect);
-        if (r < 0)
-        {
-            printf("SDL_BlitSurface error: %s\n", TTF_GetError());
-            return;
-        }
-
-        SDL_UnlockSurface(dest_surface);
-        SDL_UnlockSurface(surface);
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(dest_renderer, dest_surface);
-        SDL_RenderCopy(dest_renderer, texture, NULL, NULL);
-        SDL_DestroyTexture(texture);
+        printf("SDL_BlitSurface error: %s\n", TTF_GetError());
+        return;
     }
 
-    SDL_RenderPresent(dest_renderer);
+    SDL_UnlockSurface(dest_surface);
+    SDL_UnlockSurface(surface);
 
-    draw_rects.clear();
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(dest_renderer, dest_surface);
+    SDL_RenderCopy(dest_renderer, texture, NULL, NULL);
+    SDL_DestroyTexture(texture);
+
+    SDL_RenderPresent(dest_renderer);
 }
 
 void WebWindow::SocketTasks()

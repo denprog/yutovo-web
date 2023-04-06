@@ -16,7 +16,7 @@ SDL_Surface* surface = nullptr;
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
-    window->Draw(renderer, surface);
+    window->Render(renderer, surface);
     window->SocketTasks();
 }
 

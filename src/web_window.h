@@ -60,7 +60,7 @@ public:
     virtual bool IsOpen(const int socket_id);
     virtual bool Close(const int socket_id);
 
-    void Draw(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface);
+    void Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface);
 
     void SocketTasks();
 
@@ -85,7 +85,7 @@ private:
     SDL_Rect store_rect;
     SDL_Texture* stored_texture = nullptr;
 
-    std::vector<SDL_Rect> draw_rects; //draw rects to be copied on Draw
+    std::atomic_bool needs_render{false};
 
     SDL_Rect view_port{0, 0, 0, 0};
 

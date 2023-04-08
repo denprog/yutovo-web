@@ -1,5 +1,5 @@
 <template>
-    <div class="emscripten_border" style="width:100%; height:100%">
+    <div class="editor-container" tabindex=0>
         <figure style="overflow:visible;" id="spinner">
             <div class="spinner">
             </div>
@@ -11,8 +11,12 @@
         <div class="emscripten">
             <progress value="0" max="100" id="progress" hidden=1></progress>  
         </div>
-        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 style="width:100%; height:100%"></canvas>
-        <hr/>
+
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+        
+        <div id="scroll-container">
+            <div id="scroll-space"></div>
+        </div>
     </div>
 </template>
 
@@ -111,15 +115,35 @@
                             }
                             statusElement.innerHTML = text;
                         },
-                        totalDependencies: 0,
-                        monitorRunDependencies: 
-                            function(left)
-                            {
-                                this.totalDependencies = Math.max(this.totalDependencies, left);
-                                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-                            }
+                    totalDependencies: 0,
+                    monitorRunDependencies: 
+                        function(left)
+                        {
+                            this.totalDependencies = Math.max(this.totalDependencies, left);
+                            Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+                        },
+
+                    onRuntimeInitialized: 
+                        function()
+                        {
+                            const on_scroll = Module.cwrap('OnScroll', 'number', ['number', 'number']);
+
+                            var scroll = document.getElementById('scroll-container');
+                            scroll.addEventListener("scroll", (event) =>
+                                {
+                                    if (event.type != "scroll")
+                                        return;
+                                    on_scroll(scroll.scrollLeft, scroll.scrollTop);
+                                });
+                            scroll.onclick = 
+                                function()
+                                {
+                                    var canvas = document.getElementById('canvas');
+                                    canvas.focus();
+                                }
+                        }
                 };
-            
+
             Module.setStatus('Downloading...');
             window.onerror = 
                 function()
@@ -140,15 +164,49 @@
 </script>
 
 <style scoped>
+    .editor-container {
+        border: 1px solid black;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
     div.emscripten {
         text-align: center;
     }
+
     div.emscripten_border {
         border: 1px solid black;
     }
+
     canvas.emscripten {
         border: 0px none; background-color: white;
     }
+
+    #canvas {
+        border: 0px none;
+        background-color: white;
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
+        position: absolute;
+    }
+
+    #scroll-container {
+        border: 0px;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        overflow: scroll;
+    }
+
+    #scroll-space {
+        width: 1500px;
+        height: 2500px;
+    }
+
     .spinner {
         height: 50px;
         width: 50px;

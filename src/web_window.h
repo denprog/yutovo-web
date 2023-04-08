@@ -69,6 +69,8 @@ public:
 
     EditorState current_editor_state;
 
+    std::atomic_bool needs_render{false};
+
 private:
     friend struct DrawTextTask;
     friend struct DrawLineTask;
@@ -84,8 +86,6 @@ private:
 
     SDL_Rect store_rect;
     SDL_Texture* stored_texture = nullptr;
-
-    std::atomic_bool needs_render{false};
 
     SDL_Rect view_port{0, 0, 0, 0};
 

@@ -113,7 +113,6 @@ Size WebWindow::GetTextSize(const std::u32string& text, const StringFormatPtr fo
     std::string s = boost::locale::conv::utf_to_utf<char>(text);
     int w, h;
     TTF_SizeText(font, s.c_str(), &w, &h);
-    //printf("Text size=%d,%d\n", w, h);
     return Size{w, h};
 }
 
@@ -158,7 +157,6 @@ Rect WebWindow::GetViewPort(const int pos)
 void WebWindow::Update(const Rect& rect)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
-    int t = SDL_GetTicks();
     for (auto& t : tasks) //execute all tasks before Draw
         t->Execute();
     tasks.clear();
@@ -255,9 +253,6 @@ bool WebWindow::Close(const int socket_id)
 
 void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
 {
-    if (!needs_render)
-        return;
-    
     std::lock_guard<std::mutex> lock(draw_mutex);
     needs_render = false;
 

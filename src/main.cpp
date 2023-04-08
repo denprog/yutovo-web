@@ -9,14 +9,43 @@
 
 using emscripten::val;
 
+yutovo::DocumentPtr document;
+std::atomic_bool set_document_point;
+yutovo::Point document_point{false};
+
 SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
+EM_JS(void, UpdateScrollBars, (int v_size, int h_size, int v_value, int h_value), 
+    {
+        var scroll_space = document.getElementById('scroll-space');
+        scroll_space.style.width = h_size + "px";
+        scroll_space.style.height = v_size + "px";
+        var scroll_container = document.getElementById('scroll-container');
+        scroll_container.scrollLeft = h_value;
+        scroll_container.scrollTop = v_value;
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
-    window->Render(renderer, surface);
+    if (set_document_point)
+    {
+        window->document_point = document_point;
+        set_document_point = false;
+    }
+    if (window->needs_render)
+    {
+        //document was updated
+        window->Render(renderer, surface);
+
+        //update scrollbars
+        yutovo::Rect r = window->GetViewPort(0);
+        yutovo::Size s = window->document_size;
+        yutovo::Point p = window->document_point;
+        UpdateScrollBars(s.height + r.top, s.width + r.left, p.y, p.x);
+    }
     window->SocketTasks();
 }
 
@@ -77,7 +106,16 @@ EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_d
     return true;
 }
 
-yutovo::DocumentPtr document;
+extern "C" EMSCRIPTEN_KEEPALIVE int OnScroll(int x_pos, int y_pos)
+{
+    if (document)
+    {
+        document_point = yutovo::Point{x_pos, y_pos};
+        set_document_point = true;
+        document->Redraw();
+    }
+    return 0;
+}
 
 int main(int argc, char* argv[])
 {

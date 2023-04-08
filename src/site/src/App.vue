@@ -2,7 +2,7 @@
     <div>
         <vue-file-toolbar-menu :content="my_menu" />
     </div>
-    <div class="editor-container">
+    <div class="yutovo-web-container">
         <yutovo-web>
         </yutovo-web>
     </div>
@@ -98,7 +98,7 @@
         padding: 0;
     }
 
-    .editor-container {
+    .yutovo-web-container {
         text-align: center;
         border: 1px solid black;
         top: 0;

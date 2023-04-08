@@ -9,8 +9,11 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "konva": "^8.4.3",
     "vue": "^3.2.13",
-    "vue-file-toolbar-menu": "^2.2.0"
+    "vue-file-toolbar-menu": "^2.2.0",
+    "vue-konva": "^3.0.2",
+    "vue-virtual-scroller": "^2.0.0-beta.8"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

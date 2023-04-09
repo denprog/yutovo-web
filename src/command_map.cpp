@@ -32,7 +32,7 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(DOM_VK_HOME, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretHome, document.get(), true)));
     Add(KeySequence(DOM_VK_END, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretEnd, document.get(), true)));
     Add(KeySequence(DOM_VK_UP, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretUp, document.get(), true)));
-    Add(KeySequence(DOM_VK_END, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretDown, document.get(), true)));
+    Add(KeySequence(DOM_VK_DOWN, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretDown, document.get(), true)));
 
     Add(KeySequence(DOM_VK_LEFT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordLeft, document.get(), true)));
     Add(KeySequence(DOM_VK_RIGHT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordRight, document.get(), true)));

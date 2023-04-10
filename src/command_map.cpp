@@ -24,7 +24,8 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(DOM_VK_PAGE_DOWN), "", std::function<void ()>(std::bind(&Document::MoveCaretPageDown, document.get(), false)));
 
     Add(KeySequence(DOM_VK_HOME, true, false, false), "", std::function<void ()>(std::bind(&Document::MoveCaretToDocumentBegin, document.get(), false)));
-    Add(KeySequence(DOM_VK_END, true, false, false), "", std::function<void ()>(std::bind(&Document::MoveCaretToDocumentEnd, document.get(), false)));
+    Add(KeySequence(DOM_VK_END, true, false, false), "", 
+        std::function<void ()>(std::bind(static_cast<uint(Document::*)(bool)>(&Document::MoveCaretToDocumentEnd), document.get(), false)));
 
     //selection
     Add(KeySequence(DOM_VK_LEFT, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretLeft, document.get(), true, true)));
@@ -36,6 +37,8 @@ void ShortcutsMap::Init(DocumentPtr _document)
 
     Add(KeySequence(DOM_VK_LEFT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordLeft, document.get(), true)));
     Add(KeySequence(DOM_VK_RIGHT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordRight, document.get(), true)));
+
+    Add(KeySequence(DOM_VK_A, true, false, false), "", std::function<void ()>(std::bind(&Document::SelectAll, document.get())));
 
     //edit text
     Add(KeySequence(DOM_VK_DELETE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), false, true, false)));

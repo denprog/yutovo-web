@@ -163,9 +163,6 @@ int main(int argc, char* argv[])
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
-    document->SetFontSize(34);
-    document->InsertString("Text", true);
-
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);
 
     printf("Finish\n");

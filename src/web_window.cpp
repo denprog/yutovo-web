@@ -116,7 +116,7 @@ Size WebWindow::GetTextSize(const std::u32string& text, const StringFormatPtr fo
 
     std::string s = boost::locale::conv::utf_to_utf<char>(text);
     int w, h;
-    TTF_SizeText(font, s.c_str(), &w, &h);
+    TTF_SizeUTF8(font, s.c_str(), &w, &h);
     return Size{w, h};
 }
 

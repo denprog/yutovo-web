@@ -1,9 +1,9 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-#include <yutovo_editor/window.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <yutovo_editor/util.h>
 
 namespace yutovo_web
 {

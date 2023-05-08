@@ -79,6 +79,10 @@ void WebWindow::DrawBezierPath(const std::list<Point>& path, const Color color)
 {
 }
 
+void WebWindow::DrawWavyLine(const int x1, const int y1, const int width, const int radius, const Color color)
+{
+}
+
 void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
 {
     if (x1 == 0 && y1 == 0 && _width == width && _height == height)

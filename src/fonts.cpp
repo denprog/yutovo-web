@@ -9,7 +9,9 @@ std::map<std::string, std::string> Fonts::font_files =
     {
         {"Arial", "Arial.ttf"},
         {"Courier New", "Courier_New.ttf"},
-        {"Courier", "Courier_New.ttf"}
+        {"Courier", "Courier_New.ttf"},
+        {"Times New Roman", "Times_New_Roman.ttf"},
+        {"FreeMono", "FreeMono.ttf"}
     };
 
 Fonts::~Fonts()

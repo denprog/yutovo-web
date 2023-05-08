@@ -86,6 +86,25 @@ EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void
     return false;
 }
 
+EM_JS(void, SetCursor, (int type), 
+    {
+        var scroll_container = document.getElementById('scroll-container');
+        scroll_container.style.cursor = (type == 1 ? 'text' : 'default');
+    });
+
+EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
+{
+    EventArgs* args = (EventArgs*)user_data;
+    auto p = args->window->GetDocumentPoint();
+    yutovo_web::ElementId id;
+    args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, id);
+    if (args->document->IsString(id))
+        SetCursor(1);
+    else
+        SetCursor(0);
+    return false;
+}
+
 EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_data)
 {
     EventArgs* args = (EventArgs*)user_data;
@@ -161,6 +180,7 @@ int main(int argc, char* argv[])
 
     EventArgs args{&shortcuts_map, document.get(), &window};
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
+    emscripten_set_mousemove_callback("#scroll-container", &args, true, OnMouseMove);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);

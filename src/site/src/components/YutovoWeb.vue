@@ -81,7 +81,8 @@
                                 {
                                     alert('WebGL context lost. You will need to reload the page.');
                                     e.preventDefault();
-                                }, false);
+                                }, 
+                                false);
                             return canvas;
                         })(),
                     setStatus: 

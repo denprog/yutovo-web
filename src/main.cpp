@@ -105,6 +105,17 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     return false;
 }
 
+EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
+{
+    if (mouse_event->button == 0)
+    {
+        EventArgs* args = (EventArgs*)user_data;
+        auto p = args->window->GetDocumentPoint();
+        args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+    }
+    return false;
+}
+
 EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_data)
 {
     EventArgs* args = (EventArgs*)user_data;
@@ -181,6 +192,7 @@ int main(int argc, char* argv[])
     EventArgs args{&shortcuts_map, document.get(), &window};
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
     emscripten_set_mousemove_callback("#scroll-container", &args, true, OnMouseMove);
+    emscripten_set_mousedown_callback("#scroll-container", &args, true, OnMouseDown);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);

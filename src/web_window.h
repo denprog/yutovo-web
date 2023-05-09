@@ -77,6 +77,7 @@ private:
     friend struct DrawLineTask;
     friend struct DrawRectTask;
     friend struct DrawFillRectTask;
+    friend struct DrawWavyLineTask;
     friend struct StoreRectTask;
     friend struct RestoreRectTask;
     friend struct ClearTask;

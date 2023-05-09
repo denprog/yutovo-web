@@ -67,6 +67,19 @@ struct DrawTextTask : Task
     Fonts& fonts;
 };
 
+struct DrawWavyLineTask : Task
+{
+    DrawWavyLineTask(const int _x1, const int _y1, const int _width, const int _radius, const Color _color, 
+        WebWindow* _web_window, bool _draw_doc);
+
+    virtual void Execute();
+
+    void DrawArc(const int x, const int y, const int radius, int start, int end);
+
+    int x1, y1, width, radius;
+    Color color;
+};
+
 struct StoreRectTask : Task
 {
     StoreRectTask(const Rect& _rect, WebWindow* _web_window);

@@ -136,6 +136,227 @@ void DrawTextTask::Execute()
     SDL_DestroyTexture(texture);
 }
 
+//DrawWavyLineTask
+
+DrawWavyLineTask::DrawWavyLineTask(const int _x1, const int _y1, const int _width, const int _radius, const Color _color, 
+    WebWindow* _web_window, bool _draw_doc) :
+    Task(_web_window, _draw_doc),
+    x1(_x1),
+    y1(_y1),
+    width(_width),
+    radius(_radius),
+    color(_color)
+{
+}
+
+void DrawWavyLineTask::Execute()
+{
+    if (draw_doc)
+        SDL_RenderSetClipRect(web_window->renderer, &web_window->view_port);
+    else
+        SDL_RenderSetClipRect(web_window->renderer, nullptr);
+    SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+    int x = x1;
+    while (x <= x1 + width)
+    {
+        DrawArc(x, y1, radius, 0, -180);
+        x += radius * 2;
+        if (x >= x1 + width)
+            break;
+        DrawArc(x, y1, radius, 0, 180);
+        x += radius * 2;
+    }
+}
+
+void DrawWavyLineTask::DrawArc(const int x, const int y, const int radius, int start, int end)
+{
+    if (radius < 0)
+        return;
+
+	int result;
+	int cx = 0;
+	int cy = radius;
+	int df = 1 - radius;
+	int d_e = 3;
+	int d_se = -2 * radius + 5;
+	int xpcx, xmcx, xpcy, xmcy;
+	int ypcy, ymcy, ypcx, ymcx;
+	uint drawoct;
+	int startoct = 0, endoct, oct, stopval_start = 0, stopval_end = 0;
+	double dstart, dend, temp = 0.;
+
+	start %= 360;
+	end %= 360;
+	while (start < 0)
+        start += 360;
+	while (end < 0)
+        end += 360;
+	start %= 360;
+	end %= 360;
+
+	startoct = start / 45;
+	endoct = end / 45;
+	oct = startoct - 1;
+
+	do
+    {
+		oct = (oct + 1) % 8;
+		if (oct == startoct)
+        {
+			dstart = (double)start;
+			switch (oct) 
+			{
+			case 0:
+			case 3:
+				temp = sin(dstart * M_PI / 180.);
+				break;
+			case 1:
+			case 6:
+				temp = cos(dstart * M_PI / 180.);
+				break;
+			case 2:
+			case 5:
+				temp = -cos(dstart * M_PI / 180.);
+				break;
+			case 4:
+			case 7:
+				temp = -sin(dstart * M_PI / 180.);
+				break;
+			}
+			temp *= radius;
+			stopval_start = (int)temp;
+
+			if (oct % 2)
+                drawoct |= (1 << oct);
+			else
+                drawoct &= 255 - (1 << oct);
+		}
+		if (oct == endoct)
+        {
+			dend = (double)end;
+			switch (oct)
+			{
+			case 0:
+			case 3:
+				temp = sin(dend * M_PI / 180);
+				break;
+			case 1:
+			case 6:
+				temp = cos(dend * M_PI / 180);
+				break;
+			case 2:
+			case 5:
+				temp = -cos(dend * M_PI / 180);
+				break;
+			case 4:
+			case 7:
+				temp = -sin(dend * M_PI / 180);
+				break;
+			}
+			temp *= radius;
+			stopval_end = (int)temp;
+
+			if (startoct == endoct)
+            {
+				if (start > end)
+					drawoct = 255;
+                else
+					drawoct &= 255 - (1 << oct);
+			} 
+			else if (oct % 2)
+                drawoct &= 255 - (1 << oct);
+			else
+                drawoct |= (1 << oct);
+		}
+        else if (oct != startoct)
+        {
+			drawoct |= (1 << oct); /* draw this entire segment */
+		}
+	}
+    while (oct != endoct);
+
+	do
+    {
+		ypcy = y + cy;
+		ymcy = y - cy;
+		if (cx > 0)
+        {
+			xpcx = x + cx;
+			xmcx = x - cx;
+
+			if (drawoct & 4)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xmcx, ypcy);
+			if (drawoct & 2)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xpcx, ypcy);
+			if (drawoct & 32)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xmcx, ymcy);
+			if (drawoct & 64)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xpcx, ymcy);
+		}
+        else
+        {
+			if (drawoct & 96)
+                result |= SDL_RenderDrawPoint(web_window->renderer, x, ymcy);
+			if (drawoct & 6)
+                result |= SDL_RenderDrawPoint(web_window->renderer, x, ypcy);
+		}
+
+		xpcy = x + cy;
+		xmcy = x - cy;
+		if (cx > 0 && cx != cy)
+        {
+			ypcx = y + cx;
+			ymcx = y - cx;
+			if (drawoct & 8)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xmcy, ypcx);
+			if (drawoct & 1)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xpcy, ypcx);
+			if (drawoct & 16)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xmcy, ymcx);
+			if (drawoct & 128)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xpcy, ymcx);
+		}
+        else if (cx == 0)
+        {
+			if (drawoct & 24)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xmcy, y);
+			if (drawoct & 129)
+                result |= SDL_RenderDrawPoint(web_window->renderer, xpcy, y);
+		}
+
+		if (stopval_start == cx)
+        {
+			if (drawoct & (1 << startoct))
+                drawoct &= 255 - (1 << startoct);
+			else
+                drawoct |= (1 << startoct);
+		}
+		if (stopval_end == cx)
+        {
+			if (drawoct & (1 << endoct))
+                drawoct &= 255 - (1 << endoct);
+			else
+                drawoct |= (1 << endoct);
+		}
+
+		if (df < 0)
+        {
+			df += d_e;
+			d_e += 2;
+			d_se += 2;
+		}
+        else
+        {
+			df += d_se;
+			d_e += 2;
+			d_se += 4;
+			cy--;
+		}
+		cx++;
+	}
+    while (cx <= cy);
+}
+
 //StoreRectTask
 
 StoreRectTask::StoreRectTask(const Rect& _rect, WebWindow* _web_window) :

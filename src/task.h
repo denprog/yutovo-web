@@ -17,6 +17,13 @@ struct Task
 
     virtual void Execute() = 0;
 
+    void DrawPixelWeight(const int x, const int y, const Color& color, const int weight);
+    void DrawPixel(const int x, const int y, const Color& color);
+    void DrawHLine(const int x1, const int x2, const int y, const Color& color);
+    void DrawVLine(const int x, const int y1, const int y2, const Color& color);
+    void DrawLine(const int x1, const int y1, const int x2, const int y2, const Color& color);
+    void DrawLine(int x1, int y1, int x2, int y2, const Color& color, bool draw_endpoint);
+
     WebWindow* web_window;
     bool draw_doc;
 };
@@ -77,6 +84,16 @@ struct DrawWavyLineTask : Task
     void DrawArc(const int x, const int y, const int radius, int start, int end);
 
     int x1, y1, width, radius;
+    Color color;
+};
+
+struct DrawFillPathTask : Task
+{
+    DrawFillPathTask(const std::list<Point>& _path, const Color _color, WebWindow* _web_window, bool _draw_doc);
+
+    virtual void Execute();
+
+    std::list<Point> path;
     Color color;
 };
 

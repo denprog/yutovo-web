@@ -72,6 +72,10 @@ public:
 
     std::atomic_bool needs_render{false};
 
+    SDL_Renderer* renderer = nullptr;
+
+    SDL_Rect view_port{0, 0, 0, 0};
+
 private:
     friend struct DrawTextTask;
     friend struct DrawLineTask;
@@ -83,13 +87,10 @@ private:
     friend struct ClearTask;
     
     int width = 0, height = 0;
-    SDL_Renderer* renderer = nullptr;
     SDL_Surface* surface = nullptr;
 
     SDL_Rect store_rect;
     SDL_Texture* stored_texture = nullptr;
-
-    SDL_Rect view_port{0, 0, 0, 0};
 
     emscripten::val store_image;
 

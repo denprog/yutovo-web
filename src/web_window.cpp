@@ -73,6 +73,7 @@ void WebWindow::DrawFillEllipse(const int x1, const int y1, const int width, con
 
 void WebWindow::DrawFillPath(const std::list<Point>& path, const Color color)
 {
+    tasks.emplace_back(new DrawFillPathTask(path, color, this, draw_doc));
 }
 
 void WebWindow::DrawBezierPath(const std::list<Point>& path, const Color color)
@@ -279,7 +280,7 @@ void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
     SDL_UnlockSurface(surface);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(dest_renderer, dest_surface);
-    SDL_RenderCopy(dest_renderer, texture, NULL, NULL);
+    SDL_RenderCopyF(dest_renderer, texture, NULL, NULL);
     SDL_DestroyTexture(texture);
 
     SDL_RenderPresent(dest_renderer);

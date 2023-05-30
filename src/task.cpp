@@ -15,6 +15,174 @@ Task::Task(WebWindow* _web_window, bool _draw_doc) :
 {
 }
 
+void Task::DrawPixelWeight(const int x, const int y, const Color& color, const int weight)
+{
+	uint8_t ax = color.a;
+	ax = ((ax * weight) >> 8);
+	if (ax > 255)
+		ax = 255;
+	else
+		ax = (uint8_t)(ax & 0x000000ff);
+
+	return DrawPixel(x, y, Color{ax, color.r, color.g, color.b});
+}
+
+void Task::DrawPixel(const int x, const int y, const Color& color)
+{
+    SDL_SetRenderDrawBlendMode(web_window->renderer, (color.a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderDrawPoint(web_window->renderer, x, y);
+}
+
+void Task::DrawHLine(const int x1, const int x2, const int y, const Color& color)
+{
+	SDL_SetRenderDrawBlendMode(web_window->renderer, (color.a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+	SDL_RenderDrawLine(web_window->renderer, x1, y, x2, y);
+}
+
+void Task::DrawVLine(const int x, const int y1, const int y2, const Color& color)
+{
+	SDL_SetRenderDrawBlendMode(web_window->renderer, (color.a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+	SDL_RenderDrawLine(web_window->renderer, x, y1, x, y2);
+}
+
+void Task::DrawLine(const int x1, const int y1, const int x2, const int y2, const Color& color)
+{
+	SDL_SetRenderDrawBlendMode(web_window->renderer, (color.a == 255) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);	
+	SDL_RenderDrawLine(web_window->renderer, x1, y1, x2, y2);
+}
+
+void Task::DrawLine(int x1, int y1, int x2, int y2, const Color& color, bool draw_endpoint)
+{
+	uint int_shift, err_acc, err_adj;
+	uint err_acc_tmp, wgt, wgt_comp_mask;
+	int dx, dy, x_dir, y0_p1, x0_px;
+    const int aa_levels = 256;
+    const int aa_bits = 8;
+
+	if (y1 > y2)
+    {
+		int tmp = y1;
+		y1 = y2;
+		y2 = tmp;
+		tmp = x1;
+		x1 = x2;
+		x2 = tmp;
+	}
+
+	dx = x2 - x1;
+	dy = y2 - y1;
+
+	//adjust for negative dx and set x_dir 
+	if (dx >= 0)
+		x_dir = 1;
+	else
+    {
+		x_dir = -1;
+		dx = -dx;
+	}
+	
+	//check for special cases 
+	if (dx == 0)
+    {
+		//vertical line 
+		if (draw_endpoint)
+		{
+			DrawVLine(x1, y1, y2, color);
+            return;
+		}
+        else
+        {
+			if (dy > 0)
+            {
+				DrawVLine(x1, y1, y1 + dy, color);
+                return;
+            }
+			else
+            {
+				DrawPixel(x1, y1, color);
+                return;
+            }
+		}
+	}
+    else if (dy == 0)
+    {
+		//horizontal line 
+		if (draw_endpoint)
+			DrawHLine(x1, x2, y1, color);
+        else
+        {
+			if (dx > 0)
+				DrawHLine(x1, x1 + dx, y1, color);
+            else
+				DrawPixel(x1, y1, color);
+		}
+        return;
+	}
+    else if (dx == dy && draw_endpoint)
+    {
+		DrawLine(x1, y1, x2, y2, color);
+        return;
+	}
+
+	err_acc = 0;
+	int_shift = 32 - aa_bits;
+	wgt_comp_mask = aa_levels - 1;
+
+	DrawPixel(x1, y1, color); //the initial pixel in the foreground color 
+
+	if (dy > dx)
+    {
+		err_adj = ((dx << 16) / dy) << 16; //calculate 16-bit fixed point fractional part of a pixel
+
+		//draw all pixels other than the first and last 
+		x0_px = x1 + x_dir;
+		while (--dy)
+        {
+			err_acc_tmp = err_acc;
+			err_acc += err_adj;
+			if (err_acc <= err_acc_tmp)
+            {
+				//rollover in error accumulator, x coord advances 
+				x1 = x0_px;
+				x0_px += x_dir;
+			}
+			y1++; //y-major so always advance Y
+
+			wgt = (err_acc >> int_shift) & 255;
+			DrawPixelWeight(x1, y1, color, 255 - wgt);
+			DrawPixelWeight(x0_px, y1, color, wgt);
+		}
+	}
+    else
+    {
+		err_adj = ((dy << 16) / dx) << 16;
+
+		//draw all pixels other than the first and last 
+		y0_p1 = y1 + 1;
+		while (--dx)
+        {
+			err_acc_tmp = err_acc;
+			err_acc += err_adj;
+			if (err_acc <= err_acc_tmp)
+            {
+				y1 = y0_p1;
+				y0_p1++;
+			}
+			x1 += x_dir;	//x-major so always advance X
+			wgt = (err_acc >> int_shift) & 255;
+			DrawPixelWeight(x1, y1, color, 255 - wgt);
+			DrawPixelWeight(x1, y0_p1, color, wgt);
+		}
+	}
+
+	if (draw_endpoint)
+        DrawPixel(x2, y2, color); //draw final pixel
+}
+
 //DrawLineTask
 
 DrawLineTask::DrawLineTask(const int _x1, const int _y1, const int _x2, const int _y2, const Color _color, WebWindow* _web_window, bool _draw_doc) :
@@ -355,6 +523,109 @@ void DrawWavyLineTask::DrawArc(const int x, const int y, const int radius, int s
 		cx++;
 	}
     while (cx <= cy);
+}
+
+//DrawFillPathTask
+
+DrawFillPathTask::DrawFillPathTask(const std::list<Point>& _path, const Color _color, WebWindow* _web_window, bool _draw_doc) :
+    Task(_web_window, _draw_doc),
+    path(_path),
+    color(_color)
+{
+}
+
+void DrawFillPathTask::Execute()
+{
+    if (path.size() < 3)
+        return;
+    
+    if (draw_doc)
+        SDL_RenderSetClipRect(web_window->renderer, &web_window->view_port);
+    else
+        SDL_RenderSetClipRect(web_window->renderer, nullptr);
+    SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+
+    std::vector<Point> _path{std::make_move_iterator(std::begin(path)), std::make_move_iterator(std::end(path))};
+
+    for (size_t i = 0; i < _path.size() - 1; ++i)
+    {
+        Point& p1 = _path[i];
+        Point& p2 = _path[i + 1];
+        DrawLine(p1.x, p1.y, p2.x, p2.y, color, true);
+    }
+
+    Point& p1 = _path[_path.size() - 1];
+    Point& p2 = _path[0];
+    DrawLine(p1.x, p1.y, p2.x, p2.y, color, true);
+
+    Point p = *_path.begin();
+    int y_min = p.y, y_max = p.y;
+    for (size_t i = 1; i < _path.size(); ++i)
+    {
+        Point& p = _path[i];
+        if (p.y < y_min)
+            y_min = p.y;
+        else if (p.y > y_max)
+            y_max = p.y;
+    }
+
+    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+    int ind1 = 0, ind2 = 0;
+    std::vector<int> poly_ints;
+
+	for (int y = y_min; y <= y_max; ++y)
+    {
+        poly_ints.clear();
+		for (int i = 0; i < _path.size(); ++i)
+        {
+			if (!i)
+            {
+				ind1 = _path.size() - 1;
+				ind2 = 0;
+			}
+            else
+            {
+				ind1 = i - 1;
+				ind2 = i;
+			}
+			y1 = _path[ind1].y;
+			y2 = _path[ind2].y;
+			if (y1 < y2)
+            {
+				x1 = _path[ind1].x;
+				x2 = _path[ind2].x;
+			}
+            else if (y1 > y2)
+            {
+				y2 = _path[ind1].y;
+				y1 = _path[ind2].y;
+				x2 = _path[ind1].x;
+				x1 = _path[ind2].x;
+			}
+            else
+            {
+				continue;
+			}
+
+			if ((y >= y1 && y < y2) || (y == y_max && y > y1 && y <= y2))
+				poly_ints.push_back(((65536 * (y - y1)) / (y2 - y1)) * (x2 - x1) + (65536 * x1));
+		}
+
+		std::sort(poly_ints.begin(), poly_ints.end(),
+            [](int const& a, int const& b)
+            {
+                return a < b;
+            });
+
+		for (size_t i = 0; i < poly_ints.size(); i += 2)
+        {
+			int xa = poly_ints[i] + 1;
+			xa = (xa >> 16) + ((xa & 32768) >> 15);
+			int xb = poly_ints[i + 1] - 1;
+			xb = (xb >> 16) + ((xb & 32768) >> 15);
+            DrawLine(xa, y, xb, y, color);
+		}
+	}
 }
 
 //StoreRectTask

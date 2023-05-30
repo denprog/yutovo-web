@@ -78,6 +78,7 @@ void WebWindow::DrawFillPath(const std::list<Point>& path, const Color color)
 
 void WebWindow::DrawBezierPath(const std::list<Point>& path, const Color color)
 {
+    tasks.emplace_back(new DrawBezierTask(path, color, this, draw_doc));
 }
 
 void WebWindow::DrawWavyLine(const int x1, const int y1, const int width, const int radius, const Color color)

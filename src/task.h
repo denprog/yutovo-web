@@ -23,6 +23,7 @@ struct Task
     void DrawVLine(const int x, const int y1, const int y2, const Color& color);
     void DrawLine(const int x1, const int y1, const int x2, const int y2, const Color& color);
     void DrawLine(int x1, int y1, int x2, int y2, const Color& color, bool draw_endpoint);
+    void DrawFillPath(std::vector<Point>& path, const Color& color);
 
     WebWindow* web_window;
     bool draw_doc;
@@ -92,6 +93,19 @@ struct DrawFillPathTask : Task
     DrawFillPathTask(const std::list<Point>& _path, const Color _color, WebWindow* _web_window, bool _draw_doc);
 
     virtual void Execute();
+
+    std::list<Point> path;
+    Color color;
+};
+
+struct DrawBezierTask : Task
+{
+    DrawBezierTask(const std::list<Point>& _path, const Color _color, WebWindow* _web_window, bool _draw_doc);
+
+    virtual void Execute();
+
+    void DrawBezier();
+    double EvaluateBezier(std::vector<double>& data, int size, double t);
 
     std::list<Point> path;
     Color color;

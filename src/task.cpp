@@ -183,6 +183,89 @@ void Task::DrawLine(int x1, int y1, int x2, int y2, const Color& color, bool dra
         DrawPixel(x2, y2, color); //draw final pixel
 }
 
+void Task::DrawFillPath(std::vector<Point>& path, const Color& color)
+{
+    for (size_t i = 0; i < path.size() - 1; ++i)
+    {
+        Point& p1 = path[i];
+        Point& p2 = path[i + 1];
+        DrawLine(p1.x, p1.y, p2.x, p2.y, color, true);
+    }
+
+    Point& p1 = path[path.size() - 1];
+    Point& p2 = path[0];
+    DrawLine(p1.x, p1.y, p2.x, p2.y, color, true);
+
+    Point p = *path.begin();
+    int y_min = p.y, y_max = p.y;
+    for (size_t i = 1; i < path.size(); ++i)
+    {
+        Point& p = path[i];
+        if (p.y < y_min)
+            y_min = p.y;
+        else if (p.y > y_max)
+            y_max = p.y;
+    }
+
+    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+    int ind1 = 0, ind2 = 0;
+    std::vector<int> poly_ints;
+
+	for (int y = y_min; y <= y_max; ++y)
+    {
+        poly_ints.clear();
+		for (int i = 0; i < path.size(); ++i)
+        {
+			if (!i)
+            {
+				ind1 = path.size() - 1;
+				ind2 = 0;
+			}
+            else
+            {
+				ind1 = i - 1;
+				ind2 = i;
+			}
+			y1 = path[ind1].y;
+			y2 = path[ind2].y;
+			if (y1 < y2)
+            {
+				x1 = path[ind1].x;
+				x2 = path[ind2].x;
+			}
+            else if (y1 > y2)
+            {
+				y2 = path[ind1].y;
+				y1 = path[ind2].y;
+				x2 = path[ind1].x;
+				x1 = path[ind2].x;
+			}
+            else
+            {
+				continue;
+			}
+
+			if ((y >= y1 && y < y2) || (y == y_max && y > y1 && y <= y2))
+				poly_ints.push_back(((65536 * (y - y1)) / (y2 - y1)) * (x2 - x1) + (65536 * x1));
+		}
+
+		std::sort(poly_ints.begin(), poly_ints.end(),
+            [](int const& a, int const& b)
+            {
+                return a < b;
+            });
+
+		for (size_t i = 0; i < poly_ints.size(); i += 2)
+        {
+			int xa = poly_ints[i] + 1;
+			xa = (xa >> 16) + ((xa & 32768) >> 15);
+			int xb = poly_ints[i + 1] - 1;
+			xb = (xb >> 16) + ((xb & 32768) >> 15);
+            DrawLine(xa, y, xb, y, color);
+		}
+	}
+}
+
 //DrawLineTask
 
 DrawLineTask::DrawLineTask(const int _x1, const int _y1, const int _x2, const int _y2, const Color _color, WebWindow* _web_window, bool _draw_doc) :
@@ -546,86 +629,112 @@ void DrawFillPathTask::Execute()
     SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
 
     std::vector<Point> _path{std::make_move_iterator(std::begin(path)), std::make_move_iterator(std::end(path))};
+    DrawFillPath(_path, color);
+}
 
-    for (size_t i = 0; i < _path.size() - 1; ++i)
+//DrawBezierTask
+
+DrawBezierTask::DrawBezierTask(const std::list<Point>& _path, const Color _color, WebWindow* _web_window, bool _draw_doc) :
+    Task(_web_window, _draw_doc),
+    path(_path),
+    color(_color)
+{
+}
+
+void DrawBezierTask::Execute()
+{
+    if (draw_doc)
+        SDL_RenderSetClipRect(web_window->renderer, &web_window->view_port);
+    else
+        SDL_RenderSetClipRect(web_window->renderer, nullptr);
+    SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+
+    DrawBezier();
+}
+
+void DrawBezierTask::DrawBezier()
+{
+    if (path.size() < 3)
+        return;
+    
+    int n = path.size();
+    int s = n - 1;
+    double step_size = 1.0 / (double)s;
+    double t = 0.;
+    std::vector<double> x, y;
+
+    for (auto it = path.begin(); it != path.end(); ++it)
     {
-        Point& p1 = _path[i];
-        Point& p2 = _path[i + 1];
-        DrawLine(p1.x, p1.y, p2.x, p2.y, color, true);
+        x.push_back((double)it->x);
+        y.push_back((double)it->y);
+    }
+	x.push_back((double)path.begin()->x);
+	y.push_back((double)path.begin()->y);
+
+    int x1 = (int)lrint(EvaluateBezier(x, n + 1, t));
+    int y1 = (int)lrint(EvaluateBezier(y, n + 1, t));
+
+    std::vector<Point> _path;
+
+    for (int i = 0; i <= (n * s); ++i)
+    {
+        t += step_size;
+		int x2 = (int)EvaluateBezier(x, n, t);
+		int y2 = (int)EvaluateBezier(y, n, t);
+        _path.push_back(Point{x1, y1});
+        _path.push_back(Point{x2, y2});
+		x1 = x2;
+		y1 = y2;
     }
 
-    Point& p1 = _path[_path.size() - 1];
-    Point& p2 = _path[0];
-    DrawLine(p1.x, p1.y, p2.x, p2.y, color, true);
+    DrawFillPath(_path, color);
+}
 
-    Point p = *_path.begin();
-    int y_min = p.y, y_max = p.y;
-    for (size_t i = 1; i < _path.size(); ++i)
+double DrawBezierTask::EvaluateBezier(std::vector<double>& data, int size, double t)
+{
+	double mu, result;
+	int n, k, kn, nn, nkn;
+	double blend, muk, munk;
+
+	if (t < 0.0)
+		return(data[0]);
+	if (t >= size)
+		return(data[size - 1]);
+
+	mu = t / (double)size; //adjust t to the range 0.0 to 1.0
+
+	//calculate interpolate
+	n = size - 1;
+	result = 0.0;
+	muk = 1;
+	munk = pow(1 - mu, (double)n);
+	for (k = 0; k <= n; k++)
     {
-        Point& p = _path[i];
-        if (p.y < y_min)
-            y_min = p.y;
-        else if (p.y > y_max)
-            y_max = p.y;
-    }
-
-    int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-    int ind1 = 0, ind2 = 0;
-    std::vector<int> poly_ints;
-
-	for (int y = y_min; y <= y_max; ++y)
-    {
-        poly_ints.clear();
-		for (int i = 0; i < _path.size(); ++i)
+		nn = n;
+		kn = k;
+		nkn = n - k;
+		blend = muk * munk;
+		muk *= mu;
+		munk /= (1 - mu);
+		while (nn >= 1)
         {
-			if (!i)
+			blend *= nn;
+			nn--;
+			if (kn > 1)
             {
-				ind1 = _path.size() - 1;
-				ind2 = 0;
+				blend /= (double)kn;
+				kn--;
 			}
-            else
+			if (nkn > 1)
             {
-				ind1 = i - 1;
-				ind2 = i;
+				blend /= (double)nkn;
+				nkn--;
 			}
-			y1 = _path[ind1].y;
-			y2 = _path[ind2].y;
-			if (y1 < y2)
-            {
-				x1 = _path[ind1].x;
-				x2 = _path[ind2].x;
-			}
-            else if (y1 > y2)
-            {
-				y2 = _path[ind1].y;
-				y1 = _path[ind2].y;
-				x2 = _path[ind1].x;
-				x1 = _path[ind2].x;
-			}
-            else
-            {
-				continue;
-			}
-
-			if ((y >= y1 && y < y2) || (y == y_max && y > y1 && y <= y2))
-				poly_ints.push_back(((65536 * (y - y1)) / (y2 - y1)) * (x2 - x1) + (65536 * x1));
 		}
-
-		std::sort(poly_ints.begin(), poly_ints.end(),
-            [](int const& a, int const& b)
-            {
-                return a < b;
-            });
-
-		for (size_t i = 0; i < poly_ints.size(); i += 2)
-        {
-			int xa = poly_ints[i] + 1;
-			xa = (xa >> 16) + ((xa & 32768) >> 15);
-			int xb = poly_ints[i + 1] - 1;
-			xb = (xb >> 16) + ((xb & 32768) >> 15);
-            DrawLine(xa, y, xb, y, color);
-		}
+		result += data[k] * blend;
 	}
+
+	return result;
 }
 
 //StoreRectTask

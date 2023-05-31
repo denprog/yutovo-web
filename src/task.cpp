@@ -755,7 +755,30 @@ void StoreRectTask::Execute()
     SDL_QueryTexture(texture, &format, &access, &w, &h);
     if (web_window->stored_texture)
         SDL_DestroyTexture(web_window->stored_texture);
-    web_window->stored_texture = SDL_CreateTexture(web_window->renderer, format, SDL_TEXTUREACCESS_TARGET, rect.width, rect.height);
+    
+    SDL_Rect& store_rect = web_window->store_rect;
+    store_rect = yutovo_web::GetRect(rect);
+    store_rect.x -= web_window->document_point.x;
+    store_rect.y -= web_window->document_point.y;
+
+    //fix the store_rect if it is out of the image
+    if (store_rect.x < 0)
+    {
+        store_rect.w -= -store_rect.x;
+        store_rect.x = 0;
+    }
+    if (store_rect.x + store_rect.w > web_window->width)
+        store_rect.w = web_window->width - store_rect.x;
+
+    if (store_rect.y < 0)
+    {
+        store_rect.h -= -store_rect.y;
+        store_rect.y = 0;
+    }
+    if (store_rect.y + store_rect.h > web_window->height)
+        store_rect.h = web_window->height - store_rect.y;
+    
+    web_window->stored_texture = SDL_CreateTexture(web_window->renderer, format, SDL_TEXTUREACCESS_TARGET, store_rect.w, store_rect.h);
     if (!web_window->stored_texture)
     {
         printf("SDL_CreateTexture error: %s\n", TTF_GetError());
@@ -763,10 +786,7 @@ void StoreRectTask::Execute()
         return;
     }
     SDL_SetRenderTarget(web_window->renderer, web_window->stored_texture);
-    web_window->store_rect = yutovo_web::GetRect(rect);
-    web_window->store_rect.x -= web_window->document_point.x;
-    web_window->store_rect.y -= web_window->document_point.y;
-    SDL_RenderCopy(web_window->renderer, texture, &web_window->store_rect, nullptr);
+    SDL_RenderCopy(web_window->renderer, texture, &store_rect, nullptr);
     SDL_SetRenderTarget(web_window->renderer, nullptr);
     SDL_DestroyTexture(texture);
 }

@@ -50,6 +50,7 @@
                 {
                     preRun: [],
                     postRun: [],
+                    
                     print: (
                         function()
                         {
@@ -68,6 +69,7 @@
                                     }
                                 };
                         })(),
+                    
                     canvas: (
                         function()
                         {
@@ -85,6 +87,7 @@
                                 false);
                             return canvas;
                         })(),
+                    
                     setStatus: 
                         function(text)
                         {
@@ -101,8 +104,8 @@
                             if (m)
                             {
                                 text = m[1];
-                                progressElement.value = parseInt(m[2])*100;
-                                progressElement.max = parseInt(m[4])*100;
+                                progressElement.value = parseInt(m[2]) * 100;
+                                progressElement.max = parseInt(m[4]) * 100;
                                 progressElement.hidden = false;
                                 spinnerElement.hidden = false;
                             }
@@ -116,7 +119,9 @@
                             }
                             statusElement.innerHTML = text;
                         },
+                    
                     totalDependencies: 0,
+
                     monitorRunDependencies: 
                         function(left)
                         {

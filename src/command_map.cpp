@@ -41,9 +41,9 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(DOM_VK_A, true, false, false), "", std::function<void ()>(std::bind(&Document::SelectAll, document.get())));
 
     //edit text
-    Add(KeySequence(DOM_VK_DELETE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), false, true, false)));
-    Add(KeySequence(DOM_VK_BACK_SPACE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), true, true, false)));
-    Add(KeySequence(DOM_VK_RETURN), "", std::function<void ()>(std::bind(&Document::InsertParagraph, document.get(), true, false)));
+    Add(KeySequence(DOM_VK_DELETE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), false, true)));
+    Add(KeySequence(DOM_VK_BACK_SPACE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), true, true)));
+    Add(KeySequence(DOM_VK_RETURN), "", std::function<void ()>(std::bind(&Document::InsertParagraph, document.get(), true)));
 
     Add(KeySequence(DOM_VK_Z, true, false, false), "", std::function<void ()>(std::bind(&Document::Undo, document.get())));
     Add(KeySequence(DOM_VK_Y, true, false, false), "", std::function<void ()>(std::bind(&Document::Redo, document.get())));

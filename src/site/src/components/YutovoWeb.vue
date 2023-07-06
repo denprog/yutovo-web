@@ -1,31 +1,31 @@
 <template>
     <div class="editor-container" tabindex=0>
-        <figure style="overflow:visible;" id="spinner">
-            <div class="spinner">
-            </div>
-            <center style="margin-top:0.5em">
-                <strong>emscripten</strong>
-            </center>
-        </figure>
-        <div class="emscripten" id="status">Downloading...</div>
-        <div class="emscripten">
-            <progress value="0" max="100" id="progress" hidden=1></progress>  
-        </div>
-
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
         
         <div id="scroll-container">
             <div id="scroll-space"></div>
         </div>
     </div>
+
+    <q-resize-observer @resize="onResize" />
+
+    <div v-if="report" class="q-gutter-sm">
+        <q-badge>width: {{ report.width }}</q-badge>
+        <q-badge>height: {{ report.height }}</q-badge>
+    </div>
 </template>
 
 <script>
+    import { ref } from 'vue'
+
     export default {
-        name: "YutovoWeb",
+        name: 'YutovoWeb',
 
         setup()
         {
+            const style = ref({ width: '200px', height: '200px' })
+            const report = ref(null)
+
             let s_js = document.createElement('script');
             s_js.setAttribute('type', 'text/javascript');
             s_js.setAttribute('src', 'coi-serviceworker.js');
@@ -35,14 +35,27 @@
             yutovo_web_js.setAttribute('type', 'text/javascript');
             yutovo_web_js.setAttribute('src', 'yutovo_web.js');
             document.body.appendChild(yutovo_web_js);
+
+            return {
+                style,
+                report,
+
+                onResize (size) {
+                    report.value = size;
+                    var scroll = document.getElementById('scroll-container');
+                    if (scroll)
+                    {
+                        window.dispatchEvent(new Event('resize'));
+                        var canvas = document.getElementById('canvas');
+                        if (canvas)
+                            canvas.focus();
+                    }
+                }
+            };
         },
 
         mounted()
         {
-            var statusElement = document.getElementById('status');
-            var progressElement = document.getElementById('progress');
-            var spinnerElement = document.getElementById('spinner');
-
             window.sockets = new Map();
             window.socket_id = 1;
 
@@ -64,7 +77,7 @@
                                     console.log(text);
                                     if (element)
                                     {
-                                        element.value += text + "\n";
+                                        element.value += text + '\n';
                                         element.scrollTop = element.scrollHeight; // focus on bottom
                                     }
                                 };
@@ -78,7 +91,7 @@
                             // As a default initial behavior, pop up an alert when webgl context is lost. To make your
                             // application robust, you may want to override this behavior before shipping!
                             // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-                            canvas.addEventListener("webglcontextlost", 
+                            canvas.addEventListener('webglcontextlost', 
                                 function(e)
                                 {
                                     alert('WebGL context lost. You will need to reload the page.');
@@ -104,20 +117,7 @@
                             if (m)
                             {
                                 text = m[1];
-                                progressElement.value = parseInt(m[2]) * 100;
-                                progressElement.max = parseInt(m[4]) * 100;
-                                progressElement.hidden = false;
-                                spinnerElement.hidden = false;
                             }
-                            else
-                            {
-                                progressElement.value = null;
-                                progressElement.max = null;
-                                progressElement.hidden = true;
-                                if (!text)
-                                    spinnerElement.hidden = true;
-                            }
-                            statusElement.innerHTML = text;
                         },
                     
                     totalDependencies: 0,
@@ -135,9 +135,9 @@
                             const on_scroll = Module.cwrap('OnScroll', 'number', ['number', 'number']);
 
                             var scroll = document.getElementById('scroll-container');
-                            scroll.addEventListener("scroll", (event) =>
+                            scroll.addEventListener('scroll', (event) =>
                                 {
-                                    if (event.type != "scroll")
+                                    if (event.type != 'scroll')
                                         return;
                                     on_scroll(scroll.scrollLeft, scroll.scrollTop);
                                 });
@@ -147,21 +147,14 @@
                                     var canvas = document.getElementById('canvas');
                                     canvas.focus();
                                 }
+                            scroll.onresize = 
+                                function()
+                                {
+                                    var canvas = document.getElementById('canvas');
+                                    canvas.width = window.innerWidth;
+                                    canvas.height = window.innerHeight;
+                                };
                         }
-                };
-
-            Module.setStatus('Downloading...');
-            window.onerror = 
-                function()
-                {
-                    Module.setStatus('Exception thrown, see JavaScript console');
-                    spinnerElement.style.display = 'none';
-                    Module.setStatus = 
-                        function(text)
-                        {
-                            if (text)
-                                console.error('[post-exception status] ' + text);
-                        };
                 };
             
             window.Module = Module;

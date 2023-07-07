@@ -827,43 +827,9 @@ EM_JS(int, ConnectJs, (const char* addr),
         socket.onmessage = function(event)
             {
                 socket.last_message = event.data;
-                socket.temp = 555;
             };
-
-        const WaitForConnection = (s) => 
-            {
-                return new Promise((resolve, reject) =>
-                    {
-                        const attempts = 10;
-                        const interval_time = 200; //ms
-
-                        let cur_attempt = 0;
-                        const interval = setInterval(() =>
-                            {
-                                if (cur_attempt > attempts - 1)
-                                {
-                                    clearInterval(interval);
-                                    reject(new Error('Maximum number of attempts exceeded'));
-                                }
-                                else if (socket.readyState === socket.OPEN)
-                                {
-                                    clearInterval(interval);
-                                    resolve();
-                                }
-                                cur_attempt++;
-                            }, interval_time);
-                    });
-            };
-
-        try
-        {
-            WaitForConnection(socket);
-            window.sockets.set(window.socket_id, socket);
-        }
-        catch (err)
-        {
-            return 0;
-        }
+        
+        window.sockets.set(window.socket_id, socket);
         return window.socket_id++;
     });
 

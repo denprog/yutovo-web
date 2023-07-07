@@ -102,17 +102,4 @@ export default
     width: 6px;
     cursor: ew-resize;
 }
-
-&:after
-{
-    content: '';
-    position: absolute;
-    top: 50%;
-    height: 30px;
-    left: -5px;
-    right: -5px;
-    transform: translateY(-50%);
-    background-color: inherit;
-    border-radius: 4px;
-}
 </style>

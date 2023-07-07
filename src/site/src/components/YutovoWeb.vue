@@ -147,13 +147,6 @@
                                     var canvas = document.getElementById('canvas');
                                     canvas.focus();
                                 }
-                            scroll.onresize = 
-                                function()
-                                {
-                                    var canvas = document.getElementById('canvas');
-                                    canvas.width = window.innerWidth;
-                                    canvas.height = window.innerHeight;
-                                };
                         }
                 };
             
@@ -206,21 +199,6 @@
         height: 2500px;
     }
 
-    .spinner {
-        height: 50px;
-        width: 50px;
-        margin: 0px auto;
-        -webkit-animation: rotation .8s linear infinite;
-        -moz-animation: rotation .8s linear infinite;
-        -o-animation: rotation .8s linear infinite;
-        animation: rotation 0.8s linear infinite;
-        border-left: 10px solid rgb(0,150,240);
-        border-right: 10px solid rgb(0,150,240);
-        border-bottom: 10px solid rgb(0,150,240);
-        border-top: 10px solid rgb(100,0,200);
-        border-radius: 100%;
-        background-color: rgb(200,100,250);
-    }
     @-webkit-keyframes rotation {
         from {-webkit-transform: rotate(0deg);}
         to {-webkit-transform: rotate(360deg);}

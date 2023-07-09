@@ -36,13 +36,13 @@ TTF_Font* Fonts::Get(const yutovo::StringFormatPtr format)
     TTF_Font* font = nullptr;
     if (ttf_font == fonts.end())
     {
-        TTF_Font* f = TTF_OpenFont((base_dir + font_file->second).c_str(), format->size);
-        if (!f)
+        font = TTF_OpenFont((base_dir + font_file->second).c_str(), format->size);
+        if (!font)
         {
             printf("%s\n", TTF_GetError());
             return nullptr;
         }
-        fonts.emplace_back(Font{format->family, format->size, f});
+        fonts.emplace_back(Font{format->family, format->size, font});
     }
     else
     {

@@ -903,35 +903,8 @@ EM_JS(char*, ReceiveJs, (const int socket_id),
         if (typeof socket === "undefined")
             return 0;
 
-        const WaitForMessage = (s) => 
-            {
-                return new Promise((resolve, reject) =>
-                    {
-                        const attempts = 10;
-                        const interval_time = 200; //ms
-
-                        let cur_attempt = 0;
-                        const interval = setInterval(() =>
-                            {
-                                if (cur_attempt > attempts - 1)
-                                {
-                                    clearInterval(interval);
-                                    reject(new Error('Maximum number of attempts exceeded'));
-                                }
-                                else if (socket.last_message != "")
-                                {
-                                    clearInterval(interval);
-                                    resolve();
-                                }
-                                cur_attempt++;
-                            }, interval_time);
-                    });
-            };
-
         try
         {
-            if (socket.last_message == "")
-                WaitForMessage(socket);
             var str = _malloc(socket.last_message.length + 1);
             stringToUTF8(socket.last_message, str, socket.last_message.length + 1);
             socket.last_message = "";

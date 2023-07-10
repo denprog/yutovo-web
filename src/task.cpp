@@ -748,14 +748,6 @@ StoreRectTask::StoreRectTask(const Rect& _rect, WebWindow* _web_window) :
 void StoreRectTask::Execute()
 {
     //printf("WebWindow::StoreRect\n");
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(web_window->renderer, web_window->surface);
-    Uint32 format;
-    int access;
-    int w, h;
-    SDL_QueryTexture(texture, &format, &access, &w, &h);
-    if (web_window->stored_texture)
-        SDL_DestroyTexture(web_window->stored_texture);
-    
     SDL_Rect& store_rect = web_window->store_rect;
     store_rect = yutovo_web::GetRect(rect);
     store_rect.x -= web_window->document_point.x;
@@ -778,6 +770,17 @@ void StoreRectTask::Execute()
     if (store_rect.y + store_rect.h > web_window->height)
         store_rect.h = web_window->height - store_rect.y;
     
+    if (store_rect.w <= 0 || store_rect.h <= 0)
+        return;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(web_window->renderer, web_window->surface);
+    Uint32 format;
+    int access;
+    int w, h;
+    SDL_QueryTexture(texture, &format, &access, &w, &h);
+    if (web_window->stored_texture)
+        SDL_DestroyTexture(web_window->stored_texture);
+
     web_window->stored_texture = SDL_CreateTexture(web_window->renderer, format, SDL_TEXTUREACCESS_TARGET, store_rect.w, store_rect.h);
     if (!web_window->stored_texture)
     {

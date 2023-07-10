@@ -12,6 +12,8 @@ using emscripten::val;
 yutovo::DocumentPtr document;
 std::atomic_bool set_document_point;
 yutovo::Point document_point{false};
+yutovo::Size last_document_size;
+yutovo::Point last_document_point;
 
 SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
@@ -44,7 +46,12 @@ void MainLoop(void* arg)
         yutovo::Rect r = window->GetViewPort(0);
         yutovo::Size s = window->document_size;
         yutovo::Point p = window->document_point;
-        UpdateScrollBars(s.height + r.top, s.width + r.left, p.y, p.x);
+        if (last_document_size != s && last_document_point != p)
+        {
+            UpdateScrollBars(s.height + r.top, s.width + r.left, p.y, p.x);
+            last_document_size = s;
+            last_document_point = p;
+        }
     }
     window->SocketTasks();
 }

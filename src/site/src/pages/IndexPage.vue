@@ -18,7 +18,7 @@ export default {
 <style>
     .yutovo-web-container {
         text-align: center;
-        border: 1px solid black;
+        border: 0px;
         top: 0;
         left: 0;
         width: 99%;

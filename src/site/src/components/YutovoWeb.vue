@@ -157,23 +157,16 @@
 
 <style scoped>
     .editor-container {
-        border: 1px solid black;
+        border: 0px;
         position: relative;
         width: 100%;
         height: 100%;
         overflow: hidden;
     }
     
-    div.emscripten {
-        text-align: center;
-    }
-
-    div.emscripten_border {
-        border: 1px solid black;
-    }
-
     canvas.emscripten {
-        border: 0px none; background-color: white;
+        border: 0px none;
+        background-color: white;
     }
 
     #canvas {
@@ -195,24 +188,5 @@
     }
 
     #scroll-space {
-        width: 1500px;
-        height: 2500px;
-    }
-
-    @-webkit-keyframes rotation {
-        from {-webkit-transform: rotate(0deg);}
-        to {-webkit-transform: rotate(360deg);}
-    }
-    @-moz-keyframes rotation {
-        from {-moz-transform: rotate(0deg);}
-        to {-moz-transform: rotate(360deg);}
-    }
-    @-o-keyframes rotation {
-        from {-o-transform: rotate(0deg);}
-        to {-o-transform: rotate(360deg);}
-    }
-    @keyframes rotation {
-        from {transform: rotate(0deg);}
-        to {transform: rotate(360deg);}
     }
 </style>

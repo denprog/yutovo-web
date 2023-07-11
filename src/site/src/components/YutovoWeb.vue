@@ -1,18 +1,13 @@
 <template>
     <div class="editor-container" tabindex=0>
-        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
         <div id="scroll-container">
-            <div id="scroll-space"></div>
+            <div id="scroll-space" />
         </div>
     </div>
 
     <q-resize-observer @resize="onResize" />
-
-    <div v-if="report" class="q-gutter-sm">
-        <q-badge>width: {{ report.width }}</q-badge>
-        <q-badge>height: {{ report.height }}</q-badge>
-    </div>
 </template>
 
 <script>
@@ -24,7 +19,6 @@
         setup()
         {
             const style = ref({ width: '200px', height: '200px' })
-            const report = ref(null)
 
             let s_js = document.createElement('script');
             s_js.setAttribute('type', 'text/javascript');
@@ -38,10 +32,8 @@
 
             return {
                 style,
-                report,
 
                 onResize (size) {
-                    report.value = size;
                     var scroll = document.getElementById('scroll-container');
                     if (scroll)
                     {
@@ -144,8 +136,7 @@
                             scroll.onclick = 
                                 function()
                                 {
-                                    var canvas = document.getElementById('canvas');
-                                    canvas.focus();
+                                    document.getElementById('canvas').focus();
                                 }
                         }
                 };
@@ -160,7 +151,7 @@
         border: 0px;
         position: relative;
         width: 100%;
-        height: 100%;
+        height: calc(100vh - 4em);
         overflow: hidden;
     }
     

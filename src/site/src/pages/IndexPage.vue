@@ -21,8 +21,8 @@ export default {
         border: 0px;
         top: 0;
         left: 0;
-        width: 99%;
-        height: 90vh;
+        width: 100%;
+        height: 100%;
         margin: 2px;
         margin-left: auto;
         margin-right: auto;

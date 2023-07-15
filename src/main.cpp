@@ -8,6 +8,7 @@
 #include "command_map.h"
 
 using emscripten::val;
+using namespace yutovo;
 
 yutovo::DocumentPtr document;
 std::atomic_bool set_document_point;
@@ -29,6 +30,23 @@ EM_JS(void, UpdateScrollBars, (int v_size, int h_size, int v_value, int h_value)
         scroll_container.scrollTop = v_value;
     });
 
+EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
+    unsigned int font_size, bool bold, bool italic, bool underline),
+    {
+        window.dispatchEvent(new CustomEvent('setStandardToolbar', 
+            {
+                'detail': 
+                {
+                    'paragraph_format': UTF8ToString(paragraph_format, paragraph_format_size),
+                    'font_family': UTF8ToString(font_family, font_family_size),
+                    'font_size': font_size,
+                    'bold': bold, 
+                    'italic': italic, 
+                    'underline': underline
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
@@ -37,6 +55,67 @@ void MainLoop(void* arg)
         window->document_point = document_point;
         set_document_point = false;
     }
+
+    if (window->update_toolbar)
+    {
+        window->update_toolbar = false;
+
+        const CaretState& c = window->current_editor_state.caret_state;
+        const SelectionState& s = window->current_editor_state.selection_state;
+        StringFormat format;
+        ParagraphFormat paragraph_format;
+
+        //find common paragraph format
+        document->GetParagraphFormat(c.id, paragraph_format);
+        for (auto& state : s.state)
+        {
+            ParagraphFormat p;
+            if (document->GetParagraphFormat(c.id, p))
+            {
+                if (p.name != paragraph_format.name)
+                {
+                    paragraph_format.name = "";
+                    break;
+                }
+            }
+        }
+
+        //find common string format
+        if (c.id.empty() || c.id.size() == 1)
+            return;
+        ElementId _id = GetParent(c.id);
+        auto t = document->GetElementType(_id);
+        if (!document->IsString(document->GetElement(_id)) && !document->IsRow(document->GetElement(_id)))
+        {
+            format.Reset();
+        }
+        else if (document->GetStringFormat(_id, format))
+        {
+            for (auto& state : s.state)
+            {
+                for (int i = state.start; i < state.start + state.size; ++i)
+                {
+                    ElementId _id = GetChild(state.id, i);
+                    StringFormat f;
+                    document->GetStringFormat(_id, f);
+                    if (format.family != "" && format.family != f.family)
+                        format.family = "";
+                    if (format.size != 0 && format.size != f.size)
+                        format.size = 0;
+                    if (format.bold != false && format.bold != f.bold)
+                        format.bold = false;
+                    if (format.italic != false && format.italic != f.italic)
+                        format.italic = false;
+                    if (format.underline != false && format.underline != f.underline)
+                        format.underline = false;
+                }
+            }
+        }
+
+        UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
+            format.size, format.bold, format.italic, format.underline);
+    }
+
     if (window->needs_render)
     {
         //document was updated
@@ -53,6 +132,7 @@ void MainLoop(void* arg)
             last_document_point = p;
         }
     }
+
     window->SocketTasks();
 }
 
@@ -152,6 +232,100 @@ extern "C" EMSCRIPTEN_KEEPALIVE int OnScroll(int x_pos, int y_pos)
         document->Redraw();
     }
     return 0;
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
+{
+    if (document)
+        document->New();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnUndo()
+{
+    if (document)
+        document->Undo();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnRedo()
+{
+    if (document)
+        document->Redo();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnCut()
+{
+    if (!document)
+        return;
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnCopy()
+{
+    if (!document)
+        return;
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()
+{
+    if (!document)
+        return;
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
+{
+    if (!document)
+        return;
+    document->InsertCode(false, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
+{
+    if (!document)
+        return;
+    document->SetCurrentParagraphFormat(paragraph_format);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFontFamily(const char* font_family)
+{
+    if (!document)
+        return;
+    document->SetFontFamily(font_family);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFontSize(const char* font_size)
+{
+    if (!document)
+        return;
+    int s;
+    try
+    {
+        s = std::stoi(font_size);
+    }
+    catch (...)
+    {
+        return;
+    }
+    document->SetFontSize(s);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnBold(int checked)
+{
+    if (!document)
+        return;
+    document->SetBold(checked);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnItalic(int checked)
+{
+    if (!document)
+        return;
+    document->SetItalic(checked);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnUnderline(int checked)
+{
+    if (!document)
+        return;
+    document->SetUnderline(checked);
 }
 
 int main(int argc, char* argv[])

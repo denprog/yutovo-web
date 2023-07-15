@@ -1,4 +1,32 @@
 <template>
+    <div class="q-pa-md q-gutter-y-md column items-start">
+        <q-btn-group id="editor-toolbar" flat square unelevated stretch>
+            <q-btn size="14px" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
+            <q-btn size="14px" square dense icon="img:/images/standard/open.png"/>
+            <q-btn size="14px" square dense icon="img:/images/standard/save.png"/>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
+            <q-btn size="14px" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onCut();" icon="img:/images/standard/cut.png"/>
+            <q-btn size="14px" square dense @click="onCopy();" icon="img:/images/standard/copy.png"/>
+            <q-btn size="14px" square dense @click="onPaste();" icon="img:/images/standard/paste.png"/>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onCode();" icon="img:/images/format/code.png"/>
+            <q-separator vertical/>
+            <q-select class="toolbar-select" v-model="paragraph_format_model" :options="paragraph_format" @update:model-value="onParagraphFormat();" 
+                dense options-dense borderless />
+            <q-separator vertical/>
+            <q-select class="toolbar-select" v-model="font_family_model" :options="font_family" @update:model-value="onFontFamily();" 
+                dense options-dense borderless />
+            <q-select class="toolbar-select" v-model="font_size_model" :options="font_size" @update:model-value="onFontSize();" 
+                dense options-dense borderless />
+            <q-btn size="14px" square dense :color="bold_button_color" @click="onBold();" icon="img:/images/format/bold.png"/>
+            <q-btn size="14px" square dense :color="italic_button_color" @click="onItalic();" icon="img:/images/format/italic.png"/>
+            <q-btn size="14px" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png"/>
+        </q-btn-group>
+    </div>
+
     <div class="editor-container" tabindex=0>
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
@@ -16,9 +44,17 @@
     export default {
         name: 'YutovoWeb',
 
+        created()
+        {
+            if (window.addEventListener)
+                window.addEventListener('setStandardToolbar', this.setStandardToolbar, false);
+            else
+                window.attachEvent('setStandardToolbar', this.setStandardToolbar);
+        },
+
         setup()
         {
-            const style = ref({ width: '200px', height: '200px' })
+            const style = ref({ width: '200px', height: '200px' });
 
             let s_js = document.createElement('script');
             s_js.setAttribute('type', 'text/javascript');
@@ -33,7 +69,24 @@
             return {
                 style,
 
-                onResize (size) {
+                paragraph_format_model: ref('Text body'),
+                paragraph_format: [
+                    'Text body', 'Header 1', 'Header 2', 'Header 3', 'Monospace', 'Code'
+                ],
+
+                font_family_model: ref('Arial'),
+                font_family: [
+                    '', 'Arial', 'Courier New', 'Free Mono', 'Times New Roman'
+                ],
+
+                font_size_model: ref('14'),
+                font_size: [
+                    '', '6', '7', '8', '9', '10', '11', '12', '14', '16', '18', '20'
+                ],
+
+                bold_model: ref(null),
+
+                onResize() {
                     var scroll = document.getElementById('scroll-container');
                     if (scroll)
                     {
@@ -142,6 +195,112 @@
                 };
             
             window.Module = Module;
+        },
+
+        data()
+        {
+            return {
+                bold_button_color: 'white',
+                italic_button_color: 'white',
+                underline_button_color: 'white'
+            }
+        },
+
+        methods:
+        {
+            setStandardToolbar(event)
+            {
+                this.paragraph_format_model = event.detail.paragraph_format;
+                this.font_family_model = event.detail.font_family;
+                this.font_size_model = event.detail.font_size;
+                this.bold_button_color = (event.detail.bold == true ? 'blue' : 'white');
+                this.italic_button_color = (event.detail.italic == true ? 'blue' : 'white');
+                this.underline_button_color = (event.detail.underline == true ? 'blue' : 'white');
+            },
+
+            onCode()
+            {
+                Module.cwrap('OnCode', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onParagraphFormat()
+            {
+                Module.cwrap('OnParagraphFormat', 'void', ['string'])(this.paragraph_format_model);
+                document.getElementById('canvas').focus();
+            },
+
+            onFontFamily()
+            {
+                Module.cwrap('OnFontFamily', 'void', ['string'])(this.font_family_model);
+                document.getElementById('canvas').focus();
+            },
+
+            onFontSize()
+            {
+                Module.cwrap('OnFontSize', 'void', ['string'])(this.font_size_model);
+                document.getElementById('canvas').focus();
+            },
+
+            onBold()
+            {
+                if (this.bold_button_color == 'blue')
+                    this.bold_button_color = 'white';
+                else
+                    this.bold_button_color = 'blue';
+                Module.cwrap('OnBold', 'void', [])(this.bold_button_color == 'blue');
+                document.getElementById('canvas').focus();
+            },
+
+            onItalic()
+            {
+                if (this.italic_button_color == 'blue')
+                    this.italic_button_color = 'white';
+                else
+                    this.italic_button_color = 'blue';
+                Module.cwrap('OnItalic', 'void', [])(this.italic_button_color == 'blue');
+                document.getElementById('canvas').focus();
+            },
+
+            onUnderline()
+            {
+                if (this.underline_button_color == 'blue')
+                    this.underline_button_color = 'white';
+                else
+                    this.underline_button_color = 'blue';
+                Module.cwrap('OnUnderline', 'void', [])(this.underline_button_color == 'blue');
+                document.getElementById('canvas').focus();
+            },
+
+            onNew()
+            {
+                Module.cwrap('OnNew', 'void', [])();
+            },
+
+            onUndo()
+            {
+                Module.cwrap('OnUndo', 'void', [])();
+            },
+
+            onRedo()
+            {
+                Module.cwrap('OnRedo', 'void', [])();
+            },
+
+            onCut()
+            {
+                Module.cwrap('OnCut', 'void', [])();
+            },
+
+            onCopy()
+            {
+                Module.cwrap('OnCopy', 'void', [])();
+            },
+
+            onPaste()
+            {
+                Module.cwrap('OnPaste', 'void', [])();
+            }
         }
     };
 </script>
@@ -151,7 +310,7 @@
         border: 0px;
         position: relative;
         width: 100%;
-        height: calc(100vh - 4em);
+        height: calc(100vh - 7em);
         overflow: hidden;
     }
     
@@ -179,5 +338,16 @@
     }
 
     #scroll-space {
+    }
+
+    .q-pa-md {
+        padding: 0em 0 0 1em;
+    }
+
+    #editor-toolbar {
+    }
+
+    .toolbar-select {
+        padding: 0em 0 0 0.5em;
     }
 </style>

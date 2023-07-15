@@ -53,6 +53,8 @@ public:
 
     virtual Rect GetRect();
 
+    virtual void OnFormatChanged(const EditorState editor_state);
+
     virtual void OnCaretMoved(const EditorState editor_state);
 
     virtual int Connect(const std::string& addr);
@@ -71,6 +73,7 @@ public:
     EditorState current_editor_state;
 
     std::atomic_bool needs_render{false};
+    std::atomic_bool update_toolbar{false};
 
     SDL_Renderer* renderer = nullptr;
 

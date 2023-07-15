@@ -192,10 +192,18 @@ Rect WebWindow::GetRect()
     return Rect{0, 0, w, h};
 }
 
+void WebWindow::OnFormatChanged(const EditorState editor_state)
+{
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    current_editor_state = editor_state;
+    update_toolbar = true;
+}
+
 void WebWindow::OnCaretMoved(const EditorState editor_state)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
     current_editor_state = editor_state;
+    update_toolbar = true;
 }
 
 int WebWindow::Connect(const std::string& addr)

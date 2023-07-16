@@ -367,6 +367,8 @@ int main(int argc, char* argv[])
     yutovo::Config config;
     document->Start(config);
 
+    document->SetDefaultPageFormat(2, 2, 22, 22, 10);
+
     yutovo_web::ShortcutsMap shortcuts_map;
     shortcuts_map.Init(document);
 

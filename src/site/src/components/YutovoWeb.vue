@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pa-md q-gutter-y-md column items-start">
+    <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
         <q-btn-group id="editor-toolbar" flat square unelevated stretch>
             <q-btn size="14px" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
             <q-btn size="14px" square dense icon="img:/images/standard/open.png"/>
@@ -27,7 +27,7 @@
         </q-btn-group>
     </div>
 
-    <div class="q-pa-md q-gutter-y-md column items-start">
+    <div class="q-pa-md q-gutter-y-md column items-start" id="algebra-toolbar">
         <q-btn-group id="algebra-toolbar" flat square unelevated stretch>
             <q-btn size="14px" square dense @click="onPlus();" icon="img:/images/algebra/plus.png"/>
             <q-btn size="14px" square dense @click="onMinus();" icon="img:/images/algebra/minus.png"/>
@@ -43,7 +43,7 @@
         </q-btn-group>
     </div>
 
-    <div class="editor-container" tabindex=0>
+    <div class="editor-container" id="editor" tabindex=0>
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
         <div id="scroll-container">
@@ -110,6 +110,18 @@
                         var canvas = document.getElementById('canvas');
                         if (canvas)
                             canvas.focus();
+                    }
+
+                    var editor = document.getElementById('editor');
+                    if (editor)
+                    {
+                        var scroll_width = window.innerWidth - document.documentElement.clientWidth;
+                        var standard_toolbar = document.getElementById("standard-toolbar");
+                        var algebra_toolbar = document.getElementById("algebra-toolbar");
+                        editor.style.height = "calc(100vh - " + standard_toolbar.clientHeight.toString() + "px - " + 
+                            algebra_toolbar.clientHeight.toString() + "px - " + scroll_width + "px - " + "2em)";
+                        editor.style.height = scroll.clientHeight;
+                        console.log(editor.style.height);
                     }
                 }
             };
@@ -392,7 +404,6 @@
         border: 0px;
         position: relative;
         width: 100%;
-        height: calc(100vh - 7em);
         overflow: hidden;
     }
     

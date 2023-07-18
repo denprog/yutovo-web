@@ -27,6 +27,22 @@
         </q-btn-group>
     </div>
 
+    <div class="q-pa-md q-gutter-y-md column items-start">
+        <q-btn-group id="algebra-toolbar" flat square unelevated stretch>
+            <q-btn size="14px" square dense @click="onPlus();" icon="img:/images/algebra/plus.png"/>
+            <q-btn size="14px" square dense @click="onMinus();" icon="img:/images/algebra/minus.png"/>
+            <q-btn size="14px" square dense @click="onMultiply();" icon="img:/images/algebra/multiply.png"/>
+            <q-btn size="14px" square dense @click="onDivision();" icon="img:/images/algebra/division.png"/>
+            <q-btn size="14px" square dense @click="onPower();" icon="img:/images/algebra/power.png"/>
+            <q-btn size="14px" square dense @click="onSqrt();" icon="img:/images/algebra/sqrt.png"/>
+            <q-btn size="14px" square dense @click="onNthRoot();" icon="img:/images/algebra/nth_root.png"/>
+            <q-btn size="14px" square dense @click="onSubscript();" icon="img:/images/algebra/subscript.png"/>
+            <q-btn size="14px" square dense @click="onFences();" icon="img:/images/algebra/fences.png"/>
+            <q-btn size="14px" square dense @click="onAssignment();" icon="img:/images/algebra/assignment.png"/>
+            <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png"/>
+        </q-btn-group>
+    </div>
+
     <div class="editor-container" tabindex=0>
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
@@ -300,6 +316,72 @@
             onPaste()
             {
                 Module.cwrap('OnPaste', 'void', [])();
+            },
+
+            onPlus()
+            {
+                Module.cwrap('OnPlus', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onMinus()
+            {
+                Module.cwrap('OnMinus', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onMultiply()
+            {
+                Module.cwrap('OnMultiply', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onDivision()
+            {
+                Module.cwrap('OnDivision', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onPower()
+            {
+                Module.cwrap('OnPower', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onSqrt()
+            {
+                Module.cwrap('OnSqrt', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onNthRoot()
+            {
+                Module.cwrap('OnNthRoot', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onSubscript()
+            {
+                Module.cwrap('OnSubscript', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onFences()
+            {
+                Module.cwrap('OnFences', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onAssignment()
+            {
+                Module.cwrap('OnAssignment', 'void', [])();
+                document.getElementById('canvas').focus();
+            },
+
+            onEquation()
+            {
+                Module.cwrap('OnEquation', 'void', [])();
+                document.getElementById('canvas').focus();
             }
         }
     };
@@ -342,9 +424,6 @@
 
     .q-pa-md {
         padding: 0em 0 0 1em;
-    }
-
-    #editor-toolbar {
     }
 
     .toolbar-select {

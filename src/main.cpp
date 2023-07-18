@@ -277,6 +277,83 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
     document->InsertCode(false, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPlus()
+{
+    if (!document)
+        return;
+    document->InsertPlus(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnMinus()
+{
+    if (!document)
+        return;
+    document->InsertMinus(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnMultiply()
+{
+    if (!document)
+        return;
+    document->InsertMultiply(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDivision()
+{
+    if (!document)
+        return;
+    document->InsertDivision(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPower()
+{
+    if (!document)
+        return;
+    document->InsertPower(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSqrt()
+{
+    if (!document)
+        return;
+    document->InsertSquareRoot(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnNthRoot()
+{
+    if (!document)
+        return;
+    document->InsertNthRoot(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSubscript()
+{
+    if (!document)
+        return;
+    document->InsertSubscript(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFences()
+{
+    if (!document)
+        return;
+    document->InsertFences(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
+{
+    if (!document)
+        return;
+    document->InsertAssignment(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnEquation()
+{
+    if (!document)
+        return;
+    document->InsertEquation(ResultType::AUTO, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
 {
     if (!document)

@@ -116,10 +116,10 @@
                     if (editor)
                     {
                         var scroll_width = window.innerWidth - document.documentElement.clientWidth;
-                        var standard_toolbar = document.getElementById("standard-toolbar");
-                        var algebra_toolbar = document.getElementById("algebra-toolbar");
-                        editor.style.height = "calc(100vh - " + standard_toolbar.clientHeight.toString() + "px - " + 
-                            algebra_toolbar.clientHeight.toString() + "px - " + scroll_width + "px - " + "2em)";
+                        var standard_toolbar = document.getElementById('standard-toolbar');
+                        var algebra_toolbar = document.getElementById('algebra-toolbar');
+                        editor.style.height = 'calc(100vh - ' + standard_toolbar.clientHeight.toString() + 'px - ' + 
+                            algebra_toolbar.clientHeight.toString() + 'px - ' + scroll_width + 'px - 2em)';
                         editor.style.height = scroll.clientHeight;
                         console.log(editor.style.height);
                     }

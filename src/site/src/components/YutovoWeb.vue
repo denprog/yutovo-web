@@ -218,6 +218,16 @@
                                 {
                                     document.getElementById('canvas').focus();
                                 }
+                            
+                            var canvas = document.getElementById('canvas');
+                            canvas.addEventListener('focusin', (event) => 
+                                {
+                                    Module.cwrap('OnFocusIn', 'void', [])();
+                                });
+                            canvas.addEventListener('focusout', (event) => 
+                                {
+                                    Module.cwrap('OnFocusOut', 'void', [])();
+                                });
                         }
                 };
             

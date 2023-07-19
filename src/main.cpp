@@ -234,6 +234,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE int OnScroll(int x_pos, int y_pos)
     return 0;
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFocusIn()
+{
+    if (document)
+        document->SetCaretVisible(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFocusOut()
+{
+    if (document)
+        document->SetCaretVisible(false);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 {
     if (document)

@@ -7,9 +7,11 @@ set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_DEBUG_POSTFIX d)
 
 set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
+set(yutovo_logger_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_logger/)
 
 find_package(PkgConfig REQUIRED)
 find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo_logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -32,6 +34,7 @@ add_executable(${PROJECT_NAME}
 )
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/site/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION .)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/site/)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")
@@ -70,6 +73,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     yutovo_editor
+    yutovo_logger
     pthread
     ${Boost_SERIALIZATION_LIBRARY_RELEASE}
 )

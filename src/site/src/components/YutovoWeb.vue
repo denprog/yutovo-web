@@ -107,7 +107,6 @@
                     if (scroll)
                     {
                         window.dispatchEvent(new Event('resize'));
-                        var canvas = document.getElementById('canvas');
                         if (canvas)
                             canvas.focus();
                     }
@@ -216,10 +215,9 @@
                             scroll.onclick = 
                                 function()
                                 {
-                                    document.getElementById('canvas').focus();
+                                    canvas.focus();
                                 }
                             
-                            var canvas = document.getElementById('canvas');
                             canvas.addEventListener('focusin', (event) => 
                                 {
                                     Module.cwrap('OnFocusIn', 'void', [])();
@@ -258,25 +256,25 @@
             onCode()
             {
                 Module.cwrap('OnCode', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onParagraphFormat()
             {
                 Module.cwrap('OnParagraphFormat', 'void', ['string'])(this.paragraph_format_model);
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onFontFamily()
             {
                 Module.cwrap('OnFontFamily', 'void', ['string'])(this.font_family_model);
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onFontSize()
             {
                 Module.cwrap('OnFontSize', 'void', ['string'])(this.font_size_model);
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onBold()
@@ -286,7 +284,7 @@
                 else
                     this.bold_button_color = 'blue';
                 Module.cwrap('OnBold', 'void', [])(this.bold_button_color == 'blue');
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onItalic()
@@ -296,7 +294,7 @@
                 else
                     this.italic_button_color = 'blue';
                 Module.cwrap('OnItalic', 'void', [])(this.italic_button_color == 'blue');
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onUnderline()
@@ -306,7 +304,7 @@
                 else
                     this.underline_button_color = 'blue';
                 Module.cwrap('OnUnderline', 'void', [])(this.underline_button_color == 'blue');
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onNew()
@@ -342,67 +340,67 @@
             onPlus()
             {
                 Module.cwrap('OnPlus', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onMinus()
             {
                 Module.cwrap('OnMinus', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onMultiply()
             {
                 Module.cwrap('OnMultiply', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onDivision()
             {
                 Module.cwrap('OnDivision', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onPower()
             {
                 Module.cwrap('OnPower', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onSqrt()
             {
                 Module.cwrap('OnSqrt', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onNthRoot()
             {
                 Module.cwrap('OnNthRoot', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onSubscript()
             {
                 Module.cwrap('OnSubscript', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onFences()
             {
                 Module.cwrap('OnFences', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onAssignment()
             {
                 Module.cwrap('OnAssignment', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             },
 
             onEquation()
             {
                 Module.cwrap('OnEquation', 'void', [])();
-                document.getElementById('canvas').focus();
+                canvas.focus();
             }
         }
     };

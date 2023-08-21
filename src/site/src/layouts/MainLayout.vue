@@ -5,12 +5,18 @@
                 <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
                 <q-toolbar-title>
-                    <q-avatar>
-                        <img src="Quasar_Logo.png">
-                    </q-avatar>
-                    Yutovo
+                    <q-btn no-caps dense flat @click="$router.push('/')">
+                        <q-avatar>
+                            <img src="Quasar_Logo.png">
+                        </q-avatar>
+                    </q-btn>
+                    <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
+                        Yutovo
+                    </q-btn>
                 </q-toolbar-title>
 
+                <q-btn dense no-caps flat @click="showLoginDialog">Login</q-btn>
+                <q-btn dense no-caps flat @click="showRegisterDialog">Register</q-btn>
                 <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
             </q-toolbar>
         </q-header>
@@ -35,6 +41,8 @@
 
 <script>
 import { ref } from 'vue'
+import LoginDialog from 'layouts/LoginDialog.vue';
+import RegisterDialog from 'layouts/RegisterDialog.vue';
 
 export default
 {
@@ -77,6 +85,71 @@ export default
             {
                 rightDrawerOpen.value = !rightDrawerOpen.value
             }
+        }
+    },
+
+    methods:
+    {
+        showRegisterDialog()
+        {
+            this.registerDialog = this.$q
+                .dialog({
+                  component: RegisterDialog,
+
+                  // optional if you want to have access to
+                  // Router, Vuex store, and so on, in your
+                  // custom component:
+                  parent: this, // becomes child of this Vue node
+                  // ("this" points to your Vue component)
+                  // (prop was called "root" in < 1.1.0 and
+                  // still works, but recommending to switch
+                  // to the more appropriate "parent" name)
+
+                  // props forwarded to component
+                  // (everything except "component" and "parent" props above):
+                  apiResponse: this.resp
+                  // ...more.props...
+                })
+                .onOk(() => {
+                  console.log('OK')
+                })
+                .onCancel(() => {
+                  console.log('Cancel')
+                })
+                .onDismiss(() => {
+                  console.log('Called on OK or Cancel')
+                })
+        },
+
+        showLoginDialog()
+        {
+            this.loginDialog = this.$q
+                .dialog({
+                  component: LoginDialog,
+
+                  // optional if you want to have access to
+                  // Router, Vuex store, and so on, in your
+                  // custom component:
+                  parent: this, // becomes child of this Vue node
+                  // ("this" points to your Vue component)
+                  // (prop was called "root" in < 1.1.0 and
+                  // still works, but recommending to switch
+                  // to the more appropriate "parent" name)
+
+                  // props forwarded to component
+                  // (everything except "component" and "parent" props above):
+                  apiResponse: this.resp
+                  // ...more.props...
+                })
+                .onOk(() => {
+                  console.log('OK')
+                })
+                .onCancel(() => {
+                  console.log('Cancel')
+                })
+                .onDismiss(() => {
+                  console.log('Called on OK or Cancel')
+                })
         }
     }
 }

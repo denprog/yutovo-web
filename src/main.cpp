@@ -427,6 +427,8 @@ int main(int argc, char* argv[])
     val canvas = doc.call<val>("getElementById", std::string("canvas"));
     int width = 0, height = 0, f = 0;
     emscripten_get_canvas_size(&width, &height, &f);
+    
+    SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#canvas");
 
     SDL_Window *w = SDL_CreateWindow("", 0, 0, width, height, 
         SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MOUSE_FOCUS);

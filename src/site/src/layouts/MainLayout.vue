@@ -15,8 +15,9 @@
                     </q-btn>
                 </q-toolbar-title>
 
-                <q-btn dense no-caps flat @click="showLoginDialog">Login</q-btn>
-                <q-btn dense no-caps flat @click="showRegisterDialog">Register</q-btn>
+                <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
+                <q-btn dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
+                <q-btn dense no-caps flat v-if="logoutState" @click="logout">Logout</q-btn>
                 <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
             </q-toolbar>
         </q-header>
@@ -43,17 +44,57 @@
 import { ref } from 'vue'
 import LoginDialog from 'layouts/LoginDialog.vue';
 import RegisterDialog from 'layouts/RegisterDialog.vue';
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+import { api } from 'boot/boot'
 
 export default
 {
     setup()
     {
-        const leftDrawerOpen = ref(false)
-        const rightDrawerOpen = ref(false)
-        let initialLeftDrawerWidth
-        let initialRightDrawerWidth
-        const leftDrawerWidth = ref(300)
-        const rightDrawerWidth = ref(300)
+        const leftDrawerOpen = ref(false);
+        const rightDrawerOpen = ref(false);
+        let initialLeftDrawerWidth;
+        let initialRightDrawerWidth;
+        const leftDrawerWidth = ref(300);
+        const rightDrawerWidth = ref(300);
+
+        const $store = useStore();
+
+        const loginState = computed({
+            get: () => ($store.state.login.login == "")
+        })
+
+        const logoutState = computed({
+            get: () => ($store.state.login.login != "")
+        })
+
+        const logout = () =>
+        {
+            api.post('/auth/logout', 
+                {
+                    login: $store.state.login.login
+                },
+                {
+                    headers:
+                    {
+                        access_token: $store.state.login.access_token
+                    }
+                }
+                ).then(
+                    function(response)
+                    {
+                        console.log(response);
+                        $store.commit('login/updateLogin', "");
+                        $store.commit('login/updateAccessToken', "");
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
+        };
 
         return {
             drawer: ref(false),
@@ -84,7 +125,14 @@ export default
             toggleRightDrawer()
             {
                 rightDrawerOpen.value = !rightDrawerOpen.value
-            }
+            },
+
+            $store,
+
+            loginState,
+            logoutState,
+
+            logout
         }
     },
 
@@ -94,30 +142,30 @@ export default
         {
             this.registerDialog = this.$q
                 .dialog({
-                  component: RegisterDialog,
+                    component: RegisterDialog,
 
-                  // optional if you want to have access to
-                  // Router, Vuex store, and so on, in your
-                  // custom component:
-                  parent: this, // becomes child of this Vue node
-                  // ("this" points to your Vue component)
-                  // (prop was called "root" in < 1.1.0 and
-                  // still works, but recommending to switch
-                  // to the more appropriate "parent" name)
+                    // optional if you want to have access to
+                    // Router, Vuex store, and so on, in your
+                    // custom component:
+                    parent: this, // becomes child of this Vue node
+                    // ("this" points to your Vue component)
+                    // (prop was called "root" in < 1.1.0 and
+                    // still works, but recommending to switch
+                    // to the more appropriate "parent" name)
 
-                  // props forwarded to component
-                  // (everything except "component" and "parent" props above):
-                  apiResponse: this.resp
-                  // ...more.props...
+                    // props forwarded to component
+                    // (everything except "component" and "parent" props above):
+                    apiResponse: this.resp
+                    // ...more.props...
                 })
                 .onOk(() => {
-                  console.log('OK')
+                    console.log('OK')
                 })
                 .onCancel(() => {
-                  console.log('Cancel')
+                    console.log('Cancel')
                 })
                 .onDismiss(() => {
-                  console.log('Called on OK or Cancel')
+                    console.log('Called on OK or Cancel')
                 })
         },
 
@@ -125,30 +173,30 @@ export default
         {
             this.loginDialog = this.$q
                 .dialog({
-                  component: LoginDialog,
+                    component: LoginDialog,
 
-                  // optional if you want to have access to
-                  // Router, Vuex store, and so on, in your
-                  // custom component:
-                  parent: this, // becomes child of this Vue node
-                  // ("this" points to your Vue component)
-                  // (prop was called "root" in < 1.1.0 and
-                  // still works, but recommending to switch
-                  // to the more appropriate "parent" name)
+                    // optional if you want to have access to
+                    // Router, Vuex store, and so on, in your
+                    // custom component:
+                    parent: this, // becomes child of this Vue node
+                    // ("this" points to your Vue component)
+                    // (prop was called "root" in < 1.1.0 and
+                    // still works, but recommending to switch
+                    // to the more appropriate "parent" name)
 
-                  // props forwarded to component
-                  // (everything except "component" and "parent" props above):
-                  apiResponse: this.resp
-                  // ...more.props...
+                    // props forwarded to component
+                    // (everything except "component" and "parent" props above):
+                    apiResponse: this.resp
+                    // ...more.props...
                 })
                 .onOk(() => {
-                  console.log('OK')
+                    console.log('OK')
                 })
                 .onCancel(() => {
-                  console.log('Cancel')
+                    console.log('Cancel')
                 })
                 .onDismiss(() => {
-                  console.log('Called on OK or Cancel')
+                    console.log('Called on OK or Cancel')
                 })
         }
     }

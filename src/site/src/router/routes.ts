@@ -15,7 +15,7 @@ export default [
         ]
     },
     {
-        path: '/session/:session',
+        path: '/session/:param',
         component: MainLayout,
         children: [
             {

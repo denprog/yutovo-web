@@ -15,6 +15,7 @@
                     </q-btn>
                 </q-toolbar-title>
 
+                <div class="text-white q-pa-sm" v-if="loginStr != ''">{{ loginStr }}</div>
                 <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
                 <q-btn dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
                 <q-btn dense no-caps flat v-if="logoutState" @click="logout">Logout</q-btn>
@@ -69,6 +70,10 @@ export default
             get: () => ($store.state.login.login != "")
         })
 
+        const loginStr = computed({
+            get: () => ($store.state.login.login)
+        })
+
         const logout = () =>
         {
             api.post('/auth/logout', 
@@ -92,6 +97,8 @@ export default
                     function(response)
                     {
                         console.log(response);
+                        $store.commit('login/updateLogin', "");
+                        $store.commit('login/updateAccessToken', "");
                     }
                 );
         };
@@ -131,8 +138,8 @@ export default
 
             loginState,
             logoutState,
-
-            logout
+            logout, 
+            loginStr
         }
     },
 
@@ -188,12 +195,6 @@ export default
                     // (everything except "component" and "parent" props above):
                     apiResponse: this.resp
                     // ...more.props...
-                })
-                .onOk(() => {
-                    console.log('OK')
-                })
-                .onCancel(() => {
-                    console.log('Cancel')
                 })
                 .onDismiss(() => {
                     console.log('Called on OK or Cancel')

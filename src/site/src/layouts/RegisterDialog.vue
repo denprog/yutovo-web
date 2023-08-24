@@ -4,7 +4,7 @@
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
-                    <q-form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset">
+                    <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">Registration</div>
                         <q-input square v-model="login" lazy-rules :rules="[this.required]" type="username" label="login" />
                         <q-input square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" label="email" />

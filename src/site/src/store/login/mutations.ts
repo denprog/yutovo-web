@@ -6,10 +6,15 @@ const mutation: MutationTree<LoginStateInterface> = {
     {
         state.login = login;
     },
-    
+
     updateAccessToken(state, access_token)
     {
         state.access_token = access_token;
+    },
+
+    updateLastError(state, last_error)
+    {
+        state.last_error = last_error;
     }
 };
 

@@ -143,6 +143,32 @@ export default
         }
     },
 
+    mounted()
+    {
+        //auto-login
+        const $store = useStore();
+
+        api.post('/auth/refresh-token', 
+        {
+        }
+        ).then(
+            function(response)
+            {
+                console.log(response);
+                $store.commit('login/updateLogin', response.headers['login']);
+                $store.commit('login/updateAccessToken', response.headers['access_token']);
+                $store.commit('login/updateLastError', '');
+            }
+        ).catch(
+            function(response)
+            {
+                console.log(response);
+                $store.commit('login/updateLogin', "");
+                $store.commit('login/updateAccessToken', "");
+            }
+        );
+    },
+
     methods:
     {
         showRegisterDialog()

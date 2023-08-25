@@ -82,13 +82,13 @@ export default {
                                 function(response)
                                 {
                                     console.log(response);
-                                    $store.commit('login/updateLogin', login.value);
-                                    $store.commit('login/updateAccessToken', response.headers['access_token']);
+                                    $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                                     registerDialog.value.hide();
                                 }
                             ).catch(
                                 function(response)
                                 {
+                                    $store.dispatch('login/updateAccessToken', '');
                                     console.log(response);
                                 }
                             );

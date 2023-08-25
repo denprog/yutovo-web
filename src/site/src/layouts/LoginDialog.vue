@@ -39,7 +39,7 @@ export default {
         const loginDialog = ref(null);
         const $store = useStore();
 
-        $store.commit('login/updateLastError', '');
+        $store.commit('login/setLastError', '');
 
         const required = (val) =>
         {
@@ -64,16 +64,16 @@ export default {
                     function(response)
                     {
                         console.log(response);
-                        $store.commit('login/updateLogin', login.value);
-                        $store.commit('login/updateAccessToken', response.headers['access_token']);
-                        $store.commit('login/updateLastError', '');
+                        $store.dispatch('login/updateAccessToken', response.headers['access_token']);
+                        $store.commit('login/setLastError', '');
                         loginDialog.value.hide();
                     }
                 ).catch(
                     function(response)
                     {
                         console.log(response);
-                        $store.commit('login/updateLastError', 'Login failed');
+                        $store.dispatch('login/updateAccessToken', '');
+                        $store.commit('login/setLastError', 'Login failed');
                     }
                 );
         };

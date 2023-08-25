@@ -90,15 +90,13 @@ export default
                     function(response)
                     {
                         console.log(response);
-                        $store.commit('login/updateLogin', "");
-                        $store.commit('login/updateAccessToken', "");
+                        $store.dispatch('login/updateAccessToken', "");
                     }
                 ).catch(
                     function(response)
                     {
                         console.log(response);
-                        $store.commit('login/updateLogin', "");
-                        $store.commit('login/updateAccessToken', "");
+                        $store.dispatch('login/updateAccessToken', "");
                     }
                 );
         };
@@ -155,16 +153,14 @@ export default
             function(response)
             {
                 console.log(response);
-                $store.commit('login/updateLogin', response.headers['login']);
-                $store.commit('login/updateAccessToken', response.headers['access_token']);
-                $store.commit('login/updateLastError', '');
+                $store.dispatch('login/updateAccessToken', response.headers['access_token']);
+                $store.commit('login/setLastError', '');
             }
         ).catch(
             function(response)
             {
                 console.log(response);
-                $store.commit('login/updateLogin', "");
-                $store.commit('login/updateAccessToken', "");
+                $store.dispatch('login/updateAccessToken', "");
             }
         );
     },

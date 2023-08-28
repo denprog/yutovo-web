@@ -1,7 +1,5 @@
 import MainLayout from 'layouts/MainLayout.vue';
 import IndexPage from 'pages/IndexPage.vue';
-import LoginPage from 'pages/LoginPage.vue';
-import RegisterPage from 'pages/RegisterPage.vue';
 
 export default [
     {
@@ -23,14 +21,6 @@ export default [
                 component: IndexPage
             }
         ]
-    },
-    {
-        path: '/login',
-        component: LoginPage
-    },
-    {
-        path: '/register',
-        component: RegisterPage
     },
     {
         path: '/:catchAll(.*)*',

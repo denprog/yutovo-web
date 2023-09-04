@@ -15,6 +15,7 @@ SDL_Rect GetRect(const Rect& rect);
 Rect GetRect(const SDL_Rect& rect);
 
 std::string ToBasicString(const std::u32string& str);
+std::u32string ToUtfString(const std::string& str);
 
 }
 

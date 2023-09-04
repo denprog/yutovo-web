@@ -417,6 +417,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnUnderline(int checked)
     document->SetUnderline(checked);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* json_doc)
+{
+    auto s = ToUtfString(json_doc);
+    document->LoadJson(s);
+}
+
 int main(int argc, char* argv[])
 {
     printf("Start\n");

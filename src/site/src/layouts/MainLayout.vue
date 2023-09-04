@@ -24,7 +24,16 @@
         </q-header>
 
         <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
-            Test
+            <div class="q-sm">
+                <q-input class="q-pa-sm" dense ref="tasksFilterRef" v-model="tasksFilter" label="Filter">
+                    <template v-slot:append>
+                        <q-icon v-if="tasksFilter !== ''" name="clear" class="cursor-pointer" @click="resetTasksFilter" />
+                    </template>
+                </q-input>
+                <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
+                    :filter="tasksFilter" @update:selected="onSelected" default-expand-all />
+            </div>
+
             <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
         </q-drawer>
 
@@ -59,47 +68,136 @@ export default
         let initialRightDrawerWidth;
         const leftDrawerWidth = ref(300);
         const rightDrawerWidth = ref(300);
+        const tasksFilter = ref('');
+        const tasksFilterRef = ref(null);
+        const tasksNodes = [
+            {
+                label: 'Tasks'
+            }
+        ];
+        const tasks = ref(tasksNodes);
+        const tasksRef = ref(null);
 
-        const $store = useStore();
+        const store = useStore();
 
         const loginState = computed({
-            get: () => ($store.state.login.login == "")
+            get: () => (store.state.login.login == '')
         })
 
         const logoutState = computed({
-            get: () => ($store.state.login.login != "")
+            get: () => (store.state.login.login != '')
         })
 
         const loginStr = computed({
-            get: () => ($store.state.login.login)
+            get: () => (store.state.login.login)
         })
 
         const logout = () =>
         {
-            api.post('/auth/logout', 
+            api.get('/auth/logout', 
                 {
-                    login: $store.state.login.login
+                    login: store.state.login.login
                 },
                 {
                     headers:
                     {
-                        access_token: $store.state.login.access_token
+                        access_token: store.state.login.access_token
                     }
                 }
                 ).then(
                     function(response)
                     {
                         console.log(response);
-                        $store.dispatch('login/updateAccessToken', "");
+                        store.dispatch('login/updateAccessToken', '');
                     }
                 ).catch(
                     function(response)
                     {
                         console.log(response);
-                        $store.dispatch('login/updateAccessToken', "");
+                        store.dispatch('login/updateAccessToken', '');
                     }
                 );
         };
+
+        const updateTasks = (obj, t, path) =>
+        {
+            if (obj == null)
+                return;
+            for (var prop in obj)
+            {
+                if (prop == 'files')
+                {
+                    for (var i = 0; i < obj[prop].length; ++i)
+                    {
+                        let p = path + obj[prop][i];
+                        t.push({
+                            'id': p,
+                            'label': obj[prop][i],
+                            'selectable': true
+                        });
+                    }
+                }
+                else
+                {
+                    let p = path + prop + '/';
+                    t.push({
+                        'id': p,
+                        'label': prop,
+                        'selectable': false,
+                        'children': []
+                    });
+                    updateTasks(obj[prop], t[t.length - 1]['children'], p);
+                }
+            }
+        };
+
+        const resetTasksFilter = () =>
+        {
+            tasksFilter.value = '';
+            tasksFilterRef.value.focus();
+        };
+
+        const loadTasks = () =>
+        {
+            api.get('/service/get-tasks', 
+                {
+                }
+                ).then(
+                    function(response)
+                    {
+                        console.log(response);
+                        tasks.value = [];
+                        updateTasks(response.data, tasks.value, '/');
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
+        };
+
+        const onSelected = (target) =>
+        {
+            console.log(target);
+            api.post('/service/load-task', 
+                {
+                    task: target
+                }
+                ).then(
+                    function(response)
+                    {
+                        store.dispatch('service/updateTaskFile', response.data);
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
+        };
+
+        loadTasks();
 
         return {
             drawer: ref(false),
@@ -132,19 +230,28 @@ export default
                 rightDrawerOpen.value = !rightDrawerOpen.value
             },
 
-            $store,
+            store,
 
             loginState,
             logoutState,
             logout, 
-            loginStr
+            loginStr,
+
+            tasksFilter,
+            tasksFilterRef,
+            resetTasksFilter,
+            tasksNodes,
+            tasks,
+            tasksRef,
+            selectedTask: ref(null),
+            onSelected
         }
     },
 
     mounted()
     {
         //auto-login
-        const $store = useStore();
+        const store = useStore();
 
         api.post('/auth/refresh-token', 
         {
@@ -153,14 +260,14 @@ export default
             function(response)
             {
                 console.log(response);
-                $store.dispatch('login/updateAccessToken', response.headers['access_token']);
-                $store.commit('login/setLastError', '');
+                store.dispatch('login/updateAccessToken', response.headers['access_token']);
+                store.commit('login/setLastError', '');
             }
         ).catch(
             function(response)
             {
                 console.log(response);
-                $store.dispatch('login/updateAccessToken', "");
+                store.dispatch('login/updateAccessToken', '');
             }
         );
     },

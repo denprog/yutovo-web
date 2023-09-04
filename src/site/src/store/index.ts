@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import login from './login'
+import service from './service'
 
 export interface StateInterface {
     // Define your own store structure, using submodules if needed
@@ -8,10 +9,12 @@ export interface StateInterface {
     example: unknown;
 }
 
-export default function (/* { ssrContext } */) {
+export default function ()
+{
   	const Store = createStore({
     	modules: {
-      		login
+      		login,
+			service
     	},
 
     	// enable strict mode (adds overhead!)

@@ -56,6 +56,7 @@
 
 <script>
     import { ref } from 'vue'
+    import { useStore } from 'vuex'
 
     export default {
         name: 'YutovoWeb',
@@ -82,6 +83,8 @@
             yutovo_web_js.setAttribute('src', 'yutovo_web.js');
             document.body.appendChild(yutovo_web_js);
 
+            const store = useStore();
+
             return {
                 style,
 
@@ -101,6 +104,8 @@
                 ],
 
                 bold_model: ref(null),
+
+                store,
 
                 onResize() {
                     var scroll = document.getElementById('scroll-container');
@@ -238,6 +243,15 @@
                 bold_button_color: 'white',
                 italic_button_color: 'white',
                 underline_button_color: 'white'
+            }
+        },
+
+        watch:
+        {
+            'store.state.service.task_file': function()
+            {
+                Module.cwrap('OnTaskFile', 'void', ['string'])(JSON.stringify(this.store.state.service.task_file));
+                canvas.focus();
             }
         },
 

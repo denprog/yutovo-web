@@ -134,14 +134,11 @@ void MainLoop(void* arg)
         }
         else if (last_code_id != code_id)
         {
-            //update the identifiers tree
-            std::string guid = document->GetSolverGuid();
+            std::string guid;
+            document->GetSolverGuid(guid);
             UpdateIdentifiersTree(code_id, guid.c_str(), guid.size());
         }
-        else
-        {
-            last_code_id = code_id;
-        }
+        last_code_id = code_id;
     }
 
     if (window->needs_render)

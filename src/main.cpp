@@ -47,6 +47,18 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
             }));
     });
 
+EM_JS(void, UpdateIdentifiersTree, (unsigned int code_id, const char* solver_guid, size_t solver_guid_size),
+    {
+        window.dispatchEvent(new CustomEvent('updateIdentifiersTree', 
+            {
+                'detail': 
+                {
+                    'code_id': code_id,
+                    'solver_guid': solver_guid == 0 ? "" : UTF8ToString(solver_guid, solver_guid_size)
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
@@ -84,7 +96,6 @@ void MainLoop(void* arg)
         if (c.id.empty() || c.id.size() == 1)
             return;
         ElementId _id = GetParent(c.id);
-        auto t = document->GetElementType(_id);
         if (!document->IsString(document->GetElement(_id)) && !document->IsRow(document->GetElement(_id)))
         {
             format.Reset();
@@ -114,6 +125,23 @@ void MainLoop(void* arg)
 
         UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
             format.size, format.bold, format.italic, format.underline);
+        
+        static uint last_code_id = 0;
+        uint code_id = document->FindCodeBlock(_id);
+        if (code_id == 0)
+        {
+            UpdateIdentifiersTree(0, NULL, 0);
+        }
+        else if (last_code_id != code_id)
+        {
+            //update the identifiers tree
+            std::string guid = document->GetSolverGuid();
+            UpdateIdentifiersTree(code_id, guid.c_str(), guid.size());
+        }
+        else
+        {
+            last_code_id = code_id;
+        }
     }
 
     if (window->needs_render)

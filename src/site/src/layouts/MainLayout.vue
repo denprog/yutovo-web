@@ -25,23 +25,21 @@
 
         <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
             <div class="q-sm">
-                <q-input class="q-pa-sm" dense ref="tasksFilterRef" v-model="tasksFilter" label="Filter">
+                <q-input class="q-pa-sm" dense ref="tasksFilterRef" v-model="tasksFilter">
                     <template v-slot:append>
                         <q-icon v-if="tasksFilter !== ''" name="clear" class="cursor-pointer" @click="resetTasksFilter" />
                     </template>
                 </q-input>
                 <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
-                    :filter="tasksFilter" @update:selected="onSelected" default-expand-all />
+                    :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all />
             </div>
-
             <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
         </q-drawer>
 
         <q-drawer show-if-above :width="rightDrawerWidth" v-model="rightDrawerOpen" side="right" bordered>
             <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeRightDrawer" class="q-right_drawer__resizer"></div>
-            <div>
-                Test text
-            </div>
+            <identifiers-tree>
+            </identifiers-tree>
         </q-drawer>
 
         <q-page-container>
@@ -54,12 +52,15 @@
 import { ref } from 'vue'
 import LoginDialog from 'layouts/LoginDialog.vue';
 import RegisterDialog from 'layouts/RegisterDialog.vue';
+import IdentifiersTree from 'components/IdentifiersTree.vue';
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
 
 export default
 {
+    components: { IdentifiersTree },
+
     setup()
     {
         const leftDrawerOpen = ref(false);
@@ -68,6 +69,7 @@ export default
         let initialRightDrawerWidth;
         const leftDrawerWidth = ref(300);
         const rightDrawerWidth = ref(300);
+
         const tasksFilter = ref('');
         const tasksFilterRef = ref(null);
         const tasksNodes = [
@@ -177,7 +179,7 @@ export default
                 );
         };
 
-        const onSelected = (target) =>
+        const onTaskSelected = (target) =>
         {
             console.log(target);
             api.post('/service/load-task', 
@@ -244,7 +246,7 @@ export default
             tasks,
             tasksRef,
             selectedTask: ref(null),
-            onSelected
+            onTaskSelected
         }
     },
 

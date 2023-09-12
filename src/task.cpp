@@ -361,10 +361,10 @@ void DrawTextTask::Execute()
     
     //printf("WebWindow::DrawText %s, rect={%d, %d, %d, %d}\n", text.c_str(), rect.left, rect.top, rect.width, rect.height);
     SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
-    SDL_Surface* text_surface = TTF_RenderUTF8_Solid(font, text.c_str(), GetColor(color));
+    SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), GetColor(color));
     if (!text_surface)
     {
-        printf("TTF_RenderUTF8_Solid error: %s\n", TTF_GetError());
+        printf("TTF_RenderUTF8_Blended error: %s\n", TTF_GetError());
         return;
     }
     SDL_Texture* texture = SDL_CreateTextureFromSurface(web_window->renderer, text_surface);

@@ -111,15 +111,22 @@ export default
             leftDrawerWidth,
             rightDrawerWidth,
 
-            resizeLeftDrawer (ev) {
+            resizeLeftDrawer (ev)
+            {
                 if (ev.isFirst === true)
-                    initialLeftDrawerWidth = leftDrawerWidth.value
-                leftDrawerWidth.value = initialLeftDrawerWidth + ev.offset.x
+                    initialLeftDrawerWidth = leftDrawerWidth.value;
+                let w = initialLeftDrawerWidth + ev.offset.x;
+                if (w > 50 && w < window.screen.width - 50 - rightDrawerWidth.value)
+                    leftDrawerWidth.value = w;
             },
-            resizeRightDrawer (ev) {
+
+            resizeRightDrawer (ev)
+            {
                 if (ev.isFirst === true)
-                    initialRightDrawerWidth = rightDrawerWidth.value
-                rightDrawerWidth.value = initialRightDrawerWidth - ev.offset.x
+                    initialRightDrawerWidth = rightDrawerWidth.value;
+                let w = initialRightDrawerWidth - ev.offset.x;
+                if (w > 50 && w < window.screen.width - 50 - leftDrawerWidth.value)
+                    rightDrawerWidth.value = w;
             },
 
             leftDrawerOpen,

@@ -8,9 +8,9 @@
             <q-btn size="14px" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
             <q-btn size="14px" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
             <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onCut();" icon="img:/images/standard/cut.png"/>
-            <q-btn size="14px" square dense @click="onCopy();" icon="img:/images/standard/copy.png"/>
-            <q-btn size="14px" square dense @click="onPaste();" icon="img:/images/standard/paste.png"/>
+            <q-btn size="14px" id="cut-button" square dense @click="onCut();" icon="img:/images/standard/cut.png"/>
+            <q-btn size="14px" id="copy-button" square dense @click="onCopy();" icon="img:/images/standard/copy.png"/>
+            <q-btn size="14px" id="paste-button" square dense @click="onPaste();" icon="img:/images/standard/paste.png"/>
             <q-separator vertical/>
             <q-btn size="14px" square dense @click="onCode();" icon="img:/images/format/code.png"/>
             <q-separator vertical/>
@@ -47,6 +47,20 @@
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
         <div id="scroll-container">
+            <q-menu touch-position square context-menu auto-close @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
+                <q-list dense style="min-width: 100px">
+                    <q-item id="copy-menu" clickable @click='onCopy();'>
+                        <q-item-section>Copy</q-item-section>
+                    </q-item>
+                    <q-item id="paste-menu" clickable @click='onPaste();'>
+                        <q-item-section>Paste</q-item-section>
+                    </q-item>
+                    <q-item id="cut-menu" clickable @click='onCut();'>
+                        <q-item-section>Cut</q-item-section>
+                    </q-item>
+                </q-list>            
+            </q-menu>
+
             <div id="scroll-space" />
         </div>
     </div>
@@ -64,9 +78,19 @@
         created()
         {
             if (window.addEventListener)
+            {
                 window.addEventListener('setStandardToolbar', this.setStandardToolbar, false);
+                window.addEventListener('onCopy', this.onCopy, false);
+                window.addEventListener('onPaste', this.onPaste, false);
+                window.addEventListener('onCut', this.onCut, false);
+            }
             else
+            {
                 window.attachEvent('setStandardToolbar', this.setStandardToolbar);
+                window.attachEvent('onCopy', this.onCopy);
+                window.attachEvent('onPaste', this.onPaste);
+                window.attachEvent('onCut', this.onCut);
+            }
         },
 
         setup()
@@ -257,7 +281,7 @@
 
         methods:
         {
-            setStandardToolbar(event)
+            async setStandardToolbar(event)
             {
                 this.paragraph_format_model = event.detail.paragraph_format;
                 this.font_family_model = event.detail.font_family;
@@ -265,6 +289,44 @@
                 this.bold_button_color = (event.detail.bold == true ? 'blue' : 'white');
                 this.italic_button_color = (event.detail.italic == true ? 'blue' : 'white');
                 this.underline_button_color = (event.detail.underline == true ? 'blue' : 'white');
+
+                var copy_button = document.getElementById('copy-button');
+                const can_copy = Module.cwrap('CanCopy', 'bool', [])();
+                if (can_copy)
+                    copy_button.classList.remove("disabled");
+                else
+                    copy_button.classList.add("disabled");
+
+                var can_paste = false;
+                try
+                {
+                    const data = await navigator.clipboard.read();
+                    for (let i = 0; i < data.length; i++)
+                    {
+                        if (data[i].types.includes("web yutovo/elements") || data[i].types.includes("text/plain"))
+                        {
+                            can_paste = true;
+                            break;
+                        }
+                    }
+                }
+                catch (err)
+                {
+                }
+
+                var paste_button = document.getElementById('paste-button');
+                can_paste = Module.cwrap('CanPaste', 'bool', [])() && can_paste;
+                if (can_paste)
+                    paste_button.classList.remove("disabled");
+                else
+                    paste_button.classList.add("disabled");
+
+                var cut_button = document.getElementById('cut-button');
+                const can_cut = Module.cwrap('CanCut', 'bool', [])();
+                if (can_cut)
+                    cut_button.classList.remove("disabled");
+                else
+                    cut_button.classList.add("disabled");
             },
 
             onCode()
@@ -339,16 +401,106 @@
             onCut()
             {
                 Module.cwrap('OnCut', 'void', [])();
+                const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
+                const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
+                navigator.clipboard.write([
+                    new ClipboardItem({
+                        'text/plain': new Blob([clipboard_text], 
+                        {
+                            type: 'text/plain'
+                        }),
+                        'web yutovo/elements': new Blob([clipboard_json], 
+                        {
+                            type: 'web yutovo/elements'
+                        })
+                    })
+                ]);
+                canvas.focus();
             },
 
             onCopy()
             {
                 Module.cwrap('OnCopy', 'void', [])();
+                const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
+                const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
+                navigator.clipboard.write([
+                    new ClipboardItem({
+                        'text/plain': new Blob([clipboard_text], 
+                        {
+                            type: 'text/plain'
+                        }),
+                        'web yutovo/elements': new Blob([clipboard_json], 
+                        {
+                            type: 'web yutovo/elements'
+                        })
+                    })
+                ]);
+                canvas.focus();
             },
 
-            onPaste()
+            async onPaste()
             {
+                Module.cwrap('SetClipboardText', 'void', ['string'])('');
+                Module.cwrap('SetClipboardJson', 'void', ['string'])('');
+                const data = await navigator.clipboard.read();
+                for (let i = 0; i < data.length; i++)
+                {
+                    if (data[i].types.includes("web yutovo/elements"))
+                    {
+                        const blob = await data[i].getType("web yutovo/elements");
+                        const text = await blob.text();
+                        Module.cwrap('SetClipboardJson', 'void', ['string'])(text);
+                    }
+                    else if (data[i].types.includes("text/plain"))
+                    {
+                        const blob = await data[i].getType("text/plain");
+                        const text = await blob.text();
+                        Module.cwrap('SetClipboardText', 'void', ['string'])(text);
+                    }
+                }
                 Module.cwrap('OnPaste', 'void', [])();
+                canvas.focus();
+            },
+
+            async onShowContextMenu(event)
+            {
+                var copy_menu = document.getElementById('copy-menu');
+                const can_copy = Module.cwrap('CanCopy', 'bool', [])();
+                if (can_copy)
+                    copy_menu.classList.remove("disabled");
+                else
+                    copy_menu.classList.add("disabled");
+
+                var can_paste = false;
+                try
+                {
+                    const data = await navigator.clipboard.read();
+                    for (let i = 0; i < data.length; i++)
+                    {
+                        if (data[i].types.includes("web yutovo/elements") || data[i].types.includes("text/plain"))
+                        {
+                            can_paste = true;
+                            break;
+                        }
+                    }
+                }
+                catch (err)
+                {
+                }
+
+                var paste_menu = document.getElementById('paste-menu');
+                can_paste = Module.cwrap('CanPaste', 'bool', [])() && can_paste;
+                if (can_paste)
+                    paste_menu.classList.remove("disabled");
+                else
+                    paste_menu.classList.add("disabled");
+
+                var cut_menu = document.getElementById('cut-menu');
+                const can_cut = Module.cwrap('CanCut', 'bool', [])();
+                if (can_cut)
+                    cut_menu.classList.remove("disabled");
+                else
+                    cut_menu.classList.add("disabled");
             },
 
             onPlus()
@@ -414,6 +566,11 @@
             onEquation()
             {
                 Module.cwrap('OnEquation', 'void', [])();
+                canvas.focus();
+            },
+
+            onCloseContextMenu(event)
+            {
                 canvas.focus();
             }
         }

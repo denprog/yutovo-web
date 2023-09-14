@@ -16,6 +16,8 @@ yutovo::Point document_point{false};
 yutovo::Size last_document_size;
 yutovo::Point last_document_point;
 
+std::u32string clipboard_json, clipboard_text;
+
 SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
@@ -219,9 +221,10 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 
 EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
 {
-    if (mouse_event->button == 0)
+    EventArgs* args = (EventArgs*)user_data;
+    EditorState s = args->document->GetEditorState();
+    if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
-        EventArgs* args = (EventArgs*)user_data;
         auto p = args->window->GetDocumentPoint();
         args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
     }
@@ -289,22 +292,98 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnRedo()
         document->Redo();
 }
 
+EM_JS(void, CopyJs, (), 
+    {
+        window.dispatchEvent(new CustomEvent('onCopy', {}));
+    });
+
+EM_JS(void, PasteJs, (), 
+    {
+        window.dispatchEvent(new CustomEvent('onPaste', {}));
+    });
+
+EM_JS(void, CutJs, (), 
+    {
+        window.dispatchEvent(new CustomEvent('onCut', {}));
+    });
+
+void Copy()
+{
+    CopyJs();
+}
+
+void Paste()
+{
+    PasteJs();
+}
+
+void Cut()
+{
+    CutJs();
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCut()
 {
     if (!document)
         return;
+    uint t = document->Cut(clipboard_json, clipboard_text);
+    document->WaitTask(t);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCopy()
 {
     if (!document)
         return;
+    uint t = document->Copy(clipboard_json, clipboard_text);
+    document->WaitTask(t);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()
 {
     if (!document)
         return;
+    if (!clipboard_json.empty())
+        document->Paste(clipboard_json);
+    else if (!clipboard_text.empty())
+        document->PasteText(std::move(clipboard_text));
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardText()
+{
+    return (char*)clipboard_text.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardJson()
+{
+    return (char*)clipboard_json.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardText(const char* value)
+{
+    clipboard_text = ToUtfString(value);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardJson(const char* value)
+{
+    clipboard_json = ToUtfString(value);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy()
+{
+    EditorState s = document->GetEditorState();
+    return !s.selection_state.IsEmpty();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste()
+{
+    EditorState s = document->GetEditorState();
+    return document->IsEditable(s.caret_state.id);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
+{
+    EditorState s = document->GetEditorState();
+    return document->IsEditable(s.caret_state.id) && !s.selection_state.IsEmpty();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()

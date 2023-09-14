@@ -1,6 +1,10 @@
 #include "command_map.h"
 #include <emscripten/key_codes.h>
 
+extern void Copy();
+extern void Paste();
+extern void Cut();
+
 namespace yutovo_web
 {
 
@@ -47,6 +51,10 @@ void ShortcutsMap::Init(DocumentPtr _document)
 
     Add(KeySequence(DOM_VK_Z, true, false, false), "", std::function<void ()>(std::bind(&Document::Undo, document.get())));
     Add(KeySequence(DOM_VK_Y, true, false, false), "", std::function<void ()>(std::bind(&Document::Redo, document.get())));
+
+    Add(KeySequence(DOM_VK_INSERT, true, false, false), "", std::function<void ()>(std::bind(&Copy)));
+    Add(KeySequence(DOM_VK_INSERT, false, true, false), "", std::function<void ()>(std::bind(&Paste)));
+    Add(KeySequence(DOM_VK_DELETE, false, true, false), "", std::function<void ()>(std::bind(&Cut)));
 
     //edit code
     Add(KeySequence(DOM_VK_C, true, true, false), "\\code", std::function<void ()>(std::bind(&Document::InsertCode, document.get(), false, true)));

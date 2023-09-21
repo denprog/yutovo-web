@@ -22,6 +22,10 @@ SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy();
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste();
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
+
 EM_JS(void, UpdateScrollBars, (int v_size, int h_size, int v_value, int h_value), 
     {
         var scroll_space = document.getElementById('scroll-space');
@@ -309,17 +313,20 @@ EM_JS(void, CutJs, (),
 
 void Copy()
 {
-    CopyJs();
+    if (CanCopy())
+        CopyJs();
 }
 
 void Paste()
 {
-    PasteJs();
+    if (CanPaste())
+        PasteJs();
 }
 
 void Cut()
 {
-    CutJs();
+    if (CanCut())
+        CutJs();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCut()

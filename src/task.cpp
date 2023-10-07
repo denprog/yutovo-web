@@ -340,13 +340,14 @@ void DrawFillRectTask::Execute()
 
 //DrawTextTask
 
-DrawTextTask::DrawTextTask(const std::string& _text, const StringFormatPtr _format, const Rect& _rect, const Color _color, Fonts& _fonts, 
-    WebWindow* _web_window, bool _draw_doc) :
+DrawTextTask::DrawTextTask(const std::string& _text, const StringFormatPtr _format, const Rect& _rect, const Color _color, const Color _bg_color, 
+    Fonts& _fonts, WebWindow* _web_window, bool _draw_doc) :
     Task(_web_window, _draw_doc),
     text(_text),
     format(_format),
     rect(_rect),
     color(_color),
+    bg_color(_bg_color),
     fonts(_fonts)
 {
 }
@@ -361,7 +362,7 @@ void DrawTextTask::Execute()
     
     //printf("WebWindow::DrawText %s, rect={%d, %d, %d, %d}\n", text.c_str(), rect.left, rect.top, rect.width, rect.height);
     SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
-    SDL_Surface* text_surface = TTF_RenderUTF8_Blended(font, text.c_str(), GetColor(color));
+    SDL_Surface* text_surface = TTF_RenderUTF8_Shaded(font, text.c_str(), GetColor(color), GetColor(bg_color));
     if (!text_surface)
     {
         printf("TTF_RenderUTF8_Blended error: %s\n", TTF_GetError());

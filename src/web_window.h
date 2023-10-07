@@ -23,7 +23,7 @@ public:
 
     virtual void Init();
 
-    virtual void DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color);
+    virtual void DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color, const Color bg_color);
     virtual void DrawLine(const int x1, const int y1, const int x2, const int y2, const Color color);
     virtual void DrawRect(const int x1, const int y1, const int width, const int height, const Color color);
     virtual void DrawFillRect(const int x1, const int y1, const int width, const int height, const Color color);
@@ -31,6 +31,7 @@ public:
     virtual void DrawFillPath(const std::list<Point>& path, const Color color);
     virtual void DrawBezierPath(const std::list<Point>& path, const Color color);
     virtual void DrawWavyLine(const int x1, const int y1, const int width, const int radius, const Color color);
+    virtual void DrawImage(const int x1, const int y1, const int width, const int height, const std::vector<unsigned char>& bmp);
 
     virtual void ClearRect(const int x1, const int y1, const int _width, const int _height);
 
@@ -42,6 +43,7 @@ public:
     virtual Size GetTextSize(const std::u32string& text, const StringFormatPtr format);
     virtual int GetCharPos(const std::u32string& text, const StringFormatPtr format, int pos);
     virtual int GetFontAscent(const StringFormatPtr format);
+    virtual Size GetImageSize(const std::vector<unsigned char>& bmp, const int width, const int height);
 
     virtual void SetViewPort(const Rect _view_port);
     virtual void AddViewPort(const Rect view_port);

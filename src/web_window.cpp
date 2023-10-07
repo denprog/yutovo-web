@@ -47,9 +47,9 @@ void WebWindow::Init()
     SDL_RenderClear(renderer);
 }
 
-void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color)
+void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color, const Color bg_color)
 {
-    tasks.emplace_back(new DrawTextTask(text, format, rect, color, fonts, this, draw_doc));
+    tasks.emplace_back(new DrawTextTask(text, format, rect, color, bg_color, fonts, this, draw_doc));
 }
 
 void WebWindow::DrawLine(const int x1, const int y1, const int x2, const int y2, const Color color)
@@ -84,6 +84,10 @@ void WebWindow::DrawBezierPath(const std::list<Point>& path, const Color color)
 void WebWindow::DrawWavyLine(const int x1, const int y1, const int width, const int radius, const Color color)
 {
     tasks.emplace_back(new DrawWavyLineTask(x1, y1, width, radius, color, this, draw_doc));
+}
+
+void WebWindow::DrawImage(const int x1, const int y1, const int width, const int height, const std::vector<unsigned char>& bmp)
+{
 }
 
 void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
@@ -145,6 +149,11 @@ int WebWindow::GetFontAscent(const StringFormatPtr format)
     if (!font)
         return 0;
     return TTF_FontAscent(font);
+}
+
+Size WebWindow::GetImageSize(const std::vector<unsigned char>& bmp, const int width, const int height)
+{
+    return Size{};
 }
 
 void WebWindow::SetViewPort(const Rect _view_port)

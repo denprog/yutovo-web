@@ -63,8 +63,8 @@ struct DrawFillRectTask : Task
 
 struct DrawTextTask : Task
 {
-    DrawTextTask(const std::string& _text, const StringFormatPtr _format, const Rect& _rect, const Color _color, Fonts& _fonts, 
-        WebWindow* _web_window, bool _draw_doc);
+    DrawTextTask(const std::string& _text, const StringFormatPtr _format, const Rect& _rect, const Color _color, const Color _bg_color, 
+        Fonts& _fonts, WebWindow* _web_window, bool _draw_doc);
 
     virtual void Execute();
 
@@ -72,6 +72,7 @@ struct DrawTextTask : Task
     StringFormatPtr format;
     Rect rect;
     Color color;
+    Color bg_color;
     Fonts& fonts;
 };
 

@@ -1,6 +1,7 @@
 #include "web_window.h"
 #include "utils.h"
 #include <emscripten/em_js.h>
+#include <SDL2/SDL_image.h>
 #include <chrono>
 #include <thread>
 
@@ -88,6 +89,7 @@ void WebWindow::DrawWavyLine(const int x1, const int y1, const int width, const 
 
 void WebWindow::DrawImage(const int x1, const int y1, const int width, const int height, const std::vector<unsigned char>& bmp)
 {
+    tasks.emplace_back(new DrawImageTask(Rect{x1, y1, width, height}, bmp, this, draw_doc));
 }
 
 void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
@@ -153,7 +155,30 @@ int WebWindow::GetFontAscent(const StringFormatPtr format)
 
 Size WebWindow::GetImageSize(const std::vector<unsigned char>& bmp, const int width, const int height)
 {
-    return Size{};
+    SDL_RWops* p = SDL_RWFromConstMem(&bmp[0], bmp.size());
+    if (!p)
+    {
+        printf("SDL_RWFromConstMem error: %s\n", TTF_GetError());
+        return Size{};
+    }
+
+    // SDL_Surface* surface = IMG_LoadTyped_RW(p, 1, "PNG");
+    // if (!surface)
+    // {
+    //     printf("IMG_Load_RW error: %s\n", TTF_GetError());
+    //     return Size{};
+    // }
+
+    SDL_Surface* surface = SDL_LoadBMP_RW(p, 1);
+    if (!surface)
+    {
+        printf("SDL_LoadBMP_RW error: %s\n", TTF_GetError());
+        return Size{};
+    }
+    
+    Size s{surface->w, surface->h};
+    SDL_FreeSurface(surface);
+    return s;
 }
 
 void WebWindow::SetViewPort(const Rect _view_port)

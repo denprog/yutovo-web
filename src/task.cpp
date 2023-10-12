@@ -1,6 +1,7 @@
 #include "task.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include "utils.h"
 #include "web_window.h"
 
@@ -736,6 +737,54 @@ double DrawBezierTask::EvaluateBezier(std::vector<double>& data, int size, doubl
 	}
 
 	return result;
+}
+
+//DrawImageTask
+
+DrawImageTask::DrawImageTask(const Rect& _rect, std::vector<unsigned char> _bmp, WebWindow* _web_window, bool _draw_doc) :
+    Task(_web_window, _draw_doc),
+    rect(_rect),
+    bmp(_bmp)
+{
+}
+
+void DrawImageTask::Execute()
+{
+    SDL_RWops* p = SDL_RWFromConstMem(&bmp[0], bmp.size());
+    if (!p)
+    {
+        printf("SDL_RWFromConstMem error: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Surface* surface = SDL_LoadBMP_RW(p, 1);
+    //SDL_Surface* surface = IMG_LoadTyped_RW(p, 1, "BMP");
+    //SDL_Surface* surface = IMG_Load_RW(p, 1);
+    if (!surface)
+    {
+        printf("SDL_LoadBMP_RW error: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(web_window->renderer, surface);
+    //IMG_LoadTexture();
+    //SDL_Texture* texture = IMG_LoadTextureTyped_RW(web_window->renderer, p, 1, "BMP");
+    //SDL_Texture* texture = IMG_LoadTexture_RW(web_window->renderer, p, 1);
+    //SDL_Texture* texture = IMG_LoadTyped_RW(web_window->renderer, p, 1);
+    if (!texture)
+    {
+        printf("SDL_CreateTextureFromSurface error: %s\n", TTF_GetError());
+        return;
+    }
+
+    if (draw_doc)
+        SDL_RenderSetClipRect(web_window->renderer, &web_window->view_port);
+    else
+        SDL_RenderSetClipRect(web_window->renderer, nullptr);
+    SDL_Rect r{rect.left - web_window->document_point.x, rect.top - web_window->document_point.y, rect.width, rect.height};
+    SDL_RenderCopy(web_window->renderer, texture, NULL, &r);
+    //SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 }
 
 //StoreRectTask

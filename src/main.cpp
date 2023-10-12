@@ -17,6 +17,7 @@ yutovo::Size last_document_size;
 yutovo::Point last_document_point;
 
 std::u32string clipboard_json, clipboard_text;
+std::string clipboard_image;
 
 SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
@@ -353,6 +354,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()
         document->Paste(clipboard_json);
     else if (!clipboard_text.empty())
         document->PasteText(std::move(clipboard_text));
+    else if (!clipboard_image.empty())
+        document->PasteImage(clipboard_image, 225, 225);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardText()
@@ -373,6 +376,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardText(const char* value)
 extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardJson(const char* value)
 {
     clipboard_json = ToUtfString(value);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardImage(const char* value)
+{
+    clipboard_image = value;
+    size_t p = clipboard_image.find("base64,");
+    clipboard_image = clipboard_image.substr(p + 7);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy()

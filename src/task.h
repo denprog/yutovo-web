@@ -112,6 +112,16 @@ struct DrawBezierTask : Task
     Color color;
 };
 
+struct DrawImageTask : Task
+{
+    DrawImageTask(const Rect& _rect, std::vector<unsigned char> _bmp, WebWindow* _web_window, bool _draw_doc);
+
+    virtual void Execute();
+
+    std::vector<unsigned char> bmp;
+    Rect rect;
+};
+
 struct StoreRectTask : Task
 {
     StoreRectTask(const Rect& _rect, WebWindow* _web_window);

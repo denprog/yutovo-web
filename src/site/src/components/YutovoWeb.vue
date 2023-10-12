@@ -68,9 +68,10 @@
     <q-resize-observer @resize="onResize" />
 </template>
 
-<script>
+<script lang="ts">
     import { ref } from 'vue'
     import { useStore } from 'vuex'
+    import { Image } from 'image-js'
 
     export default {
         name: 'YutovoWeb',
@@ -445,15 +446,15 @@
                 const data = await navigator.clipboard.read();
                 for (let i = 0; i < data.length; i++)
                 {
-                    if (data[i].types.includes("web yutovo/elements"))
+                    if (data[i].types.includes('web yutovo/elements'))
                     {
-                        const blob = await data[i].getType("web yutovo/elements");
+                        const blob = await data[i].getType('web yutovo/elements');
                         const text = await blob.text();
                         Module.cwrap('SetClipboardJson', 'void', ['string'])(text);
                     }
-                    else if (data[i].types.includes("text/plain"))
+                    else if (data[i].types.includes('text/plain'))
                     {
-                        const blob = await data[i].getType("text/plain");
+                        const blob = await data[i].getType('text/plain');
                         const text = await blob.text();
                         Module.cwrap('SetClipboardText', 'void', ['string'])(text);
                     }
@@ -477,7 +478,8 @@
                     const data = await navigator.clipboard.read();
                     for (let i = 0; i < data.length; i++)
                     {
-                        if (data[i].types.includes("web yutovo/elements") || data[i].types.includes("text/plain"))
+                        if (data[i].types.includes("web yutovo/elements") || data[i].types.includes("text/plain") || 
+                            data[i].types.includes("image/png") || data[i].types.includes("image/jpeg" || data[i].types.includes("image/bmp")))
                         {
                             can_paste = true;
                             break;

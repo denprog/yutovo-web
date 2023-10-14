@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import login from './login'
 import service from './service'
+import editor from './editor'
 
 export interface StateInterface {
     // Define your own store structure, using submodules if needed
@@ -14,7 +15,8 @@ export default function ()
   	const Store = createStore({
     	modules: {
       		login,
-			service
+			service,
+			editor
     	},
 
     	// enable strict mode (adds overhead!)

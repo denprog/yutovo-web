@@ -24,6 +24,8 @@
             <q-btn size="14px" square dense :color="bold_button_color" @click="onBold();" icon="img:/images/format/bold.png"/>
             <q-btn size="14px" square dense :color="italic_button_color" @click="onItalic();" icon="img:/images/format/italic.png"/>
             <q-btn size="14px" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png"/>
+            <q-btn size="14px" square dense @click="onTextColor();" icon="img:/images/format/text_color.png"/>
+            <q-btn size="14px" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png"/>
         </q-btn-group>
     </div>
 
@@ -72,6 +74,8 @@
     import { ref } from 'vue'
     import { useStore } from 'vuex'
     import { Image } from 'image-js'
+    import { useQuasar } from 'quasar'
+    import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
     export default {
         name: 'YutovoWeb',
@@ -96,6 +100,8 @@
 
         setup()
         {
+            const $q = useQuasar();
+
             const style = ref({ width: '200px', height: '200px' });
 
             let s_js = document.createElement('script');
@@ -267,7 +273,9 @@
             return {
                 bold_button_color: 'white',
                 italic_button_color: 'white',
-                underline_button_color: 'white'
+                underline_button_color: 'white',
+                text_color: '#000000',
+                text_bg_color: '#ffffff'
             }
         },
 
@@ -290,6 +298,8 @@
                 this.bold_button_color = (event.detail.bold == true ? 'blue' : 'white');
                 this.italic_button_color = (event.detail.italic == true ? 'blue' : 'white');
                 this.underline_button_color = (event.detail.underline == true ? 'blue' : 'white');
+                this.text_color = event.detail.text_color;
+                this.text_bg_color = event.detail.text_bg_color;
 
                 var copy_button = document.getElementById('copy-button');
                 const can_copy = Module.cwrap('CanCopy', 'bool', [])();
@@ -381,6 +391,30 @@
                 else
                     this.underline_button_color = 'blue';
                 Module.cwrap('OnUnderline', 'void', [])(this.underline_button_color == 'blue');
+                canvas.focus();
+            },
+
+            onTextColor()
+            {
+                this.store.commit('editor/setDialogColor', this.text_color);
+                this.$q.dialog({
+                    component: ColorPickerDialog
+                })
+                .onOk(() => {
+                    Module.cwrap('OnTextColor', 'void', ['string'])(this.store.state.editor.dialog_color);
+                })
+                canvas.focus();
+            },
+
+            onTextBgColor()
+            {
+                this.store.commit('editor/setDialogColor', this.text_bg_color);
+                this.$q.dialog({
+                    component: ColorPickerDialog
+                })
+                .onOk(() => {
+                    Module.cwrap('OnTextBgColor', 'void', ['string'])(this.store.state.editor.dialog_color);
+                })
                 canvas.focus();
             },
 

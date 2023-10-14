@@ -38,7 +38,8 @@ EM_JS(void, UpdateScrollBars, (int v_size, int h_size, int v_value, int h_value)
     });
 
 EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
-    unsigned int font_size, bool bold, bool italic, bool underline),
+    unsigned int font_size, bool bold, bool italic, bool underline, const char* text_color, size_t text_color_size, 
+    const char* text_bg_color, size_t text_bg_color_size),
     {
         window.dispatchEvent(new CustomEvent('setStandardToolbar', 
             {
@@ -49,7 +50,9 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'font_size': font_size,
                     'bold': bold, 
                     'italic': italic, 
-                    'underline': underline
+                    'underline': underline,
+                    'text_color': UTF8ToString(text_color, text_color),
+                    'text_bg_color': UTF8ToString(text_bg_color, text_bg_color),
                 }
             }));
     });
@@ -130,8 +133,11 @@ void MainLoop(void* arg)
             }
         }
 
+        auto text_color = format.text_color.ToHex();
+        auto text_bg_color = format.text_bg_color.ToHex();
         UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-            format.size, format.bold, format.italic, format.underline);
+            format.size, format.bold, format.italic, format.underline, text_color.c_str(), text_color.size(), 
+            text_bg_color.c_str(), text_bg_color.size());
         
         static uint last_code_id = 0;
         uint code_id = document->FindCodeBlock(_id);
@@ -536,6 +542,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnUnderline(int checked)
     if (!document)
         return;
     document->SetUnderline(checked);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTextColor(const char* color)
+{
+    if (!document)
+        return;
+    document->SetColor(yutovo::Color::FromHex(color));
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTextBgColor(const char* color)
+{
+    if (!document)
+        return;
+    document->SetBgColor(yutovo::Color::FromHex(color));
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* json_doc)

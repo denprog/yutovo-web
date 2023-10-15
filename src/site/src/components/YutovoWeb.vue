@@ -5,8 +5,8 @@
             <q-btn size="14px" square dense icon="img:/images/standard/open.png"/>
             <q-btn size="14px" square dense icon="img:/images/standard/save.png"/>
             <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
-            <q-btn size="14px" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
+            <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
+            <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
             <q-separator vertical/>
             <q-btn size="14px" id="cut-button" square dense @click="onCut();" icon="img:/images/standard/cut.png"/>
             <q-btn size="14px" id="copy-button" square dense @click="onCopy();" icon="img:/images/standard/copy.png"/>
@@ -21,11 +21,11 @@
                 dense options-dense borderless />
             <q-select class="toolbar-select" v-model="font_size_model" :options="font_size" @update:model-value="onFontSize();" 
                 dense options-dense borderless />
-            <q-btn size="14px" square dense :color="bold_button_color" @click="onBold();" icon="img:/images/format/bold.png"/>
-            <q-btn size="14px" square dense :color="italic_button_color" @click="onItalic();" icon="img:/images/format/italic.png"/>
-            <q-btn size="14px" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png"/>
-            <q-btn size="14px" square dense @click="onTextColor();" icon="img:/images/format/text_color.png"/>
-            <q-btn size="14px" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png"/>
+            <q-btn size="14px" id="bold-button" square dense :color="bold_button_color" @click="onBold();" icon="img:/images/format/bold.png"/>
+            <q-btn size="14px" id="italic-button" square dense :color="italic_button_color" @click="onItalic();" icon="img:/images/format/italic.png"/>
+            <q-btn size="14px" id="underline-button" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png"/>
+            <q-btn size="14px" id="text-color-button" square dense @click="onTextColor();" icon="img:/images/format/text_color.png"/>
+            <q-btn size="14px" id="text-bg-color-button" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png"/>
         </q-btn-group>
     </div>
 
@@ -295,9 +295,9 @@
                 this.paragraph_format_model = event.detail.paragraph_format;
                 this.font_family_model = event.detail.font_family;
                 this.font_size_model = event.detail.font_size;
-                this.bold_button_color = (event.detail.bold == true ? 'blue' : 'white');
-                this.italic_button_color = (event.detail.italic == true ? 'blue' : 'white');
-                this.underline_button_color = (event.detail.underline == true ? 'blue' : 'white');
+                this.bold_button_color = (event.detail.bold == 1 ? 'blue' : 'white');
+                this.italic_button_color = (event.detail.italic == 1 ? 'blue' : 'white');
+                this.underline_button_color = (event.detail.underline == 1 ? 'blue' : 'white');
                 this.text_color = event.detail.text_color;
                 this.text_bg_color = event.detail.text_bg_color;
 
@@ -325,19 +325,35 @@
                 {
                 }
 
-                var paste_button = document.getElementById('paste-button');
-                can_paste = Module.cwrap('CanPaste', 'bool', [])() && can_paste;
-                if (can_paste)
-                    paste_button.classList.remove("disabled");
-                else
-                    paste_button.classList.add("disabled");
+                var button = document.getElementById('undo-button');
+                button.disabled = !(Module.cwrap('CanUndo', 'bool', [])());
 
-                var cut_button = document.getElementById('cut-button');
-                const can_cut = Module.cwrap('CanCut', 'bool', [])();
-                if (can_cut)
-                    cut_button.classList.remove("disabled");
-                else
-                    cut_button.classList.add("disabled");
+                button = document.getElementById('redo-button');
+                button.disabled = !(Module.cwrap('CanRedo', 'bool', [])());
+
+                button = document.getElementById('copy-button');
+                button.disabled = !(Module.cwrap('CanCopy', 'bool', [])());
+
+                button = document.getElementById('paste-button');
+                button.disabled = !(Module.cwrap('CanPaste', 'bool', [])() && can_paste);
+
+                button = document.getElementById('cut-button');
+                button.disabled = !(Module.cwrap('CanCut', 'bool', [])());
+
+                button = document.getElementById('bold-button');
+                button.disabled = (event.detail.bold < 0);
+
+                button = document.getElementById('italic-button');
+                button.disabled = (event.detail.italic < 0);
+
+                button = document.getElementById('underline-button');
+                button.disabled = (event.detail.underline < 0);
+
+                button = document.getElementById('text-color-button');
+                button.disabled = (this.text_color == "");
+
+                button = document.getElementById('text-bg-color-button');
+                button.disabled = (this.text_bg_color == "");
             },
 
             onCode()
@@ -396,6 +412,8 @@
 
             onTextColor()
             {
+                if (this.text_color == "")
+                    return;
                 this.store.commit('editor/setDialogColor', this.text_color);
                 this.$q.dialog({
                     component: ColorPickerDialog
@@ -408,6 +426,8 @@
 
             onTextBgColor()
             {
+                if (this.text_bg_color == "")
+                    return;
                 this.store.commit('editor/setDialogColor', this.text_bg_color);
                 this.$q.dialog({
                     component: ColorPickerDialog

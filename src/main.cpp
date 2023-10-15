@@ -38,7 +38,7 @@ EM_JS(void, UpdateScrollBars, (int v_size, int h_size, int v_value, int h_value)
     });
 
 EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
-    unsigned int font_size, bool bold, bool italic, bool underline, const char* text_color, size_t text_color_size, 
+    unsigned int font_size, int bold, int italic, int underline, const char* text_color, size_t text_color_size, 
     const char* text_bg_color, size_t text_bg_color_size),
     {
         window.dispatchEvent(new CustomEvent('setStandardToolbar', 
@@ -109,9 +109,14 @@ void MainLoop(void* arg)
         if (!document->IsString(document->GetElement(_id)) && !document->IsRow(document->GetElement(_id)))
         {
             format.Reset();
+
+            UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
+                format.size, -1, -1, -1, "", 0, "", 0);
         }
         else if (document->GetStringFormat(_id, format))
         {
+            auto text_color = format.text_color.ToHex();
+            auto text_bg_color = format.text_bg_color.ToHex();
             for (auto& state : s.state)
             {
                 for (int i = state.start; i < state.start + state.size; ++i)
@@ -131,14 +136,12 @@ void MainLoop(void* arg)
                         format.underline = false;
                 }
             }
-        }
 
-        auto text_color = format.text_color.ToHex();
-        auto text_bg_color = format.text_bg_color.ToHex();
-        UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-            format.size, format.bold, format.italic, format.underline, text_color.c_str(), text_color.size(), 
-            text_bg_color.c_str(), text_bg_color.size());
-        
+            UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
+                format.size, format.bold, format.italic, format.underline, text_color.c_str(), text_color.size(), 
+                text_bg_color.c_str(), text_bg_color.size());
+        }
+       
         static uint last_code_id = 0;
         uint code_id = document->FindCodeBlock(_id);
         if (code_id == 0)
@@ -389,6 +392,16 @@ extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardImage(const char* value)
     clipboard_image = value;
     size_t p = clipboard_image.find("base64,");
     clipboard_image = clipboard_image.substr(p + 7);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanUndo()
+{
+    return document->CanUndo();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE bool CanRedo()
+{
+    return document->CanRedo();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy()

@@ -240,6 +240,16 @@ void WebWindow::OnCaretMoved(const EditorState editor_state)
     update_toolbar = true;
 }
 
+void WebWindow::OnSaveResult(const uint task_id, IOResult result)
+{
+    if (result == IOResult::Success)
+        save_ready = true;
+}
+
+void WebWindow::OnLoadResult(const uint task_id, IOResult result)
+{
+}
+
 int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;

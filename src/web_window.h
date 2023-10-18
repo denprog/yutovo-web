@@ -59,6 +59,9 @@ public:
 
     virtual void OnCaretMoved(const EditorState editor_state);
 
+    virtual void OnSaveResult(const uint task_id, IOResult result);
+    virtual void OnLoadResult(const uint task_id, IOResult result);
+
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
@@ -76,6 +79,7 @@ public:
 
     std::atomic_bool needs_render{false};
     std::atomic_bool update_toolbar{false};
+    std::atomic_bool save_ready{false};
 
     SDL_Renderer* renderer = nullptr;
 

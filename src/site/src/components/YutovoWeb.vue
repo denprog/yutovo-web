@@ -2,8 +2,8 @@
     <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
         <q-btn-group id="editor-toolbar" flat square unelevated stretch>
             <q-btn size="14px" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
-            <q-btn size="14px" square dense icon="img:/images/standard/open.png"/>
-            <q-btn size="14px" square dense icon="img:/images/standard/save.png"/>
+            <q-btn size="14px" square dense @click="onOpen();" icon="img:/images/standard/open.png"/>
+            <q-btn size="14px" square dense @click="onSave();" icon="img:/images/standard/save.png"/>
             <q-separator vertical/>
             <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
             <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
@@ -75,6 +75,7 @@
     import { useStore } from 'vuex'
     import { Image } from 'image-js'
     import { useQuasar } from 'quasar'
+    import { api } from 'boot/boot'
     import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
     export default {
@@ -88,6 +89,7 @@
                 window.addEventListener('onCopy', this.onCopy, false);
                 window.addEventListener('onPaste', this.onPaste, false);
                 window.addEventListener('onCut', this.onCut, false);
+                window.addEventListener('saveDocument', this.saveDocument, false);
             }
             else
             {
@@ -95,6 +97,7 @@
                 window.attachEvent('onCopy', this.onCopy);
                 window.attachEvent('onPaste', this.onPaste);
                 window.attachEvent('onCut', this.onCut);
+                window.attachEvent('saveDocument', this.saveDocument);
             }
         },
 
@@ -441,6 +444,31 @@
             onNew()
             {
                 Module.cwrap('OnNew', 'void', [])();
+                canvas.focus();
+            },
+
+            onOpen()
+            {
+                api.post('/service/load-document', {}).then
+                    (
+                        function(response)
+                        {
+                            console.log(response);
+                            Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                            canvas.focus();
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
+            },
+
+            onSave()
+            {
+                Module.cwrap('OnSave', 'void', [])();
+                canvas.focus();
             },
 
             onUndo()
@@ -515,6 +543,23 @@
                 }
                 Module.cwrap('OnPaste', 'void', [])();
                 canvas.focus();
+            },
+
+            async saveDocument(event)
+            {
+                var json = JSON.parse(event.detail.json);
+                api.post('/service/save-document', json).then
+                    (
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
             },
 
             async onShowContextMenu(event)

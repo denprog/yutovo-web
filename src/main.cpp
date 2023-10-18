@@ -19,6 +19,8 @@ yutovo::Point last_document_point;
 std::u32string clipboard_json, clipboard_text;
 std::string clipboard_image;
 
+std::u32string save_json;
+
 SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
@@ -65,6 +67,17 @@ EM_JS(void, UpdateIdentifiersTree, (unsigned int code_id, const char* solver_gui
                 {
                     'code_id': code_id,
                     'solver_guid': solver_guid == 0 ? "" : UTF8ToString(solver_guid, solver_guid_size)
+                }
+            }));
+    });
+
+EM_JS(void, SaveDocument, (const char* json, size_t json_size),
+    {
+        window.dispatchEvent(new CustomEvent('saveDocument', 
+            {
+                'detail': 
+                {
+                    'json': UTF8ToString(json, json_size)
                 }
             }));
     });
@@ -172,6 +185,13 @@ void MainLoop(void* arg)
             last_document_size = s;
             last_document_point = p;
         }
+    }
+
+    if (window->save_ready)
+    {
+        std::string s = ToBasicString(save_json);
+        SaveDocument(s.c_str(), s.size());
+        window->save_ready = false;
     }
 
     window->SocketTasks();
@@ -292,6 +312,21 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 {
     if (document)
         document->New();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json)
+{
+    if (document)
+        document->LoadJson(ToUtfString(std::string(json)));
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSave()
+{
+    if (document)
+    {
+        save_json = U"";
+        document->SaveJson(save_json);
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnUndo()

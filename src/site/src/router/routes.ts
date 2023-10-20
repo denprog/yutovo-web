@@ -13,7 +13,7 @@ export default [
         ]
     },
     {
-        path: '/session/:param',
+        path: '/document/:param',
         component: MainLayout,
         children: [
             {

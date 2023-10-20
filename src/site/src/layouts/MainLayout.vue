@@ -80,7 +80,7 @@ export default
 
         const logout = () =>
         {
-            api.get('/auth/logout', 
+            api.post('/auth/logout', 
                 {
                     login: store.state.login.login
                 },
@@ -204,9 +204,6 @@ export default
                 .onCancel(() => {
                     console.log('Cancel')
                 })
-                .onDismiss(() => {
-                    console.log('Called on OK or Cancel')
-                })
         },
 
         showLoginDialog()
@@ -228,9 +225,6 @@ export default
                     // (everything except "component" and "parent" props above):
                     apiResponse: this.resp
                     // ...more.props...
-                })
-                .onDismiss(() => {
-                    console.log('Called on OK or Cancel')
                 })
         }
     }

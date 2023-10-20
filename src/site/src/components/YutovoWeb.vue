@@ -75,6 +75,8 @@
     import { useStore } from 'vuex'
     import { Image } from 'image-js'
     import { useQuasar } from 'quasar'
+    import { Cookies } from 'quasar'
+    import { useRouter } from 'vue-router'
     import { api } from 'boot/boot'
     import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
@@ -118,6 +120,7 @@
             document.body.appendChild(yutovo_web_js);
 
             const store = useStore();
+            const router = useRouter();
 
             return {
                 style,
@@ -140,6 +143,7 @@
                 bold_model: ref(null),
 
                 store,
+                router,
 
                 onResize() {
                     var scroll = document.getElementById('scroll-container');
@@ -265,6 +269,20 @@
                                 {
                                     Module.cwrap('OnFocusOut', 'void', [])();
                                 });
+                            
+                            api.post('/service/load-document', {}).then
+                                (
+                                    function(response)
+                                    {
+                                        Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                                    }
+                                ).catch(
+                                    function(response)
+                                    {
+                                        console.log(response);
+                                    }
+                                );
+                            canvas.focus();
                         }
                 };
             
@@ -443,7 +461,31 @@
 
             onNew()
             {
-                Module.cwrap('OnNew', 'void', [])();
+                var r = this.router;
+                api.post('/service/new-document', {}).then(
+                    function(response)
+                    {
+                        const document_id = Cookies.get("document_id");
+                        r.push({ path: '/document/' + document_id });
+                        api.post('/service/load-document', {}).then
+                            (
+                                function(response)
+                                {
+                                    Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                                }
+                            ).catch(
+                                function(response)
+                                {
+                                    console.log(response);
+                                }
+                            );
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
                 canvas.focus();
             },
 
@@ -453,9 +495,7 @@
                     (
                         function(response)
                         {
-                            console.log(response);
                             Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                            canvas.focus();
                         }
                     ).catch(
                         function(response)
@@ -463,6 +503,7 @@
                             console.log(response);
                         }
                     );
+                canvas.focus();
             },
 
             onSave()

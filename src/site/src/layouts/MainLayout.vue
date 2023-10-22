@@ -157,10 +157,7 @@ export default
         //auto-login
         const store = useStore();
 
-        api.post('/auth/refresh-token', 
-        {
-        }
-        ).then(
+        api.post('/auth/refresh-token', {}).then(
             function(response)
             {
                 console.log(response);

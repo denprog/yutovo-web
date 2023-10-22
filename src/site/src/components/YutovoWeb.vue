@@ -2,8 +2,8 @@
     <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
         <q-btn-group id="editor-toolbar" flat square unelevated stretch>
             <q-btn size="14px" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
-            <q-btn size="14px" square dense @click="onOpen();" icon="img:/images/standard/open.png"/>
-            <q-btn size="14px" square dense @click="onSave();" icon="img:/images/standard/save.png"/>
+            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onOpen();" icon="img:/images/standard/open.png"/>
+            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();" icon="img:/images/standard/save.png"/>
             <q-separator vertical/>
             <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
             <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
@@ -77,6 +77,7 @@
     import { useQuasar } from 'quasar'
     import { Cookies } from 'quasar'
     import { useRouter } from 'vue-router'
+    import { computed } from 'vue'
     import { api } from 'boot/boot'
     import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
@@ -92,6 +93,7 @@
                 window.addEventListener('onPaste', this.onPaste, false);
                 window.addEventListener('onCut', this.onCut, false);
                 window.addEventListener('saveDocument', this.saveDocument, false);
+                window.addEventListener('openDocument', this.openDocument, false);
             }
             else
             {
@@ -100,6 +102,7 @@
                 window.attachEvent('onPaste', this.onPaste);
                 window.attachEvent('onCut', this.onCut);
                 window.attachEvent('saveDocument', this.saveDocument);
+                window.attachEvent('openDocument', this.openDocument);
             }
         },
 
@@ -270,18 +273,8 @@
                                     Module.cwrap('OnFocusOut', 'void', [])();
                                 });
                             
-                            api.post('/service/load-document', {}).then
-                                (
-                                    function(response)
-                                    {
-                                        Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                                    }
-                                ).catch(
-                                    function(response)
-                                    {
-                                        console.log(response);
-                                    }
-                                );
+                            window.dispatchEvent(new CustomEvent('openDocument', {}));
+
                             canvas.focus();
                         }
                 };
@@ -322,12 +315,8 @@
                 this.text_color = event.detail.text_color;
                 this.text_bg_color = event.detail.text_bg_color;
 
-                var copy_button = document.getElementById('copy-button');
-                const can_copy = Module.cwrap('CanCopy', 'bool', [])();
-                if (can_copy)
-                    copy_button.classList.remove("disabled");
-                else
-                    copy_button.classList.add("disabled");
+                var button = document.getElementById('copy-button');
+                button.disabled = !Module.cwrap('CanCopy', 'bool', [])();
 
                 var can_paste = false;
                 try
@@ -346,7 +335,7 @@
                 {
                 }
 
-                var button = document.getElementById('undo-button');
+                button = document.getElementById('undo-button');
                 button.disabled = !(Module.cwrap('CanUndo', 'bool', [])());
 
                 button = document.getElementById('redo-button');
@@ -461,41 +450,28 @@
 
             onNew()
             {
-                var r = this.router;
-                api.post('/service/new-document', {}).then(
-                    function(response)
-                    {
-                        const document_id = Cookies.get("document_id");
-                        r.push({ path: '/document/' + document_id });
-                        api.post('/service/load-document', {}).then
-                            (
-                                function(response)
-                                {
-                                    Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                                }
-                            ).catch(
-                                function(response)
-                                {
-                                    console.log(response);
-                                }
-                            );
-                    }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                    }
-                );
-                canvas.focus();
-            },
+                if (this.store.state.login.login == "")
+                {
+                    Module.cwrap('OnNew', 'void', [])(); //for unregisted use just reset the document
+                    canvas.focus();
+                    return;
+                }
 
-            onOpen()
-            {
-                api.post('/service/load-document', {}).then
-                    (
+                //for registered user create new document in the DB
+                var r = this.router;
+                api.post('/service/new-document', {},
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).then(
                         function(response)
                         {
-                            Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                            const document_id = Cookies.get("document_id");
+                            r.push({ path: '/document/' + document_id });
+                            window.dispatchEvent(new CustomEvent('openDocument', {}));
                         }
                     ).catch(
                         function(response)
@@ -503,6 +479,29 @@
                             console.log(response);
                         }
                     );
+                canvas.focus();
+            },
+
+            onOpen()
+            {
+                api.post('/service/load-document', {},
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                ).then(
+                    function(response)
+                    {
+                        Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
                 canvas.focus();
             },
 
@@ -589,11 +588,64 @@
             async saveDocument(event)
             {
                 var json = JSON.parse(event.detail.json);
-                api.post('/service/save-document', json).then
-                    (
+                var s = this.store;
+                var r = this.router;
+                api.post('/service/save-document', json,
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).then(
                         function(response)
                         {
                             console.log(response);
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                            if (response.response.status == 403)
+                            {
+                                //save this document with own id
+                                api.post('/service/new-document', json,
+                                    {
+                                        headers:
+                                        {
+                                            access_token: s.state.login.access_token
+                                        }
+                                    }
+                                    ).then(
+                                        function(response)
+                                        {
+                                            const document_id = Cookies.get("document_id");
+                                            r.push({ path: '/document/' + document_id });
+                                            window.dispatchEvent(new CustomEvent('openDocument', {}));
+                                        }
+                                    ).catch(
+                                        function(response)
+                                        {
+                                            console.log(response);
+                                        }
+                                    );
+                            }
+                        }
+                    );
+            },
+
+            async openDocument(event)
+            {
+                api.post('/service/load-document', {},
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }).then(
+                        function(response)
+                        {
+                            window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
                         }
                     ).catch(
                         function(response)

@@ -305,7 +305,6 @@
 
             'store.state.editor.language': function()
             {
-                console.log("language");
                 Module.cwrap('OnLanguage', 'void', ['string'])(JSON.stringify(this.store.state.editor.language));
                 canvas.focus();
             }

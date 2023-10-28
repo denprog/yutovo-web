@@ -71,8 +71,9 @@ export default
 
         const loadTasks = () =>
         {
-            api.get('/service/get-tasks', 
+            api.post('/service/get-tasks', 
                 {
+                    language: store.state.editor.language == "" ? "en" : store.state.editor.language
                 }
                 ).then(
                     function(response)
@@ -94,7 +95,8 @@ export default
             console.log(target);
             api.post('/service/load-task', 
                 {
-                    task: target
+                    task: target,
+                    language: store.state.editor.language == "" ? "en" : store.state.editor.language
                 }
                 ).then(
                     function(response)
@@ -112,6 +114,7 @@ export default
         loadTasks();
 
         return {
+            store,
             tasksFilter,
             tasksFilterRef,
             resetTasksFilter,
@@ -119,7 +122,17 @@ export default
             tasks,
             tasksRef,
             selectedTask: ref(null),
-            onTaskSelected
+            onTaskSelected,
+            loadTasks
+        }
+    },
+
+    watch:
+    {
+        'store.state.editor.language': function()
+        {
+            this.loadTasks();
+            canvas.focus();
         }
     }
 }

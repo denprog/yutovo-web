@@ -640,7 +640,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file_name)
 extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 {
     auto s = ToUtfString(language);
-    printf("Language: %s\n", language);
     if (s == U"\"en\"")
         document->SetLanguage(yutovo_calculator::Language::English);
     else if (s == U"\"ru\"")

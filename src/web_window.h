@@ -57,6 +57,9 @@ public:
 
     virtual void OnFormatChanged(const EditorState editor_state);
 
+    virtual std::string Translate(ElementId id, const std::string& str);
+    virtual std::u32string Translate(ElementId id, const std::u32string& str);
+    
     virtual void OnCaretMoved(const EditorState editor_state);
 
     virtual void OnSaveResult(const uint task_id, IOResult result);
@@ -72,6 +75,8 @@ public:
 
     void SocketTasks();
 
+    void GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::string>>& _translate_tasks);
+
 public:
     std::mutex draw_mutex;
 
@@ -80,6 +85,7 @@ public:
     std::atomic_bool needs_render{false};
     std::atomic_bool update_toolbar{false};
     std::atomic_bool save_ready{false};
+    std::atomic_bool needs_translate{false};
 
     SDL_Renderer* renderer = nullptr;
 
@@ -109,6 +115,9 @@ private:
 
     std::mutex socket_mutex;
     std::vector<TaskPtr> socket_tasks;
+
+    std::mutex translate_mutex;
+    std::vector<std::pair<yutovo::ElementId, std::string>> translate_tasks;
 };
 
 }

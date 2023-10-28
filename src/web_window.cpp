@@ -233,6 +233,22 @@ void WebWindow::OnFormatChanged(const EditorState editor_state)
     update_toolbar = true;
 }
 
+std::string WebWindow::Translate(ElementId id, const std::string& str)
+{
+    std::lock_guard<std::mutex> lock(translate_mutex);
+    translate_tasks.push_back(std::make_pair(id, str));
+    needs_translate = true;
+    return "";
+}
+
+std::u32string WebWindow::Translate(ElementId id, const std::u32string& str)
+{
+    std::lock_guard<std::mutex> lock(translate_mutex);
+    translate_tasks.push_back(std::make_pair(id, ToBasicString(str)));
+    needs_translate = true;
+    return U"";
+}
+
 void WebWindow::OnCaretMoved(const EditorState editor_state)
 {
     std::lock_guard<std::mutex> lock(draw_mutex);
@@ -347,6 +363,13 @@ void WebWindow::SocketTasks()
         t->Execute();
     }
     socket_tasks.clear();
+}
+
+void WebWindow::GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::string>>& _translate_tasks)
+{
+    std::lock_guard<std::mutex> lock(translate_mutex);
+    _translate_tasks = translate_tasks;
+    translate_tasks.clear();
 }
 
 }

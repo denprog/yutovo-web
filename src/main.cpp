@@ -25,6 +25,8 @@ SDL_Window *canvas_window = nullptr;
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
+std::queue<yutovo::ElementId> translate_tasks;
+
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
@@ -78,6 +80,17 @@ EM_JS(void, SaveDocument, (const char* json, size_t json_size),
                 'detail': 
                 {
                     'json': UTF8ToString(json, json_size)
+                }
+            }));
+    });
+
+EM_JS(void, TranslateString, (const char* str, size_t str_size),
+    {
+        window.dispatchEvent(new CustomEvent('translateString', 
+            {
+                'detail': 
+                {
+                    'str': UTF8ToString(str, str_size)
                 }
             }));
     });
@@ -192,6 +205,18 @@ void MainLoop(void* arg)
         std::string s = ToBasicString(save_json);
         SaveDocument(s.c_str(), s.size());
         window->save_ready = false;
+    }
+
+    if (window->needs_translate)
+    {
+        std::vector<std::pair<yutovo::ElementId, std::string>> t;
+        window->GetTranslateTasks(t);
+        for (auto& p : t)
+        {
+            translate_tasks.push(p.first);
+            TranslateString(p.second.c_str(), p.second.size());
+        }
+        window->needs_translate = false;
     }
 
     window->SocketTasks();
@@ -606,10 +631,28 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTextBgColor(const char* color)
     document->SetBgColor(yutovo::Color::FromHex(color));
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* json_doc)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file_name)
 {
-    auto s = ToUtfString(json_doc);
+    auto s = ToUtfString(file_name);
     document->LoadJson(s);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
+{
+    auto s = ToUtfString(language);
+    printf("Language: %s\n", language);
+    if (s == U"\"en\"")
+        document->SetLanguage(yutovo_calculator::Language::English);
+    else if (s == U"\"ru\"")
+        document->SetLanguage(yutovo_calculator::Language::Russian);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
+{
+    printf("Translate: %s\n", str);
+    assert(translate_tasks.size() > 0);
+    document->InsertString(str, translate_tasks.front(), false);
+    translate_tasks.pop();
 }
 
 int main(int argc, char* argv[])

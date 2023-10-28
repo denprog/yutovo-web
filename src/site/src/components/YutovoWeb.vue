@@ -94,6 +94,7 @@
                 window.addEventListener('onCut', this.onCut, false);
                 window.addEventListener('saveDocument', this.saveDocument, false);
                 window.addEventListener('openDocument', this.openDocument, false);
+                window.addEventListener('translateString', this.translateString, false);
             }
             else
             {
@@ -103,6 +104,7 @@
                 window.attachEvent('onCut', this.onCut);
                 window.attachEvent('saveDocument', this.saveDocument);
                 window.attachEvent('openDocument', this.openDocument);
+                window.attachEvent('translateString', this.translateString);
             }
         },
 
@@ -298,6 +300,13 @@
             'store.state.service.task_file': function()
             {
                 Module.cwrap('OnTaskFile', 'void', ['string'])(JSON.stringify(this.store.state.service.task_file));
+                canvas.focus();
+            },
+
+            'store.state.editor.language': function()
+            {
+                console.log("language");
+                Module.cwrap('OnLanguage', 'void', ['string'])(JSON.stringify(this.store.state.editor.language));
                 canvas.focus();
             }
         },
@@ -632,6 +641,11 @@
                             }
                         }
                     );
+            },
+
+            async translateString(event)
+            {
+                window.Module.cwrap('OnTranslate', 'void', ['string'])(this.$t(event.detail.str));
             },
 
             async openDocument(event)

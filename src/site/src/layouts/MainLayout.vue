@@ -11,10 +11,13 @@
                         </q-avatar>
                     </q-btn>
                     <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
-                        Yutovo
+                        {{ $t('yutovo_caption') }}
                     </q-btn>
                 </q-toolbar-title>
 
+                <q-select v-model="locale" :options="localeOptions" @update:model-value="onLanguage();" dense borderless no-caps 
+                    flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
+               
                 <div class="text-white q-pa-sm" v-if="loginStr != ''">{{ loginStr }}</div>
                 <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
                 <q-btn dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
@@ -50,6 +53,7 @@ import IdentifiersTree from 'components/IdentifiersTree.vue';
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
+import { useI18n } from 'vue-i18n'
 
 export default
 {
@@ -105,6 +109,8 @@ export default
                 );
         };
 
+        const { locale } = useI18n({ useScope: 'global' });
+
         return {
             drawer: ref(false),
 
@@ -148,7 +154,13 @@ export default
             loginState,
             logoutState,
             logout, 
-            loginStr
+            loginStr,
+
+            locale,
+            localeOptions: [
+                { value: 'en', label: 'English' },
+                { value: 'ru', label: 'Русский' }
+            ]
         }
     },
 
@@ -223,6 +235,11 @@ export default
                     apiResponse: this.resp
                     // ...more.props...
                 })
+        },
+
+        onLanguage()
+        {
+            this.store.commit('editor/setLanguage', this.locale);
         }
     }
 }

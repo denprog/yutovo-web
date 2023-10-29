@@ -15,7 +15,7 @@
                     </q-btn>
                 </q-toolbar-title>
 
-                <q-select v-model="locale" :options="localeOptions" @update:model-value="onLanguage();" dense borderless no-caps 
+                <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();" dense borderless no-caps 
                     flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
                
                 <div class="text-white q-pa-sm" v-if="loginStr != ''">{{ loginStr }}</div>
@@ -264,5 +264,13 @@ export default
     right: 100%;
     width: 6px;
     cursor: ew-resize;
+}
+
+.language-select
+{
+    .q-field__native
+    {
+        color: white;
+    }
 }
 </style>

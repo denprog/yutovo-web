@@ -12,8 +12,8 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from 'vuex'
 import { api } from 'boot/boot'
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'IdentifiersTree',
@@ -21,9 +21,15 @@ export default {
     created()
     {
         if (window.addEventListener)
+        {
             window.addEventListener('updateIdentifiersTree', this.updateIdentifiersTree, false);
+            window.addEventListener('updateLanguage', this.updateLanguage, false);
+        }
         else
+        {
             window.attachEvent('updateIdentifiersTree', this.updateIdentifiersTree);
+            window.attachEvent('updateLanguage', this.updateLanguage);
+        }
     },
 
     setup()
@@ -37,6 +43,9 @@ export default {
         ];
         const identifiers = ref(identifiersNodes);
         const identifiersRef = ref(null);
+
+        var last_code_id;
+        var last_solver_guid;
 
         const addIdentifiers = (data, id, label) =>
         {
@@ -58,12 +67,14 @@ export default {
             }
         };
 
-        const updateIdentifiers = (data) =>
+        const updateIdentifiers = (data, t) =>
         {
-            addIdentifiers(data, 'builtin_functions', 'Builtin functions');
-            addIdentifiers(data, 'user_functions', 'User functions');
-            addIdentifiers(data, 'builtin_variables', 'Builtin variables');
-            addIdentifiers(data, 'user_variables', 'User variables');
+            addIdentifiers(data, 'builtin_functions', t('builtin_functions'));
+            addIdentifiers(data, 'user_functions', t('user_functions'));
+            addIdentifiers(data, 'builtin_variables', t('builtin_variables'));
+            addIdentifiers(data, 'user_variables', t('user_variables'));
+            addIdentifiers(data, 'builtin_units', t('builtin_units'));
+            addIdentifiers(data, 'user_units', t('user_units'));
         };
 
         const resetIdentifiersFilter = () =>
@@ -72,8 +83,15 @@ export default {
             identifiersFilterRef.value.focus();
         };
 
-        const loadIdentifiers = (code_id, solver_guid) =>
+        const loadIdentifiers = (code_id, solver_guid, t) =>
         {
+            if (code_id == "")
+                code_id = last_code_id;
+            if (solver_guid == "")
+                solver_guid = last_solver_guid;
+            last_code_id = code_id;
+            last_solver_guid = solver_guid;
+
             if (code_id == 0)
             {
                 identifiers.value = [];
@@ -89,9 +107,8 @@ export default {
                     ).then(
                         function(response)
                         {
-                            console.log(response);
                             identifiers.value = [];
-                            updateIdentifiers(response.data);
+                            updateIdentifiers(response.data, t);
                         }
                     ).catch(
                         function(response)
@@ -125,7 +142,12 @@ export default {
     {
         updateIdentifiersTree(event)
         {
-            this.loadIdentifiers(event.detail.code_id, event.detail.solver_guid);
+            this.loadIdentifiers(event.detail.code_id, event.detail.solver_guid, this.$t);
+        },
+
+        updateLanguage(event)
+        {
+            this.loadIdentifiers("", "", this.$t);
         }
     }
 }

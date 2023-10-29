@@ -62,6 +62,8 @@ public:
     
     virtual void OnCaretMoved(const EditorState editor_state);
 
+    virtual void OnLanguageChanged(const yutovo_calculator::Language language);
+
     virtual void OnSaveResult(const uint task_id, IOResult result);
     virtual void OnLoadResult(const uint task_id, IOResult result);
 
@@ -86,6 +88,7 @@ public:
     std::atomic_bool update_toolbar{false};
     std::atomic_bool save_ready{false};
     std::atomic_bool needs_translate{false};
+    std::atomic_bool update_language{false};
 
     SDL_Renderer* renderer = nullptr;
 

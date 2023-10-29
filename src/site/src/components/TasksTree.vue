@@ -78,7 +78,6 @@ export default
                 ).then(
                     function(response)
                     {
-                        console.log(response);
                         tasks.value = [];
                         updateTasks(response.data, tasks.value, '/');
                     }
@@ -92,7 +91,6 @@ export default
 
         const onTaskSelected = (target) =>
         {
-            console.log(target);
             api.post('/service/load-task', 
                 {
                     task: target,

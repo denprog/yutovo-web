@@ -17,5 +17,12 @@ export default {
     overflow: 'Overflow',
     argument_is_over: 'Argument is over',
     units_are_incompatible: 'Units are incompatible',
-    conversion_does_not_fit: 'Conversion does not fit'
+    conversion_does_not_fit: 'Conversion does not fit',
+
+    builtin_functions: 'Builtin functions',
+    user_functions: 'User functions',
+    builtin_variables: 'Builtin variables',
+    user_variables: 'User variables',
+    builtin_units: 'Builtin units',
+    user_units: 'User units'
 };

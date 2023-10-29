@@ -20,7 +20,6 @@ const mutation: MutationTree<LoginStateInterface> =
 
         const decoded = jwt_decode<Payload>(access_token);
         state.login = decoded.login;
-        console.log(decoded);
     },
 
     setLastError(state, last_error)

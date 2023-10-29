@@ -71,8 +71,6 @@ export default {
                 ).then(
                     function(response)
                     {
-                        console.log(response);
-
                         api.post('/auth/login', 
                             {
                                 login: login.value,
@@ -81,7 +79,6 @@ export default {
                             ).then(
                                 function(response)
                                 {
-                                    console.log(response);
                                     $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                                     registerDialog.value.hide();
                                 }

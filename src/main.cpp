@@ -95,6 +95,16 @@ EM_JS(void, TranslateString, (const char* str, size_t str_size),
             }));
     });
 
+EM_JS(void, UpdateLanguage, (),
+    {
+        window.dispatchEvent(new CustomEvent('updateLanguage', 
+            {
+                'detail': 
+                {
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
@@ -217,6 +227,12 @@ void MainLoop(void* arg)
             TranslateString(p.second.c_str(), p.second.size());
         }
         window->needs_translate = false;
+    }
+
+    if (window->update_language)
+    {
+        UpdateLanguage();
+        window->update_language = false;
     }
 
     window->SocketTasks();

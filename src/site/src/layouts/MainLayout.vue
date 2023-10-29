@@ -97,7 +97,6 @@ export default
                 ).then(
                     function(response)
                     {
-                        console.log(response);
                         store.dispatch('login/updateAccessToken', '');
                     }
                 ).catch(
@@ -172,7 +171,6 @@ export default
         api.post('/auth/refresh-token', {}).then(
             function(response)
             {
-                console.log(response);
                 store.dispatch('login/updateAccessToken', response.headers['access_token']);
                 store.commit('login/setLastError', '');
             }

@@ -22,7 +22,6 @@ const actions: ActionTree<LoginStateInterface, StateInterface> =
                 api.post('/auth/refresh-token', {}).then(
                     function(response)
                     {
-                        console.log(response);
                         dispatch('updateAccessToken', response.headers['access_token']);
                         commit('setLastError', '');
                     }

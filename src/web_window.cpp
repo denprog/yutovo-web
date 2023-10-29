@@ -256,6 +256,11 @@ void WebWindow::OnCaretMoved(const EditorState editor_state)
     update_toolbar = true;
 }
 
+void WebWindow::OnLanguageChanged(const yutovo_calculator::Language language)
+{
+    update_language = true;
+}
+
 void WebWindow::OnSaveResult(const uint task_id, IOResult result)
 {
     if (result == IOResult::Success)

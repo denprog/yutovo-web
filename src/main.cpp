@@ -664,7 +664,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
 {
-    printf("Translate: %s\n", str);
     assert(translate_tasks.size() > 0);
     document->InsertString(str, translate_tasks.front(), false);
     translate_tasks.pop();

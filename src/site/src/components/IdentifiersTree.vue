@@ -69,12 +69,12 @@ export default {
 
         const updateIdentifiers = (data, t) =>
         {
-            addIdentifiers(data, 'builtin_functions', t('builtin_functions'));
-            addIdentifiers(data, 'user_functions', t('user_functions'));
-            addIdentifiers(data, 'builtin_variables', t('builtin_variables'));
-            addIdentifiers(data, 'user_variables', t('user_variables'));
-            addIdentifiers(data, 'builtin_units', t('builtin_units'));
-            addIdentifiers(data, 'user_units', t('user_units'));
+            addIdentifiers(data, 'builtin_functions', t('Builtin functions'));
+            addIdentifiers(data, 'user_functions', t('User functions'));
+            addIdentifiers(data, 'builtin_variables', t('Builtin variables'));
+            addIdentifiers(data, 'user_variables', t('User variables'));
+            addIdentifiers(data, 'builtin_units', t('Builtin units'));
+            addIdentifiers(data, 'user_units', t('User units'));
         };
 
         const resetIdentifiersFilter = () =>

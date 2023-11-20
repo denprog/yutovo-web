@@ -26,6 +26,7 @@ import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
+import { Cookies } from 'quasar'
 
 export default {
     name: 'LoginDialog',
@@ -65,6 +66,8 @@ export default {
                     {
                         $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                         $store.commit('login/setLastError', '');
+                        window.dispatchEvent(new CustomEvent('listDocuments', {}));
+                        window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
                         loginDialog.value.hide();
                     }
                 ).catch(

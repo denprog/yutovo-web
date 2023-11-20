@@ -4,6 +4,8 @@
             <q-btn size="14px" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
             <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onOpen();" icon="img:/images/standard/open.png"/>
             <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();" icon="img:/images/standard/save.png"/>
+            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onSaveAs();" icon="img:/images/standard/save_as.png"/>
+            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onDelete();" icon="img:/images/standard/delete.png"/>
             <q-separator vertical/>
             <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
             <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
@@ -60,7 +62,7 @@
                     <q-item id="cut-menu" clickable @click='onCut();'>
                         <q-item-section>Cut</q-item-section>
                     </q-item>
-                </q-list>            
+                </q-list>
             </q-menu>
 
             <div id="scroll-space" />
@@ -89,21 +91,27 @@
             if (window.addEventListener)
             {
                 window.addEventListener('setStandardToolbar', this.setStandardToolbar, false);
+                window.addEventListener('onNew', this.onNew, false);
                 window.addEventListener('onCopy', this.onCopy, false);
                 window.addEventListener('onPaste', this.onPaste, false);
                 window.addEventListener('onCut', this.onCut, false);
                 window.addEventListener('saveDocument', this.saveDocument, false);
                 window.addEventListener('openDocument', this.openDocument, false);
+                window.addEventListener('loadDocument', this.loadDocument, false);
+                window.addEventListener('updateDocumentName', this.updateDocumentName, false);
                 window.addEventListener('translateString', this.translateString, false);
             }
             else
             {
                 window.attachEvent('setStandardToolbar', this.setStandardToolbar);
+                window.attachEvent('onNew', this.onNew);
                 window.attachEvent('onCopy', this.onCopy);
                 window.attachEvent('onPaste', this.onPaste);
                 window.attachEvent('onCut', this.onCut);
                 window.attachEvent('saveDocument', this.saveDocument);
                 window.attachEvent('openDocument', this.openDocument);
+                window.attachEvent('loadDocument', this.loadDocument);
+                window.attachEvent('updateDocumentName', this.updateDocumentName, false);
                 window.attachEvent('translateString', this.translateString);
             }
         },
@@ -169,7 +177,9 @@
                             algebra_toolbar.clientHeight.toString() + 'px - ' + scroll_width + 'px - 2em)';
                         editor.style.height = scroll.clientHeight;
                     }
-                }
+                },
+
+                last_documents: [],
             };
         },
 
@@ -275,8 +285,7 @@
                                     Module.cwrap('OnFocusOut', 'void', [])();
                                 });
                             
-                            window.dispatchEvent(new CustomEvent('openDocument', {}));
-
+                            window.dispatchEvent(new CustomEvent('openDocument', {})); //open last document
                             canvas.focus();
                         }
                 };
@@ -458,6 +467,7 @@
 
             onNew()
             {
+                console.log("onNew");
                 if (this.store.state.login.login == "")
                 {
                     Module.cwrap('OnNew', 'void', [])(); //for unregisted use just reset the document
@@ -466,7 +476,6 @@
                 }
 
                 //for registered user create new document in the DB
-                var r = this.router;
                 api.post('/service/new-document', {},
                     {
                         headers:
@@ -477,9 +486,14 @@
                     ).then(
                         function(response)
                         {
-                            const document_id = Cookies.get("document_id");
-                            r.push({ path: '/document/' + document_id });
-                            window.dispatchEvent(new CustomEvent('openDocument', {}));
+                            window.dispatchEvent(new CustomEvent('loadDocument', 
+                                {
+                                    detail:
+                                    {
+                                        document_id: response.data.document_id,
+                                        last_document: Cookies.get("document_id")
+                                    }
+                                }));
                         }
                     ).catch(
                         function(response)
@@ -492,30 +506,76 @@
 
             onOpen()
             {
-                api.post('/service/load-document', {},
-                    {
-                        headers:
-                        {
-                            access_token: this.store.state.login.access_token
-                        }
-                    }
-                ).then(
-                    function(response)
-                    {
-                        Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                    }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                    }
-                );
-                canvas.focus();
+                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
             },
 
             onSave()
             {
                 Module.cwrap('OnSave', 'void', [])();
+                canvas.focus();
+            },
+
+            onSaveAs()
+            {
+                canvas.focus();
+            },
+
+            onDelete()
+            {
+                console.log("onDelete");
+                var r = this.router;
+                var s = this.store;
+                var last_documents = this.last_documents;
+                this.$q.dialog({
+                    title: 'Confirm',
+                    message: 'Delete the document?',
+                    cancel: true
+                }).onOk(() => {
+                    api.post('/service/delete-document', {}, 
+                        {
+                            headers:
+                            {
+                                access_token: s.state.login.access_token
+                            }
+                        }
+                        ).then(
+                            function(response)
+                            {
+                                console.log(response);
+                                var last_document_id = 0;// = s.getters['editor/lastDocument'];
+
+                                if (last_documents.length > 0)
+                                {
+                                    last_document_id = last_documents.pop();
+                                    for (let j = 0; j < last_documents.length;)
+                                    {
+                                        if (last_documents[j] == i)
+                                            last_documents.splice(j, 1);
+                                        else
+                                            ++j;
+                                    }
+                                }
+
+                                console.log(last_documents);
+                                console.log("after delete last_document=", last_document_id);
+                                //open previous document or create a new one
+                                if (last_document_id == 0)
+                                {
+                                    window.dispatchEvent(new CustomEvent('onNew', {}));
+                                }
+                                else
+                                {
+                                    window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: last_document_id}}));
+                                }
+                            }
+                        ).catch(
+                            function(response)
+                            {
+                                console.log(response);
+                            }
+                        );
+                });
+
                 canvas.focus();
             },
 
@@ -649,16 +709,68 @@
 
             async openDocument(event)
             {
-                api.post('/service/load-document', {},
+                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
+            },
+
+            async loadDocument(event)
+            {
+                console.log("loadDocument id=", event.detail.document_id);
+                var last_document_id = event.detail.last_document;
+                var id = event.detail.document_id;
+                var r = this.router;
+                var s = this.store;
+                var last_documents = this.last_documents;
+                api.post('/service/load-document', 
+                    {
+                        document_id: id
+                    },
                     {
                         headers:
                         {
                             access_token: this.store.state.login.access_token
                         }
-                    }).then(
+                    }
+                    ).then(
                         function(response)
                         {
                             window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                            Cookies.set("document_id", id, {path: '/'});
+                            r.push({ path: '/document/' + id });
+                            window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
+                            console.log("last_document_id=", last_document_id);
+                            if (last_document_id != undefined)
+                                last_documents.push(last_document_id);
+                            console.log(last_documents);
+                                //s.commit('editor/setLastDocument', last_document_id);
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
+                window.dispatchEvent(new CustomEvent('listDocuments', {}));
+            },
+
+            async updateDocumentName(event)
+            {
+                var id = event.detail.document_id;
+                var s = this.store;
+                api.post('/service/get-document-name', 
+                    {
+                        document_id: id
+                    },
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).then(
+                        function(response)
+                        {
+                            window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
+                            s.commit('editor/setDocumentName', response.data.name);
                         }
                     ).catch(
                         function(response)

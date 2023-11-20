@@ -15,6 +15,8 @@
                     </q-btn>
                 </q-toolbar-title>
 
+                <div class="text-white q-pa-sm" v-if="documentName != ''">{{ documentName }}</div>
+
                 <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();" dense borderless no-caps 
                     flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
                
@@ -27,6 +29,8 @@
         </q-header>
 
         <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
+            <documents-tree v-if="loginStr != ''">
+            </documents-tree>
             <tasks-tree>
             </tasks-tree>
             <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
@@ -49,6 +53,7 @@ import { ref } from 'vue'
 import LoginDialog from 'layouts/LoginDialog.vue';
 import RegisterDialog from 'layouts/RegisterDialog.vue';
 import TasksTree from 'components/TasksTree.vue';
+import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
 import { computed } from 'vue'
 import { useStore } from 'vuex'
@@ -57,7 +62,7 @@ import { useI18n } from 'vue-i18n'
 
 export default
 {
-    components: { IdentifiersTree, TasksTree },
+    components: { IdentifiersTree, TasksTree, DocumentsTree },
 
     setup()
     {
@@ -65,8 +70,8 @@ export default
         const rightDrawerOpen = ref(false);
         let initialLeftDrawerWidth;
         let initialRightDrawerWidth;
-        const leftDrawerWidth = ref(300);
-        const rightDrawerWidth = ref(300);
+        const leftDrawerWidth = ref(200);
+        const rightDrawerWidth = ref(200);
 
         const store = useStore();
 
@@ -80,6 +85,10 @@ export default
 
         const loginStr = computed({
             get: () => (store.state.login.login)
+        })
+
+        const documentName = computed({
+            get: () => (store.state.editor.document_name)
         })
 
         const logout = () =>
@@ -154,6 +163,7 @@ export default
             logoutState,
             logout, 
             loginStr,
+            documentName,
 
             locale,
             localeOptions: [
@@ -270,5 +280,11 @@ export default
     {
         color: white;
     }
+}
+
+#documents-tree
+{
+    height: 50%;
+    overflow: scroll;
 }
 </style>

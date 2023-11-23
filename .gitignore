@@ -7,3 +7,4 @@ src/site/public/yutovo_web.worker.js
 src/site/node_modules
 src/site/fonts
 src/site/images
+src/site/test/__pycache__

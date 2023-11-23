@@ -8,11 +8,11 @@
                         <div class="text-blue text-h5">Registration</div>
                         <q-input square v-model="login" lazy-rules :rules="[this.required]" type="username" label="login" />
                         <q-input square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" label="email" />
-                        <q-input square v-model="password" lazy-rules :rules="[this.required]" type="password" label="password" />
+                        <q-input square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" label="password" />
                         <q-input ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
-                            type="password" label="repeate password" />
+                            id="repassword" type="password" label="repeate password" />
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" label="Register" />
+                            <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" id="submit" label="Register" />
                             <q-btn unelevated class="text-blue" type="reset" label="Cancel" v-close-popup />
                         </div>
                     </q-form>
@@ -27,6 +27,8 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { Cookies } from 'quasar'
 
 export default {
     name: 'RegisterDialog',
@@ -41,6 +43,7 @@ export default {
         const registerDialog = ref(null);
         const closed = ref(false);
         const $store = useStore();
+        const router = useRouter();
 
         const required = (val) => 
         {
@@ -81,6 +84,9 @@ export default {
                                 {
                                     $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                                     registerDialog.value.hide();
+
+                                    router.push({ path: '/document/' + response.data.document_id });
+                                    Cookies.set("document_id", response.data.document_id, {path: '/'});
                                 }
                             ).catch(
                                 function(response)
@@ -117,7 +123,8 @@ export default {
             diffPassword,
             onSubmit,
             onReset,
-            closed
+            closed,
+            router
         }
     }
 }

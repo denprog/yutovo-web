@@ -26,7 +26,6 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
-import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { Cookies } from 'quasar'
 
@@ -57,8 +56,6 @@ export default
         const documentsRef = ref(null);
 
         const store = useStore();
-        const router = useRouter();
-
         const $q = useQuasar();
 
         const updateDocuments = (obj) =>
@@ -143,7 +140,6 @@ export default
 
         return {
             store,
-            router,
             documentsFilter,
             documentsFilterRef,
             resetDocumentsFilter,

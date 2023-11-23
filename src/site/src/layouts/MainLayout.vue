@@ -19,11 +19,11 @@
 
                 <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();" dense borderless no-caps 
                     flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
-               
-                <div class="text-white q-pa-sm" v-if="loginStr != ''">{{ loginStr }}</div>
-                <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
-                <q-btn dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
-                <q-btn dense no-caps flat v-if="logoutState" @click="logout">Logout</q-btn>
+
+                <div class="text-white q-pa-sm" id='login_caption' v-if="loginStr != ''">{{ loginStr }}</div>
+                <q-btn id='login' dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
+                <q-btn id='register' dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
+                <q-btn id='logout' dense no-caps flat v-if="logoutState" @click="logout">Logout</q-btn>
                 <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
             </q-toolbar>
         </q-header>

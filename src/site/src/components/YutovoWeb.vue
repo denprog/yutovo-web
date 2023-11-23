@@ -1,11 +1,15 @@
 <template>
     <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
         <q-btn-group id="editor-toolbar" flat square unelevated stretch>
-            <q-btn size="14px" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
-            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onOpen();" icon="img:/images/standard/open.png"/>
-            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();" icon="img:/images/standard/save.png"/>
-            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onSaveAs();" icon="img:/images/standard/save_as.png"/>
-            <q-btn size="14px" :disabled="store.state.login.login == ''" square dense no-caps @click="onDelete();" icon="img:/images/standard/delete.png"/>
+            <q-btn size="14px" id="new-button" square dense @click="onNew();" icon="img:/images/standard/new.png"/>
+            <q-btn size="14px" id="open-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onOpen();" 
+                icon="img:/images/standard/open.png"/>
+            <q-btn size="14px" id="save-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();" 
+                icon="img:/images/standard/save.png"/>
+            <q-btn size="14px" id="save-as-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSaveAs();" 
+                icon="img:/images/standard/save_as.png"/>
+            <q-btn size="14px" id="delete-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDelete();" 
+                icon="img:/images/standard/delete.png"/>
             <q-separator vertical/>
             <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png"/>
             <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png"/>
@@ -467,7 +471,6 @@
 
             onNew()
             {
-                console.log("onNew");
                 if (this.store.state.login.login == "")
                 {
                     Module.cwrap('OnNew', 'void', [])(); //for unregisted use just reset the document
@@ -491,7 +494,7 @@
                                     detail:
                                     {
                                         document_id: response.data.document_id,
-                                        last_document: Cookies.get("document_id")
+                                        last_document: Cookies.has("document_id") ? Cookies.get("document_id") : 0
                                     }
                                 }));
                         }
@@ -522,7 +525,6 @@
 
             onDelete()
             {
-                console.log("onDelete");
                 var r = this.router;
                 var s = this.store;
                 var last_documents = this.last_documents;
@@ -556,11 +558,10 @@
                                     }
                                 }
 
-                                console.log(last_documents);
-                                console.log("after delete last_document=", last_document_id);
                                 //open previous document or create a new one
                                 if (last_document_id == 0)
                                 {
+                                    Cookies.remove('document_id', {path: '/'});
                                     window.dispatchEvent(new CustomEvent('onNew', {}));
                                 }
                                 else
@@ -669,6 +670,8 @@
                         function(response)
                         {
                             console.log(response);
+                            r.push({ path: '/document/' + response.data.document_id });
+                            Cookies.set("document_id", response.data.document_id, {path: '/'});
                         }
                     ).catch(
                         function(response)
@@ -687,9 +690,17 @@
                                     ).then(
                                         function(response)
                                         {
-                                            const document_id = Cookies.get("document_id");
-                                            r.push({ path: '/document/' + document_id });
-                                            window.dispatchEvent(new CustomEvent('openDocument', {}));
+                                            window.dispatchEvent(new CustomEvent('loadDocument', 
+                                                {
+                                                    detail:
+                                                    {
+                                                        document_id: response.data.document_id,
+                                                        last_document: Cookies.get("document_id")
+                                                    }
+                                                }));
+                                            // const document_id = Cookies.get("document_id");
+                                            // r.push({ path: '/document/' + document_id });
+                                            // window.dispatchEvent(new CustomEvent('openDocument', {}));
                                         }
                                     ).catch(
                                         function(response)
@@ -714,9 +725,10 @@
 
             async loadDocument(event)
             {
-                console.log("loadDocument id=", event.detail.document_id);
                 var last_document_id = event.detail.last_document;
                 var id = event.detail.document_id;
+                if (id == null)
+                    return;
                 var r = this.router;
                 var s = this.store;
                 var last_documents = this.last_documents;
@@ -737,11 +749,8 @@
                             Cookies.set("document_id", id, {path: '/'});
                             r.push({ path: '/document/' + id });
                             window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
-                            console.log("last_document_id=", last_document_id);
-                            if (last_document_id != undefined)
+                            if (last_document_id != undefined && last_document_id != 0)
                                 last_documents.push(last_document_id);
-                            console.log(last_documents);
-                                //s.commit('editor/setLastDocument', last_document_id);
                         }
                     ).catch(
                         function(response)

@@ -6,11 +6,11 @@
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">Login</div>
-                        <q-input ref="loginRef" square v-model="login" lazy-rules :rules="[this.required]" type="username" label="user name" />
-                        <q-input ref="passwordRef" square v-model="password" lazy-rules :rules="[this.required]" type="password" label="password" />
+                        <q-input ref="loginRef" square v-model="login" lazy-rules :rules="[this.required]" id="username" type="username" label="user name" />
+                        <q-input ref="passwordRef" square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" label="password" />
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" type="submit" label="Login" />
+                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="Login" />
                             <q-btn unelevated class="text-blue" type="reset" label="Cancel" />
                         </div>
                     </q-form>
@@ -27,6 +27,7 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { Cookies } from 'quasar'
+import { useRouter } from 'vue-router'
 
 export default {
     name: 'LoginDialog',
@@ -51,6 +52,13 @@ export default {
             get: () => ($store.state.login.last_error)
         })
 
+        const onReset = () =>
+        {
+            loginDialog.value.hide();
+        };
+
+        const router = useRouter();
+
         const onSubmit = () =>
         {
             loginRef.value.validate();
@@ -64,11 +72,15 @@ export default {
                 ).then(
                     function(response)
                     {
+                        console.log(response);
                         $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                         $store.commit('login/setLastError', '');
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
                         window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
                         loginDialog.value.hide();
+
+                        router.push({ path: '/document/' + response.data.document_id });
+                        Cookies.set("document_id", response.data.document_id, {path: '/'});
                     }
                 ).catch(
                     function(response)
@@ -78,12 +90,7 @@ export default {
                         $store.commit('login/setLastError', 'Login failed');
                     }
                 );
-        };
-
-        const onReset = () =>
-        {
-            loginDialog.value.hide();
-        };
+        }
 
         return {
             loginDialog,
@@ -94,7 +101,8 @@ export default {
             lastErrorState,
             required,
             onSubmit,
-            onReset
+            onReset,
+            router
         }
     }
 }

@@ -153,5 +153,12 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(c1['value'] != c2['value'])
         self.assertTrue(self.driver.current_url != 'http://localhost:9001/document/' + c1['value'])
 
+    #Check input text
+    def test_documents9(self):
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        c.send_keys('12345')
+        t = self.driver.execute_script('return window.getText();')
+        self.assertTrue(t == '12345')
+
 if __name__ == '__main__':
     unittest.main()

@@ -295,6 +295,11 @@
                 };
             
             window.Module = Module;
+
+            window.getText = function()
+            {
+                return UTF32ToString(Module.cwrap('GetText', 'number', [])());
+            }
         },
 
         data()

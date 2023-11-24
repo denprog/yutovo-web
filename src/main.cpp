@@ -19,6 +19,8 @@ yutovo::Point last_document_point;
 std::u32string clipboard_json, clipboard_text;
 std::string clipboard_image;
 
+std::u32string document_text;
+
 std::u32string save_json;
 
 SDL_Window *canvas_window = nullptr;
@@ -667,6 +669,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
     assert(translate_tasks.size() > 0);
     document->InsertString(str, translate_tasks.front(), false);
     translate_tasks.pop();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
+{
+    document_text = document->ToText();
+    return (char*)document_text.c_str();
 }
 
 int main(int argc, char* argv[])

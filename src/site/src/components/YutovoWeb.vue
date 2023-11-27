@@ -179,7 +179,6 @@
                         var algebra_toolbar = document.getElementById('algebra-toolbar');
                         editor.style.height = 'calc(100vh - ' + standard_toolbar.clientHeight.toString() + 'px - ' + 
                             algebra_toolbar.clientHeight.toString() + 'px - ' + scroll_width + 'px - 2em)';
-                        editor.style.height = scroll.clientHeight;
                     }
                 },
 

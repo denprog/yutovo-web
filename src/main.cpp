@@ -33,11 +33,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
 
-EM_JS(void, UpdateScrollBars, (int v_size, int h_size, int v_value, int h_value), 
+EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value), 
     {
         var scroll_space = document.getElementById('scroll-space');
         scroll_space.style.width = h_size + "px";
-        scroll_space.style.height = v_size + "px";
+        scroll_space.style.height = "calc(" + v_size + "px + 2em)";
         var scroll_container = document.getElementById('scroll-container');
         scroll_container.scrollLeft = h_value;
         scroll_container.scrollTop = v_value;
@@ -141,7 +141,7 @@ void MainLoop(void* arg)
         }
 
         //find common string format
-        if (c.id.empty() || c.id.size() == 1)
+        if (c.id.empty() || (c.id.size() == 1))
             return;
         ElementId _id = GetParent(c.id);
         if (!document->IsString(document->GetElement(_id)) && !document->IsRow(document->GetElement(_id)))
@@ -179,7 +179,7 @@ void MainLoop(void* arg)
                 format.size, format.bold, format.italic, format.underline, text_color.c_str(), text_color.size(), 
                 text_bg_color.c_str(), text_bg_color.size());
         }
-       
+        
         static uint last_code_id = 0;
         uint code_id = document->FindCodeBlock(_id);
         if (code_id == 0)
@@ -203,10 +203,11 @@ void MainLoop(void* arg)
         //update scrollbars
         yutovo::Rect r = window->GetViewPort(0);
         yutovo::Size s = window->document_size;
+        s.height += 1;
         yutovo::Point p = window->document_point;
-        if (last_document_size != s && last_document_point != p)
+        if ((last_document_size != s) || (last_document_point != p))
         {
-            UpdateScrollBars(s.height + r.top, s.width + r.left, p.y, p.x);
+            UpdateScrollBars(s.width + r.left, s.height + r.top, p.x, p.y);
             last_document_size = s;
             last_document_point = p;
         }

@@ -819,7 +819,13 @@ void StoreRectTask::Execute()
     }
     if (store_rect.y + store_rect.h > web_window->height)
         store_rect.h = web_window->height - store_rect.y;
-    
+
+    if (web_window->stored_texture)
+    {
+        SDL_DestroyTexture(web_window->stored_texture);
+        web_window->stored_texture = nullptr;
+    }
+
     if (store_rect.w <= 0 || store_rect.h <= 0)
         return;
 
@@ -828,8 +834,6 @@ void StoreRectTask::Execute()
     int access;
     int w, h;
     SDL_QueryTexture(texture, &format, &access, &w, &h);
-    if (web_window->stored_texture)
-        SDL_DestroyTexture(web_window->stored_texture);
 
     web_window->stored_texture = SDL_CreateTexture(web_window->renderer, format, SDL_TEXTUREACCESS_TARGET, store_rect.w, store_rect.h);
     if (!web_window->stored_texture)
@@ -853,9 +857,12 @@ RestoreRectTask::RestoreRectTask(WebWindow* _web_window) :
 
 void RestoreRectTask::Execute()
 {
-    //printf("WebWindow::RestoreRect\n");
+    //printf("WebWindow::RestoreRect %d, %d, %d, %d\n", web_window->store_rect.x, web_window->store_rect.y, web_window->store_rect.w, web_window->store_rect.h);
     if (!web_window->stored_texture)
+    {
+        printf("No stored texture\n");
         return;
+    }
     SDL_RenderCopy(web_window->renderer, web_window->stored_texture, nullptr, &web_window->store_rect);
 }
 
@@ -868,7 +875,37 @@ ClearTask::ClearTask(WebWindow* _web_window) :
 
 void ClearTask::Execute()
 {
+    //printf("WebWindow::ClearTask\n");
     SDL_RenderClear(web_window->renderer);
+}
+
+//ResizeTask
+
+ResizeTask::ResizeTask(WebWindow* _web_window, uint _width, uint _height) :
+    Task(_web_window, false),
+    width(_width),
+    height(_height)
+{
+}
+
+void ResizeTask::Execute()
+{
+    //printf("WebWindow::ResizeTask\n");
+    if (web_window->surface)
+        SDL_FreeSurface(web_window->surface);
+    if (web_window->renderer)
+        SDL_DestroyRenderer(web_window->renderer);
+    web_window->surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    web_window->renderer = SDL_CreateSoftwareRenderer(web_window->surface);
+    SDL_SetRenderDrawColor(web_window->renderer, 255, 255, 255, 255);
+    SDL_RenderClear(web_window->renderer);
+    if (web_window->stored_texture)
+    {
+        SDL_DestroyTexture(web_window->stored_texture);
+        web_window->stored_texture = nullptr;
+    }
+    web_window->width = width;
+    web_window->height = height;
 }
 
 //ConnectTask

@@ -103,6 +103,7 @@ private:
     friend struct StoreRectTask;
     friend struct RestoreRectTask;
     friend struct ClearTask;
+    friend struct ResizeTask;
     
     int width = 0, height = 0;
     SDL_Surface* surface = nullptr;

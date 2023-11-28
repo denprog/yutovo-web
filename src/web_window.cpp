@@ -197,6 +197,7 @@ Rect WebWindow::GetViewPort(const int pos)
 
 void WebWindow::Update(const Rect& rect)
 {
+    //printf("Update %d, %d, %d, %d\n", rect.left, rect.top, rect.width, rect.height);
     std::lock_guard<std::mutex> lock(draw_mutex);
     for (auto& t : tasks) //execute all tasks before Draw
         t->Execute();
@@ -206,17 +207,7 @@ void WebWindow::Update(const Rect& rect)
 
 void WebWindow::Resize(uint _width, uint _height)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    width = _width;
-    height = _height;
-    if (surface)
-        SDL_FreeSurface(surface);
-    if (renderer)
-        SDL_DestroyRenderer(renderer);
-    surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-    renderer = SDL_CreateSoftwareRenderer(surface);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    ClearSurface();
+    tasks.emplace_back(new ResizeTask(this, width, height));
 }
 
 Rect WebWindow::GetRect()

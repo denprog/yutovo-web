@@ -145,6 +145,15 @@ struct ClearTask : Task
     virtual void Execute();
 };
 
+struct ResizeTask : Task
+{
+    ResizeTask(WebWindow* _web_window, uint _width, uint _height);
+
+    virtual void Execute();
+
+    uint width, height;
+};
+
 struct ConnectTask : Task
 {
     ConnectTask(const std::string& _addr, std::atomic_int32_t& _socket_id);

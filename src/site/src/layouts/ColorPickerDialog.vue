@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
 import { computed } from 'vue';
 import { useStore } from 'vuex'
 

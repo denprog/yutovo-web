@@ -72,7 +72,7 @@ export default {
                     password: password.value
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         api.post('/auth/login', 
                             {
@@ -86,7 +86,7 @@ export default {
                                     registerDialog.value.hide();
 
                                     router.push({ path: '/document/' + response.data.document_id });
-                                    Cookies.set("document_id", response.data.document_id, {path: '/'});
+                                    Cookies.set('document_id', response.data.document_id, {path: '/'});
                                 }
                             ).catch(
                                 function(response)

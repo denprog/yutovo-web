@@ -29,7 +29,7 @@ const actions: ActionTree<LoginStateInterface, StateInterface> =
                     function(response)
                     {
                         console.log(response);
-                        dispatch('setAccessToken', "");
+                        dispatch('setAccessToken', '');
                     }
                 );
             },

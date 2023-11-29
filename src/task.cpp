@@ -859,10 +859,7 @@ void RestoreRectTask::Execute()
 {
     //printf("WebWindow::RestoreRect %d, %d, %d, %d\n", web_window->store_rect.x, web_window->store_rect.y, web_window->store_rect.w, web_window->store_rect.h);
     if (!web_window->stored_texture)
-    {
-        printf("No stored texture\n");
         return;
-    }
     SDL_RenderCopy(web_window->renderer, web_window->stored_texture, nullptr, &web_window->store_rect);
 }
 

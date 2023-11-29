@@ -65,8 +65,8 @@ export default
             for (var prop in obj)
             {
                 documents.value.push({
-                    'id': obj[prop]["id"],
-                    'label': obj[prop]["name"] == "" ? "(no name)" : obj[prop]["name"],
+                    'id': obj[prop]['id'],
+                    'label': obj[prop]['name'] == '' ? '(no name)' : obj[prop]['name'],
                     'selectable': true
                 });
             }
@@ -108,7 +108,7 @@ export default
                     detail: 
                     {
                         document_id: target,
-                        last_document: Cookies.get("document_id")
+                        last_document: Cookies.get('document_id')
                     }
                 }));
         };

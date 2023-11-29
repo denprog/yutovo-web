@@ -13,7 +13,6 @@
 <script>
 import { ref } from 'vue'
 import { api } from 'boot/boot'
-import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'IdentifiersTree',
@@ -85,9 +84,9 @@ export default {
 
         const loadIdentifiers = (code_id, solver_guid, t) =>
         {
-            if (code_id == "")
+            if (code_id == '')
                 code_id = last_code_id;
-            if (solver_guid == "")
+            if (solver_guid == '')
                 solver_guid = last_solver_guid;
             last_code_id = code_id;
             last_solver_guid = solver_guid;
@@ -100,9 +99,9 @@ export default {
             {
                 api.post('/service/list-identifiers', 
                     {
-                        "code_id": code_id,
-                        "guid": solver_guid,
-                        "solver_type": 1
+                        'code_id': code_id,
+                        'guid': solver_guid,
+                        'solver_type': 1
                     }
                     ).then(
                         function(response)
@@ -145,9 +144,9 @@ export default {
             this.loadIdentifiers(event.detail.code_id, event.detail.solver_guid, this.$t);
         },
 
-        updateLanguage(event)
+        updateLanguage()
         {
-            this.loadIdentifiers("", "", this.$t);
+            this.loadIdentifiers('', '', this.$t);
         }
     }
 }

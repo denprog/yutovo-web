@@ -73,7 +73,7 @@ export default
         {
             api.post('/service/get-tasks', 
                 {
-                    language: store.state.editor.language == "" ? "en" : store.state.editor.language
+                    language: store.state.editor.language == '' ? 'en' : store.state.editor.language
                 }
                 ).then(
                     function(response)
@@ -94,7 +94,7 @@ export default
             api.post('/service/load-task', 
                 {
                     task: target,
-                    language: store.state.editor.language == "" ? "en" : store.state.editor.language
+                    language: store.state.editor.language == '' ? 'en' : store.state.editor.language
                 }
                 ).then(
                     function(response)

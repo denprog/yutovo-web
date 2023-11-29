@@ -6,7 +6,7 @@ export interface ServiceInterface
 function state(): ServiceInterface
 {
     return {
-        task_file: ""
+        task_file: ''
     };
 }
 

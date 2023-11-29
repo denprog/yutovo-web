@@ -79,11 +79,8 @@
 <script lang="ts">
     import { ref } from 'vue'
     import { useStore } from 'vuex'
-    import { Image } from 'image-js'
-    import { useQuasar } from 'quasar'
     import { Cookies } from 'quasar'
     import { useRouter } from 'vue-router'
-    import { computed } from 'vue'
     import { api } from 'boot/boot'
     import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
@@ -124,8 +121,6 @@
 
         setup()
         {
-            const $q = useQuasar();
-
             const style = ref({ width: '200px', height: '200px' });
 
             let s_js = document.createElement('script');
@@ -281,11 +276,11 @@
                                     canvas.focus();
                                 }
                             
-                            canvas.addEventListener('focusin', (event) => 
+                            canvas.addEventListener('focusin', () => 
                                 {
                                     Module.cwrap('OnFocusIn', 'void', [])();
                                 });
-                            canvas.addEventListener('focusout', (event) => 
+                            canvas.addEventListener('focusout', () => 
                                 {
                                     Module.cwrap('OnFocusOut', 'void', [])();
                                 });
@@ -351,7 +346,7 @@
                     const data = await navigator.clipboard.read();
                     for (let i = 0; i < data.length; i++)
                     {
-                        if (data[i].types.includes("web yutovo/elements") || data[i].types.includes("text/plain"))
+                        if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain'))
                         {
                             can_paste = true;
                             break;
@@ -387,10 +382,10 @@
                 button.disabled = (event.detail.underline < 0);
 
                 button = document.getElementById('text-color-button');
-                button.disabled = (this.text_color == "");
+                button.disabled = (this.text_color == '');
 
                 button = document.getElementById('text-bg-color-button');
-                button.disabled = (this.text_bg_color == "");
+                button.disabled = (this.text_bg_color == '');
             },
 
             onCode()
@@ -449,7 +444,7 @@
 
             onTextColor()
             {
-                if (this.text_color == "")
+                if (this.text_color == '')
                     return;
                 this.store.commit('editor/setDialogColor', this.text_color);
                 this.$q.dialog({
@@ -463,7 +458,7 @@
 
             onTextBgColor()
             {
-                if (this.text_bg_color == "")
+                if (this.text_bg_color == '')
                     return;
                 this.store.commit('editor/setDialogColor', this.text_bg_color);
                 this.$q.dialog({
@@ -477,7 +472,7 @@
 
             onNew()
             {
-                if (this.store.state.login.login == "")
+                if (this.store.state.login.login == '')
                 {
                     Module.cwrap('OnNew', 'void', [])(); //for unregisted use just reset the document
                     canvas.focus();
@@ -491,7 +486,7 @@
 
             onOpen()
             {
-                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
+                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
             },
 
             onSave()
@@ -507,8 +502,6 @@
 
             onDelete()
             {
-                var r = this.router;
-                var s = this.store;
                 var last_documents = this.last_documents;
                 this.$q.dialog({
                     title: 'Confirm',
@@ -655,7 +648,7 @@
                                     detail:
                                     {
                                         document_id: response.data.document_id,
-                                        last_document: Cookies.has("document_id") ? Cookies.get("document_id") : 0
+                                        last_document: Cookies.has('document_id') ? Cookies.get('document_id') : 0
                                     }
                                 }));
                         }
@@ -671,7 +664,6 @@
             {
                 console.log('saveDocument ', event.detail.json);
                 var json = JSON.parse(event.detail.json);
-                var s = this.store;
                 var r = this.router;
                 api.post('/service/save-document', json,
                     {
@@ -685,7 +677,7 @@
                         {
                             console.log(response);
                             r.push({ path: '/document/' + response.data.document_id });
-                            Cookies.set("document_id", response.data.document_id, {path: '/'});
+                            Cookies.set('document_id', response.data.document_id, {path: '/'});
                         }
                     ).catch(
                         function(response)
@@ -705,7 +697,7 @@
                 window.Module.cwrap('OnTranslate', 'void', ['string'])(this.$t(event.detail.str));
             },
 
-            async openDocument(event)
+            async openDocument()
             {
                 if (Cookies.has('document_id'))
                     window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
@@ -715,11 +707,10 @@
             {
                 var last_document_id = event.detail.last_document;
                 var id = event.detail.document_id;
-                console.log("loadDocument ", id);
+                console.log('loadDocument ', id);
                 if (id == null)
                     return;
                 var r = this.router;
-                var s = this.store;
                 var last_documents = this.last_documents;
                 api.post('/service/load-document', 
                     {
@@ -735,7 +726,7 @@
                         function(response)
                         {
                             window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                            Cookies.set("document_id", id, {path: '/'});
+                            Cookies.set('document_id', id, {path: '/'});
                             r.push({ path: '/document/' + id });
                             window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
                             if (last_document_id != undefined && last_document_id != 0)
@@ -753,7 +744,7 @@
             async updateDocumentName(event)
             {
                 var id = event.detail.document_id;
-                console.log("updateDocumentName ", id);
+                console.log('updateDocumentName ', id);
                 var s = this.store;
                 api.post('/service/get-document-name', 
                     {
@@ -779,14 +770,14 @@
                     );
             },
 
-            async onShowContextMenu(event)
+            async onShowContextMenu()
             {
                 var copy_menu = document.getElementById('copy-menu');
                 const can_copy = Module.cwrap('CanCopy', 'bool', [])();
                 if (can_copy)
-                    copy_menu.classList.remove("disabled");
+                    copy_menu.classList.remove('disabled');
                 else
-                    copy_menu.classList.add("disabled");
+                    copy_menu.classList.add('disabled');
 
                 var can_paste = false;
                 try
@@ -794,8 +785,8 @@
                     const data = await navigator.clipboard.read();
                     for (let i = 0; i < data.length; i++)
                     {
-                        if (data[i].types.includes("web yutovo/elements") || data[i].types.includes("text/plain") || 
-                            data[i].types.includes("image/png") || data[i].types.includes("image/jpeg" || data[i].types.includes("image/bmp")))
+                        if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain') || 
+                            data[i].types.includes('image/png') || data[i].types.includes('image/jpeg' || data[i].types.includes('image/bmp')))
                         {
                             can_paste = true;
                             break;
@@ -809,16 +800,16 @@
                 var paste_menu = document.getElementById('paste-menu');
                 can_paste = Module.cwrap('CanPaste', 'bool', [])() && can_paste;
                 if (can_paste)
-                    paste_menu.classList.remove("disabled");
+                    paste_menu.classList.remove('disabled');
                 else
-                    paste_menu.classList.add("disabled");
+                    paste_menu.classList.add('disabled');
 
                 var cut_menu = document.getElementById('cut-menu');
                 const can_cut = Module.cwrap('CanCut', 'bool', [])();
                 if (can_cut)
-                    cut_menu.classList.remove("disabled");
+                    cut_menu.classList.remove('disabled');
                 else
-                    cut_menu.classList.add("disabled");
+                    cut_menu.classList.add('disabled');
             },
 
             onPlus()
@@ -887,7 +878,7 @@
                 canvas.focus();
             },
 
-            onCloseContextMenu(event)
+            onCloseContextMenu()
             {
                 canvas.focus();
             }

@@ -17,9 +17,9 @@ export interface LoginStateInterface
 function state() : LoginStateInterface
 {
   	return {
-    	login: "",
-		access_token: "",
-		last_error: ""
+    	login: '',
+		access_token: '',
+		last_error: ''
   	};
 }
 

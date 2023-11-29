@@ -175,5 +175,24 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
+    #Open the last document at start
+    def test_documents11(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+        utils.writeText(self.driver, '12345')
+        utils.save(self.driver)
+        time.sleep(1)
+        c1 = self.driver.get_cookie('document_id')
+
+        self.driver.quit()
+        self.driver = webdriver.Chrome()
+        self.driver.get('http://localhost:9001')
+        self.driver.add_cookie(c1)
+        self.driver.refresh()
+        self.driver.get('http://localhost:9001/')
+        time.sleep(4)
+        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(utils.documentContains(self.driver, '12345'))
+
 if __name__ == '__main__':
     unittest.main()

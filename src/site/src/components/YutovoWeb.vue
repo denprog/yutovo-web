@@ -285,7 +285,7 @@
                                     Module.cwrap('OnFocusOut', 'void', [])();
                                 });
                             
-                            window.dispatchEvent(new CustomEvent('openDocument', {})); //open last document
+                            window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
                             canvas.focus();
                         }
                 };
@@ -677,7 +677,7 @@
                         {
                             console.log(response);
                             r.push({ path: '/document/' + response.data.document_id });
-                            Cookies.set('document_id', response.data.document_id, {path: '/'});
+                            Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
                         }
                     ).catch(
                         function(response)
@@ -726,7 +726,7 @@
                         function(response)
                         {
                             window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                            Cookies.set('document_id', id, {path: '/'});
+                            Cookies.set('document_id', id, {path: '/', expires: '1d'});
                             r.push({ path: '/document/' + id });
                             window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
                             if (last_document_id != undefined && last_document_id != 0)

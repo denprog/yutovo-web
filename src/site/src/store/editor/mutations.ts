@@ -13,12 +13,6 @@ const mutation: MutationTree<EditorInterface> =
         state.language = language;
     },
 
-    // setLastDocument(state, last_document)
-    // {
-    //     state.last_documents.push(last_document);
-    //     console.log("setter state.last_documents=", state.last_documents);
-    // },
-
     setDocumentName(state, document_name)
     {
         state.document_name = document_name;

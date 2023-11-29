@@ -3,16 +3,19 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ChromeOptions
 import time
 import utils
 
 class TestDocuments(unittest.TestCase):
     def setUp(self):
-        self.driver = webdriver.Chrome()
+        opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
+        self.driver = webdriver.Chrome(options = opts)
         self.driver.get('http://localhost:9001')
         self.conn = utils.getDbConnection()
         utils.clearTestUser(self.conn, self.driver)
-        time.sleep(2)
+        time.sleep(4)
     
     def tearDown(self):
         self.driver.quit()
@@ -28,7 +31,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c != None)
-        self.assertTrue(utils.documentContains(self.conn, c['value'], "12345"))
+        self.assertTrue(utils.fileContains(self.conn, c['value'], "12345"))
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c['value'])
         time.sleep(1)
 
@@ -71,21 +74,18 @@ class TestDocuments(unittest.TestCase):
     #Open documents from the list
     def test_documents5(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(2)
+        utils.div(self.driver, 'document_1')
         c1 = self.driver.get_cookie('document_id')
         utils.new(self.driver)
         time.sleep(1)
         c2 = self.driver.get_cookie('document_id')
         utils.new(self.driver)
         time.sleep(1)
-        time.sleep(1)
         c3 = self.driver.get_cookie('document_id')
-
-        utils.div(self.driver, 'document_2')
+        utils.div(self.driver, 'document_3')
         time.sleep(1)
-        c = self.driver.get_cookie('document_id')
-        self.assertTrue(c['value'] == c2['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
+        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c3['value'])
 
         utils.div(self.driver, 'document_3')
         time.sleep(1)
@@ -113,9 +113,9 @@ class TestDocuments(unittest.TestCase):
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c['value'] == c3['value'])
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c3['value'])
-        self.assertTrue(utils.documentContains(self.conn, c['value'], "12345"))
-        self.assertTrue(utils.documentContains(self.conn, c2['value'], "12345") == False)
-        self.assertTrue(utils.documentContains(self.conn, c1['value'], "12345") == False)
+        self.assertTrue(utils.fileContains(self.conn, c['value'], "12345"))
+        self.assertTrue(utils.fileContains(self.conn, c2['value'], "12345") == False)
+        self.assertTrue(utils.fileContains(self.conn, c1['value'], "12345") == False)
 
     #Save a document from the list and delete it
     def test_documents7(self):
@@ -155,10 +155,25 @@ class TestDocuments(unittest.TestCase):
 
     #Check input text
     def test_documents9(self):
-        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
         c.send_keys('12345')
         t = self.driver.execute_script('return window.getText();')
         self.assertTrue(t == '12345')
+
+    #Open a document by url at start
+    def test_documents10(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+        utils.writeText(self.driver, '12345')
+        utils.save(self.driver)
+        time.sleep(1)
+        c = self.driver.get_cookie('document_id')
+
+        self.driver.quit()
+        self.driver = webdriver.Chrome()
+        self.driver.get('http://localhost:9001/document/' + c['value'])
+        time.sleep(2)
+        self.assertTrue(utils.documentContains(self.driver, '12345'))
 
 if __name__ == '__main__':
     unittest.main()

@@ -60,6 +60,10 @@ def div(driver, text):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + text + '\')]')))
     b.click()
 
+def writeText(driver, text):
+    c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
+    c.send_keys(text)
+
 def getDbConnection():
     return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "11", port = 5432)
 
@@ -77,8 +81,12 @@ def clearTestUser(conn, driver):
     cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test1\')')
     conn.commit()
 
-def documentContains(conn, document_id, str):
+def fileContains(conn, document_id, str):
     cursor = conn.cursor()
     cursor.execute('select 1 from user_documents where document_id = %s and jsonb_path_exists(document, \'$.** ? (@.type() == "string" && @ like_regex "%s")\')', 
         (document_id, AsIs(str)))
     return cursor.fetchone() is not None
+
+def documentContains(driver, str):
+    t = driver.execute_script('return window.getText();')
+    return str in t

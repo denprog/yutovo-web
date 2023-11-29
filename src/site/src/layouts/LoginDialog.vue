@@ -76,7 +76,9 @@ export default {
                         $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                         $store.commit('login/setLastError', '');
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
-                        window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
+                        if (Cookies.has("document_id"))
+                            window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
+
                         loginDialog.value.hide();
 
                         router.push({ path: '/document/' + response.data.document_id });

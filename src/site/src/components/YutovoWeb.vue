@@ -99,6 +99,7 @@
                 window.addEventListener('onCopy', this.onCopy, false);
                 window.addEventListener('onPaste', this.onPaste, false);
                 window.addEventListener('onCut', this.onCut, false);
+                window.addEventListener('newDocument', this.newDocument, false);
                 window.addEventListener('saveDocument', this.saveDocument, false);
                 window.addEventListener('openDocument', this.openDocument, false);
                 window.addEventListener('loadDocument', this.loadDocument, false);
@@ -112,6 +113,7 @@
                 window.attachEvent('onCopy', this.onCopy);
                 window.attachEvent('onPaste', this.onPaste);
                 window.attachEvent('onCut', this.onCut);
+                window.attachEvent('newDocument', this.newDocument);
                 window.attachEvent('saveDocument', this.saveDocument);
                 window.attachEvent('openDocument', this.openDocument);
                 window.attachEvent('loadDocument', this.loadDocument);
@@ -483,31 +485,7 @@
                 }
 
                 //for registered user create new document in the DB
-                api.post('/service/new-document', {},
-                    {
-                        headers:
-                        {
-                            access_token: this.store.state.login.access_token
-                        }
-                    }
-                    ).then(
-                        function(response)
-                        {
-                            window.dispatchEvent(new CustomEvent('loadDocument', 
-                                {
-                                    detail:
-                                    {
-                                        document_id: response.data.document_id,
-                                        last_document: Cookies.has("document_id") ? Cookies.get("document_id") : 0
-                                    }
-                                }));
-                        }
-                    ).catch(
-                        function(response)
-                        {
-                            console.log(response);
-                        }
-                    );
+                window.dispatchEvent(new CustomEvent('newDocument'));
                 canvas.focus();
             },
 
@@ -658,8 +636,40 @@
                 canvas.focus();
             },
 
+            async newDocument(event)
+            {
+                console.log('newDocument ', event.detail == null ? '' : event.detail.json);
+                var s = this.store;
+                api.post('/service/new-document', event.detail == null ? {} : event.detail.json,
+                    {
+                        headers:
+                        {
+                            access_token: s.state.login.access_token
+                        }
+                    }
+                    ).then(
+                        function(response)
+                        {
+                            window.dispatchEvent(new CustomEvent('loadDocument', 
+                                {
+                                    detail:
+                                    {
+                                        document_id: response.data.document_id,
+                                        last_document: Cookies.has("document_id") ? Cookies.get("document_id") : 0
+                                    }
+                                }));
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
+            },
+
             async saveDocument(event)
             {
+                console.log('saveDocument ', event.detail.json);
                 var json = JSON.parse(event.detail.json);
                 var s = this.store;
                 var r = this.router;
@@ -684,34 +694,7 @@
                             if (response.response.status == 403)
                             {
                                 //save this document with own id
-                                api.post('/service/new-document', json,
-                                    {
-                                        headers:
-                                        {
-                                            access_token: s.state.login.access_token
-                                        }
-                                    }
-                                    ).then(
-                                        function(response)
-                                        {
-                                            window.dispatchEvent(new CustomEvent('loadDocument', 
-                                                {
-                                                    detail:
-                                                    {
-                                                        document_id: response.data.document_id,
-                                                        last_document: Cookies.get("document_id")
-                                                    }
-                                                }));
-                                            // const document_id = Cookies.get("document_id");
-                                            // r.push({ path: '/document/' + document_id });
-                                            // window.dispatchEvent(new CustomEvent('openDocument', {}));
-                                        }
-                                    ).catch(
-                                        function(response)
-                                        {
-                                            console.log(response);
-                                        }
-                                    );
+                                window.dispatchEvent(new CustomEvent('newDocument'), {detail: {json: json}});
                             }
                         }
                     );
@@ -724,13 +707,15 @@
 
             async openDocument(event)
             {
-                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get("document_id")}}));
+                if (Cookies.has('document_id'))
+                    window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
             },
 
             async loadDocument(event)
             {
                 var last_document_id = event.detail.last_document;
                 var id = event.detail.document_id;
+                console.log("loadDocument ", id);
                 if (id == null)
                     return;
                 var r = this.router;
@@ -768,6 +753,7 @@
             async updateDocumentName(event)
             {
                 var id = event.detail.document_id;
+                console.log("updateDocumentName ", id);
                 var s = this.store;
                 api.post('/service/get-document-name', 
                     {

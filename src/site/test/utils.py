@@ -55,6 +55,16 @@ def saveAs(driver, filename):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
     b.click()
 
+def rename(driver, filename):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'rename-button')))
+    b.click()
+    time.sleep(1)
+    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'filename\']')))
+    e.send_keys(filename)
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
+    b.click()
+
 def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'delete-button')))
     b.click()

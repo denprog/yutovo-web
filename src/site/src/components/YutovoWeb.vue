@@ -8,6 +8,8 @@
                 icon="img:/images/standard/save.png"/>
             <q-btn size="14px" id="save-as-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSaveAs();" 
                 icon="img:/images/standard/save_as.png"/>
+            <q-btn size="14px" id="rename-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onRename();" 
+                icon="img:/images/standard/rename.png"/>
             <q-btn size="14px" id="delete-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDelete();" 
                 icon="img:/images/standard/delete.png"/>
             <q-separator vertical/>
@@ -84,6 +86,7 @@
     import { api } from 'boot/boot'
     import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
     import SaveAsDialog from 'layouts/SaveAsDialog.vue';
+    import RenameDialog from 'layouts/RenameDialog.vue';
 
     export default {
         name: 'YutovoWeb',
@@ -502,6 +505,12 @@
                 canvas.focus();
             },
 
+            onRename()
+            {
+                this.renameDialog = this.$q.dialog({component: RenameDialog, parent: this, apiResponse: this.resp});
+                canvas.focus();
+            },
+
             onDelete()
             {
                 var last_documents = this.last_documents;
@@ -521,7 +530,7 @@
                             function(response)
                             {
                                 console.log(response);
-                                var last_document_id = 0;// = s.getters['editor/lastDocument'];
+                                var last_document_id = 0;
 
                                 if (last_documents.length > 0)
                                 {

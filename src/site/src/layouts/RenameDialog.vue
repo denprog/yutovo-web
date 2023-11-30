@@ -1,11 +1,11 @@
 <template>
-<q-dialog ref="saveAsDialog">
+<q-dialog ref="renameDialog">
     <div class="column row justify-center items-center">
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
-                        <div class="text-blue text-h5">Save document as</div>
+                        <div class="text-blue text-h5">Rename document</div>
                         <q-input ref="filenameRef" square v-model="filename" lazy-rules :rules="[this.required]" id="filename" type="filename" label="File name" />
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
@@ -29,11 +29,11 @@ import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
 
 export default {
-    name: 'SaveAsDialog',
+    name: 'RenameDialog',
 
     setup()
     {
-        const saveAsDialog = ref(null);
+        const renameDialog = ref(null);
         const filename = ref('');
         const filenameRef = ref(null);
         const store = useStore();
@@ -49,7 +49,7 @@ export default {
         {
             filenameRef.value.validate();
 
-            api.post('/service/save-as-document', 
+            api.post('/service/rename-document', 
                 {
                     document_id: Cookies.get('document_id'),
                     name: filename.value
@@ -64,16 +64,9 @@ export default {
                     function(response)
                     {
                         console.log(response);
-                        //load the new document
-                        window.dispatchEvent(new CustomEvent('loadDocument', 
-                            {
-                                detail:
-                                {
-                                    document_id: response.data.document_id,
-                                    last_document: Cookies.get('document_id')
-                                }
-                            }));
-                        saveAsDialog.value.hide();
+                        window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: Cookies.get('document_id')}}));
+                        window.dispatchEvent(new CustomEvent('listDocuments', {}));
+                        renameDialog.value.hide();
                     }
                 ).catch(
                     function(response)
@@ -86,7 +79,7 @@ export default {
 
         const onReset = () =>
         {
-            saveAsDialog.value.hide();
+            renameDialog.value.hide();
         };
 
         const lastErrorState = computed({
@@ -95,7 +88,7 @@ export default {
 
         return {
             store,
-            saveAsDialog,
+            renameDialog,
             filename,
             onSubmit,
             onReset,

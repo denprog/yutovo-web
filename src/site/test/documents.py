@@ -210,5 +210,21 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
+    #Rename a document
+    def test_documents13(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+        utils.writeText(self.driver, '12345')
+        utils.save(self.driver)
+        time.sleep(1)
+        c1 = self.driver.get_cookie('document_id')
+
+        utils.rename(self.driver, 'new_name')
+        time.sleep(2)
+        c2 = self.driver.get_cookie('document_id')
+        self.assertTrue(c1['value'] == c2['value'])
+        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
+        self.assertTrue(utils.documentContains(self.driver, '12345'))
+
 if __name__ == '__main__':
     unittest.main()

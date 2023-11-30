@@ -1,5 +1,5 @@
 <template>
-<q-dialog ref="loginDialog" v-close-popup="closed">
+<q-dialog ref="loginDialog">
     <div class="column row justify-center items-center">
         <div class="row">
             <q-card square bordered class="q-sm">

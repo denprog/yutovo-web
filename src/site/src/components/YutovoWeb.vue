@@ -83,6 +83,7 @@
     import { useRouter } from 'vue-router'
     import { api } from 'boot/boot'
     import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
+    import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 
     export default {
         name: 'YutovoWeb',
@@ -497,6 +498,7 @@
 
             onSaveAs()
             {
+                this.saveAsDialog = this.$q.dialog({component: SaveAsDialog, parent: this, apiResponse: this.resp});
                 canvas.focus();
             },
 

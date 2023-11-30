@@ -16,6 +16,11 @@ const mutation: MutationTree<EditorInterface> =
     setDocumentName(state, document_name)
     {
         state.document_name = document_name;
+    },
+    
+    setLastError(state, last_error)
+    {
+        state.last_error = last_error;
     }
 };
 

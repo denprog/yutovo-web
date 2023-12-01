@@ -15,7 +15,8 @@ class TestDocuments(unittest.TestCase):
         self.driver.get('http://localhost:9001')
         self.conn = utils.getDbConnection()
         utils.clearTestUser(self.conn, self.driver)
-        time.sleep(4)
+        time.sleep(6)
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
     
     def tearDown(self):
         self.driver.quit()
@@ -45,12 +46,12 @@ class TestDocuments(unittest.TestCase):
     #Create new document
     def test_documents3(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(c1 != None)
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
         utils.new(self.driver)
-        time.sleep(1)
+        time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         self.assertTrue(c2 != None)
         self.assertTrue(c2['value'] != c1['value'])
@@ -65,7 +66,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         utils.delete(self.driver)
-        time.sleep(3)
+        time.sleep(4)
         c3 = self.driver.get_cookie('document_id')
         self.assertTrue(c3['value'] != c2['value'])
         self.assertTrue(c3['value'] == c1['value'])
@@ -75,7 +76,7 @@ class TestDocuments(unittest.TestCase):
     def test_documents5(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(2)
-        utils.div(self.driver, 'document_1')
+        utils.clickDocument(self.driver, 'document_1')
         c1 = self.driver.get_cookie('document_id')
         utils.new(self.driver)
         time.sleep(1)
@@ -83,11 +84,11 @@ class TestDocuments(unittest.TestCase):
         utils.new(self.driver)
         time.sleep(1)
         c3 = self.driver.get_cookie('document_id')
-        utils.div(self.driver, 'document_3')
+        utils.clickDocument(self.driver, 'document_3')
         time.sleep(1)
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c3['value'])
 
-        utils.div(self.driver, 'document_3')
+        utils.clickDocument(self.driver, 'document_3')
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c['value'] == c3['value'])
@@ -105,7 +106,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         c3 = self.driver.get_cookie('document_id')
 
-        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
         c.send_keys('12345')
         time.sleep(1)
         utils.save(self.driver)
@@ -148,7 +149,7 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
 
         utils.delete(self.driver)
-        time.sleep(1)
+        time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         self.assertTrue(c1['value'] != c2['value'])
         self.assertTrue(self.driver.current_url != 'http://localhost:9001/document/' + c1['value'])
@@ -163,7 +164,7 @@ class TestDocuments(unittest.TestCase):
     #Open a document by url at start
     def test_documents10(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(4)
         utils.writeText(self.driver, '12345')
         utils.save(self.driver)
         time.sleep(1)
@@ -178,10 +179,12 @@ class TestDocuments(unittest.TestCase):
     #Open the last document at start
     def test_documents11(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(4)
         utils.writeText(self.driver, '12345')
-        utils.save(self.driver)
         time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, '12345'))
+        utils.save(self.driver)
+        time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
 
         self.driver.quit()
@@ -189,6 +192,7 @@ class TestDocuments(unittest.TestCase):
         self.driver.get('http://localhost:9001')
         self.driver.add_cookie(c1)
         self.driver.refresh()
+        time.sleep(1)
         self.driver.get('http://localhost:9001/')
         time.sleep(4)
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
@@ -197,10 +201,10 @@ class TestDocuments(unittest.TestCase):
     #Save a document with another name
     def test_documents12(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(4)
         utils.writeText(self.driver, '12345')
         utils.save(self.driver)
-        time.sleep(1)
+        time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
 
         utils.saveAs(self.driver, 'new_name')
@@ -213,7 +217,7 @@ class TestDocuments(unittest.TestCase):
     #Rename a document
     def test_documents13(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(4)
         utils.writeText(self.driver, '12345')
         utils.save(self.driver)
         time.sleep(1)

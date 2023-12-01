@@ -515,6 +515,7 @@ export default
         onDelete()
         {
             var last_documents = this.last_documents;
+            var s = this.store;
             this.$q.dialog({
                 title: 'Confirm',
                 message: 'Delete the document?',

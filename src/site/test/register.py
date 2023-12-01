@@ -22,8 +22,7 @@ class TestRegister(unittest.TestCase):
         time.sleep(1)
         utils.registerUser(self.driver, 'test1', '11', 'test1@mail.ru')
         time.sleep(1)
-        c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'login_caption')))
-        self.assertTrue(c.text == 'test1')
+        self.assertTrue(utils.loginCaption(self.driver) == 'test1')
 
 if __name__ == '__main__':
     unittest.main()

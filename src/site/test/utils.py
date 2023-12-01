@@ -72,9 +72,13 @@ def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
     b.click()
 
-def div(driver, text):
+def clickDocument(driver, text):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + text + '\')]')))
     b.click()
+
+def loginCaption(driver):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'login_caption')))
+    return b.text
 
 def writeText(driver, text):
     c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))

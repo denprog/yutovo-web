@@ -142,10 +142,10 @@ class TestDocuments(unittest.TestCase):
         utils.new(self.driver)
         time.sleep(1)
         utils.new(self.driver)
-        time.sleep(1)
+        time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.driver.get('http://localhost:9001')
-        time.sleep(1)
+        time.sleep(2)
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
 
         utils.delete(self.driver)

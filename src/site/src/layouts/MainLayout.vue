@@ -55,6 +55,7 @@ import RegisterDialog from 'layouts/RegisterDialog.vue';
 import TasksTree from 'components/TasksTree.vue';
 import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
+import { Cookies } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
@@ -107,6 +108,7 @@ export default
                     function(response)
                     {
                         store.dispatch('login/updateAccessToken', '');
+                        Cookies.remove('document_id');
                     }
                 ).catch(
                     function(response)

@@ -22,6 +22,8 @@ class TestLogin(unittest.TestCase):
         self.assertTrue(c.text == 'test1')
         utils.logout(self.driver)
         time.sleep(1)
+        c1 = self.driver.get_cookie('document_id')
+        self.assertTrue(c1 == None)
         c = self.driver.find_elements(By.ID, 'login_caption')
         self.assertTrue(len(c) == 0)
 

@@ -25,9 +25,11 @@ class TestDocuments(unittest.TestCase):
     #Write text, login, save the document, check the cookie
     def test_documents1(self):
         c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
         c.send_keys('12345')
         time.sleep(1)
         utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
         utils.save(self.driver)
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
@@ -157,6 +159,7 @@ class TestDocuments(unittest.TestCase):
     #Check input text
     def test_documents9(self):
         c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
         c.send_keys('12345')
         t = self.driver.execute_script('return window.getText();')
         self.assertTrue(t == '12345')

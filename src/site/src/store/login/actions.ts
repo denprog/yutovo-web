@@ -4,10 +4,15 @@ import { LoginStateInterface, Payload } from './state';
 import jwt_decode from 'jwt-decode';
 import { api } from 'boot/boot'
 
+let timer: any;
+
 const actions: ActionTree<LoginStateInterface, StateInterface> =
 {
     updateAccessToken({commit, dispatch}, access_token)
     {
+        if (typeof timer !== 'undefined')
+            clearTimeout(timer);
+
         commit('setAccessToken', access_token);
         if (access_token == '')
             return;
@@ -17,7 +22,7 @@ const actions: ActionTree<LoginStateInterface, StateInterface> =
         const now = Math.floor(Date.now() / 1000);
         if (decoded.exp > now + 1)
         {
-            setTimeout(() =>
+            timer = setTimeout(() =>
             {
                 api.post('/auth/refresh-token', {}).then(
                     function(response)

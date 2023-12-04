@@ -115,6 +115,7 @@ export default
                     {
                         console.log(response);
                         store.dispatch('login/updateAccessToken', '');
+                        Cookies.remove('document_id');
                     }
                 );
         };

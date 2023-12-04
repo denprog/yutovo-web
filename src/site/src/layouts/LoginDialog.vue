@@ -83,7 +83,7 @@ export default {
                         else if (response.data.document_id > 0)
                         {
                             router.push({ path: '/document/' + response.data.document_id });
-                            Cookies.set('document_id', response.data.document_id, {path: '/'});
+                            window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: response.data.document_id}}));
                         }
                     }
                 ).catch(

@@ -106,7 +106,7 @@ export default
                     }
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         store.dispatch('login/updateAccessToken', '');
                         Cookies.remove('document_id');

@@ -4,7 +4,7 @@ import { ServiceInterface } from './state';
 
 const actions: ActionTree<ServiceInterface, StateInterface> =
 {
-    updateTaskFile({commit, dispatch}, task_file)
+    updateTaskFile({commit}, task_file)
     {
         commit('setTaskFile', task_file);
     }

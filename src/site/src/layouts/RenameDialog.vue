@@ -26,7 +26,6 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { Cookies } from 'quasar'
-import { useRouter } from 'vue-router'
 
 export default {
     name: 'RenameDialog',

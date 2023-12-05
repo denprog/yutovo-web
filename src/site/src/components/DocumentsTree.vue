@@ -15,7 +15,6 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
-import { useQuasar } from 'quasar'
 import { Cookies } from 'quasar'
 
 export default
@@ -45,7 +44,6 @@ export default
         const documentsRef = ref(null);
 
         const store = useStore();
-        const $q = useQuasar();
 
         const updateDocuments = (obj) =>
         {

@@ -13,6 +13,11 @@ export default {
     name: 'IndexPage',
     components: { YutovoWeb },
 
+    setup()
+    {
+        console.log('IndexPage setup');
+    },
+
     mounted()
     {
         window.onpopstate = function()

@@ -473,6 +473,16 @@ extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardImage(const char* value)
     clipboard_image = clipboard_image.substr(p + 7);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertFunction(const char* str)
+{
+    document->InsertFunction(str, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertString(const char* str)
+{
+    document->InsertString(str, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanUndo()
 {
     return document->CanUndo();

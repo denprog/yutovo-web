@@ -67,6 +67,7 @@ export default
 
     setup()
     {
+        console.log('MainLayout setup');
         const leftDrawerOpen = ref(false);
         const rightDrawerOpen = ref(false);
         let initialLeftDrawerWidth;

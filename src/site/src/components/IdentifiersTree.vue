@@ -122,6 +122,13 @@ export default {
         const onIdentifierSelected = (target) =>
         {
             console.log(target);
+            var s = target.split('/');
+            if (s[0] == 'builtin_functions' || s[0] == 'user_functions')
+                window.Module.cwrap('InsertFunction', 'void', ['string'])(s[1]);
+            else
+                window.Module.cwrap('InsertString', 'void', ['string'])(s[1]);
+            var canvas = document.getElementById('canvas');
+            canvas.focus();
         };
 
         return {

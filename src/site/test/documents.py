@@ -233,5 +233,22 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
+    #Change language and add a variable
+    def test_documents14(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(4)
+        utils.writeText(self.driver, '12345')
+        utils.insertCode(self.driver)
+        time.sleep(1)
+        utils.clickIdentifier(self.driver, 'Builtin functions', 'arccos')
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'arccos'))
+
+        utils.setLanguage(self.driver, 'Русский')
+        time.sleep(2)
+        utils.clickIdentifier(self.driver, 'Встроенные размерности', 'сек')
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'сек'))
+
 if __name__ == '__main__':
     unittest.main()

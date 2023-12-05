@@ -20,7 +20,7 @@
             <q-btn size="14px" id="copy-button" square dense @click="onCopy();" icon="img:/images/standard/copy.png"/>
             <q-btn size="14px" id="paste-button" square dense @click="onPaste();" icon="img:/images/standard/paste.png"/>
             <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onCode();" icon="img:/images/format/code.png"/>
+            <q-btn size="14px" id="code-button" square dense @click="onCode();" icon="img:/images/format/code.png"/>
             <q-separator vertical/>
             <q-select class="toolbar-select" v-model="paragraph_format_model" :options="paragraph_format" @update:model-value="onParagraphFormat();" 
                 dense options-dense borderless />

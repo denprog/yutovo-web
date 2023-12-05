@@ -84,6 +84,24 @@ def writeText(driver, text):
     c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
     c.send_keys(text)
 
+def insertCode(driver):
+    c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'code-button')))
+    c.click()
+
+def clickIdentifier(driver, category, identifier):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category + '\')]')))
+    b.click()
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + identifier + '\')]')))
+    b.click()
+
+def setLanguage(driver, language):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language-select')))
+    b.click()
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
+    b.click()
+
 def getDbConnection():
     return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "11", port = 5432)
 

@@ -84,39 +84,40 @@ export default {
 
         const loadIdentifiers = (code_id, solver_guid, t) =>
         {
-            if (code_id == '')
-                code_id = last_code_id;
-            if (solver_guid == '')
-                solver_guid = last_solver_guid;
-            last_code_id = code_id;
-            last_solver_guid = solver_guid;
-
+            console.log('loadIdentifiers ', code_id);
             if (code_id == 0)
             {
                 identifiers.value = [];
+                return;
             }
-            else
-            {
-                api.post('/service/list-identifiers', 
+
+            if (code_id == -1)
+                code_id = last_code_id;
+            if (solver_guid == -1)
+                solver_guid = last_solver_guid;
+            last_code_id = code_id;
+            last_solver_guid = solver_guid;
+            console.log('loadIdentifiers ', code_id);
+
+            api.post('/service/list-identifiers', 
+                {
+                    'code_id': code_id,
+                    'guid': solver_guid,
+                    'solver_type': 1
+                }
+                ).then(
+                    function(response)
                     {
-                        'code_id': code_id,
-                        'guid': solver_guid,
-                        'solver_type': 1
+                        identifiers.value = [];
+                        updateIdentifiers(response.data, t);
                     }
-                    ).then(
-                        function(response)
-                        {
-                            identifiers.value = [];
-                            updateIdentifiers(response.data, t);
-                        }
-                    ).catch(
-                        function(response)
-                        {
-                            console.log(response);
-                            identifiers.value = [];
-                        }
-                    );
-            }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                        identifiers.value = [];
+                    }
+                );
         };
 
         const onIdentifierSelected = (target) =>
@@ -153,7 +154,7 @@ export default {
 
         updateLanguage()
         {
-            this.loadIdentifiers('', '', this.$t);
+            this.loadIdentifiers(-1, -1, this.$t);
         }
     }
 }

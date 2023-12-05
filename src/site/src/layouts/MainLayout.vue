@@ -17,8 +17,8 @@
 
                 <div class="text-white q-pa-sm" v-if="documentName != ''">{{ documentName }}</div>
 
-                <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();" dense borderless no-caps 
-                    flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
+                <q-select v-model="locale" id='language-select' class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
+                    dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
 
                 <div class="text-white q-pa-sm" id='login_caption' v-if="loginStr != ''">{{ loginStr }}</div>
                 <q-btn id='login' dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>

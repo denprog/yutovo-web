@@ -8,17 +8,6 @@
         <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
             :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all>
         </q-tree>
-
-        <q-menu touch-position square context-menu auto-close>
-            <q-list dense style="min-width: 100px">
-                <q-item id="rename-menu" clickable @click='onRename();'>
-                    <q-item-section>Rename</q-item-section>
-                </q-item>
-                <q-item id="delete-menu" clickable @click='onDelete();'>
-                    <q-item-section>Delete</q-item-section>
-                </q-item>
-            </q-list>
-        </q-menu>
     </div>
 </template>
 
@@ -113,31 +102,6 @@ export default
                 }));
         };
 
-        function onDelete()
-        {
-            $q.dialog({
-                title: 'Confirm',
-                message: 'Delete the document?',
-                cancel: true
-            }).onOk(() => {
-                api.post('/service/delete-document', 
-                    {
-                        document_id: target,
-                    }
-                    ).then(
-                        function(response)
-                        {
-                            console.log(response);
-                        }
-                    ).catch(
-                        function(response)
-                        {
-                            console.log(response);
-                        }
-                    );
-            });
-        }
-
         return {
             store,
             documentsFilter,
@@ -148,8 +112,7 @@ export default
             documentsRef,
             selectedDocument: ref(null),
             onDocumentSelected,
-            listDocuments,
-            onDelete
+            listDocuments
         }
     },
 

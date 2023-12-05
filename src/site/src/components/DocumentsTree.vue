@@ -51,6 +51,10 @@ export default
         {
             if (obj == null)
                 return;
+            obj.sort(function(a, b)
+                {
+                    return a.name.localeCompare(b.name);
+                });
             for (var prop in obj)
             {
                 documents.value.push({

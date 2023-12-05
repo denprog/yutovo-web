@@ -675,7 +675,7 @@ export default
 
         async saveDocument(event)
         {
-            console.log('saveDocument ', event.detail.json);
+            console.log('saveDocument');
             var json = JSON.parse(event.detail.json);
             var r = this.router;
             api.post('/service/save-document', json,

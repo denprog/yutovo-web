@@ -84,7 +84,6 @@ export default {
 
         const loadIdentifiers = (code_id, solver_guid, t) =>
         {
-            console.log('loadIdentifiers ', code_id);
             if (code_id == 0)
             {
                 identifiers.value = [];
@@ -122,7 +121,6 @@ export default {
 
         const onIdentifierSelected = (target) =>
         {
-            console.log(target);
             var s = target.split('/');
             if (s[0] == 'builtin_functions' || s[0] == 'user_functions')
                 window.Module.cwrap('InsertFunction', 'void', ['string'])(s[1]);

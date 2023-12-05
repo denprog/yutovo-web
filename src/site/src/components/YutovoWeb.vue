@@ -744,6 +744,7 @@ export default
                         window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
                         if (last_document_id != undefined && last_document_id != 0)
                             last_documents.push(last_document_id);
+                        canvas.focus();
                     }
                 ).catch(
                     function(response)
@@ -757,7 +758,6 @@ export default
         async updateDocumentName(event)
         {
             var id = event.detail.document_id;
-            console.log('updateDocumentName ', id);
             var s = this.store;
             api.post('/service/get-document-name', 
                 {

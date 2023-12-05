@@ -102,6 +102,7 @@ export default
                         last_document: Cookies.get('document_id')
                     }
                 }));
+            canvas.focus();
         };
 
         return {

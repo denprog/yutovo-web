@@ -42,6 +42,9 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(DOM_VK_LEFT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordLeft, document.get(), true)));
     Add(KeySequence(DOM_VK_RIGHT, true, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretWordRight, document.get(), true)));
 
+    Add(KeySequence(DOM_VK_PAGE_UP, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretPageUp, document.get(), true)));
+    Add(KeySequence(DOM_VK_PAGE_DOWN, false, true, false), "", std::function<void ()>(std::bind(&Document::MoveCaretPageDown, document.get(), true)));
+
     Add(KeySequence(DOM_VK_A, true, false, false), "", std::function<void ()>(std::bind(&Document::SelectAll, document.get())));
 
     //edit text

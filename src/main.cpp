@@ -15,6 +15,7 @@ std::atomic_bool set_document_point;
 yutovo::Point document_point{false};
 yutovo::Size last_document_size;
 yutovo::Point last_document_point;
+yutovo::Point left_click_pos;
 
 std::u32string clipboard_json, clipboard_text;
 std::string clipboard_image;
@@ -294,6 +295,11 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
         SetCursor(1);
     else
         SetCursor(0);
+    if (mouse_event->buttons == 1)
+    {
+        //selection with mouse
+        args->document->Select(left_click_pos.x, left_click_pos.y, mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+    }
     return false;
 }
 
@@ -301,10 +307,15 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 {
     EventArgs* args = (EventArgs*)user_data;
     EditorState s = args->document->GetEditorState();
+    auto p = args->window->GetDocumentPoint();
     if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
-        auto p = args->window->GetDocumentPoint();
         args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+    }
+    if (mouse_event->button == 0)
+    {
+        //start selection with mouse
+        left_click_pos = Point(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
     }
     return false;
 }

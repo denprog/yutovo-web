@@ -315,7 +315,7 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     if (mouse_event->button == 0)
     {
         //start selection with mouse
-        left_click_pos = Point(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+        left_click_pos = Point{mouse_event->targetX + p.x, mouse_event->targetY + p.y};
     }
     return false;
 }
@@ -450,11 +450,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()
     if (!document)
         return;
     if (!clipboard_json.empty())
+    {
         document->Paste(clipboard_json);
+        clipboard_json = U"";
+    }
     else if (!clipboard_text.empty())
+    {
         document->PasteText(std::move(clipboard_text));
+        clipboard_text = U"";
+    }
     else if (!clipboard_image.empty())
-        document->PasteImage(clipboard_image, 225, 225);
+    {
+        document->PasteImage(clipboard_image, 0, 0);
+        clipboard_image = "";
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardText()

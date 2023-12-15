@@ -43,7 +43,7 @@ public:
     virtual Size GetTextSize(const std::u32string& text, const StringFormatPtr format);
     virtual int GetCharPos(const std::u32string& text, const StringFormatPtr format, int pos);
     virtual int GetFontAscent(const StringFormatPtr format);
-    virtual Size GetImageSize(const std::vector<unsigned char>& bmp, const int width, const int height);
+    virtual Size GetImageSize(const std::vector<unsigned char>& picture, const int width, const int height);
 
     virtual void SetViewPort(const Rect _view_port);
     virtual void AddViewPort(const Rect view_port);
@@ -110,8 +110,6 @@ private:
 
     SDL_Rect store_rect;
     SDL_Texture* stored_texture = nullptr;
-
-    emscripten::val store_image;
 
     Fonts fonts;
 

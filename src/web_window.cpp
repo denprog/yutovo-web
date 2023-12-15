@@ -37,6 +37,13 @@ void WebWindow::Init()
         return;
     }
 
+    r = IMG_Init(IMG_INIT_PNG);
+    if (r < 0)
+    {
+        printf("IMG_Init error: %s\n", TTF_GetError());
+        return;
+    }
+
     surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
     renderer = SDL_CreateSoftwareRenderer(surface);
     if (!renderer)
@@ -153,30 +160,30 @@ int WebWindow::GetFontAscent(const StringFormatPtr format)
     return TTF_FontAscent(font);
 }
 
-Size WebWindow::GetImageSize(const std::vector<unsigned char>& bmp, const int width, const int height)
+Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture, const int width, const int height)
 {
-    SDL_RWops* p = SDL_RWFromConstMem(&bmp[0], bmp.size());
+    SDL_RWops* p = SDL_RWFromConstMem(&picture[0], picture.size());
     if (!p)
     {
-        printf("SDL_RWFromConstMem error: %s\n", TTF_GetError());
+        printf("SDL_RWFromConstMem error: %s\n", SDL_GetError());
         return Size{};
     }
 
-    // SDL_Surface* surface = IMG_LoadTyped_RW(p, 1, "PNG");
-    // if (!surface)
-    // {
-    //     printf("IMG_Load_RW error: %s\n", TTF_GetError());
-    //     return Size{};
-    // }
-
-    SDL_Surface* surface = SDL_LoadBMP_RW(p, 1);
+    SDL_Surface* surface = IMG_LoadTyped_RW(p, 1, "PNG");
     if (!surface)
     {
-        printf("SDL_LoadBMP_RW error: %s\n", TTF_GetError());
-        return Size{};
+        //try to load as bmp
+        p = SDL_RWFromConstMem(&picture[0], picture.size());
+        surface = SDL_LoadBMP_RW(p, 1);
+        if (!surface)
+        {
+            printf("IMG_Load_RW error: %s\n", SDL_GetError());
+            return Size{};
+        }
     }
     
     Size s{surface->w, surface->h};
+    printf("%d, %d\n", s.width, s.height);
     SDL_FreeSurface(surface);
     return s;
 }

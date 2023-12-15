@@ -114,11 +114,11 @@ struct DrawBezierTask : Task
 
 struct DrawImageTask : Task
 {
-    DrawImageTask(const Rect& _rect, std::vector<unsigned char> _bmp, WebWindow* _web_window, bool _draw_doc);
+    DrawImageTask(const Rect& _rect, std::vector<unsigned char> _picture, WebWindow* _web_window, bool _draw_doc);
 
     virtual void Execute();
 
-    std::vector<unsigned char> bmp;
+    std::vector<unsigned char> picture;
     Rect rect;
 };
 

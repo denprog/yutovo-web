@@ -637,6 +637,19 @@ export default
                     const text = await blob.text();
                     Module.cwrap('SetClipboardText', 'void', ['string'])(text);
                 }
+                else if (data[i].types.includes('image/png'))
+                {
+                    const blob = await data[i].getType('image/png');
+                    var reader = new FileReader();
+                    reader.readAsDataURL(blob); 
+                    reader.onloadend = function()
+                        {
+                            var text = reader.result;
+                            Module.cwrap('SetClipboardImage', 'void', ['string'])(text);
+                            Module.cwrap('OnPaste', 'void', [])();
+                            canvas.focus();
+                        }
+                }
             }
             Module.cwrap('OnPaste', 'void', [])();
             canvas.focus();

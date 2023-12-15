@@ -96,7 +96,6 @@ export default {
                 solver_guid = last_solver_guid;
             last_code_id = code_id;
             last_solver_guid = solver_guid;
-            console.log('loadIdentifiers ', code_id);
 
             api.post('/service/list-identifiers', 
                 {

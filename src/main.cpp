@@ -522,13 +522,17 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy()
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste()
 {
     EditorState s = document->GetEditorState();
-    return document->IsEditable(s.caret_state.id);
+    if (s.caret_state.IsEmpty() || s.caret_state.id.size() == 1)
+        return false;
+    return document->IsEditable(yutovo::GetParent(s.caret_state.id));
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
 {
     EditorState s = document->GetEditorState();
-    return document->IsEditable(s.caret_state.id) && !s.selection_state.IsEmpty();
+    if (s.caret_state.IsEmpty() || s.caret_state.id.size() == 1)
+        return false;
+    return document->IsEditable(yutovo::GetParent(s.caret_state.id));
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()

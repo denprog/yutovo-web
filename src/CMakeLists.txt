@@ -63,7 +63,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ../third_party
+    ${THIRD_PARTY_PATH}
     ${INSTALL_PATH}/include
 )
 

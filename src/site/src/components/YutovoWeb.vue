@@ -704,6 +704,7 @@ export default
                         console.log(response);
                         r.push({ path: '/document/' + response.data.document_id });
                         Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
+                        window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
                     }
                 ).catch(
                     function(response)
@@ -763,6 +764,8 @@ export default
                     function(response)
                     {
                         console.log(response);
+                        Cookies.remove('document_id', {path: '/'});
+                        alert('Document not found');
                     }
                 );
             window.dispatchEvent(new CustomEvent('listDocuments', {}));

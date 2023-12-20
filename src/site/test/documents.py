@@ -250,5 +250,15 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'сек'))
 
+    #Check document not found
+    def test_documents15(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+        self.driver.get('http://localhost:9001/document/99999')
+        time.sleep(2)
+        alert = self.driver.switch_to.alert
+        self.assertTrue(alert.text, 'Document not found')
+        alert.accept()
+
 if __name__ == '__main__':
     unittest.main()

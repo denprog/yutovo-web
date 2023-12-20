@@ -183,7 +183,6 @@ Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture, const in
     }
     
     Size s{surface->w, surface->h};
-    printf("%d, %d\n", s.width, s.height);
     SDL_FreeSurface(surface);
     return s;
 }

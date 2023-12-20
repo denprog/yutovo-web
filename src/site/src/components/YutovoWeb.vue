@@ -788,7 +788,6 @@ export default
                 ).then(
                     function(response)
                     {
-                        window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
                         s.commit('editor/setDocumentName', response.data.name);
                     }
                 ).catch(

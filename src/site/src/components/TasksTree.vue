@@ -91,22 +91,7 @@ export default
 
         const onTaskSelected = (target) =>
         {
-            api.post('/service/load-task', 
-                {
-                    task: target,
-                    language: store.state.editor.language == '' ? 'en' : store.state.editor.language
-                }
-                ).then(
-                    function(response)
-                    {
-                        store.dispatch('service/updateTaskFile', response.data);
-                    }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                    }
-                );
+            window.dispatchEvent(new CustomEvent('loadTask', {detail: {task: target}}));
         };
 
         loadTasks();

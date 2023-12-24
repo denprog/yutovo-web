@@ -1,6 +1,5 @@
 import { createStore } from 'vuex'
 import login from './login'
-import service from './service'
 import editor from './editor'
 
 export interface StateInterface {
@@ -15,7 +14,6 @@ export default function ()
   	const Store = createStore({
     	modules: {
       		login,
-			service,
 			editor
     	},
 

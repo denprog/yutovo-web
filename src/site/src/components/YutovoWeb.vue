@@ -105,6 +105,7 @@ export default
             window.addEventListener('saveDocument', this.saveDocument, false);
             window.addEventListener('openDocument', this.openDocument, false);
             window.addEventListener('loadDocument', this.loadDocument, false);
+            window.addEventListener('loadTask', this.loadTask, false);
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
             window.addEventListener('translateString', this.translateString, false);
         }
@@ -119,6 +120,7 @@ export default
             window.attachEvent('saveDocument', this.saveDocument);
             window.attachEvent('openDocument', this.openDocument);
             window.attachEvent('loadDocument', this.loadDocument);
+            window.attachEvent('loadTask', this.loadTask);
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
             window.attachEvent('translateString', this.translateString);
         }
@@ -192,6 +194,7 @@ export default
     {
         window.sockets = new Map();
         window.socket_id = 1;
+        var r = this.router;
 
         var Module =
             {
@@ -290,7 +293,23 @@ export default
                                 Module.cwrap('OnFocusOut', 'void', [])();
                             });
                         
-                        window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
+                        var route = r.currentRoute.value
+                        if (route.path.substring(0, 5) == '/task')
+                        {
+                            var task = route.params.param.replaceAll(/\\/g, '/');
+                            var lang = task.substring(0, 2);
+                            task = task.substring(2);
+                            window.dispatchEvent(new CustomEvent('loadTask', 
+                                {
+                                    'detail': 
+                                    {
+                                        task: task, 
+                                        language: lang
+                                    }
+                                }));
+                        }
+                        else
+                            window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
                         canvas.focus();
                     }
             };
@@ -316,12 +335,6 @@ export default
 
     watch:
     {
-        'store.state.service.task_file': function()
-        {
-            Module.cwrap('OnTaskFile', 'void', ['string'])(JSON.stringify(this.store.state.service.task_file));
-            canvas.focus();
-        },
-
         'store.state.editor.language': function()
         {
             Module.cwrap('OnLanguage', 'void', ['string'])(JSON.stringify(this.store.state.editor.language));
@@ -769,6 +782,47 @@ export default
                     }
                 );
             window.dispatchEvent(new CustomEvent('listDocuments', {}));
+        },
+
+        async loadTask(event)
+        {
+            var task = event.detail.task;
+            var language = event.detail.language;
+            console.log('loadTask ', task);
+            if (task == null)
+                return;
+            
+            var r = this.router;
+            var s = this.store;
+            if (language == 'undefined')
+                language = s.state.editor.language == '' ? 'en' : s.state.editor.language;
+            api.post('/service/load-task', 
+                {
+                    task: task,
+                    language: language
+                },
+                {
+                    headers:
+                    {
+                        access_token: s.state.login.access_token
+                    }
+                }
+                ).then(
+                    function(response)
+                    {
+                        window.Module.cwrap('OnTaskFile', 'void', ['string'])(JSON.stringify(response.data));
+                        var language = s.state.editor.language == '' ? 'en' : s.state.editor.language;
+                        task = task.replaceAll(/\//g, '%5C');
+                        r.push({ path: '/task/' + language + task });
+                        canvas.focus();
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                        alert('Error loading the task');
+                    }
+                );
         },
 
         async updateDocumentName(event)

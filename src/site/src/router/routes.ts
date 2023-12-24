@@ -23,6 +23,17 @@ export default [
         ]
     },
     {
+        path: '/task/:param',
+        name: 'task',
+        component: MainLayout,
+        children: [
+            {
+                path: '',
+                component: IndexPage
+            }
+        ]
+    },
+    {
         path: '/:catchAll(.*)*',
         component: () => import('pages/ErrorNotFound.vue')
     }

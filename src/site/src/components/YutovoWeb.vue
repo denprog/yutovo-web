@@ -704,32 +704,71 @@ export default
             console.log('saveDocument');
             var json = JSON.parse(event.detail.json);
             var r = this.router;
-            api.post('/service/save-document', json,
-                {
-                    headers:
+            var s = this.store;
+            if (r.currentRoute.value.path.substring(0, 5) == '/task') //save the current task as a new user document
+            {
+                var route = r.currentRoute.value
+                var task = route.params.param.replaceAll(/\\/g, '/');
+                var lang = task.substring(0, 2);
+                task = task.substring(2);
+                api.post('/service/save-task', 
                     {
-                        access_token: this.store.state.login.access_token
-                    }
-                }
-                ).then(
-                    function(response)
+                        task: task,
+                        language: lang
+                    },
                     {
-                        console.log(response);
-                        r.push({ path: '/document/' + response.data.document_id });
-                        Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
-                        window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
-                    }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                        if (response.response.status == 403)
+                        headers:
                         {
-                            //save this document with own id
-                            window.dispatchEvent(new CustomEvent('newDocument'), {detail: {json: json}});
+                            access_token: this.store.state.login.access_token
                         }
                     }
-                );
+                    ).then(
+                        function(response)
+                        {
+                            console.log(response);
+                            r.push({ path: '/document/' + response.data.document_id });
+                            Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
+                            window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
+                            canvas.focus();
+                            window.dispatchEvent(new CustomEvent('listDocuments', {}));
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
+            }
+            else //save this document
+            {
+                api.post('/service/save-document', json,
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).then(
+                        function(response)
+                        {
+                            console.log(response);
+                            r.push({ path: '/document/' + response.data.document_id });
+                            Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
+                            window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
+                            canvas.focus();
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                            if (response.response.status == 403)
+                            {
+                                //save this document with own id
+                                window.dispatchEvent(new CustomEvent('newDocument'), {detail: {json: json}});
+                            }
+                        }
+                    );
+            }
         },
 
         async translateString(event)
@@ -811,9 +850,11 @@ export default
                     function(response)
                     {
                         window.Module.cwrap('OnTaskFile', 'void', ['string'])(JSON.stringify(response.data));
+                        window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: task}}));
                         var language = s.state.editor.language == '' ? 'en' : s.state.editor.language;
                         task = task.replaceAll(/\//g, '%5C');
                         r.push({ path: '/task/' + language + task });
+                        Cookies.remove('document_id', {path: '/'});
                         canvas.focus();
                     }
                 ).catch(
@@ -827,8 +868,14 @@ export default
 
         async updateDocumentName(event)
         {
-            var id = event.detail.document_id;
             var s = this.store;
+            if (event.detail.name != undefined)
+            {
+                s.commit('editor/setDocumentName', event.detail.name);
+                return;
+            }
+
+            var id = event.detail.document_id;
             api.post('/service/get-document-name', 
                 {
                     document_id: id

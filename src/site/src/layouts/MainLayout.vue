@@ -15,7 +15,7 @@
                     </q-btn>
                 </q-toolbar-title>
 
-                <div class="text-white q-pa-sm" v-if="documentName != ''">{{ documentName }}</div>
+                <div class="text-white q-pa-sm" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
 
                 <q-select v-model="locale" id='language-select' class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
                     dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />

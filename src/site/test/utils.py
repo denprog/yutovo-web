@@ -72,6 +72,20 @@ def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
     b.click()
 
+def clickCategory(driver, name):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + name + '\')]')))
+    b.click()
+
+def clickTask(driver, category1, category2, name):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category1 + '\')]')))
+    b.click()
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category2 + '\')]')))
+    b.click()
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + name + '\')]')))
+    b.click()
+
 def clickDocument(driver, text):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + text + '\')]')))
     b.click()
@@ -94,6 +108,10 @@ def clickIdentifier(driver, category, identifier):
     time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + identifier + '\')]')))
     b.click()
+
+def getDocumentName(driver):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'document-name')))
+    return b.text
 
 def setLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language-select')))

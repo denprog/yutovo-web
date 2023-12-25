@@ -75,7 +75,6 @@ export default {
                         console.log(response);
                         $store.dispatch('login/updateAccessToken', response.headers['access_token']);
                         $store.commit('login/setLastError', '');
-                        window.dispatchEvent(new CustomEvent('listDocuments', {}));
                         loginDialog.value.hide();
 
                         if (Cookies.has('document_id'))
@@ -85,6 +84,7 @@ export default {
                             router.push({ path: '/document/' + response.data.document_id });
                             window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: response.data.document_id}}));
                         }
+                        window.dispatchEvent(new CustomEvent('listDocuments', {}));
                     }
                 ).catch(
                     function(response)

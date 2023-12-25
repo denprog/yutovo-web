@@ -41,7 +41,7 @@ class TestDocuments(unittest.TestCase):
     #Check cookie after login
     def test_documents2(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(2)
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c != None)
     
@@ -161,6 +161,7 @@ class TestDocuments(unittest.TestCase):
         c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
         time.sleep(2)
         c.send_keys('12345')
+        time.sleep(1)
         t = self.driver.execute_script('return window.getText();')
         self.assertTrue(t == '12345')
 

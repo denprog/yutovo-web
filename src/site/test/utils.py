@@ -20,13 +20,17 @@ def registerUser(driver, username, password, email):
     b.click()
 
 def login(driver, username, password):
+    time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'login')))
     b.click()
+    time.sleep(1)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'username\']')))
     e.send_keys(username)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'password\']')))
     e.send_keys(password)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
+    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'scroll-container')))
     b.click()
 
 def logout(driver):

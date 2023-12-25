@@ -35,6 +35,7 @@ class TestTasks(unittest.TestCase):
         utils.clickCategory(self.driver, 'Physics')
         time.sleep(1)
         utils.clickDocument(self.driver, 'Momentum of force')
+        time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
         self.assertTrue(utils.documentContains(self.driver, 'Newton'))

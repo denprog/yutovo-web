@@ -30,8 +30,6 @@ def login(driver, username, password):
     e.send_keys(password)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
     b.click()
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'scroll-container')))
-    b.click()
 
 def logout(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'logout')))
@@ -134,8 +132,7 @@ def deleteTestUser(conn):
     cursor.execute('delete from users where login=\'test1\'')
     conn.commit()
 
-def clearTestUser(conn, driver):
-    driver.delete_all_cookies()
+def clearTestUser(conn):
     cursor = conn.cursor()
     cursor.execute('delete from user_sessions where user_id in (select user_id from users where login=\'test1\')')
     cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test1\')')

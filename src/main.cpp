@@ -535,6 +535,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
     return document->IsEditable(yutovo::GetParent(s.caret_state.id));
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE bool IsEmpty()
+{
+    return document->IsEmpty();
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)

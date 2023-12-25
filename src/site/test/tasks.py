@@ -12,9 +12,10 @@ class TestTasks(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--window-size=1100,900")
         self.driver = webdriver.Chrome(options = opts)
+        self.driver.delete_all_cookies()
         self.driver.get('http://localhost:9001')
         self.conn = utils.getDbConnection()
-        utils.clearTestUser(self.conn, self.driver)
+        utils.clearTestUser(self.conn)
         time.sleep(6)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
     

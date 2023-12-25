@@ -64,10 +64,13 @@ export default {
             loginRef.value.validate();
             passwordRef.value.validate();
 
+            var empty = window.Module.cwrap('IsEmpty', 'bool', [])();
+
             api.post('/auth/login', 
                 {
                     login: login.value,
-                    password: password.value
+                    password: password.value,
+                    load_last: !empty
                 }
                 ).then(
                     function(response)
@@ -77,13 +80,22 @@ export default {
                         $store.commit('login/setLastError', '');
                         loginDialog.value.hide();
 
-                        if (Cookies.has('document_id'))
-                            window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
-                        else if (response.data.document_id > 0)
+                        if (!empty)
                         {
-                            router.push({ path: '/document/' + response.data.document_id });
-                            window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: response.data.document_id}}));
+                            //the server returned an empty document for the current non-empty one
+                            Cookies.set('document_id', response.data.document_id, {path: '/'});
                         }
+                        else
+                        {
+                            if (Cookies.has('document_id'))
+                                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
+                            else if (response.data.document_id > 0)
+                            {
+                                router.push({ path: '/document/' + response.data.document_id });
+                                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: response.data.document_id}}));
+                            }
+                        }
+                        
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
                     }
                 ).catch(

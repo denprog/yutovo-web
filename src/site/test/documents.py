@@ -9,14 +9,17 @@ import utils
 
 class TestDocuments(unittest.TestCase):
     def setUp(self):
+        self.conn = utils.getDbConnection()
+        utils.clearTestUser(self.conn)
+
         opts = ChromeOptions()
         opts.add_argument("--window-size=1100,900")
         self.driver = webdriver.Chrome(options = opts)
+        self.driver.delete_all_cookies()
         self.driver.get('http://localhost:9001')
-        self.conn = utils.getDbConnection()
-        utils.clearTestUser(self.conn, self.driver)
-        time.sleep(6)
+        time.sleep(4)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(1)
     
     def tearDown(self):
         self.driver.quit()

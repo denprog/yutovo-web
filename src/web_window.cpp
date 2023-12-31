@@ -273,7 +273,7 @@ int WebWindow::Connect(const std::string& addr)
     std::atomic_int32_t socket_id = -1;
     {
         std::lock_guard<std::mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new ConnectTask("ws://" + addr, socket_id));
+        socket_tasks.emplace_back(new ConnectTask("wss://" + addr, socket_id));
     }
     while (socket_id == -1)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

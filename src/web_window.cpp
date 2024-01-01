@@ -211,7 +211,7 @@ void WebWindow::Update(const Rect& rect)
     needs_render = true;
 }
 
-void WebWindow::Resize(uint _width, uint _height)
+void WebWindow::Resize(uint width, uint height)
 {
     tasks.emplace_back(new ResizeTask(this, width, height));
 }

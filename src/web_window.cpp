@@ -99,6 +99,68 @@ void WebWindow::DrawImage(const int x1, const int y1, const int width, const int
     tasks.emplace_back(new DrawImageTask(Rect{x1, y1, width, height}, bmp, this, draw_doc));
 }
 
+int WebWindow::GetSymbolSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline)
+{
+    auto it = sizes_cache.find(symbol);
+    if (it != sizes_cache.end())
+    {
+        std::vector<SymbolSize>& v = it->second;
+        auto v_it = std::find_if(v.begin(), v.end(), 
+            [&](SymbolSize& s)
+            {
+                return s.height == height && s.family_name == family_name;
+            });
+        if (v_it != v.end())
+        {
+            size.Set(v_it->symbol_size.width, v_it->symbol_size.height);
+            baseline = v_it->baseline;
+            return v_it->font_size;
+        }
+    }
+    else
+    {
+        auto [_it, success] = sizes_cache.insert(std::pair<char32_t, std::vector<SymbolSize>>(symbol, std::vector<SymbolSize>()));
+        it = _it;
+    }
+
+    yutovo::Size s;
+    int font_size = 1;
+    std::string str = boost::locale::conv::utf_to_utf<char>(std::u32string(1, symbol));
+    baseline = 0;
+    std::vector<SymbolSize>& v = it->second;
+    StringFormatPtr format(new StringFormat(family_name, font_size, false, false, false, Color::Black(), Color::White(), Color::Blue()));
+    while (s.height < height)
+    {
+        auto v_it = std::find_if(v.begin(), v.end(), 
+            [&](SymbolSize& _s)
+            {
+                return _s.font_size == font_size && _s.family_name == family_name;
+            });
+        if (v_it != v.end())
+        {
+            s = v_it->symbol_size;
+            baseline = v_it->baseline;
+            ++font_size;
+            continue;
+        }
+
+        format->size = font_size;
+        std::lock_guard<std::mutex> lock(draw_mutex);
+        TTF_Font* font = fonts.Get(format);
+        if (!font)
+            break;
+
+        int w, h;
+        TTF_SizeUTF8(font, str.c_str(), &w, &h);
+        s.Set(w, h);
+        baseline = TTF_FontAscent(font);
+        it->second.push_back(SymbolSize{h, family_name, font_size, s, baseline});
+        ++font_size;
+    }
+    size.Set(s.width, s.height);
+    return font_size - 1;
+}
+
 void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
 {
     if (x1 == 0 && y1 == 0 && _width == width && _height == height)

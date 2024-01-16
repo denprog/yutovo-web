@@ -32,6 +32,7 @@ public:
     virtual void DrawBezierPath(const std::list<Point>& path, const Color color);
     virtual void DrawWavyLine(const int x1, const int y1, const int width, const int radius, const Color color);
     virtual void DrawImage(const int x1, const int y1, const int width, const int height, const std::vector<unsigned char>& bmp);
+    virtual int GetSymbolSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline);
 
     virtual void ClearRect(const int x1, const int y1, const int _width, const int _height);
 
@@ -120,6 +121,17 @@ private:
 
     std::mutex translate_mutex;
     std::vector<std::pair<yutovo::ElementId, std::string>> translate_tasks;
+
+    struct SymbolSize
+    {
+        int height = 0;
+        std::string family_name;
+        int font_size;
+        yutovo::Size symbol_size;
+        int baseline;
+    };
+
+    std::map<char32_t, std::vector<SymbolSize>> sizes_cache;
 };
 
 }

@@ -239,6 +239,11 @@ void MainLoop(void* arg)
         window->update_language = false;
     }
 
+    if (window->fill_cache)
+    {
+        window->CacheTasks();
+    }
+
     window->SocketTasks();
 }
 

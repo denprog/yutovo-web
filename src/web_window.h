@@ -33,6 +33,7 @@ public:
     virtual void DrawWavyLine(const int x1, const int y1, const int width, const int radius, const Color color);
     virtual void DrawImage(const int x1, const int y1, const int width, const int height, const std::vector<unsigned char>& bmp);
     virtual int GetSymbolSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline);
+    virtual void PrepareSymbolsSizes(const std::vector<std::tuple<char32_t, std::string, int>>& _symbols_sizes);
 
     virtual void ClearRect(const int x1, const int y1, const int _width, const int _height);
 
@@ -79,6 +80,8 @@ public:
     void SocketTasks();
 
     void GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::string>>& _translate_tasks);
+    int GetCachedSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline);
+    void CacheTasks();
 
 public:
     std::mutex draw_mutex;
@@ -90,6 +93,7 @@ public:
     std::atomic_bool save_ready{false};
     std::atomic_bool needs_translate{false};
     std::atomic_bool update_language{false};
+    std::atomic_bool fill_cache{false};
 
     SDL_Renderer* renderer = nullptr;
 
@@ -119,19 +123,23 @@ private:
     std::mutex socket_mutex;
     std::vector<TaskPtr> socket_tasks;
 
+    std::vector<TaskPtr> cache_tasks;
+
     std::mutex translate_mutex;
     std::vector<std::pair<yutovo::ElementId, std::string>> translate_tasks;
 
     struct SymbolSize
     {
         int height = 0;
-        std::string family_name;
-        int font_size;
+        int font_size = 0;
         yutovo::Size symbol_size;
-        int baseline;
+        int baseline = 0;
     };
 
-    std::map<char32_t, std::vector<SymbolSize>> sizes_cache;
+    std::mutex sizes_cache_mutex;
+    std::vector<std::tuple<char32_t, std::string, int>> symbols_sizes;
+    typedef std::map<std::string, std::vector<SymbolSize>> FontSymbolSizes;
+    std::map<char32_t, FontSymbolSizes> sizes_cache;
 };
 
 }

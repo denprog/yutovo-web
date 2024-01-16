@@ -1063,4 +1063,21 @@ void CloseTask::Execute()
     res = CloseJs(socket_id);
 }
 
+//FillSizesCacheTask
+
+FillSizesCacheTask::FillSizesCacheTask(WebWindow* _web_window, const char32_t _symbol, const int _height, const std::string& _family_name) :
+    Task(_web_window, false),
+    symbol(_symbol),
+    height(_height),
+    family_name(_family_name)
+{
+}
+
+void FillSizesCacheTask::Execute()
+{
+    yutovo::Size size;
+    int baseline = 0;
+    web_window->GetCachedSize(symbol, height, family_name, size, baseline);
+}
+
 }

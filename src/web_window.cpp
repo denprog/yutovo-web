@@ -101,64 +101,14 @@ void WebWindow::DrawImage(const int x1, const int y1, const int width, const int
 
 int WebWindow::GetSymbolSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline)
 {
-    auto it = sizes_cache.find(symbol);
-    if (it != sizes_cache.end())
-    {
-        std::vector<SymbolSize>& v = it->second;
-        auto v_it = std::find_if(v.begin(), v.end(), 
-            [&](SymbolSize& s)
-            {
-                return s.height == height && s.family_name == family_name;
-            });
-        if (v_it != v.end())
-        {
-            size.Set(v_it->symbol_size.width, v_it->symbol_size.height);
-            baseline = v_it->baseline;
-            return v_it->font_size;
-        }
-    }
-    else
-    {
-        auto [_it, success] = sizes_cache.insert(std::pair<char32_t, std::vector<SymbolSize>>(symbol, std::vector<SymbolSize>()));
-        it = _it;
-    }
+    return GetCachedSize(symbol, height, family_name, size, baseline);
+}
 
-    yutovo::Size s;
-    int font_size = 1;
-    std::string str = boost::locale::conv::utf_to_utf<char>(std::u32string(1, symbol));
-    baseline = 0;
-    std::vector<SymbolSize>& v = it->second;
-    StringFormatPtr format(new StringFormat(family_name, font_size, false, false, false, Color::Black(), Color::White(), Color::Blue()));
-    while (s.height < height)
-    {
-        auto v_it = std::find_if(v.begin(), v.end(), 
-            [&](SymbolSize& _s)
-            {
-                return _s.font_size == font_size && _s.family_name == family_name;
-            });
-        if (v_it != v.end())
-        {
-            s = v_it->symbol_size;
-            baseline = v_it->baseline;
-            ++font_size;
-            continue;
-        }
-
-        format->size = font_size;
-        std::lock_guard<std::mutex> lock(draw_mutex);
-        TTF_Font* font = fonts.Get(format);
-        if (!font)
-            break;
-
-        int w, h;
-        TTF_SizeUTF8(font, str.c_str(), &w, &h);
-        s.Set(w, h);
-        baseline = TTF_FontAscent(font);
-        it->second.push_back(SymbolSize{h, family_name, font_size, s, baseline});
-        ++font_size;
-    }
-    size.Set(s.width, s.height);
-    return font_size - 1;
+void WebWindow::PrepareSymbolsSizes(const std::vector<std::tuple<char32_t, std::string, int>>& _symbols_sizes)
+{
+    std::lock_guard<std::mutex> lock(sizes_cache_mutex);
+    symbols_sizes = _symbols_sizes;
+    fill_cache = true;
 }
 
 void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
@@ -423,9 +373,7 @@ void WebWindow::SocketTasks()
 {
     std::lock_guard<std::mutex> lock(socket_mutex);
     for (auto& t : socket_tasks)
-    {
         t->Execute();
-    }
     socket_tasks.clear();
 }
 
@@ -434,6 +382,116 @@ void WebWindow::GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::
     std::lock_guard<std::mutex> lock(translate_mutex);
     _translate_tasks = translate_tasks;
     translate_tasks.clear();
+}
+
+int WebWindow::GetCachedSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline)
+{
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    //firstly search in the cache
+    FontSymbolSizes::iterator s_it;
+    auto it = sizes_cache.find(symbol);
+    if (it != sizes_cache.end())
+    {
+        s_it = it->second.find(family_name);
+        if (s_it == it->second.end())
+        {
+            auto [_it, success] = it->second.insert(std::pair<std::string, std::vector<SymbolSize>>(family_name, std::vector<SymbolSize>()));
+            s_it = _it;
+        }
+
+        std::vector<SymbolSize>& v = s_it->second;
+        auto v_it = std::find_if(v.begin(), v.end(), 
+            [&](SymbolSize& s)
+            {
+                return s.height == height;
+            });
+        if (v_it != v.end())
+        {
+            size.Set(v_it->symbol_size.width, v_it->symbol_size.height);
+            baseline = v_it->baseline;
+            return v_it->font_size;
+        }
+    }
+    else
+    {
+        FontSymbolSizes f;
+        f.insert(std::pair<std::string, std::vector<SymbolSize>>(family_name, std::vector<SymbolSize>()));
+        auto [_it, success] = sizes_cache.insert(std::pair<char32_t, FontSymbolSizes>(symbol, f));
+        it = _it;
+        s_it = it->second.find(family_name);
+    }
+
+    //add sizes in the cache from zero up to the height
+    yutovo::Size s;
+    int font_size = 1;
+    std::string str = boost::locale::conv::utf_to_utf<char>(std::u32string(1, symbol));
+    baseline = 0;
+    std::vector<SymbolSize>& v = s_it->second;
+    StringFormatPtr format(new StringFormat(family_name, font_size, false, false, false, Color::Black(), Color::White(), Color::Blue()));
+    while (s.height < height)
+    {
+        auto v_it = std::find_if(v.begin(), v.end(), 
+            [&](SymbolSize& _s)
+            {
+                return _s.font_size == font_size;
+            });
+        if (v_it != v.end())
+        {
+            s = v_it->symbol_size;
+            baseline = v_it->baseline;
+            ++font_size;
+            continue;
+        }
+
+        int w, h;
+        format->size = font_size;
+        TTF_Font* font = fonts.Get(format);
+        if (!font)
+            break;
+
+        TTF_SizeUTF8(font, str.c_str(), &w, &h);
+        s.Set(w, h);
+        baseline = TTF_FontAscent(font);
+        s_it->second.push_back(SymbolSize{h, font_size, s, baseline});
+        ++font_size;
+    }
+    size.Set(s.width, s.height);
+    return font_size - 1;
+}
+
+void WebWindow::CacheTasks()
+{
+    for (auto& t : cache_tasks)
+        t->Execute();
+    cache_tasks.clear();
+
+    if (!fill_cache)
+        return;
+
+    std::lock_guard<std::mutex> lock(sizes_cache_mutex);
+    if (symbols_sizes.empty())
+    {
+        fill_cache = false;
+    }
+    else
+    {
+        //make one task for a cicle and decrease the pool of sizes
+        static int height = 1;
+        auto& s = symbols_sizes[0];
+        char32_t symbol = std::get<0>(s);
+        std::string family = std::get<1>(s);
+        int& max_height = std::get<2>(s);
+        if (max_height == 0)
+        {
+            symbols_sizes.erase(symbols_sizes.begin());
+            height = 1;
+        }
+        else
+        {
+            cache_tasks.emplace_back(new FillSizesCacheTask(this, symbol, height++, family));
+            --max_height;
+        }
+    }
 }
 
 }

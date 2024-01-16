@@ -206,6 +206,17 @@ struct CloseTask : Task
     std::atomic_int8_t& res;
 };
 
+struct FillSizesCacheTask : Task
+{
+    FillSizesCacheTask(WebWindow* _web_window, const char32_t _symbol, const int _height, const std::string& _family_name);
+
+    virtual void Execute();
+
+    char32_t symbol;
+    int height;
+    std::string family_name;
+};
+
 typedef std::shared_ptr<Task> TaskPtr;
 
 }

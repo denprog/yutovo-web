@@ -759,9 +759,9 @@ int main(int argc, char* argv[])
     canvas.call<void>("focus");
 
     yutovo_web::WebWindow window;
-    document.reset(new yutovo::Document(&window));
     yutovo::Config config;
-    document->Start(config);
+    document.reset(new yutovo::Document(&window, config));
+    document->Start();
 
     document->SetDefaultPageFormat(2, 2, 22, 22, 10);
 

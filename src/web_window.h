@@ -21,7 +21,7 @@ public:
     WebWindow();
     ~WebWindow();
 
-    virtual void Init();
+    virtual void Init(Document* _document);
 
     virtual void DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color, const Color bg_color);
     virtual void DrawLine(const int x1, const int y1, const int x2, const int y2, const Color color);

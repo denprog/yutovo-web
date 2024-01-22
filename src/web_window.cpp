@@ -27,7 +27,7 @@ WebWindow::~WebWindow()
         SDL_DestroyRenderer(renderer);
 }
 
-void WebWindow::Init()
+void WebWindow::Init(Document* _document)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
     int r = TTF_Init();

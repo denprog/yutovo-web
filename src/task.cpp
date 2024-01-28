@@ -914,7 +914,12 @@ EM_JS(int, ConnectJs, (const char* addr, size_t addr_size),
             {
                 socket.last_message = event.data;
             };
-        
+
+        socket.onerror = function(error)
+            {
+                console.log(error);
+            };
+
         window.sockets.set(window.socket_id, socket);
         return window.socket_id++;
     });
@@ -956,7 +961,7 @@ void IsOpenTask::Execute()
 EM_JS(bool, SendJs, (const int socket_id, const char* message, size_t message_size),
     {
         let socket = window.sockets.get(socket_id);
-        if (typeof socket === "undefined")
+        if (typeof socket === "undefined" || socket.readyState !== socket.OPEN)
             return 0;
         try
         {

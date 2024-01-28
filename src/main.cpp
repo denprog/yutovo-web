@@ -58,8 +58,8 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'bold': bold, 
                     'italic': italic, 
                     'underline': underline,
-                    'text_color': UTF8ToString(text_color, text_color),
-                    'text_bg_color': UTF8ToString(text_bg_color, text_bg_color),
+                    'text_color': UTF8ToString(text_color, text_color_size),
+                    'text_bg_color': UTF8ToString(text_bg_color, text_bg_color_size),
                 }
             }));
     });
@@ -760,6 +760,8 @@ int main(int argc, char* argv[])
 
     yutovo_web::WebWindow window;
     yutovo::Config config;
+    config.service_ip = "yutovo.ru";
+    config.service_port = 8010;
     document.reset(new yutovo::Document(&window, config));
     document->Start();
 

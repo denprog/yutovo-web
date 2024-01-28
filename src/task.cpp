@@ -906,9 +906,9 @@ void ResizeTask::Execute()
 
 //ConnectTask
 
-EM_JS(int, ConnectJs, (const char* addr),
+EM_JS(int, ConnectJs, (const char* addr, size_t addr_size),
     {
-        let socket = new WebSocket(UTF8ToString(addr));
+        let socket = new WebSocket(UTF8ToString(addr, addr_size));
         socket.last_message = "";
         socket.onmessage = function(event)
             {
@@ -927,7 +927,7 @@ ConnectTask::ConnectTask(const std::string& _addr, std::atomic_int32_t& _socket_
 
 void ConnectTask::Execute()
 {
-    socket_id = ConnectJs(addr.c_str());
+    socket_id = ConnectJs(addr.c_str(), addr.size());
 }
 
 //IsOpenTask
@@ -953,14 +953,14 @@ void IsOpenTask::Execute()
 
 //SendTask
 
-EM_JS(bool, SendJs, (const int socket_id, const char* message),
+EM_JS(bool, SendJs, (const int socket_id, const char* message, size_t message_size),
     {
         let socket = window.sockets.get(socket_id);
         if (typeof socket === "undefined")
             return 0;
         try
         {
-            socket.send(UTF8ToString(message));
+            socket.send(UTF8ToString(message, message_size));
         }
         catch (err)
         {
@@ -978,7 +978,7 @@ SendTask::SendTask(const int _socket_id, const std::string& _message, std::atomi
 
 void SendTask::Execute()
 {
-    res = SendJs(socket_id, message.c_str());
+    res = SendJs(socket_id, message.c_str(), message.size());
 }
 
 //ReceiveTask

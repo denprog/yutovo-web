@@ -991,7 +991,7 @@ void SendTask::Execute()
 EM_JS(char*, ReceiveJs, (const int socket_id),
     {
         let socket = window.sockets.get(socket_id);
-        if (typeof socket === "undefined")
+        if (typeof socket === "undefined" || socket.readyState !== socket.OPEN)
             return 0;
 
         try
@@ -1044,7 +1044,7 @@ void ReceiveTask::Execute()
 EM_JS(bool, CloseJs, (const int socket_id),
     {
         let socket = window.sockets.get(socket_id);
-        if (typeof socket === "undefined")
+        if (typeof socket === "undefined" || socket.readyState !== socket.OPEN)
             return 0;
         try
         {

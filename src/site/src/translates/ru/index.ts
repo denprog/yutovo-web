@@ -6,6 +6,7 @@ export default {
     'Json error': 'Ошибка JSON',
     'No field': 'Нет поля',
     'Field error': 'Ошибка поля',
+    'Solver error': 'Ошибка решателя',
     'Parser error': 'Ошибка разбора',
     'Operation error': 'Ошибочная операция',
     'Solver restarted': 'Рестарт сервера',

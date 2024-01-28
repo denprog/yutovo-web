@@ -85,7 +85,14 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
-      // https: true
+      https: true,
+
+      options: {
+        // Use ABSOLUTE paths or path.join(__dirname, 'root/relative/path')
+        key: "/home/denis/programs/Math/yutovo/yutovo_server/keys/yutovo_server.key",
+        cert: "/home/denis/programs/Math/yutovo/yutovo_server/keys/yutovo_server.crt"
+      },
+
       open: false // opens browser window automatically
     },
 

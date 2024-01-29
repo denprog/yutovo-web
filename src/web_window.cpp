@@ -272,12 +272,14 @@ void WebWindow::OnLanguageChanged(const yutovo_calculator::Language language)
 
 void WebWindow::OnSaveResult(const uint task_id, IOResult result)
 {
+    printf("OnSaveResult: %d\n", (int)result);
     if (result == IOResult::Success)
         save_ready = true;
 }
 
 void WebWindow::OnLoadResult(const uint task_id, IOResult result)
 {
+    printf("OnLoadResult: %d\n", (int)result);
 }
 
 int WebWindow::Connect(const std::string& addr)

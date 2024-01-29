@@ -3,15 +3,21 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ChromeOptions
 import time
 import utils
+
+address = 'https://yutovo.ru'
 
 class TestRegister(unittest.TestCase):
     def setUp(self):
         self.conn = utils.getDbConnection()
         utils.deleteTestUser(self.conn)
-        self.driver = webdriver.Chrome()
-        self.driver.get('http://localhost:9001')
+        opts = ChromeOptions()
+        opts.add_argument("--ignore-certificate-errors")
+        opts.add_argument("--disable-web-security")
+        self.driver = webdriver.Chrome(options = opts)
+        self.driver.get(address)
         self.conn = utils.getDbConnection()
 
     def tearDown(self):

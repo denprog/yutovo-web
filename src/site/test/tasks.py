@@ -7,13 +7,17 @@ from selenium.webdriver import ChromeOptions
 import time
 import utils
 
+address = 'https://yutovo.ru'
+
 class TestTasks(unittest.TestCase):
     def setUp(self):
         opts = ChromeOptions()
         opts.add_argument("--window-size=1100,900")
+        opts.add_argument("--ignore-certificate-errors")
+        opts.add_argument("--disable-web-security")
         self.driver = webdriver.Chrome(options = opts)
         self.driver.delete_all_cookies()
-        self.driver.get('http://localhost:9001')
+        self.driver.get(address)
         self.conn = utils.getDbConnection()
         utils.clearTestUser(self.conn)
         time.sleep(6)
@@ -29,7 +33,7 @@ class TestTasks(unittest.TestCase):
         utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Momentum of force')
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'Newton'))
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/task/en%5CPhysics%5CDynamics%5CMomentum%20of%20force')
+        self.assertTrue(self.driver.current_url == address + '/task/en%5CPhysics%5CDynamics%5CMomentum%20of%20force')
         self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Momentum of force')
         utils.save(self.driver)
         time.sleep(2)
@@ -38,7 +42,7 @@ class TestTasks(unittest.TestCase):
         utils.clickDocument(self.driver, 'Momentum of force')
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
         self.assertTrue(utils.documentContains(self.driver, 'Newton'))
 
 if __name__ == '__main__':

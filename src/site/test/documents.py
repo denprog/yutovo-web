@@ -7,6 +7,8 @@ from selenium.webdriver import ChromeOptions
 import time
 import utils
 
+address = 'https://yutovo.ru'
+
 class TestDocuments(unittest.TestCase):
     def setUp(self):
         self.conn = utils.getDbConnection()
@@ -14,9 +16,11 @@ class TestDocuments(unittest.TestCase):
 
         opts = ChromeOptions()
         opts.add_argument("--window-size=1100,900")
+        opts.add_argument("--ignore-certificate-errors")
+        opts.add_argument("--disable-web-security")
         self.driver = webdriver.Chrome(options = opts)
         self.driver.delete_all_cookies()
-        self.driver.get('http://localhost:9001')
+        self.driver.get(address)
         time.sleep(4)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
         time.sleep(1)
@@ -38,7 +42,7 @@ class TestDocuments(unittest.TestCase):
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c != None)
         self.assertTrue(utils.fileContains(self.conn, c['value'], "12345"))
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c['value'])
         time.sleep(1)
 
     #Check cookie after login
@@ -54,13 +58,13 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(c1 != None)
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
         utils.new(self.driver)
         time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         self.assertTrue(c2 != None)
         self.assertTrue(c2['value'] != c1['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c2['value'])
     
     #Delete a document
     def test_documents4(self):
@@ -75,7 +79,7 @@ class TestDocuments(unittest.TestCase):
         c3 = self.driver.get_cookie('document_id')
         self.assertTrue(c3['value'] != c2['value'])
         self.assertTrue(c3['value'] == c1['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
     
     #Open documents from the list
     def test_documents5(self):
@@ -91,13 +95,13 @@ class TestDocuments(unittest.TestCase):
         c3 = self.driver.get_cookie('document_id')
         utils.clickDocument(self.driver, 'document_3')
         time.sleep(1)
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c3['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c3['value'])
 
         utils.clickDocument(self.driver, 'document_3')
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c['value'] == c3['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c3['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c3['value'])
 
     #Save a document from the list
     def test_documents6(self):
@@ -118,7 +122,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c['value'] == c3['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c3['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c3['value'])
         self.assertTrue(utils.fileContains(self.conn, c['value'], "12345"))
         self.assertTrue(utils.fileContains(self.conn, c2['value'], "12345") == False)
         self.assertTrue(utils.fileContains(self.conn, c1['value'], "12345") == False)
@@ -138,26 +142,26 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         utils.delete(self.driver)
         time.sleep(2)
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
 
     #Make documents, reload page, delete the last document
     def test_documents8(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
+        time.sleep(4)
         utils.new(self.driver)
         time.sleep(1)
         utils.new(self.driver)
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
-        self.driver.get('http://localhost:9001')
+        self.driver.get(address)
         time.sleep(2)
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
 
         utils.delete(self.driver)
         time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         self.assertTrue(c1['value'] != c2['value'])
-        self.assertTrue(self.driver.current_url != 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url != address + '/document/' + c1['value'])
 
     #Check input text
     def test_documents9(self):
@@ -176,10 +180,13 @@ class TestDocuments(unittest.TestCase):
         utils.save(self.driver)
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
-
         self.driver.quit()
-        self.driver = webdriver.Chrome()
-        self.driver.get('http://localhost:9001/document/' + c['value'])
+
+        opts = ChromeOptions()
+        opts.add_argument("--ignore-certificate-errors")
+        opts.add_argument("--disable-web-security")
+        self.driver = webdriver.Chrome(options = opts)
+        self.driver.get(address + '/document/' + c['value'])
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
@@ -193,16 +200,21 @@ class TestDocuments(unittest.TestCase):
         utils.save(self.driver)
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
-
         self.driver.quit()
-        self.driver = webdriver.Chrome()
-        self.driver.get('http://localhost:9001')
+
+        opts = ChromeOptions()
+        opts.add_argument("--ignore-certificate-errors")
+        opts.add_argument("--disable-web-security")
+        self.driver = webdriver.Chrome(options = opts)
+        self.driver.get(address)
+        time.sleep(1)
+        print(c1)
         self.driver.add_cookie(c1)
         self.driver.refresh()
         time.sleep(1)
-        self.driver.get('http://localhost:9001/')
+        self.driver.get(address)
         time.sleep(4)
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c1['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
     #Save a document with another name
@@ -218,7 +230,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         self.assertTrue(c1['value'] != c2['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c2['value'])
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
     #Rename a document
@@ -234,7 +246,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
         self.assertTrue(c1['value'] == c2['value'])
-        self.assertTrue(self.driver.current_url == 'http://localhost:9001/document/' + c2['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c2['value'])
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
     #Change language and add a variable
@@ -258,7 +270,7 @@ class TestDocuments(unittest.TestCase):
     def test_documents15(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(1)
-        self.driver.get('http://localhost:9001/document/99999')
+        self.driver.get(address + '/document/99999')
         time.sleep(2)
         alert = self.driver.switch_to.alert
         self.assertTrue(alert.text, 'Document not found')

@@ -694,9 +694,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTextBgColor(const char* color)
     document->SetBgColor(yutovo::Color::FromHex(color));
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file_name)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file)
 {
-    auto s = ToUtfString(file_name);
+    auto s = ToUtfString(file);
     document->LoadJson(s);
 }
 

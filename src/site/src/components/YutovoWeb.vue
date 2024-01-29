@@ -381,9 +381,6 @@ export default
             button = document.getElementById('redo-button');
             button.disabled = !(Module.cwrap('CanRedo', 'bool', [])());
 
-            button = document.getElementById('copy-button');
-            button.disabled = !(Module.cwrap('CanCopy', 'bool', [])());
-
             button = document.getElementById('paste-button');
             button.disabled = !(Module.cwrap('CanPaste', 'bool', [])() && can_paste);
 

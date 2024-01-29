@@ -535,9 +535,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste()
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
 {
     EditorState s = document->GetEditorState();
-    if (s.caret_state.IsEmpty() || s.caret_state.id.size() == 1)
-        return false;
-    return document->IsEditable(yutovo::GetParent(s.caret_state.id));
+    return !s.selection_state.IsEmpty();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE bool IsEmpty()

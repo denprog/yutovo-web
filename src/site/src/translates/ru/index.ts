@@ -58,5 +58,11 @@ export default {
     'Subscript': 'Нижний регистр',
     'Fences': 'Скобки',
     'Assignment': 'Присваивание',
-    'Equation': 'Равенство'
+    'Equation': 'Равенство',
+
+    'Filter': 'Фильтр',
+
+    'Documents': 'Документы',
+    'Tasks': 'Задачи',
+    'Identifiers': 'Идентификаторы'
 };

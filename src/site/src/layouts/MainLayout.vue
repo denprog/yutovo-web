@@ -4,18 +4,21 @@
             <q-toolbar>
                 <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-                <q-toolbar-title>
-                    <q-btn no-caps dense flat @click="$router.push('/')">
-                        <q-avatar>
-                            <img src="Quasar_Logo.png">
-                        </q-avatar>
-                    </q-btn>
-                    <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
-                        {{ $t('yutovo_caption') }}
-                    </q-btn>
-                </q-toolbar-title>
+                <div>
+                    <q-toolbar-title>
+                        <q-btn no-caps dense flat @click="$router.push('/')">
+                            <q-avatar>
+                                <img src="Quasar_Logo.png">
+                            </q-avatar>
+                        </q-btn>
+                        <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
+                            {{ $t('yutovo_caption') }}
+                        </q-btn>
+                    </q-toolbar-title>
+                </div>
 
-                <div class="text-white q-pa-sm" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
+                <div class="text-white text-h6 q-pl-lg" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
+                <q-space />
 
                 <q-select v-model="locale" id='language-select' class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
                     dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />

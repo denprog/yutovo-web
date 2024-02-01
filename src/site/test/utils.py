@@ -136,6 +136,8 @@ def clearTestUser(conn):
     cursor = conn.cursor()
     cursor.execute('delete from user_sessions where user_id in (select user_id from users where login=\'test1\')')
     cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test1\')')
+    cursor.execute('delete from user_sessions where user_id in (select user_id from users where login=\'test2\')')
+    cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test2\')')
     conn.commit()
 
 def fileContains(conn, document_id, str):

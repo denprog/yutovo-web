@@ -21,7 +21,7 @@ class TestDocuments(unittest.TestCase):
         self.driver = webdriver.Chrome(options = opts)
         self.driver.delete_all_cookies()
         self.driver.get(address)
-        time.sleep(4)
+        time.sleep(6)
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
         time.sleep(1)
     
@@ -208,7 +208,6 @@ class TestDocuments(unittest.TestCase):
         self.driver = webdriver.Chrome(options = opts)
         self.driver.get(address)
         time.sleep(1)
-        print(c1)
         self.driver.add_cookie(c1)
         self.driver.refresh()
         time.sleep(1)
@@ -236,7 +235,7 @@ class TestDocuments(unittest.TestCase):
     #Rename a document
     def test_documents13(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(4)
+        time.sleep(6)
         utils.writeText(self.driver, '12345')
         utils.save(self.driver)
         time.sleep(1)
@@ -276,5 +275,28 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(alert.text, 'Document not found')
         alert.accept()
 
+    #Save a document of another user as an own one
+    def test_documents16(self):
+        time.sleep(1)
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(2)
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_1')
+        time.sleep(1)
+        utils.save(self.driver)
+        utils.logout(self.driver)
+        time.sleep(1)
+
+        utils.login(self.driver, 'test2', '22')
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(1)
+        utils.saveAs(self.driver, 'new_document')
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
+        utils.clickDocument(self.driver, 'new_document')
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
+        
 if __name__ == '__main__':
     unittest.main()

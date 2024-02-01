@@ -465,13 +465,13 @@ export default
             button.disabled = (this.text_bg_color == '');
 
             button = document.getElementById('save-as-button');
-            button.disabled = !Cookies.has('document_id') || store.state.login.login == '';
+            button.disabled = !Cookies.has('document_id') || this.store.state.login.login == '';
 
             button = document.getElementById('rename-button');
-            button.disabled = !Cookies.has('document_id') || store.state.login.login == '';
+            button.disabled = !Cookies.has('document_id') || this.store.state.login.login == '';
 
             button = document.getElementById('delete-button');
-            button.disabled = !Cookies.has('document_id') || store.state.login.login == '';
+            button.disabled = !Cookies.has('document_id') || this.store.state.login.login == '';
         },
 
         onCode()

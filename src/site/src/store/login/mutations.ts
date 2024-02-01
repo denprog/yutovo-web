@@ -15,6 +15,7 @@ const mutation: MutationTree<LoginStateInterface> =
         if (access_token == '')
         {
             state.login = '';
+            console.log('Logout');
             return;
         }
 

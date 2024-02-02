@@ -281,6 +281,7 @@ DrawLineTask::DrawLineTask(const int _x1, const int _y1, const int _x2, const in
 
 void DrawLineTask::Execute()
 {
+    //printf("WebWindow::DrawLine x1=%d, y1=%d, x2=%d, y2=%d\n", x1, y1, x2, y2);
     if (draw_doc)
         SDL_RenderSetClipRect(web_window->renderer, &web_window->view_port);
     else

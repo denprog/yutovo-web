@@ -248,7 +248,7 @@ export default
                 }
             },
 
-            last_documents: [],
+            last_documents: []
         };
     },
 
@@ -595,8 +595,8 @@ export default
 
         onDelete()
         {
-            var last_documents = this.last_documents;
             var s = this.store;
+            var get_last_document = this.getLastDocument;
             this.$q.dialog({
                 title: 'Confirm',
                 message: 'Delete the document?',
@@ -613,30 +613,17 @@ export default
                         function(response)
                         {
                             console.log(response);
-                            var last_document_id = 0;
-
-                            if (last_documents.length > 0)
-                            {
-                                last_document_id = last_documents.pop();
-                                for (let j = 0; j < last_documents.length;)
-                                {
-                                    if (last_documents[j] == i)
-                                        last_documents.splice(j, 1);
-                                    else
-                                        ++j;
-                                }
-                            }
-
                             //open previous document or create a new one
-                            if (last_document_id == 0)
-                            {
-                                Cookies.remove('document_id', {path: '/'});
-                                window.dispatchEvent(new CustomEvent('onNew', {}));
-                            }
-                            else
-                            {
-                                window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: last_document_id}}));
-                            }
+                            get_last_document().then(_last_document_id =>
+                                {
+                                    if (_last_document_id == 0)
+                                    {
+                                        Cookies.remove('document_id', {path: '/'});
+                                        window.dispatchEvent(new CustomEvent('onNew', {}));
+                                    }
+                                    else
+                                        window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: _last_document_id}}));
+                                });
                         }
                     ).catch(
                         function(response)
@@ -772,7 +759,6 @@ export default
             console.log('saveDocument');
             var json = JSON.parse(event.detail.json);
             var r = this.router;
-            var s = this.store;
             if (r.currentRoute.value.path.substring(0, 5) == '/task') //save the current task as a new user document
             {
                 var route = r.currentRoute.value
@@ -820,7 +806,7 @@ export default
                         function(response)
                         {
                             console.log(response);
-                            r.push({ path: '/document/' + response.data.document_id });
+                            r.push({path: '/document/' + response.data.document_id});
                             Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
                             window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
                             canvas.focus();
@@ -850,6 +836,25 @@ export default
                 window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
         },
 
+        async getLastDocument()
+        {
+            var last_document_id = 0;
+
+            if (this.last_documents.length > 0)
+            {
+                last_document_id = this.last_documents.pop();
+                for (let j = 0; j < this.last_documents.length;)
+                {
+                    if (this.last_documents[j] == i)
+                        this.last_documents.splice(j, 1);
+                    else
+                        ++j;
+                }
+            }
+
+            return last_document_id;
+        },
+
         async loadDocument(event)
         {
             var last_document_id = event.detail.last_document;
@@ -859,6 +864,7 @@ export default
                 return;
             var r = this.router;
             var last_documents = this.last_documents;
+            var get_last_document = this.getLastDocument;
             api.post('/service/load-document', 
                 {
                     document_id: id
@@ -874,7 +880,7 @@ export default
                     {
                         window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
                         Cookies.set('document_id', id, {path: '/', expires: '1d'});
-                        r.push({ path: '/document/' + id });
+                        r.push({path: '/document/' + id});
                         window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
                         if (last_document_id != undefined && last_document_id != 0)
                             last_documents.push(last_document_id);
@@ -886,6 +892,15 @@ export default
                         console.log(response);
                         Cookies.remove('document_id', {path: '/'});
                         alert('Document not found');
+
+                        //open previous document or create a new one
+                        get_last_document().then(_last_document_id =>
+                            {
+                                if (_last_document_id == 0)
+                                    window.dispatchEvent(new CustomEvent('onNew', {}));
+                                else
+                                    window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: _last_document_id}}));
+                            });
                     }
                 );
             window.dispatchEvent(new CustomEvent('listDocuments', {}));

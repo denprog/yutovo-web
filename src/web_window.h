@@ -7,6 +7,7 @@
 #include <emscripten.h>
 #include <emscripten/val.h>
 #include <vector>
+#include <queue>
 #include "fonts.h"
 #include "task.h"
 
@@ -67,7 +68,7 @@ public:
     virtual void OnLanguageChanged(const yutovo_calculator::Language language);
 
     virtual void OnSaveResult(const uint task_id, IOResult result);
-    virtual void OnLoadResult(const uint task_id, IOResult result);
+    virtual void OnLoadResult(const uint task_id, IOResult result, const int document_id);
 
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
@@ -82,6 +83,7 @@ public:
     void GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::string>>& _translate_tasks);
     int GetCachedSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline);
     void CacheTasks();
+    bool GetLoadResult(IOResult& result, int& document_id);
 
 public:
     std::mutex draw_mutex;
@@ -94,10 +96,14 @@ public:
     std::atomic_bool needs_translate{false};
     std::atomic_bool update_language{false};
     std::atomic_bool fill_cache{false};
+    std::atomic_bool load_ready{false};
 
     SDL_Renderer* renderer = nullptr;
 
     SDL_Rect view_port{0, 0, 0, 0};
+
+    std::mutex results_mutex;
+    std::queue<std::pair<IOResult, int>> load_results;
 
 private:
     friend struct DrawTextTask;

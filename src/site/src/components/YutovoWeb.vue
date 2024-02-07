@@ -168,6 +168,7 @@ export default
             window.addEventListener('openDocument', this.openDocument, false);
             window.addEventListener('loadDocument', this.loadDocument, false);
             window.addEventListener('loadTask', this.loadTask, false);
+            window.addEventListener('loadResult', this.loadResult, false);
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
             window.addEventListener('translateString', this.translateString, false);
         }
@@ -183,6 +184,7 @@ export default
             window.attachEvent('openDocument', this.openDocument);
             window.attachEvent('loadDocument', this.loadDocument);
             window.attachEvent('loadTask', this.loadTask);
+            window.attachEvent('loadResult', this.loadResult);
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
             window.attachEvent('translateString', this.translateString);
         }
@@ -204,6 +206,8 @@ export default
 
         const store = useStore();
         const router = useRouter();
+
+        var current_task;
 
         return {
             style,
@@ -248,7 +252,9 @@ export default
                 }
             },
 
-            last_documents: []
+            last_documents: [],
+
+            current_task
         };
     },
 
@@ -629,6 +635,7 @@ export default
                         function(response)
                         {
                             console.log(response);
+                            alert('Error deleting the document');
                         }
                     );
             });
@@ -750,6 +757,7 @@ export default
                     function(response)
                     {
                         console.log(response);
+                        alert('Error loading the document');
                     }
                 );
         },
@@ -790,6 +798,7 @@ export default
                         function(response)
                         {
                             console.log(response);
+                            alert('Error saving the document');
                         }
                     );
             }
@@ -819,6 +828,10 @@ export default
                             {
                                 //save this document with own id
                                 window.dispatchEvent(new CustomEvent('newDocument'), {detail: {json: json}});
+                            }
+                            else
+                            {
+                                alert('Error saving the document');
                             }
                         }
                     );
@@ -878,12 +891,7 @@ export default
                 ).then(
                     function(response)
                     {
-                        window.Module.cwrap('OnOpen', 'void', ['string'])(JSON.stringify(response.data));
-                        Cookies.set('document_id', id, {path: '/', expires: '1d'});
-                        r.push({path: '/document/' + id});
-                        window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
-                        if (last_document_id != undefined && last_document_id != 0)
-                            last_documents.push(last_document_id);
+                        window.Module.cwrap('OnOpen', 'void', ['string', 'int'])(JSON.stringify(response.data), id);
                         canvas.focus();
                     }
                 ).catch(
@@ -914,6 +922,7 @@ export default
             if (task == null)
                 return;
             
+            this.current_task = task;
             var r = this.router;
             var s = this.store;
             if (language == 'undefined')
@@ -932,12 +941,7 @@ export default
                 ).then(
                     function(response)
                     {
-                        window.Module.cwrap('OnTaskFile', 'void', ['string'])(JSON.stringify(response.data));
-                        window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: task}}));
-                        var language = s.state.editor.language == '' ? 'en' : s.state.editor.language;
-                        task = task.replaceAll(/\//g, '%5C');
-                        r.push({ path: '/task/' + language + task });
-                        Cookies.remove('document_id', {path: '/'});
+                        window.Module.cwrap('OnTaskFile', 'void', ['string', 'int'])(JSON.stringify(response.data), 0);
                         canvas.focus();
                     }
                 ).catch(
@@ -947,6 +951,38 @@ export default
                         alert('Error loading the task');
                     }
                 );
+        },
+
+        async loadResult(event)
+        {
+            var last_document_id = Cookies.has('document_id') ? Cookies.get('document_id') : 0;
+            var result = event.detail.result;
+            var id = event.detail.document_id;
+            if (result == 0)
+            {
+                if (id == 0)
+                {
+                    //it is a task
+                    var task = this.current_task;
+                    window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: task}}));
+                    var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
+                    task = task.replaceAll(/\//g, '%5C');
+                    this.router.push({ path: '/task/' + language + task });
+                    Cookies.remove('document_id', {path: '/'});
+                }
+                else
+                {
+                    Cookies.set('document_id', id, {path: '/', expires: '1d'});
+                    this.router.push({path: '/document/' + id});
+                    window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
+                    if (last_document_id != 0)
+                        this.last_documents.push(last_document_id);
+                }
+            }
+            else
+            {
+                alert('Error loading the document');
+            }
         },
 
         async updateDocumentName(event)

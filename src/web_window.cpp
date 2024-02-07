@@ -277,9 +277,12 @@ void WebWindow::OnSaveResult(const uint task_id, IOResult result)
         save_ready = true;
 }
 
-void WebWindow::OnLoadResult(const uint task_id, IOResult result)
+void WebWindow::OnLoadResult(const uint task_id, IOResult result, const int document_id)
 {
     printf("OnLoadResult: %d\n", (int)result);
+    std::lock_guard<std::mutex> lock(results_mutex);
+    load_results.emplace(result, document_id);
+    load_ready = true;
 }
 
 int WebWindow::Connect(const std::string& addr)
@@ -494,6 +497,21 @@ void WebWindow::CacheTasks()
             --max_height;
         }
     }
+}
+
+bool WebWindow::GetLoadResult(IOResult& result, int& document_id)
+{
+    std::lock_guard<std::mutex> lock(results_mutex);
+    if (load_results.empty())
+    {
+        load_ready = false;
+        return false;
+    }
+    auto p = load_results.front();
+    result = p.first;
+    document_id = p.second;
+    load_results.pop();
+    return true;
 }
 
 }

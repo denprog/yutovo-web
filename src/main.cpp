@@ -87,6 +87,18 @@ EM_JS(void, SaveDocument, (const char* json, size_t json_size),
             }));
     });
 
+EM_JS(void, LoadResult, (const int result, const int document_id),
+    {
+        window.dispatchEvent(new CustomEvent('loadResult', 
+            {
+                'detail': 
+                {
+                    'result': result,
+                    'document_id': document_id
+                }
+            }));
+    });
+
 EM_JS(void, TranslateString, (const char* str, size_t str_size),
     {
         window.dispatchEvent(new CustomEvent('translateString', 
@@ -219,6 +231,14 @@ void MainLoop(void* arg)
         std::string s = ToBasicString(save_json);
         SaveDocument(s.c_str(), s.size());
         window->save_ready = false;
+    }
+
+    if (window->load_ready)
+    {
+        IOResult result;
+        int document_id = 0;
+        if (window->GetLoadResult(result, document_id))
+            LoadResult((int)result, document_id);
     }
 
     if (window->needs_translate)
@@ -374,10 +394,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
         document->New();
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document_id)
 {
     if (document)
-        document->LoadJson(ToUtfString(std::string(json)));
+        document->LoadJson(ToUtfString(std::string(json)), document_id);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSave()
@@ -692,10 +712,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTextBgColor(const char* color)
     document->SetBgColor(yutovo::Color::FromHex(color));
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file, const int document_id)
 {
     auto s = ToUtfString(file);
-    document->LoadJson(s);
+    document->LoadJson(s, document_id);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)

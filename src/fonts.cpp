@@ -33,7 +33,8 @@ TTF_Font* Fonts::Get(const yutovo::StringFormatPtr format)
         {
             int style = TTF_GetFontStyle(font.ttf_font);
             return format->family == font.family && format->size == font.size && format->bold == bool(style & TTF_STYLE_BOLD) && 
-                format->italic == bool(style & TTF_STYLE_ITALIC) && format->underline == bool(style & TTF_STYLE_UNDERLINE);
+                format->italic == bool(style & TTF_STYLE_ITALIC) && format->underline == bool(style & TTF_STYLE_UNDERLINE) &&
+                format->strikethrough == bool(style & TTF_STYLE_STRIKETHROUGH);
         });
     if (it == fonts.end())
     {
@@ -51,6 +52,8 @@ TTF_Font* Fonts::Get(const yutovo::StringFormatPtr format)
             style |= TTF_STYLE_ITALIC;
         if (format->underline)
             style |= TTF_STYLE_UNDERLINE;
+        if (format->strikethrough)
+            style |= TTF_STYLE_STRIKETHROUGH;
         if (style > 0)
             TTF_SetFontStyle(font, style);
         fonts.emplace_back(Font{format->family, format->size, font});

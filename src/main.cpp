@@ -45,7 +45,7 @@ EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value)
     });
 
 EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
-    unsigned int font_size, int bold, int italic, int underline, const char* text_color, size_t text_color_size, 
+    unsigned int font_size, int bold, int italic, int underline, int strikethrough, const char* text_color, size_t text_color_size, 
     const char* text_bg_color, size_t text_bg_color_size),
     {
         window.dispatchEvent(new CustomEvent('setStandardToolbar', 
@@ -58,6 +58,7 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'bold': bold, 
                     'italic': italic, 
                     'underline': underline,
+                    'strikethrough': strikethrough,
                     'text_color': UTF8ToString(text_color, text_color_size),
                     'text_bg_color': UTF8ToString(text_bg_color, text_bg_color_size),
                 }
@@ -162,7 +163,7 @@ void MainLoop(void* arg)
             format.Reset();
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, -1, -1, -1, "", 0, "", 0);
+                format.size, -1, -1, -1, -1, "", 0, "", 0);
         }
         else if (document->GetStringFormat(_id, format))
         {
@@ -185,11 +186,13 @@ void MainLoop(void* arg)
                         format.italic = false;
                     if (format.underline != false && format.underline != f.underline)
                         format.underline = false;
+                    if (format.strikethrough != false && format.strikethrough != f.strikethrough)
+                        format.strikethrough = false;
                 }
             }
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, format.bold, format.italic, format.underline, text_color.c_str(), text_color.size(), 
+                format.size, format.bold, format.italic, format.underline, format.strikethrough, text_color.c_str(), text_color.size(), 
                 text_bg_color.c_str(), text_bg_color.size());
         }
         
@@ -713,6 +716,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnUnderline(int checked)
     if (!document)
         return;
     document->SetUnderline(checked);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnStrikethrough(int checked)
+{
+    if (!document)
+        return;
+    document->SetStrikethrough(checked);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTextColor(const char* color)

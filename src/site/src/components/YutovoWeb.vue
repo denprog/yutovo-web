@@ -68,6 +68,10 @@
             <q-btn size="14px" id="underline-button" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Underline') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" id="strikethrough-button" square dense :color="strikethrough_button_color" @click="onStrikethrough();" 
+                icon="img:/images/format/strikethrough.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Strikethrough') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" id="text-color-button" square dense @click="onTextColor();" icon="img:/images/format/text_color.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text color') }}</q-tooltip>
             </q-btn>
@@ -396,6 +400,7 @@ export default
             bold_button_color: 'white',
             italic_button_color: 'white',
             underline_button_color: 'white',
+            strikethrough_button_color: 'white',
             text_color: '#000000',
             text_bg_color: '#ffffff'
         }
@@ -420,6 +425,7 @@ export default
             this.bold_button_color = (event.detail.bold == 1 ? 'blue' : 'white');
             this.italic_button_color = (event.detail.italic == 1 ? 'blue' : 'white');
             this.underline_button_color = (event.detail.underline == 1 ? 'blue' : 'white');
+            this.strikethrough_button_color = (event.detail.strikethrough == 1 ? 'blue' : 'white');
             this.text_color = event.detail.text_color;
             this.text_bg_color = event.detail.text_bg_color;
 
@@ -463,6 +469,9 @@ export default
 
             button = document.getElementById('underline-button');
             button.disabled = (event.detail.underline < 0);
+
+            button = document.getElementById('strikethrough-button');
+            button.disabled = (event.detail.strikethrough < 0);
 
             button = document.getElementById('text-color-button');
             button.disabled = (this.text_color == '');
@@ -531,6 +540,16 @@ export default
             else
                 this.underline_button_color = 'blue';
             Module.cwrap('OnUnderline', 'void', [])(this.underline_button_color == 'blue');
+            canvas.focus();
+        },
+
+        onStrikethrough()
+        {
+            if (this.strikethrough_button_color == 'blue')
+                this.strikethrough_button_color = 'white';
+            else
+                this.strikethrough_button_color = 'blue';
+            Module.cwrap('OnStrikethrough', 'void', [])(this.strikethrough_button_color == 'blue');
             canvas.focus();
         },
 

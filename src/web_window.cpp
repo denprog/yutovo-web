@@ -242,6 +242,12 @@ void WebWindow::OnFormatChanged(const EditorState editor_state)
     update_toolbar = true;
 }
 
+void WebWindow::OnIdentifierChanged(const ElementId id)
+{
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    update_identifiers = true;
+}
+
 std::string WebWindow::Translate(ElementId id, const std::string& str)
 {
     std::lock_guard<std::mutex> lock(translate_mutex);

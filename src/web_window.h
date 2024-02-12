@@ -60,6 +60,8 @@ public:
 
     virtual void OnFormatChanged(const EditorState editor_state);
 
+    virtual void OnIdentifierChanged(const ElementId id);
+
     virtual std::string Translate(ElementId id, const std::string& str);
     virtual std::u32string Translate(ElementId id, const std::u32string& str);
     
@@ -97,6 +99,7 @@ public:
     std::atomic_bool update_language{false};
     std::atomic_bool fill_cache{false};
     std::atomic_bool load_ready{false};
+    std::atomic_bool update_identifiers{false};
 
     SDL_Renderer* renderer = nullptr;
 

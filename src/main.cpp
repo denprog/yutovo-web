@@ -208,6 +208,23 @@ void MainLoop(void* arg)
         last_code_id = code_id;
     }
 
+    if (window->update_identifiers)
+    {
+        window->update_identifiers = false;
+        const CaretState& c = window->current_editor_state.caret_state;
+        uint code_id = document->FindCodeBlock(c.id);
+        if (code_id == 0)
+        {
+            UpdateIdentifiersTree(0, NULL, 0);
+        }
+        else
+        {
+            std::string guid;
+            document->GetSolverGuid(guid);
+            UpdateIdentifiersTree(code_id, guid.c_str(), guid.size());
+        }
+    }
+
     if (window->needs_render)
     {
         //document was updated

@@ -298,5 +298,18 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
         
+    #Change language and add a variable
+    def test_documents17(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(4)
+        utils.setLanguage(self.driver, 'Русский')
+        utils.insertCode(self.driver)
+        utils.writeText(self.driver, '1,23')
+        utils.writeText(self.driver, '+')
+        utils.writeText(self.driver, '3,5')
+        utils.writeText(self.driver, '=')
+        time.sleep(3)
+        self.assertTrue(utils.documentContains(self.driver, '4,73'))
+
 if __name__ == '__main__':
     unittest.main()

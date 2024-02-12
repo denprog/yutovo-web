@@ -870,13 +870,10 @@ export default
 
         async loadDocument(event)
         {
-            var last_document_id = event.detail.last_document;
             var id = event.detail.document_id;
             console.log('loadDocument ', id);
             if (id == null)
                 return;
-            var r = this.router;
-            var last_documents = this.last_documents;
             var get_last_document = this.getLastDocument;
             api.post('/service/load-document', 
                 {
@@ -923,7 +920,6 @@ export default
                 return;
             
             this.current_task = task;
-            var r = this.router;
             var s = this.store;
             if (language == 'undefined')
                 language = s.state.editor.language == '' ? 'en' : s.state.editor.language;

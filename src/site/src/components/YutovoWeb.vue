@@ -267,6 +267,7 @@ export default
         window.sockets = new Map();
         window.socket_id = 1;
         var r = this.router;
+        var s = this.store;
 
         var Module =
             {
@@ -383,6 +384,21 @@ export default
                         else
                             window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
                         canvas.focus();
+
+                        //auto-login
+                        api.post('/auth/refresh-token', {}).then(
+                            function(response)
+                            {
+                                s.dispatch('login/updateAccessToken', response.headers['access_token']);
+                                s.commit('login/setLastError', '');
+                            }
+                        ).catch(
+                            function(response)
+                            {
+                                console.log(response);
+                                s.dispatch('login/updateAccessToken', '');
+                            }
+                        );
                     }
             };
         

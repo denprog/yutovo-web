@@ -39,9 +39,9 @@ export default {
         const password = ref('');
         const passwordRef = ref(null);
         const loginDialog = ref(null);
-        const $store = useStore();
+        const store = useStore();
 
-        $store.commit('login/setLastError', '');
+        store.commit('login/setLastError', '');
 
         const required = (val) =>
         {
@@ -49,7 +49,7 @@ export default {
         };
 
         const lastErrorState = computed({
-            get: () => ($store.state.login.last_error)
+            get: () => (store.state.login.last_error)
         })
 
         const onReset = () =>
@@ -76,8 +76,8 @@ export default {
                     function(response)
                     {
                         console.log(response);
-                        $store.dispatch('login/updateAccessToken', response.headers['access_token']);
-                        $store.commit('login/setLastError', '');
+                        store.dispatch('login/updateAccessToken', response.headers['access_token']);
+                        store.commit('login/setLastError', '');
                         loginDialog.value.hide();
 
                         if (!empty)
@@ -95,6 +95,11 @@ export default {
                                 window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: response.data.document_id}}));
                             }
                         }
+
+                        if (response.data.language == 'ru_RU')
+                            store.commit('editor/setLanguage', 'ru');
+                        else
+                            store.commit('editor/setLanguage', 'en');
                         
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
                     }
@@ -102,8 +107,8 @@ export default {
                     function(response)
                     {
                         console.log(response);
-                        $store.dispatch('login/updateAccessToken', '');
-                        $store.commit('login/setLastError', 'Login failed');
+                        store.dispatch('login/updateAccessToken', '');
+                        store.commit('login/setLastError', 'Login failed');
                     }
                 );
         }

@@ -72,5 +72,23 @@ class TestLogin(unittest.TestCase):
         self.assertTrue(utils.documentContains(self.driver, 'document_test_2'))
         utils.logout(self.driver)
 
+    #set language
+    def test_login3(self):
+        time.sleep(1)
+
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+        utils.setLanguage(self.driver, 'Русский')
+        utils.logout(self.driver)
+        time.sleep(1)
+
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+        self.assertTrue(utils.getLanguage(self.driver) == 'Русский')
+
+        self.driver.get(address)
+        time.sleep(2)
+        self.assertTrue(utils.getLanguage(self.driver) == 'Русский')
+
 if __name__ == '__main__':
     unittest.main()

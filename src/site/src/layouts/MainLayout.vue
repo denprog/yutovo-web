@@ -180,24 +180,40 @@ export default
         }
     },
 
-    mounted()
+    watch:
     {
-        //auto-login
-        const store = useStore();
+        'store.state.editor.language': function()
+        {
+            if (this.locale != this.store.state.editor.language)
+                this.locale = this.store.state.editor.language;
+        },
 
-        api.post('/auth/refresh-token', {}).then(
-            function(response)
-            {
-                store.dispatch('login/updateAccessToken', response.headers['access_token']);
-                store.commit('login/setLastError', '');
-            }
-        ).catch(
-            function(response)
-            {
-                console.log(response);
-                store.dispatch('login/updateAccessToken', '');
-            }
-        );
+        'store.state.login.login': function()
+        {
+            var s = this.store;
+            api.post('/auth/get-language', {},
+                {
+                    headers:
+                    {
+                        access_token: s.state.login.access_token
+                    }
+                }
+                ).then(
+                function(response)
+                {
+                    console.log(response);
+                    if (response.data.language == 'ru_RU')
+                        s.commit('editor/setLanguage', 'ru');
+                    else
+                        s.commit('editor/setLanguage', 'en');
+                }
+            ).catch(
+                function(response)
+                {
+                    console.log(response);
+                }
+            );
+        }
     },
 
     methods:
@@ -255,6 +271,26 @@ export default
         onLanguage()
         {
             this.store.commit('editor/setLanguage', this.locale);
+
+            if (this.store.state.login.login != '')
+            {
+                api.post('/auth/set-language', 
+                    {
+                        language: this.locale == 'ru' ? 'ru_RU' : 'en_EN'
+                    },
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
+            }
         }
     }
 }

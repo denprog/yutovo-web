@@ -122,6 +122,10 @@ def setLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
     b.click()
 
+def getLanguage(driver):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language-select')))
+    return b.text
+
 def getDbConnection():
     return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "11", port = 5432)
 
@@ -138,6 +142,8 @@ def clearTestUser(conn):
     cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test1\')')
     cursor.execute('delete from user_sessions where user_id in (select user_id from users where login=\'test2\')')
     cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test2\')')
+    cursor.execute('update users set language=\'\' where login=\'test1\'')
+    cursor.execute('update users set language=\'\' where login=\'test2\'')
     conn.commit()
 
 def fileContains(conn, document_id, str):

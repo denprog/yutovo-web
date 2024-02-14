@@ -201,11 +201,7 @@ export default
                 ).then(
                 function(response)
                 {
-                    console.log(response);
-                    if (response.data.language == 'ru_RU')
-                        s.commit('editor/setLanguage', 'ru');
-                    else
-                        s.commit('editor/setLanguage', 'en');
+                    s.commit('editor/setLanguage', response.data.language);
                 }
             ).catch(
                 function(response)

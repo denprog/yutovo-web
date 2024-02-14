@@ -10,7 +10,16 @@ const mutation: MutationTree<EditorInterface> =
 
     setLanguage(state, language)
     {
-        state.language = language;
+        if (language == '')
+        {
+            //set system language
+            if (navigator.language)
+                language = navigator.language;
+        }
+        if (language.startsWith('ru'))
+            state.language = 'ru';
+        else
+            state.language = 'en';
     },
 
     setDocumentName(state, document_name)

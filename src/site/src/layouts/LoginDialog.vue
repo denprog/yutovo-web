@@ -96,10 +96,7 @@ export default {
                             }
                         }
 
-                        if (response.data.language == 'ru_RU')
-                            store.commit('editor/setLanguage', 'ru');
-                        else
-                            store.commit('editor/setLanguage', 'en');
+                        store.commit('editor/setLanguage', response.data.language);
                         
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
                     }

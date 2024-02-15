@@ -6,6 +6,7 @@
 #include <yutovo_editor/document.h>
 #include "web_window.h"
 #include "command_map.h"
+#include "utils.h"
 
 using emscripten::val;
 using namespace yutovo;
@@ -134,8 +135,8 @@ void MainLoop(void* arg)
     {
         window->update_toolbar = false;
 
-        const CaretState& c = window->current_editor_state.caret_state;
-        const SelectionState& s = window->current_editor_state.selection_state;
+        const CaretState c = window->current_editor_state.caret_state;
+        const SelectionState s = window->current_editor_state.selection_state;
         StringFormat format;
         ParagraphFormat paragraph_format;
 
@@ -173,9 +174,9 @@ void MainLoop(void* arg)
             {
                 for (int i = state.start; i < state.start + state.size; ++i)
                 {
-                    ElementId _id = GetChild(state.id, i);
+                    ElementId s_id = GetChild(state.id, i);
                     StringFormat f;
-                    document->GetStringFormat(_id, f);
+                    document->GetStringFormat(s_id, f);
                     if (format.family != "" && format.family != f.family)
                         format.family = "";
                     if (format.size != 0 && format.size != f.size)
@@ -743,6 +744,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file, const int docu
 {
     auto s = ToUtfString(file);
     document->LoadJson(s, document_id);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFilePart(const char* part_file, const int document_id, const int finish)
+{
+    static std::string file;
+    file += part_file;
+    if (finish)
+    {
+        auto _s = ToUtfString(file);
+        file = "";
+        document->LoadJson(_s, document_id);
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)

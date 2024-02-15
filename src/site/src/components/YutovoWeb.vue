@@ -459,18 +459,26 @@ export default
             var can_paste = false;
             try
             {
-                const data = await navigator.clipboard.read();
-                for (let i = 0; i < data.length; i++)
-                {
-                    if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain'))
+                await navigator.clipboard.read().then(data => {
+                    for (let i = 0; i < data.length; i++)
                     {
-                        can_paste = true;
-                        break;
-                    }
-                }
+                        if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain'))
+                        {
+                            can_paste = true;
+                            break;
+                        }
+                    }}
+                    ).catch(
+                    function(err)
+                    {
+                        console.log(err);
+                        return;
+                    });
             }
             catch (err)
             {
+                console.log(err);
+                return;
             }
 
             button = document.getElementById('undo-button');
@@ -944,7 +952,7 @@ export default
                         //open previous document or create a new one
                         get_last_document().then(_last_document_id =>
                             {
-                                if (_last_document_id == 0)
+                                if (_last_document_id == 0 || _last_document_id == id)
                                     window.dispatchEvent(new CustomEvent('onNew', {}));
                                 else
                                     window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: _last_document_id}}));
@@ -980,7 +988,15 @@ export default
                 ).then(
                     function(response)
                     {
-                        window.Module.cwrap('OnTaskFile', 'void', ['string', 'int'])(JSON.stringify(response.data), 0);
+                        var json = JSON.stringify(response.data);
+                        var i = 0;
+                        for (; i < json.length - 1024 * 10; i += 1024 * 10)
+                        {
+                            var s = json.substr(i, 1024 * 10);
+                            window.Module.cwrap('OnTaskFilePart', 'void', ['string', 'int', 'int'])(s, 0, 0);
+                        }
+                        var s = json.substr(i);
+                        window.Module.cwrap('OnTaskFilePart', 'void', ['string', 'int', 'int'])(s, 0, 1);
                         canvas.focus();
                     }
                 ).catch(

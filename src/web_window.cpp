@@ -356,28 +356,30 @@ void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
     std::lock_guard<std::mutex> lock(draw_mutex);
     needs_render = false;
 
-    SDL_RenderClear(dest_renderer);
-
     if (SDL_MUSTLOCK(surface))
         SDL_LockSurface(surface);
     if (SDL_MUSTLOCK(dest_surface))
         SDL_LockSurface(dest_surface);
-    
+
+    SDL_RenderClear(dest_renderer);
+
     int r = SDL_BlitSurface(surface, nullptr, dest_surface, nullptr);
     if (r < 0)
     {
         printf("SDL_BlitSurface error: %s\n", TTF_GetError());
+        SDL_UnlockSurface(dest_surface);
+        SDL_UnlockSurface(surface);
         return;
     }
-
-    SDL_UnlockSurface(dest_surface);
-    SDL_UnlockSurface(surface);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(dest_renderer, dest_surface);
     SDL_RenderCopyF(dest_renderer, texture, NULL, NULL);
     SDL_DestroyTexture(texture);
 
     SDL_RenderPresent(dest_renderer);
+
+    SDL_UnlockSurface(dest_surface);
+    SDL_UnlockSurface(surface);
 }
 
 void WebWindow::SocketTasks()

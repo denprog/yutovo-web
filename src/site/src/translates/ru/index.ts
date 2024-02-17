@@ -28,7 +28,7 @@ export default {
     'User units': 'Пользовательские размерности',
 
     'New document': 'Новый документ',
-    'Open document': 'Открыть документ',
+    'Upload document': 'Загрузить документ',
     'Save document': 'Сохранить документ',
     'Save document as': 'Сохранить документ как',
     'Rename document': 'Переименовать документ',

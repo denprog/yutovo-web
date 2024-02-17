@@ -39,10 +39,6 @@ def new(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'new-button')))
     b.click()
 
-def open(driver):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'open-button')))
-    b.click()
-
 def save(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'save-button')))
     b.click()

@@ -1,12 +1,13 @@
 <template>
     <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
+        <q-file style="display: none" v-model="yutovo_file_model" @update:model-value="onFileUpload" accept=".yut" ref="yutovo_file"></q-file>
         <q-btn-group id="editor-toolbar" flat square unelevated stretch>
             <q-btn size="14px" id="new-button" square dense @click="onNew();" icon="img:/images/standard/new.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('New document') }}</q-tooltip>
             </q-btn>
-            <q-btn size="14px" id="open-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onOpen();" 
+            <q-btn size="14px" id="upload-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onUpload();" 
                 icon="img:/images/standard/open.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Open document') }}</q-tooltip>
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Upload document') }}</q-tooltip>
             </q-btn>
             <q-btn size="14px" id="save-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();" 
                 icon="img:/images/standard/save.png">
@@ -213,6 +214,9 @@ export default
 
         var current_task;
 
+        const yutovo_file_model = ref(null);
+        const yutovo_file = ref(null);
+
         return {
             style,
 
@@ -256,9 +260,30 @@ export default
                 }
             },
 
+            onFileUpload() {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    if (yutovo_file_model.value)
+                    {
+                        window.dispatchEvent(new CustomEvent('newDocument', 
+                            {
+                                detail:
+                                {
+                                    name: yutovo_file_model.value.name,
+                                    json: reader.result
+                                }
+                            }));
+                    }
+                }
+                reader.readAsText(yutovo_file_model.value);
+            },
+
             last_documents: [],
 
-            current_task
+            current_task,
+
+            yutovo_file_model,
+            yutovo_file
         };
     },
 
@@ -627,9 +652,9 @@ export default
             canvas.focus();
         },
 
-        onOpen()
+        onUpload()
         {
-            window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: Cookies.get('document_id')}}));
+            this.yutovo_file.pickFiles();
         },
 
         onSave()
@@ -654,6 +679,7 @@ export default
         {
             var s = this.store;
             var get_last_document = this.getLastDocument;
+            var last_documents = this.last_documents;
             this.$q.dialog({
                 title: 'Confirm',
                 message: 'Delete the document?',
@@ -670,6 +696,10 @@ export default
                         function(response)
                         {
                             console.log(response);
+                            var id = Cookies.get('document_id');
+                            const i = last_documents.indexOf(id);
+                            if (i > -1)
+                                last_documents.splice(i, 1);
                             //open previous document or create a new one
                             get_last_document().then(_last_document_id =>
                                 {
@@ -783,9 +813,13 @@ export default
 
         async newDocument(event)
         {
-            console.log('newDocument ', event.detail == null ? '' : event.detail.json);
+            console.log('newDocument ', event);
             var s = this.store;
-            api.post('/service/new-document', event.detail == null ? {} : event.detail.json,
+            api.post('/service/new-document', event.detail == null ? {} : 
+                {
+                    json: event.detail.json,
+                    name: event.detail.name
+                },
                 {
                     headers:
                     {
@@ -878,7 +912,7 @@ export default
                             if (response.response.status == 403)
                             {
                                 //save this document with own id
-                                window.dispatchEvent(new CustomEvent('newDocument'), {detail: {json: json}});
+                                window.dispatchEvent(new CustomEvent('newDocument', {detail: {json: json}}));
                             }
                             else
                             {
@@ -909,7 +943,7 @@ export default
                 last_document_id = this.last_documents.pop();
                 for (let j = 0; j < this.last_documents.length;)
                 {
-                    if (this.last_documents[j] == i)
+                    if (this.last_documents[j] == last_document_id)
                         this.last_documents.splice(j, 1);
                     else
                         ++j;

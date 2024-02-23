@@ -11,7 +11,8 @@ std::map<std::string, std::string> Fonts::font_files =
         {"Courier New", "Courier_New.ttf"},
         {"Courier", "Courier_New.ttf"},
         {"Times New Roman", "Times_New_Roman.ttf"},
-        {"FreeMono", "FreeMono.ttf"}
+        {"FreeMono", "FreeMono.ttf"},
+        {"DejaVu Serif", "DejaVuSerif.ttf"}
     };
 
 Fonts::~Fonts()

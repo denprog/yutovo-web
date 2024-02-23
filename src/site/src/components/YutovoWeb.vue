@@ -111,6 +111,12 @@
             <q-btn size="14px" square dense @click="onFences();" icon="img:/images/algebra/fences.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Fences') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onSum();" icon="img:/images/algebra/sum.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Sum') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onProduct();" icon="img:/images/algebra/product.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Product') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" square dense @click="onAssignment();" icon="img:/images/algebra/assignment.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Assignment') }}</q-tooltip>
             </q-btn>
@@ -227,7 +233,7 @@ export default
 
             font_family_model: ref('Arial'),
             font_family: [
-                '', 'Arial', 'Courier New', 'Free Mono', 'Times New Roman'
+                '', 'Arial', 'Courier New', 'Free Mono', 'Times New Roman', 'DejaVu Serif'
             ],
 
             font_size_model: ref('14'),
@@ -1200,6 +1206,18 @@ export default
         onFences()
         {
             Module.cwrap('OnFences', 'void', [])();
+            canvas.focus();
+        },
+
+        onSum()
+        {
+            Module.cwrap('OnSum', 'void', [])();
+            canvas.focus();
+        },
+
+        onProduct()
+        {
+            Module.cwrap('OnProduct', 'void', [])();
             canvas.focus();
         },
 

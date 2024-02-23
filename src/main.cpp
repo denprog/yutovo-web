@@ -654,6 +654,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFences()
     document->InsertFences(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSum()
+{
+    if (!document)
+        return;
+    document->InsertSum(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnProduct()
+{
+    if (!document)
+        return;
+    document->InsertProduct(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
 {
     if (!document)

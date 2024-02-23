@@ -57,6 +57,8 @@ export default {
     'Root of degree': 'Корень степени',
     'Subscript': 'Нижний регистр',
     'Fences': 'Скобки',
+    'Sum': 'Сумма',
+    'Product': 'Произведение',
     'Assignment': 'Присваивание',
     'Equation': 'Равенство',
 

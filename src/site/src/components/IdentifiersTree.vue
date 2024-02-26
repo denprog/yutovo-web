@@ -51,34 +51,38 @@ export default {
         var last_code_id;
         var last_solver_guid;
 
-        const addIdentifiers = (data, id, label) =>
+        const addIdentifiers = (obj, t, path, tr, arr) =>
         {
-            identifiers.value.push({
-                'id': id,
-                'label': label,
-                'selectable': false,
-                'children': []
-            });
-            var t = identifiers.value[identifiers.value.length - 1]['children'];
-            for (var prop in data[id])
+            if (obj == null)
+                return;
+            for (var prop in obj)
             {
-                var name = data[id][prop].name;
-                t.push({
-                    'id': id + '/' + name,
-                    'label': name,
-                    'selectable': true
-                });
+                if (arr)
+                {
+                    addIdentifiers(obj[prop], t, path, tr, !arr);
+                    continue;
+                }
+                if (prop == 'name')
+                {
+                    let p = path + obj[prop];
+                    t.push({
+                        'id': p,
+                        'label': obj[prop],
+                        'selectable': true
+                    });
+                }
+                else
+                {
+                    let p = path + prop + '/';
+                    t.push({
+                        'id': p,
+                        'label': tr(prop),
+                        'selectable': false,
+                        'children': []
+                    });
+                    addIdentifiers(obj[prop], t[t.length - 1]['children'], p, tr, !arr);
+                }
             }
-        };
-
-        const updateIdentifiers = (data, t) =>
-        {
-            addIdentifiers(data, 'builtin_functions', t('Builtin functions'));
-            addIdentifiers(data, 'user_functions', t('User functions'));
-            addIdentifiers(data, 'builtin_variables', t('Builtin variables'));
-            addIdentifiers(data, 'user_variables', t('User variables'));
-            addIdentifiers(data, 'builtin_units', t('Builtin units'));
-            addIdentifiers(data, 'user_units', t('User units'));
         };
 
         const resetIdentifiersFilter = () =>
@@ -112,7 +116,8 @@ export default {
                     function(response)
                     {
                         identifiers.value = [];
-                        updateIdentifiers(response.data, t);
+                        if (response.data.error == null)
+                            addIdentifiers(response.data, identifiers.value, '/', t, false);
                     }
                 ).catch(
                     function(response)
@@ -126,10 +131,10 @@ export default {
         const onIdentifierSelected = (target) =>
         {
             var s = target.split('/');
-            if (s[0] == 'builtin_functions' || s[0] == 'user_functions')
-                window.Module.cwrap('InsertFunction', 'void', ['string'])(s[1]);
+            if (s[1] == 'Functions')
+                window.Module.cwrap('InsertFunction', 'void', ['string'])(s[2]);
             else
-                window.Module.cwrap('InsertString', 'void', ['string'])(s[1]);
+                window.Module.cwrap('InsertString', 'void', ['string'])(s[s.length - 1]);
             var canvas = document.getElementById('canvas');
             canvas.focus();
         };

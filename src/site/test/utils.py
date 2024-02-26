@@ -100,12 +100,13 @@ def insertCode(driver):
     c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'code-button')))
     c.click()
 
-def clickIdentifier(driver, category, identifier):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category + '\')]')))
-    b.click()
-    time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + identifier + '\')]')))
-    b.click()
+def clickIdentifier(driver, category):
+    arr = category.split('/')
+    for i in range(len(arr)):
+        print(arr[i])
+        b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + arr[i] + '\')]')))
+        b.click()
+        time.sleep(1)
 
 def getDocumentName(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'document-name')))

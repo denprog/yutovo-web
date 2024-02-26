@@ -255,13 +255,13 @@ class TestDocuments(unittest.TestCase):
         utils.writeText(self.driver, '12345')
         utils.insertCode(self.driver)
         time.sleep(1)
-        utils.clickIdentifier(self.driver, 'Builtin functions', 'arccos')
+        utils.clickIdentifier(self.driver, 'Functions/arccos')
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'arccos'))
 
         utils.setLanguage(self.driver, 'Русский')
         time.sleep(2)
-        utils.clickIdentifier(self.driver, 'Встроенные размерности', 'сек')
+        utils.clickIdentifier(self.driver, 'Размерности/СИ/время/сек')
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'сек'))
 

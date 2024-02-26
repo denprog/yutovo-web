@@ -7,6 +7,7 @@
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">Registration</div>
                         <q-input square v-model="login" lazy-rules :rules="[this.required]" type="username" label="login" />
+                        <q-input square v-model="name" type="username" label="name" />
                         <q-input square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" label="email" />
                         <q-input square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" label="password" />
                         <q-input ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
@@ -36,6 +37,7 @@ export default {
     setup()
     {
         const login = ref('');
+        const name = ref('');
         const email = ref('');
         const password = ref('');
         const repassword = ref(null);
@@ -68,6 +70,7 @@ export default {
             api.post('/auth/register', 
                 {
                     login: login.value,
+                    name: name.value,
                     email: email.value,
                     password: password.value
                 }
@@ -114,6 +117,7 @@ export default {
             title: 'Register',
             registerDialog,
             login,
+            name,
             email,
             password,
             repassword,

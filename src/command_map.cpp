@@ -82,6 +82,8 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(), '(', "\\open_fence", std::function<void ()>(std::bind(&Document::InsertOpenFence, document.get(), true)), CommandContext::Formula);
     Add(KeySequence(), ')', "\\close_fence", std::function<void ()>(std::bind(&Document::InsertCloseFence, document.get(), true)), CommandContext::Formula);
     Add(KeySequence(), ':', "\\assign", std::function<void ()>(std::bind(&Document::InsertAssignment, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), '~', "\\unit", std::function<void ()>(std::bind(static_cast<uint(Document::*)(bool)>(&Document::InsertUnit), 
+        document.get(), true)), CommandContext::Formula);
 }
 
 bool ShortcutsMap::Call(const KeySequence& shortcut, char32_t symbol, const EditorState& editor_state)

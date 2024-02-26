@@ -71,6 +71,7 @@ export default {
     'Sum': 'Сумма',
     'Product': 'Произведение',
     'Assignment': 'Присваивание',
+    'Unit': 'Размерность',
     'Equation': 'Равенство',
 
     'Filter': 'Фильтр',

@@ -675,6 +675,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
     document->InsertAssignment(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnUnit()
+{
+    if (!document)
+        return;
+    document->InsertUnit(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnEquation()
 {
     if (!document)

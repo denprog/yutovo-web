@@ -120,6 +120,9 @@
             <q-btn size="14px" square dense @click="onAssignment();" icon="img:/images/algebra/assignment.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Assignment') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onUnit();" icon="img:/images/algebra/unit.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Unit') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }}</q-tooltip>
             </q-btn>
@@ -1224,6 +1227,12 @@ export default
         onAssignment()
         {
             Module.cwrap('OnAssignment', 'void', [])();
+            canvas.focus();
+        },
+
+        onUnit()
+        {
+            Module.cwrap('OnUnit', 'void', [])();
             canvas.focus();
         },
 

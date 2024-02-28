@@ -1,54 +1,68 @@
 <template>
-    <q-layout view="hHh lpR fFf">
-        <q-header elevated class="bg-primary text-white">
-            <q-toolbar>
-                <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+    <div style="height:100%;">
+        <q-layout view="hHh lpR fFf">
+            <q-header elevated class="bg-primary text-white">
+                <q-toolbar>
+                    <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-                <div>
-                    <q-toolbar-title>
-                        <q-btn no-caps dense flat @click="$router.push('/')">
-                            <q-avatar>
-                                <img src="Quasar_Logo.png">
-                            </q-avatar>
-                        </q-btn>
-                        <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
-                            {{ $t('yutovo_caption') }}
-                        </q-btn>
-                    </q-toolbar-title>
-                </div>
+                    <div>
+                        <q-toolbar-title>
+                            <q-btn no-caps dense flat @click="$router.push('/')">
+                                <q-avatar>
+                                    <img src="Quasar_Logo.png">
+                                </q-avatar>
+                            </q-btn>
+                            <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
+                                {{ $t('yutovo_caption') }}
+                            </q-btn>
+                        </q-toolbar-title>
+                    </div>
 
-                <div class="text-white text-h6 q-pl-lg" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
-                <q-space />
+                    <div class="text-white text-h6 q-pl-lg" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
+                    <q-space />
 
-                <q-select v-model="locale" id='language-select' class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
-                    dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
+                    <q-select v-model="locale" id='language-select' class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
+                        dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
 
-                <div class="text-white q-pa-sm" id='login_caption' v-if="loginStr != ''">{{ loginStr }}</div>
-                <q-btn id='login' dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
-                <q-btn id='register' dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
-                <q-btn id='logout' dense no-caps flat v-if="logoutState" @click="logout">Logout</q-btn>
-                <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
-            </q-toolbar>
-        </q-header>
+                    <div class="text-white q-pa-sm" id='login_caption' v-if="loginStr != ''">{{ loginStr }}</div>
+                    <q-btn id='login' dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
+                    <q-btn id='register' dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
+                    <q-btn id='logout' dense no-caps flat v-if="logoutState" @click="logout">Logout</q-btn>
+                    <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
+                </q-toolbar>
+            </q-header>
 
-        <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
-            <documents-tree v-if="loginStr != ''">
-            </documents-tree>
-            <tasks-tree>
-            </tasks-tree>
-            <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
-        </q-drawer>
+            <div style="height:100%;">
+                <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
+                    <div style="height:calc(85vh);">
+                        <div style="height:50%;">
+                            <documents-tree v-if="loginStr != ''">
+                            </documents-tree>
+                        </div>
+                        <div style="height:50%;">
+                            <tasks-tree>
+                            </tasks-tree>
+                        </div>
+                    </div>
+                    <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
+                </q-drawer>
+            </div>
 
-        <q-drawer show-if-above :width="rightDrawerWidth" v-model="rightDrawerOpen" side="right" bordered>
-            <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeRightDrawer" class="q-right_drawer__resizer"></div>
-            <identifiers-tree>
-            </identifiers-tree>
-        </q-drawer>
+            <div style="height:100%;">
+                <q-drawer show-if-above :width="rightDrawerWidth" v-model="rightDrawerOpen" side="right" bordered>
+                    <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeRightDrawer" class="q-right_drawer__resizer"></div>
+                    <div style="height:calc(85vh);">
+                        <identifiers-tree>
+                        </identifiers-tree>
+                    </div>
+                </q-drawer>
+            </div>
 
-        <q-page-container>
-            <router-view />
-        </q-page-container>
-    </q-layout>
+            <q-page-container>
+                <router-view />
+            </q-page-container>
+        </q-layout>
+    </div>
 </template>
 
 <script>

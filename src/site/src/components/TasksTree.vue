@@ -1,16 +1,20 @@
 <template>
-    <div class="q-pa-md">
+    <div class="q-pa-md" style="height:100%;">
         <div class="row">
             <div class="text-blue no-margin no-padding text-h6">{{ $t('Tasks') }}</div>
         </div>
-        <div class="row">
-            <q-input class="q-pa-none" dense ref="tasksFilterRef" v-model="tasksFilter" v-bind:label="$t('Filter')">
-                <template v-slot:append>
-                    <q-icon v-if="tasksFilter !== ''" name="clear" class="cursor-pointer" @click="resetTasksFilter" />
-                </template>
-            </q-input>
-            <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
-                :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all />
+        <div class="row" style="height:100%;">
+            <div style="height:20%;overflow-y:hidden;">
+                <q-input class="q-pa-none" dense ref="tasksFilterRef" v-model="tasksFilter" v-bind:label="$t('Filter')">
+                    <template v-slot:append>
+                        <q-icon v-if="tasksFilter !== ''" name="clear" class="cursor-pointer" @click="resetTasksFilter" />
+                    </template>
+                </q-input>
+            </div>
+            <div style="height:80%;overflow:auto;">
+                <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
+                    :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all />
+            </div>
         </div>
     </div>
 </template>

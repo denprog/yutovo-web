@@ -1,17 +1,21 @@
 <template>
-    <div class="q-pa-md">
+    <div class="q-pa-md" style="height:100%;">
         <div class="row">
             <div class="text-blue no-margin no-padding text-h6">{{ $t('Documents') }}</div>
         </div>
-        <div class="row">
-            <q-input class="q-pa-none" dense ref="documentsFilterRef" v-model="documentsFilter" v-bind:label="$t('Filter')">
-                <template v-slot:append>
-                    <q-icon v-if="documentsFilter !== ''" name="clear" class="cursor-pointer" @click="resetDocumentsFilter" />
-                </template>
-            </q-input>
-            <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
-                :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all>
-            </q-tree>
+        <div class="row" style="height:100%;">
+            <div style="height:20%;overflow-y:hidden;">
+                <q-input class="q-pa-none" dense ref="documentsFilterRef" v-model="documentsFilter" v-bind:label="$t('Filter')">
+                    <template v-slot:append>
+                        <q-icon v-if="documentsFilter !== ''" name="clear" class="cursor-pointer" @click="resetDocumentsFilter" />
+                    </template>
+                </q-input>
+            </div>
+            <div style="height:80%;overflow:auto;">
+                <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
+                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all>
+                </q-tree>
+            </div>
         </div>
     </div>
 </template>

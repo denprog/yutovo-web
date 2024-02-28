@@ -1,16 +1,20 @@
 <template>
-    <div class="q-pa-md">
+    <div class="q-pa-md" style="height:100%;">
         <div class="row">
             <div class="text-blue no-margin no-padding text-h6">{{ $t('Identifiers') }}</div>
         </div>
-        <div class="row">
-            <q-input class="q-pa-none" dense ref="identifiersFilterRef" v-model="identifiersFilter" v-bind:label="$t('Filter')">
-                <template v-slot:append>
-                    <q-icon v-if="identifiersFilter !== ''" name="clear" class="cursor-pointer" @click="resetIdentifiersFilter" />
-                </template>
-            </q-input>
-            <q-tree :nodes="identifiers" dense v-model:selected="selectedIdentifier" ref="identifiersRef" node-key="id" label-key="label" 
-                :filter="identifiersFilter" @update:selected="onIdentifierSelected" default-expand-all />
+        <div class="row" style="height:100%;">
+            <div style="height:10%;overflow-y:hidden;">
+                <q-input class="q-pa-none" dense ref="identifiersFilterRef" v-model="identifiersFilter" v-bind:label="$t('Filter')">
+                    <template v-slot:append>
+                        <q-icon v-if="identifiersFilter !== ''" name="clear" class="cursor-pointer" @click="resetIdentifiersFilter" />
+                    </template>
+                </q-input>
+            </div>
+            <div style="height:90%;overflow:auto;">
+                <q-tree :nodes="identifiers" dense v-model:selected="selectedIdentifier" ref="identifiersRef" node-key="id" label-key="label" 
+                    :filter="identifiersFilter" @update:selected="onIdentifierSelected" default-expand-all />
+            </div>
         </div>
     </div>
 </template>

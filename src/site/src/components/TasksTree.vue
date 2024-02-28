@@ -11,7 +11,7 @@
                     </template>
                 </q-input>
             </div>
-            <div style="height:80%;overflow:auto;">
+            <div style="height:80%;width:100%;overflow:auto;">
                 <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
                     :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all />
             </div>

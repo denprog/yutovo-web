@@ -4,16 +4,16 @@
             <div class="text-blue no-margin no-padding text-h6">{{ $t('Tasks') }}</div>
         </div>
         <div class="row" style="height:100%;">
-            <div style="height:20%;overflow-y:hidden;">
+            <div style="overflow-y:hidden;">
                 <q-input class="q-pa-none" dense ref="tasksFilterRef" v-model="tasksFilter" v-bind:label="$t('Filter')">
                     <template v-slot:append>
                         <q-icon v-if="tasksFilter !== ''" name="clear" class="cursor-pointer" @click="resetTasksFilter" />
                     </template>
                 </q-input>
             </div>
-            <div style="height:80%;width:100%;overflow:auto;">
+            <div style="height:85%;width:100%;overflow:auto;">
                 <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
-                    :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all />
+                    :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all no-selection-unset />
             </div>
         </div>
     </div>
@@ -26,6 +26,18 @@ import { api } from 'boot/boot'
 
 export default
 {
+    created()
+    {
+        if (window.addEventListener)
+        {
+            window.addEventListener('clearTaskSelection', this.clearTaskSelection, false);
+        }
+        else
+        {
+            window.attachEvent('clearTaskSelection', this.clearTaskSelection);
+        }
+    },
+
     setup()
     {
         const tasksFilter = ref('');
@@ -37,6 +49,7 @@ export default
         ];
         const tasks = ref(tasksNodes);
         const tasksRef = ref(null);
+        const selectedTask = ref(null);
 
         const store = useStore();
 
@@ -100,7 +113,13 @@ export default
 
         const onTaskSelected = (target) =>
         {
+            window.dispatchEvent(new CustomEvent('clearDocumentSelection', {}));
             window.dispatchEvent(new CustomEvent('loadTask', {detail: {task: target}}));
+        };
+
+        const clearTaskSelection = () =>
+        {
+            selectedTask.value = ref(null);
         };
 
         loadTasks();
@@ -113,8 +132,9 @@ export default
             tasksNodes,
             tasks,
             tasksRef,
-            selectedTask: ref(null),
+            selectedTask,
             onTaskSelected,
+            clearTaskSelection,
             loadTasks
         }
     },

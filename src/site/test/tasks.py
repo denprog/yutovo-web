@@ -54,5 +54,27 @@ class TestTasks(unittest.TestCase):
         self.assertTrue(alert.text, 'Error loading the document')
         alert.accept()
 
+    #Click on a document, then on a task, then on a document
+    def test_tasks3(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(4)
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_1')
+        time.sleep(1)
+        utils.save(self.driver)
+
+        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Momentum of force')
+        time.sleep(2)
+        self.assertTrue(utils.documentContains(self.driver, 'Newton'))
+
+        utils.clickDocument(self.driver, 'document_1')
+        time.sleep(2)
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
+
+        utils.clickCategory(self.driver, 'Momentum of force')
+        time.sleep(2)
+        self.assertTrue(utils.documentContains(self.driver, 'Newton'))
+
 if __name__ == '__main__':
     unittest.main()

@@ -4,16 +4,16 @@
             <div class="text-blue no-margin no-padding text-h6">{{ $t('Documents') }}</div>
         </div>
         <div class="row" style="height:100%;">
-            <div style="height:20%;overflow-y:hidden;">
+            <div style="overflow-y:hidden;">
                 <q-input class="q-pa-none" dense ref="documentsFilterRef" v-model="documentsFilter" v-bind:label="$t('Filter')">
                     <template v-slot:append>
                         <q-icon v-if="documentsFilter !== ''" name="clear" class="cursor-pointer" @click="resetDocumentsFilter" />
                     </template>
                 </q-input>
             </div>
-            <div style="height:80%;width:100%;overflow:auto;">
+            <div style="height:85%;width:100%;overflow:auto;">
                 <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
-                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all>
+                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset>
                 </q-tree>
             </div>
         </div>
@@ -33,10 +33,12 @@ export default
         if (window.addEventListener)
         {
             window.addEventListener('listDocuments', this.listDocuments, false);
+            window.addEventListener('clearDocumentSelection', this.clearDocumentSelection, false);
         }
         else
         {
             window.attachEvent('listDocuments', this.listDocuments);
+            window.attachEvent('clearDocumentSelection', this.clearDocumentSelection);
         }
     },
 
@@ -51,6 +53,7 @@ export default
         ];
         const documents = ref(documentsNodes);
         const documentsRef = ref(null);
+        const selectedDocument = ref(null);
 
         const store = useStore();
 
@@ -101,8 +104,14 @@ export default
                 );
         };
 
+        const clearDocumentSelection = () =>
+        {
+            selectedDocument.value = ref(null);
+        };
+
         const onDocumentSelected = (target) =>
         {
+            window.dispatchEvent(new CustomEvent('clearTaskSelection', {}));
             window.dispatchEvent(new CustomEvent('loadDocument', 
                 {
                     detail: 
@@ -122,8 +131,9 @@ export default
             documentsNodes,
             documents,
             documentsRef,
-            selectedDocument: ref(null),
+            selectedDocument,
             onDocumentSelected,
+            clearDocumentSelection,
             listDocuments
         }
     },

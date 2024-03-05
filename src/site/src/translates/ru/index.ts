@@ -68,11 +68,18 @@ export default {
     'Root of degree': 'Корень степени',
     'Subscript': 'Нижний регистр',
     'Fences': 'Скобки',
+    'Radian': 'Радиан',
+    'Degree': 'Градус',
+    'Minute': 'Минута',
+    'Second': 'Секунда',
+    'Grad': 'Град',
     'Sum': 'Сумма',
     'Product': 'Произведение',
     'Assignment': 'Присваивание',
     'Unit': 'Размерность',
     'Equation': 'Равенство',
+    'rad': 'рад',
+    'grad': 'град',
 
     'Filter': 'Фильтр',
 

@@ -111,6 +111,21 @@
             <q-btn size="14px" square dense @click="onFences();" icon="img:/images/algebra/fences.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Fences') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onRadian();" icon="img:/images/algebra/radian.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Radian') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onDegree();" icon="img:/images/algebra/degree.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Degree') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onMinute();" icon="img:/images/algebra/minute.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Minute') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onSecond();" icon="img:/images/algebra/second.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onGrad();" icon="img:/images/algebra/grad.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Grad') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" square dense @click="onSum();" icon="img:/images/algebra/sum.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Sum') }}</q-tooltip>
             </q-btn>
@@ -1209,6 +1224,36 @@ export default
         onFences()
         {
             Module.cwrap('OnFences', 'void', [])();
+            canvas.focus();
+        },
+
+        onRadian()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])(this.$t('rad'));
+            canvas.focus();
+        },
+
+        onDegree()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('°');
+            canvas.focus();
+        },
+
+        onMinute()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('\'');
+            canvas.focus();
+        },
+
+        onSecond()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('\'\'');
+            canvas.focus();
+        },
+
+        onGrad()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])(this.$t('grad'));
             canvas.focus();
         },
 

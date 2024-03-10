@@ -1,7 +1,7 @@
 <template>
     <div style="height:100%;">
         <q-layout view="hHh lpR fFf">
-            <q-header elevated class="bg-primary text-white">
+            <q-header id="header" elevated class="bg-primary text-white">
                 <q-toolbar>
                     <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
@@ -61,6 +61,14 @@
             <q-page-container>
                 <router-view />
             </q-page-container>
+
+            <q-footer id="footer" class="q-pa-none text-white">
+                <div style="float:right;">
+                    <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="downloadDialog">Download PC version</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="licenseDialog">License</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='about' dense no-caps flat @click="showAboutDialog">About</q-btn>
+                </div>
+            </q-footer>
         </q-layout>
     </div>
 </template>
@@ -72,6 +80,7 @@ import RegisterDialog from 'layouts/RegisterDialog.vue';
 import TasksTree from 'components/TasksTree.vue';
 import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
+import AboutDialog from 'layouts/AboutDialog.vue';
 import { Cookies } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
@@ -301,6 +310,27 @@ export default
                     }
                 );
             }
+        },
+
+        downloadDialog()
+        {
+            console.log("downloadDialog");
+        },
+
+        licenseDialog()
+        {
+            console.log("licenseDialog");
+        },
+
+        showAboutDialog()
+        {
+            console.log("aboutDialog");
+            this.aboutDialog = this.$q
+                .dialog({
+                    component: AboutDialog,
+                    parent: this,
+                    apiResponse: this.resp
+                })
         }
     }
 }

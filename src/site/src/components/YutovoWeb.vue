@@ -276,11 +276,15 @@ export default
                 var editor = document.getElementById('editor');
                 if (editor)
                 {
-                    var scroll_width = window.innerWidth - document.documentElement.clientWidth;
                     var standard_toolbar = document.getElementById('standard-toolbar');
                     var algebra_toolbar = document.getElementById('algebra-toolbar');
-                    editor.style.height = 'calc(100vh - ' + standard_toolbar.clientHeight.toString() + 'px - ' + 
-                        algebra_toolbar.clientHeight.toString() + 'px - ' + scroll_width + 'px - 2em)';
+                    var header = document.getElementById('header');
+                    var footer = document.getElementById('footer');
+                    editor.style.height = 'calc(' + window.innerHeight + 'px - ' + 
+                        standard_toolbar.clientHeight.toString() + 'px - ' + 
+                        algebra_toolbar.clientHeight.toString() + 'px - ' + 
+                        header.clientHeight.toString() + 'px - ' + 
+                        footer.clientHeight.toString() + 'px)';
                 }
             },
 

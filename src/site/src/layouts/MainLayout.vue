@@ -64,8 +64,8 @@
 
             <q-footer id="footer" class="q-pa-none text-white">
                 <div style="float:right;">
-                    <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="downloadDialog">Download PC version</q-btn>
-                    <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="licenseDialog">License</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="showDownloadDialog">Download PC version</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="showLicenseDialog">Terms of use</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='about' dense no-caps flat @click="showAboutDialog">About</q-btn>
                 </div>
             </q-footer>
@@ -81,6 +81,7 @@ import TasksTree from 'components/TasksTree.vue';
 import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
 import AboutDialog from 'layouts/AboutDialog.vue';
+import LicenseDialog from 'layouts/LicenseDialog.vue';
 import { Cookies } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
@@ -312,19 +313,23 @@ export default
             }
         },
 
-        downloadDialog()
+        showDownloadDialog()
         {
             console.log("downloadDialog");
         },
 
-        licenseDialog()
+        showLicenseDialog()
         {
-            console.log("licenseDialog");
+            this.licenseDialog = this.$q
+                .dialog({
+                    component: LicenseDialog,
+                    parent: this,
+                    apiResponse: this.resp
+                })
         },
 
         showAboutDialog()
         {
-            console.log("aboutDialog");
             this.aboutDialog = this.$q
                 .dialog({
                     component: AboutDialog,

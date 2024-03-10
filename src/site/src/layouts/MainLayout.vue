@@ -62,7 +62,7 @@
                 <router-view />
             </q-page-container>
 
-            <q-footer id="footer" class="q-pa-none text-white">
+            <q-footer id="footer" class="bg-blue-9 q-pa-none text-white">
                 <div style="float:right;">
                     <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="showDownloadDialog">Download PC version</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="showLicenseDialog">Terms of use</q-btn>
@@ -92,9 +92,27 @@ export default
 {
     components: { IdentifiersTree, TasksTree, DocumentsTree },
 
+    mounted()
+    {
+        if (!this.$q.cookies.has('app_initialized'))
+        {
+            this.$q.notify({
+                message: 'This website uses cookies for normal functioning.',
+                color: 'blue-9',
+                multiLine: true,
+                timeout: 0,
+                actions: [
+                    {
+                        label: 'OK', color: 'white', handler: () => { /* ... */ }
+                    }
+                ]
+            });
+            this.$q.cookies.set('app_initialized', true, {path: '/', expires: '30d'});
+        }
+    },
+
     setup()
     {
-        console.log('MainLayout setup');
         const leftDrawerOpen = ref(false);
         const rightDrawerOpen = ref(false);
         let initialLeftDrawerWidth;

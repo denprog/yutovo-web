@@ -311,5 +311,36 @@ class TestDocuments(unittest.TestCase):
         time.sleep(3)
         self.assertTrue(utils.documentContains(self.driver, '4,73'))
 
+    #Add documents and remove them on by one
+    def test_documents17(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(4)
+
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_1')
+        utils.save(self.driver)
+        time.sleep(1)
+
+        utils.new(self.driver)
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_2')
+        utils.save(self.driver)
+        time.sleep(1)
+
+        utils.new(self.driver)
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_3')
+        utils.save(self.driver)
+        time.sleep(1)
+
+        utils.delete(self.driver)
+        time.sleep(1)
+        utils.delete(self.driver)
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
+
 if __name__ == '__main__':
     unittest.main()

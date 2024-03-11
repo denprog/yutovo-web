@@ -731,9 +731,9 @@ export default
                             //open previous document or create a new one
                             get_last_document().then(_last_document_id =>
                                 {
+                                    Cookies.remove('document_id', {path: '/'});
                                     if (_last_document_id == 0)
                                     {
-                                        Cookies.remove('document_id', {path: '/'});
                                         window.dispatchEvent(new CustomEvent('onNew', {}));
                                     }
                                     else

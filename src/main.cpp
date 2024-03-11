@@ -215,7 +215,7 @@ void MainLoop(void* arg)
     if (window->update_identifiers)
     {
         window->update_identifiers = false;
-        const CaretState& c = window->current_editor_state.caret_state;
+        const CaretState c = window->current_editor_state.caret_state;
         uint code_id = document->FindCodeBlock(c.id);
         if (code_id == 0)
         {

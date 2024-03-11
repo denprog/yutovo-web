@@ -70,7 +70,7 @@ export default {
                 {
                     login: login.value,
                     password: password.value,
-                    load_last: !empty
+                    load_last: empty
                 }
                 ).then(
                     function(response)

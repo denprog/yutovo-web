@@ -388,6 +388,12 @@ export default
     }
 }
 
+.q-btn
+{
+    line-height: 1em;
+    font-weight: 400;
+}
+
 #documents-tree
 {
     height: 50%;

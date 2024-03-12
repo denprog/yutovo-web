@@ -70,6 +70,18 @@ def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
     b.click()
 
+def copy(driver):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'copy-button')))
+    b.click()
+
+def paste(driver):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'paste-button')))
+    b.click()
+
+def cut(driver):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'cut-button')))
+    b.click()
+
 def clickCategory(driver, name):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + name + '\')]')))
     b.click()

@@ -2,8 +2,12 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver import ActionChains
 import time
 import utils
 
@@ -18,12 +22,15 @@ class TestDocuments(unittest.TestCase):
         opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        prefs = {
+            'profile.content_settings.exceptions.clipboard': {'*': {'setting': 1}}
+        }
+        opts.add_experimental_option('prefs', prefs)
+
         self.driver = webdriver.Chrome(options = opts)
         self.driver.delete_all_cookies()
         self.driver.get(address)
         time.sleep(6)
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
-        time.sleep(1)
     
     def tearDown(self):
         self.driver.quit()
@@ -341,6 +348,48 @@ class TestDocuments(unittest.TestCase):
         utils.delete(self.driver)
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
+
+    #Copy-paste test
+    def test_documents18(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(4)
+
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_1')
+
+        for i in range(6):
+            ActionChains(self.driver).key_down(Keys.SHIFT).key_down(Keys.LEFT).perform()
+        time.sleep(1)
+        utils.copy(self.driver)
+        time.sleep(1)
+        ActionChains(self.driver).reset_actions()
+        ActionChains(self.driver).key_down(Keys.RIGHT).perform()
+        time.sleep(1)
+        utils.paste(self.driver)
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_1test_1'))
+
+    #Cut-paste test
+    def test_documents19(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(4)
+
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        c.send_keys('document_test_1')
+
+        for i in range(6):
+            ActionChains(self.driver).key_down(Keys.SHIFT).key_down(Keys.LEFT).perform()
+        time.sleep(1)
+        utils.cut(self.driver)
+        time.sleep(1)
+        ActionChains(self.driver).reset_actions()
+        ActionChains(self.driver).key_down(Keys.HOME).perform()
+        time.sleep(1)
+        utils.paste(self.driver)
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'test_1document_'))
 
 if __name__ == '__main__':
     unittest.main()

@@ -148,7 +148,7 @@
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
         <div id="scroll-container">
-            <q-menu touch-position square context-menu auto-close @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
+            <q-menu touch-position square context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
                 <q-list dense style="min-width: 100px">
                     <q-item id="copy-menu" clickable @click='onCopy();'>
                         <q-item-section>Copy</q-item-section>
@@ -158,6 +158,40 @@
                     </q-item>
                     <q-item id="cut-menu" clickable @click='onCut();'>
                         <q-item-section>Cut</q-item-section>
+                    </q-item>
+
+                    <q-separator/>
+
+                    <q-item id="present-as-menu" clickable style='display:none;'>
+                        <q-item-section square>Present as</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="present-as-auto-menu" dense clickable @click='onPresentAsAuto();'>
+                                    <div v-if="autoMenuChecked == true">&check;</div>
+                                    <q-item-section>Auto</q-item-section>
+                                </q-item>
+                                <q-item id="present-as-real-menu" dense clickable @click='onPresentAsReal();'>
+                                    <div v-if="realMenuChecked == true">&check;</div>
+                                    <q-item-section>Real</q-item-section>
+                                </q-item>
+                                <q-item id="present-as-integer-menu" dense clickable @click='onPresentAsInteger();'>
+                                    <div v-if="integerMenuChecked == true">&check;</div>
+                                    <q-item-section>Integer</q-item-section>
+                                </q-item>
+                                <q-item id="present-as-rational-menu" dense clickable @click='onPresentAsRational();'>
+                                    <div v-if="rationalMenuChecked == true">&check;</div>
+                                    <q-item-section>Rational</q-item-section>
+                                </q-item>
+                                <q-item id="present-as-complex-menu" dense clickable @click='onPresentAsComplex();'>
+                                    <div v-if="complexMenuChecked == true">&check;</div>
+                                    <q-item-section>Complex</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
                     </q-item>
                 </q-list>
             </q-menu>
@@ -241,6 +275,12 @@ export default
         const yutovo_file_model = ref(null);
         const yutovo_file = ref(null);
 
+        const autoMenuChecked = ref(null);
+        const realMenuChecked = ref(null);
+        const integerMenuChecked = ref(null);
+        const rationalMenuChecked = ref(null);
+        const complexMenuChecked = ref(null);
+
         return {
             style,
 
@@ -311,7 +351,13 @@ export default
             current_task,
 
             yutovo_file_model,
-            yutovo_file
+            yutovo_file,
+
+            autoMenuChecked,
+            realMenuChecked,
+            integerMenuChecked,
+            rationalMenuChecked,
+            complexMenuChecked
         };
     },
 
@@ -1175,6 +1221,43 @@ export default
                 cut_menu.classList.remove('disabled');
             else
                 cut_menu.classList.add('disabled');
+
+            var r = window.Module.cwrap('GetPresentAsMenu', 'bool', [])();
+            if (r != 0)
+            {
+                var present_as_menu = document.getElementById('present-as-menu');
+                present_as_menu.style.display = '';
+                this.autoMenuChecked = r == 1;
+                this.realMenuChecked = r == 2;
+                this.integerMenuChecked = r == 3;
+                this.rationalMenuChecked = r == 4;
+                this.complexMenuChecked = r == 5;
+            }
+        },
+
+        onPresentAsAuto()
+        {
+            window.Module.cwrap('OnPresentAsAuto', 'void', [])();
+        },
+
+        onPresentAsReal()
+        {
+            window.Module.cwrap('OnPresentAsReal', 'void', [])();
+        },
+
+        onPresentAsInteger()
+        {
+            window.Module.cwrap('OnPresentAsInteger', 'void', [])();
+        },
+
+        onPresentAsRational()
+        {
+            window.Module.cwrap('OnPresentAsRational', 'void', [])();
+        },
+
+        onPresentAsComplex()
+        {
+            window.Module.cwrap('OnPresentAsComplex', 'void', [])();
         },
 
         onPlus()

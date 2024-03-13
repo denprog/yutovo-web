@@ -592,6 +592,26 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool IsEmpty()
     return document->IsEmpty();
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetPresentAsMenu()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
+    if (!id.empty())
+        return 1;
+    id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
+    if (!id.empty())
+        return 2;
+    id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
+    if (!id.empty())
+        return 3;
+    id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    if (!id.empty())
+        return 4;
+    id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (!id.empty())
+        return 5;
+    return 0;
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)
@@ -801,6 +821,41 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
     assert(translate_tasks.size() > 0);
     document->InsertString(str, translate_tasks.front(), false);
     translate_tasks.pop();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsAuto()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResult(s.caret_state.id, ResultType::AUTO, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsReal()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResult(s.caret_state.id, ResultType::REAL, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsInteger()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResult(s.caret_state.id, ResultType::INTEGER, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsRational()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResult(s.caret_state.id, ResultType::RATIONAL, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsComplex()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResult(s.caret_state.id, ResultType::COMPLEX, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()

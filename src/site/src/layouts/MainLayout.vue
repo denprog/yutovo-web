@@ -399,4 +399,8 @@ export default
     height: 50%;
     overflow: scroll;
 }
+
+.q-dialog-plugin {
+    width: 200px !important;
+}
 </style>

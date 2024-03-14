@@ -148,7 +148,7 @@
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
         <div id="scroll-container">
-            <q-menu touch-position square context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
+            <q-menu ref="contextMenu" touch-position square context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
                 <q-list dense style="min-width: 100px">
                     <q-item id="copy-menu" clickable @click='onCopy();'>
                         <q-item-section>Copy</q-item-section>
@@ -162,7 +162,7 @@
 
                     <q-separator/>
 
-                    <q-item id="present-as-menu" clickable style='display:none;'>
+                    <q-item auto-close id="present-as-menu" clickable style='display:none;'>
                         <q-item-section square>Present as</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right"/>
@@ -192,6 +192,9 @@
                                 </q-item>
                             </q-list>
                         </q-menu>
+                    </q-item>
+                    <q-item id="set-precision-menu" clickable style='display:none;' @click='onSetPrecision();'>
+                        <q-item-section>Set precision</q-item-section>
                     </q-item>
                 </q-list>
             </q-menu>
@@ -281,6 +284,8 @@ export default
         const rationalMenuChecked = ref(null);
         const complexMenuChecked = ref(null);
 
+        const contextMenu = ref(null);
+
         return {
             style,
 
@@ -352,6 +357,8 @@ export default
 
             yutovo_file_model,
             yutovo_file,
+
+            contextMenu,
 
             autoMenuChecked,
             realMenuChecked,
@@ -739,13 +746,13 @@ export default
 
         onSaveAs()
         {
-            this.saveAsDialog = this.$q.dialog({component: SaveAsDialog, parent: this, apiResponse: this.resp});
+            this.$q.dialog({component: SaveAsDialog, parent: this, apiResponse: this.resp});
             canvas.focus();
         },
 
         onRename()
         {
-            this.renameDialog = this.$q.dialog({component: RenameDialog, parent: this, apiResponse: this.resp});
+            this.$q.dialog({component: RenameDialog, parent: this, apiResponse: this.resp});
             canvas.focus();
         },
 
@@ -1225,13 +1232,19 @@ export default
             var r = window.Module.cwrap('GetPresentAsMenu', 'bool', [])();
             if (r != 0)
             {
-                var present_as_menu = document.getElementById('present-as-menu');
-                present_as_menu.style.display = '';
+                var m = document.getElementById('present-as-menu');
+                m.style.display = '';
                 this.autoMenuChecked = r == 1;
                 this.realMenuChecked = r == 2;
                 this.integerMenuChecked = r == 3;
                 this.rationalMenuChecked = r == 4;
                 this.complexMenuChecked = r == 5;
+
+                if (r == 1 || r == 2 || r == 5)
+                {
+                    m = document.getElementById('set-precision-menu');
+                    m.style.display = '';
+                }
             }
         },
 
@@ -1258,6 +1271,34 @@ export default
         onPresentAsComplex()
         {
             window.Module.cwrap('OnPresentAsComplex', 'void', [])();
+        },
+
+        onSetPrecision()
+        {
+            this.contextMenu.hide();
+
+            var p = window.Module.cwrap('GetPrecision', 'int', [])();
+            if (p == -1)
+                return;
+
+            this.$q.dialog({
+                title: '<div class="text-blue text-h5">Set precision</div>',
+                prompt:
+                {
+                    model: p,
+                    inputmode: "numeric",
+                    mask: '##',
+                    min: 1,
+                    max: 99,
+                    step: 1
+                },
+                html: true,
+                cancel: true,
+                persistent: false
+            }).onOk(res => {
+                window.Module.cwrap('OnSetPrecision', 'void', ['int'])(res);
+            });
+            canvas.focus();
         },
 
         onPlus()

@@ -624,6 +624,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetPrecision()
     return document->GetPrecision(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetExp()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        return -1;
+    return document->GetExp(id);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)
@@ -875,6 +887,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSetPrecision(int precision)
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
         document->SetPrecision(s.caret_state.id, precision, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSetExp(int exp)
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetExp(s.caret_state.id, exp, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()

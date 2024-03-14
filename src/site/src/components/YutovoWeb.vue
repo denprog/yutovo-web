@@ -196,6 +196,9 @@
                     <q-item id="set-precision-menu" clickable style='display:none;' @click='onSetPrecision();'>
                         <q-item-section>Set precision</q-item-section>
                     </q-item>
+                    <q-item id="set-exp-menu" clickable style='display:none;' @click='onSetExp();'>
+                        <q-item-section>Set exponent order</q-item-section>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -1244,6 +1247,8 @@ export default
                 {
                     m = document.getElementById('set-precision-menu');
                     m.style.display = '';
+                    m = document.getElementById('set-exp-menu');
+                    m.style.display = '';
                 }
             }
         },
@@ -1297,6 +1302,34 @@ export default
                 persistent: false
             }).onOk(res => {
                 window.Module.cwrap('OnSetPrecision', 'void', ['int'])(res);
+            });
+            canvas.focus();
+        },
+
+        onSetExp()
+        {
+            this.contextMenu.hide();
+
+            var p = window.Module.cwrap('GetExp', 'int', [])();
+            if (p == -1)
+                return;
+
+            this.$q.dialog({
+                title: '<div class="text-blue text-h5">Set exponent order</div>',
+                prompt:
+                {
+                    model: p,
+                    inputmode: "numeric",
+                    mask: '##',
+                    min: 1,
+                    max: 99,
+                    step: 1
+                },
+                html: true,
+                cancel: true,
+                persistent: false
+            }).onOk(res => {
+                window.Module.cwrap('OnSetExp', 'void', ['int'])(res);
             });
             canvas.focus();
         },

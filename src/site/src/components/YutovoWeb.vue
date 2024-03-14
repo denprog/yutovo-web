@@ -836,6 +836,7 @@ export default
 
         onCut()
         {
+            this.contextMenu.hide();
             Module.cwrap('OnCut', 'void', [])();
             const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
             const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
@@ -856,6 +857,7 @@ export default
 
         onCopy()
         {
+            this.contextMenu.hide();
             Module.cwrap('OnCopy', 'void', [])();
             const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
             const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
@@ -876,6 +878,7 @@ export default
 
         async onPaste()
         {
+            this.contextMenu.hide();
             Module.cwrap('SetClipboardText', 'void', ['string'])('');
             Module.cwrap('SetClipboardJson', 'void', ['string'])('');
             const data = await navigator.clipboard.read();
@@ -886,12 +889,6 @@ export default
                     const blob = await data[i].getType('web yutovo/elements');
                     const text = await blob.text();
                     Module.cwrap('SetClipboardJson', 'void', ['string'])(text);
-                }
-                else if (data[i].types.includes('text/plain'))
-                {
-                    const blob = await data[i].getType('text/plain');
-                    const text = await blob.text();
-                    Module.cwrap('SetClipboardText', 'void', ['string'])(text);
                 }
                 else if (data[i].types.includes('image/png'))
                 {
@@ -905,6 +902,12 @@ export default
                             Module.cwrap('OnPaste', 'void', [])();
                             canvas.focus();
                         }
+                }
+                else if (data[i].types.includes('text/plain'))
+                {
+                    const blob = await data[i].getType('text/plain');
+                    const text = await blob.text();
+                    Module.cwrap('SetClipboardText', 'void', ['string'])(text);
                 }
             }
             Module.cwrap('OnPaste', 'void', [])();

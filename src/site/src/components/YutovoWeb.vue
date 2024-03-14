@@ -17,6 +17,10 @@
                 icon="img:/images/standard/save_as.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Save document as') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" id="download-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDownload();" 
+                icon="img:/images/standard/download.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Download document') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" id="rename-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onRename();" 
                 icon="img:/images/standard/rename.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Rename document') }}</q-tooltip>
@@ -289,6 +293,8 @@ export default
 
         const contextMenu = ref(null);
 
+        var downloading = false;
+
         return {
             style,
 
@@ -362,6 +368,8 @@ export default
             yutovo_file,
 
             contextMenu,
+
+            downloading,
 
             autoMenuChecked,
             realMenuChecked,
@@ -753,6 +761,14 @@ export default
             canvas.focus();
         },
 
+        onDownload()
+        {
+            console.log('onDownload');
+            this.downloading = true;
+            Module.cwrap('OnSave', 'void', [])();
+            canvas.focus();
+        },
+
         onRename()
         {
             this.$q.dialog({component: RenameDialog, parent: this, apiResponse: this.resp});
@@ -934,11 +950,38 @@ export default
         async saveDocument(event)
         {
             console.log('saveDocument');
+
+            if (this.downloading)
+            {
+                var s = this.store;
+                var filename = s.state.editor.document_name;
+                if (filename == '' || typeof filename == 'undefined')
+                    return;
+
+                const blob = new Blob([event.detail.json], {type: 'text/csv'});
+                if (window.navigator.msSaveOrOpenBlob)
+                {
+                    window.navigator.msSaveBlob(blob, filename);
+                }
+                else
+                {
+                    const elem = window.document.createElement('a');
+                    elem.href = window.URL.createObjectURL(blob);
+                    elem.download = filename;        
+                    document.body.appendChild(elem);
+                    elem.click();        
+                    document.body.removeChild(elem);
+                }
+
+                this.downloading = false;
+                return;
+            }
+
             var json = JSON.parse(event.detail.json);
             var r = this.router;
             if (r.currentRoute.value.path.substring(0, 5) == '/task') //save the current task as a new user document
             {
-                var route = r.currentRoute.value
+                var route = r.currentRoute.value;
                 var task = route.params.param.replaceAll(/\\/g, '/');
                 var lang = task.substring(0, 2);
                 task = task.substring(2);

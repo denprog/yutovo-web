@@ -42,6 +42,7 @@ export default {
     'Upload document': 'Загрузить документ',
     'Save document': 'Сохранить документ',
     'Save document as': 'Сохранить документ как',
+    'Download document': 'Скачать документ',
     'Rename document': 'Переименовать документ',
     'Delete document': 'Удалить документ',
     'Undo': 'Отменить',

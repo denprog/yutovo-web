@@ -636,6 +636,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetExp()
     return document->GetExp(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetResultNotation()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
+    if (id.empty())
+        return -1;
+    return (int)document->GetResultNotation(id);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)
@@ -894,6 +902,46 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSetExp(int exp)
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
         document->SetExp(s.caret_state.id, exp, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnBinaryNotation()
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (_el)
+        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Binary, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnOctalNotation()
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (_el)
+        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Octal, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDecimalNotation()
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (_el)
+        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Decimal, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnHexadecimalNotation()
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (_el)
+        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Hexadecimal, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()

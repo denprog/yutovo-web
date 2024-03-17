@@ -203,6 +203,33 @@
                     <q-item id="set-exp-menu" clickable style='display:none;' @click='onSetExp();'>
                         <q-item-section>Set exponent order</q-item-section>
                     </q-item>
+                    <q-item id="set-notation-menu" clickable style='display:none;'>
+                        <q-item-section>Set notation</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="set-binary-notation-menu" dense clickable @click='onSetBinaryNotation();'>
+                                    <div v-if="binaryMenuChecked == true">&check;</div>
+                                    <q-item-section>Binary</q-item-section>
+                                </q-item>
+                                <q-item id="set-octal-notation-menu" dense clickable @click='onSetOctalNotation();'>
+                                    <div v-if="octalMenuChecked == true">&check;</div>
+                                    <q-item-section>Octal</q-item-section>
+                                </q-item>
+                                <q-item id="set-decimal-notation-menu" dense clickable @click='onSetDecimalNotation();'>
+                                    <div v-if="decimalMenuChecked == true">&check;</div>
+                                    <q-item-section>Decimal</q-item-section>
+                                </q-item>
+                                <q-item id="set-hexadecimal-notation-menu" dense clickable @click='onSetHexadecimalNotation();'>
+                                    <div v-if="hexadecimalMenuChecked == true">&check;</div>
+                                    <q-item-section>Hexadecimal</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -291,6 +318,11 @@ export default
         const rationalMenuChecked = ref(null);
         const complexMenuChecked = ref(null);
 
+        const binaryMenuChecked = ref(null);
+        const octalMenuChecked = ref(null);
+        const decimalMenuChecked = ref(null);
+        const hexadecimalMenuChecked = ref(null);
+
         const contextMenu = ref(null);
 
         var downloading = false;
@@ -375,7 +407,12 @@ export default
             realMenuChecked,
             integerMenuChecked,
             rationalMenuChecked,
-            complexMenuChecked
+            complexMenuChecked,
+
+            binaryMenuChecked,
+            octalMenuChecked,
+            decimalMenuChecked,
+            hexadecimalMenuChecked
         };
     },
 
@@ -1278,7 +1315,7 @@ export default
             else
                 cut_menu.classList.add('disabled');
 
-            var r = window.Module.cwrap('GetPresentAsMenu', 'bool', [])();
+            var r = window.Module.cwrap('GetPresentAsMenu', 'int', [])();
             if (r != 0)
             {
                 var m = document.getElementById('present-as-menu');
@@ -1295,6 +1332,17 @@ export default
                     m.style.display = '';
                     m = document.getElementById('set-exp-menu');
                     m.style.display = '';
+                }
+
+                if (r == 3)
+                {
+                    m = document.getElementById('set-notation-menu');
+                    m.style.display = '';
+                    r = window.Module.cwrap('GetResultNotation', 'int', [])();
+                    this.binaryMenuChecked = r == 0;
+                    this.octalMenuChecked = r == 1;
+                    this.decimalMenuChecked = r == 2;
+                    this.hexadecimalMenuChecked = r == 3;
                 }
             }
         },
@@ -1378,6 +1426,26 @@ export default
                 window.Module.cwrap('OnSetExp', 'void', ['int'])(res);
             });
             canvas.focus();
+        },
+
+        onSetBinaryNotation()
+        {
+            window.Module.cwrap('OnBinaryNotation', 'void', [])();
+        },
+
+        onSetOctalNotation()
+        {
+            window.Module.cwrap('OnOctalNotation', 'void', [])();
+        },
+
+        onSetDecimalNotation()
+        {
+            window.Module.cwrap('OnDecimalNotation', 'void', [])();
+        },
+
+        onSetHexadecimalNotation()
+        {
+            window.Module.cwrap('OnHexadecimalNotation', 'void', [])();
         },
 
         onPlus()

@@ -230,6 +230,25 @@
                             </q-list>
                         </q-menu>
                     </q-item>
+                    <q-item id="set-fraction-form-menu" clickable style='display:none;'>
+                        <q-item-section>Set fraction form</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="set-fraction-form-proper-menu" dense clickable @click='onProperFractionForm();'>
+                                    <div v-if="properMenuChecked == true">&check;</div>
+                                    <q-item-section>Proper</q-item-section>
+                                </q-item>
+                                <q-item id="set-fraction-form-improper-menu" dense clickable @click='onImproperFractionForm();'>
+                                    <div v-if="improperMenuChecked == true">&check;</div>
+                                    <q-item-section>Improper</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -323,6 +342,9 @@ export default
         const decimalMenuChecked = ref(null);
         const hexadecimalMenuChecked = ref(null);
 
+        const properMenuChecked = ref(null);
+        const improperMenuChecked = ref(null);
+
         const contextMenu = ref(null);
 
         var downloading = false;
@@ -412,7 +434,10 @@ export default
             binaryMenuChecked,
             octalMenuChecked,
             decimalMenuChecked,
-            hexadecimalMenuChecked
+            hexadecimalMenuChecked,
+
+            properMenuChecked,
+            improperMenuChecked
         };
     },
 
@@ -1344,6 +1369,15 @@ export default
                     this.decimalMenuChecked = r == 2;
                     this.hexadecimalMenuChecked = r == 3;
                 }
+
+                if (r == 4)
+                {
+                    m = document.getElementById('set-fraction-form-menu');
+                    m.style.display = '';
+                    r = window.Module.cwrap('GetFractionForm', 'int', [])();
+                    this.properMenuChecked = r == 0;
+                    this.improperMenuChecked = r == 1;
+                }
             }
         },
 
@@ -1370,6 +1404,16 @@ export default
         onPresentAsComplex()
         {
             window.Module.cwrap('OnPresentAsComplex', 'void', [])();
+        },
+
+        onProperFractionForm()
+        {
+            window.Module.cwrap('OnFractionForm', 'void', ['int'])(0);
+        },
+
+        onImproperFractionForm()
+        {
+            window.Module.cwrap('OnFractionForm', 'void', ['int'])(1);
         },
 
         onSetPrecision()
@@ -1430,22 +1474,22 @@ export default
 
         onSetBinaryNotation()
         {
-            window.Module.cwrap('OnBinaryNotation', 'void', [])();
+            window.Module.cwrap('OnNotation', 'void', ['int'])(0);
         },
 
         onSetOctalNotation()
         {
-            window.Module.cwrap('OnOctalNotation', 'void', [])();
+            window.Module.cwrap('OnNotation', 'void', ['int'])(1);
         },
 
         onSetDecimalNotation()
         {
-            window.Module.cwrap('OnDecimalNotation', 'void', [])();
+            window.Module.cwrap('OnNotation', 'void', ['int'])(2);
         },
 
         onSetHexadecimalNotation()
         {
-            window.Module.cwrap('OnHexadecimalNotation', 'void', [])();
+            window.Module.cwrap('OnNotation', 'void', ['int'])(3);
         },
 
         onPlus()

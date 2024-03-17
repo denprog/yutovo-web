@@ -644,6 +644,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetResultNotation()
     return (int)document->GetResultNotation(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    if (id.empty())
+        return -1;
+    return (int)document->GetFractionForm(id);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)
@@ -904,44 +912,24 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSetExp(int exp)
         document->SetExp(s.caret_state.id, exp, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnBinaryNotation()
+extern "C" EMSCRIPTEN_KEEPALIVE void OnNotation(int notation)
 {
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
     auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
     if (_el)
-        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Binary, true);
+        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), (Notation)notation, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnOctalNotation()
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFractionForm(int fraction_form)
 {
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
+    auto _el = document->FindParent(s.caret_state.id, ElementType::RATIONAL_RESULT);
     if (_el)
-        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Octal, true);
-}
-
-extern "C" EMSCRIPTEN_KEEPALIVE void OnDecimalNotation()
-{
-    EditorState s = document->GetEditorState();
-    if (s.caret_state.IsEmpty())
-        return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
-    if (_el)
-        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Decimal, true);
-}
-
-extern "C" EMSCRIPTEN_KEEPALIVE void OnHexadecimalNotation()
-{
-    EditorState s = document->GetEditorState();
-    if (s.caret_state.IsEmpty())
-        return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
-    if (_el)
-        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), Notation::Hexadecimal, true);
+        document->SetFractionForm(s.caret_state.id, (FractionForm)fraction_form, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()

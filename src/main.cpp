@@ -652,6 +652,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
     return (int)document->GetFractionForm(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        return -1;
+    return (int)document->GetComplexForm(id);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)
@@ -930,6 +938,16 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFractionForm(int fraction_form)
     auto _el = document->FindParent(s.caret_state.id, ElementType::RATIONAL_RESULT);
     if (_el)
         document->SetFractionForm(s.caret_state.id, (FractionForm)fraction_form, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    auto _el = document->FindParent(s.caret_state.id, ElementType::COMPLEX_RESULT);
+    if (_el)
+        document->SetComplexForm(s.caret_state.id, (ComplexForm)complex_form, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()

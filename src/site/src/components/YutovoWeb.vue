@@ -197,12 +197,15 @@
                             </q-list>
                         </q-menu>
                     </q-item>
+
                     <q-item id="set-precision-menu" clickable style='display:none;' @click='onSetPrecision();'>
                         <q-item-section>Set precision</q-item-section>
                     </q-item>
+
                     <q-item id="set-exp-menu" clickable style='display:none;' @click='onSetExp();'>
                         <q-item-section>Set exponent order</q-item-section>
                     </q-item>
+
                     <q-item id="set-notation-menu" clickable style='display:none;'>
                         <q-item-section>Set notation</q-item-section>
                         <q-item-section side>
@@ -230,6 +233,7 @@
                             </q-list>
                         </q-menu>
                     </q-item>
+
                     <q-item id="set-fraction-form-menu" clickable style='display:none;'>
                         <q-item-section>Set fraction form</q-item-section>
                         <q-item-section side>
@@ -245,6 +249,30 @@
                                 <q-item id="set-fraction-form-improper-menu" dense clickable @click='onImproperFractionForm();'>
                                     <div v-if="improperMenuChecked == true">&check;</div>
                                     <q-item-section>Improper</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-item>
+
+                    <q-item id="set-complex-form-menu" clickable style='display:none;'>
+                        <q-item-section>Set complex form</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="set-arithmetic-complex-form-menu" dense clickable @click='onArithmeticComplexForm();'>
+                                    <div v-if="arithmeticMenuChecked == true">&check;</div>
+                                    <q-item-section>Arithmetic</q-item-section>
+                                </q-item>
+                                <q-item id="set-trigonometric-complex-form-menu" dense clickable @click='onTrigonometricComplexForm();'>
+                                    <div v-if="trigonometricMenuChecked == true">&check;</div>
+                                    <q-item-section>Trigonometric</q-item-section>
+                                </q-item>
+                                <q-item id="set-exponential-complex-form-menu" dense clickable @click='onExponentialComplexForm();'>
+                                    <div v-if="exponentialMenuChecked == true">&check;</div>
+                                    <q-item-section>Exponential</q-item-section>
                                 </q-item>
                             </q-list>
                         </q-menu>
@@ -345,6 +373,10 @@ export default
         const properMenuChecked = ref(null);
         const improperMenuChecked = ref(null);
 
+        const arithmeticMenuChecked = ref(null);
+        const trigonometricMenuChecked = ref(null);
+        const exponentialMenuChecked = ref(null);
+
         const contextMenu = ref(null);
 
         var downloading = false;
@@ -437,7 +469,11 @@ export default
             hexadecimalMenuChecked,
 
             properMenuChecked,
-            improperMenuChecked
+            improperMenuChecked,
+
+            arithmeticMenuChecked,
+            trigonometricMenuChecked,
+            exponentialMenuChecked
         };
     },
 
@@ -1378,6 +1414,16 @@ export default
                     this.properMenuChecked = r == 0;
                     this.improperMenuChecked = r == 1;
                 }
+
+                if (r == 5)
+                {
+                    m = document.getElementById('set-complex-form-menu');
+                    m.style.display = '';
+                    r = window.Module.cwrap('GetComplexForm', 'int', [])();
+                    this.arithmeticMenuChecked = r == 0;
+                    this.trigonometricMenuChecked = r == 1;
+                    this.exponentialMenuChecked = r == 2;
+                }
             }
         },
 
@@ -1414,6 +1460,21 @@ export default
         onImproperFractionForm()
         {
             window.Module.cwrap('OnFractionForm', 'void', ['int'])(1);
+        },
+
+        onArithmeticComplexForm()
+        {
+            window.Module.cwrap('OnComplexForm', 'void', ['int'])(0);
+        },
+
+        onTrigonometricComplexForm()
+        {
+            window.Module.cwrap('OnComplexForm', 'void', ['int'])(1);
+        },
+
+        onExponentialComplexForm()
+        {
+            window.Module.cwrap('OnComplexForm', 'void', ['int'])(2);
         },
 
         onSetPrecision()

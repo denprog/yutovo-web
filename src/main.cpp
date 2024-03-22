@@ -859,9 +859,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 {
     auto s = ToUtfString(language);
     if (s == U"\"en\"")
-        document->SetLocale(yutovo_calculator::Language::English, '.');
+        document->SetLocale(yutovo_calculator::Language::English);
     else if (s == U"\"ru\"")
-        document->SetLocale(yutovo_calculator::Language::Russian, ',');
+        document->SetLocale(yutovo_calculator::Language::Russian);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)

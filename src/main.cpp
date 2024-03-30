@@ -47,7 +47,7 @@ EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value)
 
 EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
     unsigned int font_size, int bold, int italic, int underline, int strikethrough, const char* text_color, size_t text_color_size, 
-    const char* text_bg_color, size_t text_bg_color_size),
+    const char* text_bg_color, size_t text_bg_color_size, int left_align, int center_align, int right_align, int justify_align),
     {
         window.dispatchEvent(new CustomEvent('setStandardToolbar', 
             {
@@ -62,6 +62,10 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'strikethrough': strikethrough,
                     'text_color': UTF8ToString(text_color, text_color_size),
                     'text_bg_color': UTF8ToString(text_bg_color, text_bg_color_size),
+                    'left_align': left_align,
+                    'center_align': center_align,
+                    'right_align': right_align,
+                    'justify_align': justify_align,
                 }
             }));
     });
@@ -164,7 +168,7 @@ void MainLoop(void* arg)
             format.Reset();
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, -1, -1, -1, -1, "", 0, "", 0);
+                format.size, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1);
         }
         else if (document->GetStringFormat(_id, format))
         {
@@ -194,7 +198,9 @@ void MainLoop(void* arg)
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
                 format.size, format.bold, format.italic, format.underline, format.strikethrough, text_color.c_str(), text_color.size(), 
-                text_bg_color.c_str(), text_bg_color.size());
+                text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left, 
+                paragraph_format.alignment == ParagraphFormat::Alignment::Center, paragraph_format.alignment == ParagraphFormat::Alignment::Right, 
+                paragraph_format.alignment == ParagraphFormat::Alignment::Justify);
         }
         
         static uint last_code_id = 0;
@@ -835,6 +841,34 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTextBgColor(const char* color)
     if (!document)
         return;
     document->SetBgColor(yutovo::Color::FromHex(color));
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnLeftAlign(int checked)
+{
+    if (!document)
+        return;
+    document->ChangeParagraphFormat(ParagraphFormat::Alignment::Left, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnRightAlign(int checked)
+{
+    if (!document)
+        return;
+    document->ChangeParagraphFormat(ParagraphFormat::Alignment::Right, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnCenterAlign(int checked)
+{
+    if (!document)
+        return;
+    document->ChangeParagraphFormat(ParagraphFormat::Alignment::Center, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnJustifyAlign(int checked)
+{
+    if (!document)
+        return;
+    document->ChangeParagraphFormat(ParagraphFormat::Alignment::Justify, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file, const int document_id)

@@ -83,6 +83,19 @@
             <q-btn size="14px" id="text-bg-color-button" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text background color') }}</q-tooltip>
             </q-btn>
+            <q-separator vertical/>
+            <q-btn size="14px" id="left-align-button" square dense :color="left_align_button_color" @click="onLeftAlign();" icon="img:/images/format/align_left.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Left align') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" id="center-align-button" square dense :color="center_align_button_color" @click="onCenterAlign();" icon="img:/images/format/align_center.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Center align') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" id="right-align-button" square dense :color="right_align_button_color" @click="onRightAlign();" icon="img:/images/format/align_right.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Right align') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" id="justify-align-button" square dense :color="justify_align_button_color" @click="onJustifyAlign();" icon="img:/images/format/align_justify.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Justify align') }}</q-tooltip>
+            </q-btn>
         </q-btn-group>
     </div>
 
@@ -641,7 +654,11 @@ export default
             underline_button_color: 'white',
             strikethrough_button_color: 'white',
             text_color: '#000000',
-            text_bg_color: '#ffffff'
+            text_bg_color: '#ffffff',
+            left_align_button_color: 'white',
+            center_align_button_color: 'white',
+            right_align_button_color: 'white',
+            justify_align_button_color: 'white',
         }
     },
 
@@ -667,6 +684,10 @@ export default
             this.strikethrough_button_color = (event.detail.strikethrough == 1 ? 'blue' : 'white');
             this.text_color = event.detail.text_color;
             this.text_bg_color = event.detail.text_bg_color;
+            this.left_align_button_color = (event.detail.left_align == 1 ? 'blue' : 'white');
+            this.center_align_button_color = (event.detail.center_align == 1 ? 'blue' : 'white');
+            this.right_align_button_color = (event.detail.right_align == 1 ? 'blue' : 'white');
+            this.justify_align_button_color = (event.detail.justify_align == 1 ? 'blue' : 'white');
 
             var button = document.getElementById('copy-button');
             button.disabled = !Module.cwrap('CanCopy', 'bool', [])();
@@ -825,6 +846,46 @@ export default
             .onOk(() => {
                 Module.cwrap('OnTextBgColor', 'void', ['string'])(this.store.state.editor.dialog_color);
             })
+            canvas.focus();
+        },
+
+        onLeftAlign()
+        {
+            if (this.left_align_button_color == 'blue')
+                this.left_align_button_color = 'white';
+            else
+                this.left_align_button_color = 'blue';
+            Module.cwrap('OnLeftAlign', 'void', [])(this.left_align_button_color == 'blue');
+            canvas.focus();
+        },
+
+        onCenterAlign()
+        {
+            if (this.center_align_button_color == 'blue')
+                this.center_align_button_color = 'white';
+            else
+                this.center_align_button_color = 'blue';
+            Module.cwrap('OnCenterAlign', 'void', [])(this.center_align_button_color == 'blue');
+            canvas.focus();
+        },
+
+        onRightAlign()
+        {
+            if (this.right_align_button_color == 'blue')
+                this.right_align_button_color = 'white';
+            else
+                this.right_align_button_color = 'blue';
+            Module.cwrap('OnRightAlign', 'void', [])(this.right_align_button_color == 'blue');
+            canvas.focus();
+        },
+
+        onJustifyAlign()
+        {
+            if (this.justify_align_button_color == 'blue')
+                this.justify_align_button_color = 'white';
+            else
+                this.justify_align_button_color = 'blue';
+            Module.cwrap('OnJustifyAlign', 'void', [])(this.justify_align_button_color == 'blue');
             canvas.focus();
         },
 

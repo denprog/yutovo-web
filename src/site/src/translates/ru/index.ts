@@ -86,5 +86,8 @@ export default {
 
     'Documents': 'Документы',
     'Tasks': 'Задачи',
-    'Identifiers': 'Идентификаторы'
+    'Identifiers': 'Идентификаторы',
+
+    'Error saving the document: ': 'Ошибка сохранения документа: ',
+    'Document size is more then limit': 'Размер документа больше лимита'
 };

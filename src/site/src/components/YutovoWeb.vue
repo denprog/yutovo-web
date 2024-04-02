@@ -1141,6 +1141,7 @@ export default
 
             var json = JSON.parse(event.detail.json);
             var r = this.router;
+            var t = this.$t;
             if (r.currentRoute.value.path.substring(0, 5) == '/task') //save the current task as a new user document
             {
                 var route = r.currentRoute.value;
@@ -1172,7 +1173,7 @@ export default
                         function(response)
                         {
                             console.log(response);
-                            alert('Error saving the document');
+                            alert(t('Error saving the document: ') + t(response.response.data.error));
                         }
                     );
             }
@@ -1205,7 +1206,7 @@ export default
                             }
                             else
                             {
-                                alert('Error saving the document');
+                                alert(t('Error saving the document: ') + t(response.response.data.error));
                             }
                         }
                     );

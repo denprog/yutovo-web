@@ -147,7 +147,7 @@ export default
     {
         onRename()
         {
-                canvas.focus();
+            canvas.focus();
         }
     }
 }

@@ -89,5 +89,7 @@ export default {
     'Identifiers': 'Идентификаторы',
 
     'Error saving the document: ': 'Ошибка сохранения документа: ',
-    'Document size is more then limit': 'Размер документа больше лимита'
+    'Document size is more then limit': 'Размер документа больше лимита',
+    'Error creating the document: ': 'Ошибка создания документа: ',
+    'Max files count exceed' : 'Превышено максимальное количество файлов'
 };

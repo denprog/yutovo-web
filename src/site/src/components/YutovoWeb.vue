@@ -1077,6 +1077,7 @@ export default
         {
             console.log('newDocument ', event);
             var s = this.store;
+            var t = this.$t;
             api.post('/service/new-document', event.detail == null ? {} : 
                 {
                     json: event.detail.json,
@@ -1104,7 +1105,7 @@ export default
                     function(response)
                     {
                         console.log(response);
-                        alert('Error loading the document');
+                        alert(t('Error creating the document: ') + t(response.response.data.error));
                     }
                 );
         },

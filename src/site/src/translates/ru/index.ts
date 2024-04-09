@@ -91,5 +91,9 @@ export default {
     'Error saving the document: ': 'Ошибка сохранения документа: ',
     'Document size is more then limit': 'Размер документа больше лимита',
     'Error creating the document: ': 'Ошибка создания документа: ',
-    'Max files count exceed' : 'Превышено максимальное количество файлов'
+    'Max files count exceed': 'Превышено максимальное количество файлов',
+
+    'Download PC version': 'Скачать версию для ПК',
+    'Download': 'Скачать',
+    'Target OS': 'Для ОС'
 };

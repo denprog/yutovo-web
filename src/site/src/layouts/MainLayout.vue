@@ -82,6 +82,7 @@ import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
 import AboutDialog from 'layouts/AboutDialog.vue';
 import LicenseDialog from 'layouts/LicenseDialog.vue';
+import DownloadDialog from 'layouts/DownloadDialog.vue';
 import { Cookies } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
@@ -333,7 +334,12 @@ export default
 
         showDownloadDialog()
         {
-            console.log("downloadDialog");
+            this.downloadDialog = this.$q
+                .dialog({
+                    component: DownloadDialog,
+                    parent: this,
+                    apiResponse: this.resp
+                })
         },
 
         showLicenseDialog()

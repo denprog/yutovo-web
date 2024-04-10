@@ -69,13 +69,16 @@ export default {
                 if (prop == 'name')
                 {
                     let p = path + obj[prop];
+                    var n = obj['name'];
+                    if (typeof(obj['description']) != 'undefined')
+                        n += ' (' + obj['description'] + ')';
                     t.push({
                         'id': p,
-                        'label': obj[prop],
+                        'label': n,
                         'selectable': true
                     });
                 }
-                else
+                else if (prop != 'description')
                 {
                     let p = path + prop + '/';
                     t.push({

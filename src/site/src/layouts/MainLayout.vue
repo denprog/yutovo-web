@@ -66,6 +66,7 @@
                 <div style="float:right;">
                     <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="showDownloadDialog">{{$t('Download PC version')}}</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="showLicenseDialog">{{$t('Terms of use')}}</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='privacy' dense no-caps flat @click="showPrivacyDialog">{{$t('Privacy policy')}}</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='about' dense no-caps flat @click="showAboutDialog">{{$t('About')}}</q-btn>
                 </div>
             </q-footer>
@@ -82,6 +83,7 @@ import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
 import AboutDialog from 'layouts/AboutDialog.vue';
 import LicenseDialog from 'layouts/LicenseDialog.vue';
+import PrivacyDialog from 'layouts/PrivacyDialog.vue';
 import DownloadDialog from 'layouts/DownloadDialog.vue';
 import { Cookies } from 'quasar'
 import { computed } from 'vue'
@@ -347,6 +349,16 @@ export default
             this.licenseDialog = this.$q
                 .dialog({
                     component: LicenseDialog,
+                    parent: this,
+                    apiResponse: this.resp
+                })
+        },
+
+        showPrivacyDialog()
+        {
+            this.privacyDialog = this.$q
+                .dialog({
+                    component: PrivacyDialog,
                     parent: this,
                     apiResponse: this.resp
                 })

@@ -13,5 +13,30 @@ export default {
         Documents saved on yutovo.ru account are private to logged in account.<br/>\
         The provider of the yutovo.ru service reserves the right to use all uploaded documents, software logs, results of calculations, \
         and input data within the yutovo.ru service, for purposes of maintaining, developing and testing the yutovo.ru service.<br/>\
-        The provider of the yutovo.ru service reserves the right to change these Terms of Use at any time.'
+        The provider of the yutovo.ru service reserves the right to change these Terms of Use at any time.',
+    
+    privacy_policy: 
+        '1. Types of information to collect<br/>\
+        We might collect user’s personal information such as name, email, ip address and other information.<br/>\
+        2. Ways to collect information<br/>\
+        We might collect information when user register, unregister, login or logout to the site.<br/>\
+        We might collect personal information when user uses any of the services of the site.<br/>\
+        3. Using of information<br/>\
+        We may use information to verify your account at the website by sending verification email to your registered email address.<br/>\
+        We may use personal information to respond to user\'s requests.\
+        We may use personal information to improve the services, the website and the desktop application.\
+        We may use personal information for security purposes to protect users and the website. We may use information as otherwise permitted by law.<br/>\
+        4. User rights over his data<br/>\
+        You can request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, \
+        legal, or security purposes. You can send your request for data deletion at <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>.<br/>\
+        5. Disclamer<br/>\
+        You assume all responsibility and risk with respect to your use of the website, which is provided “as is” without warranties, \
+        representations or conditions of any kind, either express or implied, with regard to information accessed from or via the website, \
+        including without limitation, all content and materials, and functions and services provided on our website, all of which are provided \
+        without warranty of any kind, including but not limited to warranties concerning the availability, accuracy, completeness or usefulness \
+        of content or information, uninterrupted access, and any warranties of title, non-infringement, merchantability or fitness for a particular purpose. \
+        We do not warrant that our website or its functioning or the content and material of the services made available thereby will be timely, secure, \
+        uninterrupted or error-free, that defects will be corrected, or that our websites or the servers that make our website available are free of viruses \
+        or other harmful components. The use of our website is at your sole risk and you assume full responsibility for any costs associated with \
+        your use of the website. We will not be liable for any damages of any kind related to the use of our website.'
 };

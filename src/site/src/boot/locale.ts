@@ -9,7 +9,8 @@ export default ({ app }) => {
         globalInjection: true,
         messages,
         missingWarn: false,
-        fallbackWarn: false
+        fallbackWarn: false,
+        warnHtmlMessage: false
     })
 
     // Tell app to use the I18n instance

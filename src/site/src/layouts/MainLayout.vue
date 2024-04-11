@@ -64,9 +64,9 @@
 
             <q-footer id="footer" class="bg-blue-9 q-pa-none text-white">
                 <div style="float:right;">
-                    <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="showDownloadDialog">Download PC version</q-btn>
-                    <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="showLicenseDialog">Terms of use</q-btn>
-                    <q-btn class="q-pl-sm text-white" size="1em" id='about' dense no-caps flat @click="showAboutDialog">About</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="showDownloadDialog">{{$t('Download PC version')}}</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="showLicenseDialog">{{$t('Terms of use')}}</q-btn>
+                    <q-btn class="q-pl-sm text-white" size="1em" id='about' dense no-caps flat @click="showAboutDialog">{{$t('About')}}</q-btn>
                 </div>
             </q-footer>
         </q-layout>
@@ -98,7 +98,7 @@ export default
         if (!this.$q.cookies.has('app_initialized'))
         {
             this.$q.notify({
-                message: 'This website uses cookies for normal functioning.',
+                message: this.$t('This website uses cookies for normal functioning.'),
                 color: 'blue-9',
                 multiLine: true,
                 timeout: 0,

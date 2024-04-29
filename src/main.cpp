@@ -93,14 +93,15 @@ EM_JS(void, SaveDocument, (const char* json, size_t json_size),
             }));
     });
 
-EM_JS(void, LoadResult, (const int result, const int document_id),
+EM_JS(void, LoadResult, (const int result, const int document_id, const char* config, size_t config_size),
     {
         window.dispatchEvent(new CustomEvent('loadResult', 
             {
                 'detail': 
                 {
                     'result': result,
-                    'document_id': document_id
+                    'document_id': document_id, 
+                    'config': UTF8ToString(config, config_size)
                 }
             }));
     });
@@ -265,7 +266,13 @@ void MainLoop(void* arg)
         IOResult result;
         int document_id = 0;
         if (window->GetLoadResult(result, document_id))
-            LoadResult((int)result, document_id);
+        {
+            Config config;
+            document->GetConfig(config);
+            std::string s;
+            config.ToJson(s);
+            LoadResult((int)result, document_id, s.c_str(), s.size());
+        }
     }
 
     if (window->needs_translate)
@@ -896,6 +903,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
         document->SetLocale(yutovo_calculator::Language::English);
     else if (s == U"\"ru\"")
         document->SetLocale(yutovo_calculator::Language::Russian);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config)
+{
+    printf("OnConfig %s\n", config);
+    document->SetConfig(std::string(config));
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)

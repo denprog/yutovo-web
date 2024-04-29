@@ -86,6 +86,7 @@ export default {
                                 function(response)
                                 {
                                     $store.dispatch('login/updateAccessToken', response.headers['access_token']);
+                                    $store.commit('editor/setSettings', JSON.parse(response.data.settings));
                                     registerDialog.value.hide();
 
                                     router.push({ path: '/document/' + response.data.document_id });

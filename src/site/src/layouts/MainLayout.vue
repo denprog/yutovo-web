@@ -19,11 +19,13 @@
                     </div>
 
                     <div class="text-white text-h6 q-pl-lg" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
+                    
                     <q-space />
 
-                    <q-select v-model="locale" id='language-select' class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
+                    <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
                         dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
 
+                    <q-btn id='settings' dense no-caps flat @click="showSettingsDialog">Settings</q-btn>
                     <div class="text-white q-pa-sm" id='login_caption' v-if="loginStr != ''">{{ loginStr }}</div>
                     <q-btn id='login' dense no-caps flat v-if="loginState" @click="showLoginDialog">Login</q-btn>
                     <q-btn id='register' dense no-caps flat v-if="loginState" @click="showRegisterDialog">Register</q-btn>
@@ -85,6 +87,7 @@ import AboutDialog from 'layouts/AboutDialog.vue';
 import LicenseDialog from 'layouts/LicenseDialog.vue';
 import PrivacyDialog from 'layouts/PrivacyDialog.vue';
 import DownloadDialog from 'layouts/DownloadDialog.vue';
+import SettingsDialog from 'layouts/SettingsDialog.vue';
 import { Cookies } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
@@ -284,6 +287,16 @@ export default
                 })
                 .onCancel(() => {
                     console.log('Cancel')
+                })
+        },
+
+        showSettingsDialog()
+        {
+            this.settingsDialog = this.$q
+                .dialog({
+                    component: SettingsDialog,
+                    parent: this,
+                    apiResponse: this.resp
                 })
         },
 

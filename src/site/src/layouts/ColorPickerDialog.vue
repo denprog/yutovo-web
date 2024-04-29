@@ -1,7 +1,7 @@
 <template>
 <q-dialog ref="dialog" @hide="onDialogHide">
     <div class="row">
-        <q-card class="q-dialog-plugin" >
+        <q-card class="q-dialog-plugin" style="min-width: 300px">
             <q-card-section>
                 <q-color v-model="colorModel" square/>
                 <div class="q-pa-md q-gutter-sm">

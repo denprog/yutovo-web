@@ -22,6 +22,16 @@ const mutation: MutationTree<EditorInterface> =
             state.language = 'en';
     },
 
+    setConfig(state, config)
+    {
+        state.config = config;
+    },
+
+    setSettings(state, settings)
+    {
+        state.settings = settings;
+    },
+
     setDocumentName(state, document_name)
     {
         state.document_name = document_name;

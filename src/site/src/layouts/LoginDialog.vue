@@ -97,6 +97,9 @@ export default {
                         }
 
                         store.commit('editor/setLanguage', response.data.language);
+                        store.commit('editor/setSettings', JSON.parse(response.data.settings));
+
+                        console.log(store.state.editor.settings);
                         
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
                     }

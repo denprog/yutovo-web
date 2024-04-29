@@ -30,6 +30,10 @@
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Delete document') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
+            <q-btn size="14px" id="settings-button" square dense no-caps @click="onConfig();" icon="img:/images/standard/settings.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Settings') }}</q-tooltip>
+            </q-btn>
+            <q-separator vertical/>
             <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Undo') }}</q-tooltip>
             </q-btn>
@@ -309,6 +313,7 @@ import { api } from 'boot/boot'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';
+import ConfigDialog from  'layouts/ConfigDialog.vue';
 
 export default
 {
@@ -616,11 +621,33 @@ export default
                         if (Cookies.has('refresh_token'))
                         {
                             //auto-login
-                            api.post('/auth/refresh-token', {}).then(
+                            api.post('/auth/refresh-token', {},).then(
                                 function(response)
                                 {
                                     s.dispatch('login/updateAccessToken', response.headers['access_token']);
                                     s.commit('login/setLastError', '');
+
+                                    //get user settings
+                                    api.post('/service/get-settings', {},
+                                        {
+                                            headers:
+                                            {
+                                                access_token: s.state.login.access_token
+                                            }
+                                        }
+                                        ).then(
+                                            function(response)
+                                            {
+                                                console.log(response);
+                                                s.commit('editor/setSettings', response.data);
+                                                console.log("settings=" + s.state.editor.settings);
+                                            }
+                                        ).catch(
+                                            function(response)
+                                            {
+                                                console.log(response);
+                                            }
+                                        );
                                 }
                             ).catch(
                                 function(response)
@@ -664,9 +691,24 @@ export default
 
     watch:
     {
-        'store.state.editor.language': function()
+        'store.state.editor.settings': function()
         {
-            Module.cwrap('OnLanguage', 'void', ['string'])(JSON.stringify(this.store.state.editor.language));
+            //update all but language and result settings
+            var c = JSON.parse(JSON.stringify(this.store.state.editor.settings));
+            delete c["language"];
+            delete c["auto_result"];
+            delete c["real_result"];
+            delete c["integer_result"];
+            delete c["rational_result"];
+            delete c["complex_result"];
+            Module.cwrap('OnConfig', 'void', ['string'])(JSON.stringify(c));
+            canvas.focus();
+        },
+
+        'store.state.editor.config': function()
+        {
+            var c = JSON.parse(JSON.stringify(this.store.state.editor.config));
+            Module.cwrap('OnConfig', 'void', ['string'])(JSON.stringify(c));
             canvas.focus();
         }
     },
@@ -980,6 +1022,12 @@ export default
                     );
             });
 
+            canvas.focus();
+        },
+
+        onConfig()
+        {
+            this.$q.dialog({component: ConfigDialog, parent: this, apiResponse: this.resp});
             canvas.focus();
         },
 
@@ -1338,6 +1386,7 @@ export default
             var last_document_id = Cookies.has('document_id') ? Cookies.get('document_id') : 0;
             var result = event.detail.result;
             var id = event.detail.document_id;
+            var config = event.detail.config;
             if (result == 0)
             {
                 if (id == 0)
@@ -1358,10 +1407,13 @@ export default
                     if (last_document_id != 0)
                         this.last_documents.push(last_document_id);
                 }
+
+                this.store.commit('editor/setConfig', JSON.parse(config));
             }
             else
             {
                 alert('Error loading the document');
+                this.store.commit('editor/setConfig', JSON.parse("{}"));
             }
         },
 

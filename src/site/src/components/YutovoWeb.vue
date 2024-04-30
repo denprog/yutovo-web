@@ -640,7 +640,6 @@ export default
                                             {
                                                 console.log(response);
                                                 s.commit('editor/setSettings', response.data);
-                                                console.log("settings=" + s.state.editor.settings);
                                             }
                                         ).catch(
                                             function(response)

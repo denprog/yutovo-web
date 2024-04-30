@@ -16,31 +16,31 @@
                         <q-tab-panel name="colors">
                             <q-card>
                                 <div>Code block frame
-                                    <q-btn @click='onCodeBlockColor();'>{{ codeBlockColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': codeBlockColor }" @click='onCodeBlockColor();'></q-btn>
                                 </div>
                                 <div>Numbers
-                                    <q-btn @click='onNumbersColor();'>{{ numbersColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': numbersColor }" @click='onNumbersColor();'></q-btn>
                                 </div>
                                 <div>Variables color
-                                    <q-btn @click='onVariablesColor();'>{{ variablesColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': variablesColor }" @click='onVariablesColor();'></q-btn>
                                 </div>
                                 <div>Functions color
-                                    <q-btn @click='onFunctionsColor();'>{{ functionsColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': functionsColor }" @click='onFunctionsColor();'></q-btn>
                                 </div>
                                 <div>Units color
-                                    <q-btn @click='onUnitsColor();'>{{ unitsColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': unitsColor }" @click='onUnitsColor();'></q-btn>
                                 </div>
                                 <div>Shapes color
-                                    <q-btn @click='onShapesColor();'>{{ shapesColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': shapesColor }" @click='onShapesColor();'></q-btn>
                                 </div>
                                 <div>Error marks color
-                                    <q-btn @click='onErrorMarksColor();'>{{ errorMarksColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': errorMarksColor }" @click='onErrorMarksColor();'></q-btn>
                                 </div>
                                 <div>Formula background color
-                                    <q-btn @click='onFormulaBgColor();'>{{ formulaBgColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': formulaBgColor }" @click='onFormulaBgColor();'></q-btn>
                                 </div>
                                 <div>Background selection color
-                                    <q-btn @click='onBgSelectionColor();'>{{ bgSelectionColor }}</q-btn>
+                                    <q-btn :style="{ 'background-color': bgSelectionColor }" @click='onBgSelectionColor();'></q-btn>
                                 </div>
                             </q-card>
                         </q-tab-panel>

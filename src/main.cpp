@@ -907,7 +907,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config)
 {
-    printf("OnConfig %s\n", config);
     document->SetConfig(std::string(config));
 }
 

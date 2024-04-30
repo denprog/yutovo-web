@@ -700,7 +700,7 @@ export default
             delete c["integer_result"];
             delete c["rational_result"];
             delete c["complex_result"];
-            Module.cwrap('OnConfig', 'void', ['string'])(JSON.stringify(c));
+            Module.cwrap('OnSettings', 'void', ['string'])(JSON.stringify(c));
             canvas.focus();
         },
 

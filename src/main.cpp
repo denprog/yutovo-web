@@ -269,7 +269,7 @@ void MainLoop(void* arg)
         int document_id = 0;
         if (window->GetLoadResult(result, document_id))
         {
-            document->WaitTask(document->SetConfig(user_settings));
+            document->WaitTask(document->SetConfig(user_settings, false));
             Config config;
             document->GetConfig(config);
             std::string s;
@@ -903,20 +903,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 {
     auto s = ToUtfString(language);
     if (s == U"\"en\"")
-        document->SetLocale(yutovo_calculator::Language::English);
+        document->SetLocale(yutovo_calculator::Language::English, true);
     else if (s == U"\"ru\"")
-        document->SetLocale(yutovo_calculator::Language::Russian);
+        document->SetLocale(yutovo_calculator::Language::Russian, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSettings(const char* settings)
 {
     user_settings = settings;
-    document->SetConfig(user_settings);
+    document->SetConfig(user_settings, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config)
 {
-    document->SetConfig(std::string(config));
+    document->SetConfig(std::string(config), true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)

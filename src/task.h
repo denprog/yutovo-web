@@ -196,6 +196,16 @@ struct ReceiveTask : Task
     std::atomic_int8_t& res;
 };
 
+struct ResetTask : Task
+{
+    ResetTask(const int _socket_id, std::atomic_int8_t& _res);
+
+    virtual void Execute();
+
+    const int socket_id;
+    std::atomic_int8_t& res;
+};
+
 struct CloseTask : Task
 {
     CloseTask(const int _socket_id, std::atomic_int8_t& _res);

@@ -748,13 +748,13 @@ export default
                     ).catch(
                     function(err)
                     {
-                        console.log(err);
+                        //console.log(err);
                         return;
                     });
             }
             catch (err)
             {
-                console.log(err);
+                //console.log(err);
                 return;
             }
 

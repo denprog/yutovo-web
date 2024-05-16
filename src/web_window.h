@@ -75,6 +75,7 @@ public:
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
+    virtual bool Reset(const int socket_id);
     virtual bool IsOpen(const int socket_id);
     virtual bool Close(const int socket_id);
 

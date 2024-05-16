@@ -922,6 +922,7 @@ EM_JS(int, ConnectJs, (const char* addr, size_t addr_size),
             };
 
         window.sockets.set(window.socket_id, socket);
+        socket.socket_id = window.socket_id;
         return window.socket_id++;
     });
 
@@ -1037,6 +1038,29 @@ void ReceiveTask::Execute()
         return;
     }
     message = std::string(str);
+    res = 1;
+}
+
+//ResetTask
+
+EM_JS(char*, ResetJs, (const int socket_id),
+    {
+        let socket = window.sockets.get(socket_id);
+        if (typeof socket === "undefined" || socket.readyState !== socket.OPEN)
+            return 0;
+
+        socket.last_message = "";
+    });
+
+ResetTask::ResetTask(const int _socket_id, std::atomic_int8_t& _res) : 
+    socket_id(_socket_id),
+    res(_res)
+{
+}
+
+void ResetTask::Execute()
+{
+    ResetJs(socket_id);
     res = 1;
 }
 

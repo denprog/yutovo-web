@@ -327,6 +327,18 @@ bool WebWindow::Receive(const int socket_id, std::string& message)
     return res > 0;
 }
 
+bool WebWindow::Reset(const int socket_id)
+{
+    std::atomic_int8_t res{-1};
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        socket_tasks.emplace_back(new ResetTask(socket_id, res));
+    }
+    while (res == -1)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return res > 0;
+}
+
 bool WebWindow::IsOpen(const int socket_id)
 {
     std::atomic_int8_t is_open{-1};

@@ -683,6 +683,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
     document->InsertCode(false, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnRecalculate()
+{
+    if (!document)
+        return;
+    document->ReSolve(ElementId{});
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPlus()
 {
     if (!document)

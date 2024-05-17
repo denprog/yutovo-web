@@ -55,6 +55,10 @@
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert code') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
+            <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
+            </q-btn>
+            <q-separator vertical/>
             <q-select class="toolbar-select" v-model="paragraph_format_model" :options="paragraph_format" @update:model-value="onParagraphFormat();" 
                 dense options-dense borderless>
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paragraph format') }}</q-tooltip>
@@ -801,6 +805,12 @@ export default
         onCode()
         {
             Module.cwrap('OnCode', 'void', [])();
+            canvas.focus();
+        },
+
+        onRecalculate()
+        {
+            Module.cwrap('OnRecalculate', 'void', [])();
             canvas.focus();
         },
 

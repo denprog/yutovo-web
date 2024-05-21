@@ -9,7 +9,7 @@
                         <q-toolbar-title>
                             <q-btn no-caps dense flat @click="$router.push('/')">
                                 <q-avatar>
-                                    <img src="Quasar_Logo.png">
+                                    <img src="yutovo.png">
                                 </q-avatar>
                             </q-btn>
                             <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">

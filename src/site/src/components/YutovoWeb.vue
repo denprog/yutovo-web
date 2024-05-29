@@ -298,6 +298,10 @@
                             </q-list>
                         </q-menu>
                     </q-item>
+
+                    <q-item id="set-unit-menu" clickable style='display:none;' @click='onSetUnit();'>
+                        <q-item-section>Set unit</q-item-section>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -318,6 +322,7 @@ import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';
 import ConfigDialog from  'layouts/ConfigDialog.vue';
+import SetUnitDialog from  'layouts/SetUnitDialog.vue';
 
 export default
 {
@@ -1549,6 +1554,10 @@ export default
                     this.exponentialMenuChecked = r == 2;
                 }
             }
+
+            m = document.getElementById('set-unit-menu');
+            if (window.Module.cwrap('HasUnit', 'int', [])())
+                m.style.display = '';
         },
 
         onPresentAsAuto()
@@ -1675,6 +1684,13 @@ export default
         onSetHexadecimalNotation()
         {
             window.Module.cwrap('OnNotation', 'void', ['int'])(3);
+        },
+
+        onSetUnit()
+        {
+            this.contextMenu.hide();
+            this.$q.dialog({component: SetUnitDialog, parent: this, apiResponse: this.resp});
+            canvas.focus();
         },
 
         onPlus()

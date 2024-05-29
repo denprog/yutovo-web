@@ -19,6 +19,13 @@ WebWindow::WebWindow()
     emscripten_get_canvas_size(&width, &height, &f);
 }
 
+WebWindow::WebWindow(const int _width, const int _height) :
+    width(_width),
+    height(_height)
+{
+    printf("Start WebWindow\n");
+}
+
 WebWindow::~WebWindow()
 {
     if (surface)
@@ -181,22 +188,22 @@ Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture, const in
         return Size{};
     }
 
-    SDL_Surface* surface = IMG_LoadTyped_RW(p, 1, "PNG");
-    if (!surface)
+    SDL_Surface* s = IMG_LoadTyped_RW(p, 1, "PNG");
+    if (!s)
     {
         //try to load as bmp
         p = SDL_RWFromConstMem(&picture[0], picture.size());
-        surface = SDL_LoadBMP_RW(p, 1);
-        if (!surface)
+        s = SDL_LoadBMP_RW(p, 1);
+        if (!s)
         {
             printf("IMG_Load_RW error: %s\n", SDL_GetError());
             return Size{};
         }
     }
     
-    Size s{surface->w, surface->h};
-    SDL_FreeSurface(surface);
-    return s;
+    Size size{s->w, s->h};
+    SDL_FreeSurface(s);
+    return size;
 }
 
 void WebWindow::SetViewPort(const Rect _view_port)
@@ -391,6 +398,34 @@ void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
     SDL_RenderPresent(dest_renderer);
 
     SDL_UnlockSurface(dest_surface);
+    SDL_UnlockSurface(surface);
+}
+
+void WebWindow::Render(std::vector<unsigned char>& picture)
+{
+    std::lock_guard<std::mutex> lock(draw_mutex);
+    needs_render = false;
+
+    if (SDL_MUSTLOCK(surface))
+        SDL_LockSurface(surface);
+
+    picture.resize(surface->pitch * surface->h);
+
+    SDL_RWops* p = SDL_RWFromMem(&picture[0], picture.size());
+    if (!p)
+    {
+        printf("SDL_RWFromConstMem error: %s\n", SDL_GetError());
+        SDL_UnlockSurface(surface);
+        return;
+    }
+
+    if (SDL_SaveBMP_RW(surface, p, 1) != 0)
+    {
+        printf("SDL_SaveBMP_RW error: %s\n", SDL_GetError());
+        SDL_UnlockSurface(surface);
+        return;
+    }
+
     SDL_UnlockSurface(surface);
 }
 

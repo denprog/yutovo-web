@@ -21,13 +21,22 @@ yutovo::Point left_click_pos;
 std::u32string clipboard_json, clipboard_text;
 std::string clipboard_image;
 
-std::u32string document_text;
-
 std::u32string save_json;
 
 std::string user_settings = "{}";
 
-SDL_Window *canvas_window = nullptr;
+ElementId cast_unit_id;
+std::atomic_bool cast_units_ready{false};
+std::thread cast_units_thread;
+std::atomic_bool stop_cast_units_thread{false};
+std::mutex cast_units_mutex;
+std::vector<Unit> cast_units;
+std::vector<std::string> cast_units_images;
+const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+yutovo_web::WebWindow cast_units_window(1, 1);
+DocumentPtr cast_units_document;
+std::u32string cast_unit_system;
+
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
@@ -125,6 +134,28 @@ EM_JS(void, UpdateLanguage, (),
             {
                 'detail': 
                 {
+                }
+            }));
+    });
+
+EM_JS(void, AddCastUnitSystem, (const char* system, size_t system_size),
+    {
+        window.dispatchEvent(new CustomEvent('addUnitSystem', 
+            {
+                'detail': 
+                {
+                    'system': UTF8ToString(system, system_size)
+                }
+            }));
+    });
+
+EM_JS(void, AddCastUnit, (const char* unit, size_t unit_size),
+    {
+        window.dispatchEvent(new CustomEvent('addUnit', 
+            {
+                'detail': 
+                {
+                    'unit': UTF8ToString(unit, unit_size)
                 }
             }));
     });
@@ -302,6 +333,15 @@ void MainLoop(void* arg)
     }
 
     window->SocketTasks();
+
+    if (cast_units_ready)
+    {
+        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        for (auto& u : cast_units_images)
+            AddCastUnit(u.c_str(), u.size());
+        cast_units_images.clear();
+        cast_units_ready = false;
+    }
 }
 
 struct EventArgs
@@ -676,6 +716,147 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
     return (int)document->GetComplexForm(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    if (id.empty())
+        return 0;
+    return document->HasUnit(id);
+}
+
+void FillUnits(const std::string system)
+{
+    DocumentPtr d = cast_units_document;
+    std::u32string s = ToUtfString(system);
+
+    for (size_t i = 0; i < cast_units.size(); ++i)
+    {
+        if (stop_cast_units_thread)
+        {
+            cast_units_ready = true;
+            break;
+        }
+        
+        Unit& unit = cast_units[i];
+        if (unit.system != s)
+            continue;
+        
+        //draw this unit
+        d->WaitTask(d->Resize(1, 1));
+        d->MoveCaretToDocumentBegin(false);
+        d->WaitTask(d->DeleteElements(false, false));
+        d->WaitTask(d->InsertUnit(unit));
+        ElementPtr t = d->GetElement({0, 0});
+        d->WaitTask(d->Resize(t->rect.width, t->rect.height));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        d->WaitTask(d->Redraw(ElementId{0}, false));
+
+        while (!cast_units_window.needs_render)
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        std::vector<unsigned char> picture;
+        cast_units_window.Render(picture); //get unit's picture
+
+        //convert the picture to base64 and send it to JS
+        std::string image_base64;
+
+        int val = 0, valb = -6;
+        for (unsigned char c : picture)
+        {
+            val = (val << 8) + c;
+            valb += 8;
+            while (valb >= 0)
+            {
+                image_base64.push_back(base[(val >> valb) & 0x3F]);
+                valb -= 6;
+            }
+        }
+        if (valb > -6)
+            image_base64.push_back(base[((val << 8) >> (valb + 8)) & 0x3F]);
+        while (image_base64.size() % 4)
+            image_base64.push_back('=');
+
+        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        cast_units_images.push_back(image_base64);
+        cast_units_ready = true;
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
+{
+    cast_unit_id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
+    if (cast_unit_id.empty())
+        cast_unit_id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
+    if (cast_unit_id.empty())
+        cast_unit_id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    if (cast_unit_id.empty())
+        return;
+
+    std::vector<std::u32string> systems;
+    cast_units.clear();
+    document->GetCastUnits(cast_unit_id, cast_units);
+    for (auto& u : cast_units)
+    {
+        if (std::find(systems.begin(), systems.end(), u.system) == systems.end())
+            systems.push_back(u.system);
+    }
+
+    for (auto& s : systems)
+    {
+        std::string _s = ToBasicString(s);
+        AddCastUnitSystem(_s.c_str(), _s.size());
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnits(const char* system)
+{
+    if (cast_unit_id.empty())
+        return;
+    
+    cast_unit_system = ToUtfString(system);
+
+    stop_cast_units_thread = true;
+    if (cast_units_thread.joinable())
+        cast_units_thread.join();
+    
+    stop_cast_units_thread = false;
+
+    {
+        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        cast_units_images.clear();
+    }
+
+    cast_units_thread = std::thread(&FillUnits, system);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void ChooseCastUnit(int pos)
+{
+    stop_cast_units_thread = true;
+
+    for (size_t i = 0, j = 0; i < cast_units.size(); ++i)
+    {
+        auto& c = cast_units[i];
+        if (c.system == cast_unit_system)
+        {
+            if (pos == j)
+            {
+                document->SetUnit(cast_unit_id, c, true);
+                break;
+            }
+            ++j;
+        }
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void StopCastUnits()
+{
+    stop_cast_units_thread = true;
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
 {
     if (!document)
@@ -1012,6 +1193,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
         document->SetComplexForm(s.caret_state.id, (ComplexForm)complex_form, true);
 }
 
+std::u32string document_text;
+
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
 {
     document_text = document->ToText();
@@ -1062,6 +1245,15 @@ int main(int argc, char* argv[])
     document->Start();
 
     document->SetDefaultPageFormat(2, 2, 22, 22, 10);
+
+    cast_units_document.reset(new Document(&cast_units_window, config));
+    cast_units_document->GetConfig(config);
+    config.with_border = false;
+    config.caret_visible = false;
+    config.formula_border = false;
+    config.solve_delay = 0;
+    cast_units_document->Start();
+    cast_units_document->WaitTask(cast_units_document->SetConfig(config, false));
 
     yutovo_web::ShortcutsMap shortcuts_map;
     shortcuts_map.Init(document);

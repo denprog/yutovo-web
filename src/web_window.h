@@ -20,6 +20,7 @@ class WebWindow : public Window
 {
 public:
     WebWindow();
+    WebWindow(const int _width, const int _height);
     ~WebWindow();
 
     virtual void Init(Document* _document);
@@ -80,6 +81,7 @@ public:
     virtual bool Close(const int socket_id);
 
     void Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface);
+    void Render(std::vector<unsigned char>& picture);
 
     void SocketTasks();
 

@@ -608,7 +608,7 @@ export default
                                 Module.cwrap('OnFocusOut', 'void', [])();
                             });
                         
-                        var route = r.currentRoute.value
+                        var route = r.currentRoute.value;
                         if (route.path.substring(0, 5) == '/task')
                         {
                             var task = route.params.param.replaceAll(/\\/g, '/');
@@ -624,8 +624,26 @@ export default
                                 }));
                         }
                         else
-                            window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
+                        {
+                            if (!Cookies.has('app_initialized'))
+                            {
+                                console.log("Load the first page ", s.state.editor.language);
+                                window.dispatchEvent(new CustomEvent('loadTask', 
+                                    {
+                                        'detail': 
+                                        {
+                                            task: '/first_page', 
+                                            language: navigator.language.startsWith('ru') ? 'ru' : 'en'
+                                        }
+                                    }));
+                            }
+                            else
+                                window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
+                        }
+
                         canvas.focus();
+
+                        Cookies.set('app_initialized', true, {path: '/', expires: '30d'});
 
                         if (Cookies.has('refresh_token'))
                         {
@@ -1353,7 +1371,7 @@ export default
         {
             var task = event.detail.task;
             var language = event.detail.language;
-            console.log('loadTask ', task);
+            console.log('loadTask ', task, ' ', language);
             if (task == null)
                 return;
             

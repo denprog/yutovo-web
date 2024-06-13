@@ -113,7 +113,6 @@ export default
                     }
                 ]
             });
-            this.$q.cookies.set('app_initialized', true, {path: '/', expires: '30d'});
         }
     },
 
@@ -247,16 +246,16 @@ export default
                     }
                 }
                 ).then(
-                function(response)
-                {
-                    s.commit('editor/setLanguage', response.data.language);
-                }
-            ).catch(
-                function(response)
-                {
-                    console.log(response);
-                }
-            );
+                    function(response)
+                    {
+                        s.commit('editor/setLanguage', response.data.language);
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
         }
     },
 

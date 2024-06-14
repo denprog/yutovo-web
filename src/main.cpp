@@ -33,7 +33,7 @@ std::mutex cast_units_mutex;
 std::vector<Unit> cast_units;
 std::vector<std::string> cast_units_images;
 const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-yutovo_web::WebWindow cast_units_window(1, 1);
+yutovo_web::WebWindow cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
 

@@ -114,7 +114,14 @@ export default
         const onTaskSelected = (target) =>
         {
             window.dispatchEvent(new CustomEvent('clearDocumentSelection', {}));
-            window.dispatchEvent(new CustomEvent('loadTask', {detail: {task: target}}));
+            window.dispatchEvent(new CustomEvent('loadTask', 
+                {
+                    'detail': 
+                    {
+                        task: target, 
+                        language: store.state.editor.language == '' ? 'en' : store.state.editor.language
+                    }
+                }));
         };
 
         const clearTaskSelection = () =>

@@ -77,7 +77,7 @@ export default {
     {
         const colorToInt = (color) =>
         {
-            return parseInt(color.substr(1, 6), 16);
+            return parseInt(color.substr(1, 6), 16) + 0xff000000;
         };
 
         const colorToHex = (color) =>

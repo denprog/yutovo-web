@@ -408,6 +408,8 @@ export default
 
         var downloading = false;
 
+        var jsonClipboard = "";
+
         return {
             style,
 
@@ -484,6 +486,8 @@ export default
 
             downloading,
 
+            jsonClipboard,
+
             autoMenuChecked,
             realMenuChecked,
             integerMenuChecked,
@@ -510,6 +514,12 @@ export default
         window.socket_id = 1;
         var r = this.router;
         var s = this.store;
+
+        this.getClipboardPermission().then(result => 
+            {
+                console.log("Clipboard permission: ", result);
+            }
+        );
 
         var Module =
             {
@@ -761,28 +771,34 @@ export default
             button.disabled = !Module.cwrap('CanCopy', 'bool', [])();
 
             var can_paste = false;
-            try
+            if (await this.getClipboardPermission())
             {
-                await navigator.clipboard.read().then(data => {
-                    for (let i = 0; i < data.length; i++)
-                    {
-                        if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain'))
+                try
+                {
+                    await navigator.clipboard.read().then(data => {
+                        for (let i = 0; i < data.length; i++)
                         {
-                            can_paste = true;
-                            break;
-                        }
-                    }}
-                    ).catch(
-                    function(err)
-                    {
-                        //console.log(err);
-                        return;
-                    });
+                            if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain'))
+                            {
+                                can_paste = true;
+                                break;
+                            }
+                        }}
+                        ).catch(
+                            function(err)
+                            {
+                                can_paste = (this.jsonClipboard != ""); //in case of locked clipboard
+                            }
+                        );
+                }
+                catch (err)
+                {
+                    can_paste = (this.jsonClipboard != ""); //in case of locked clipboard
+                }
             }
-            catch (err)
+            else
             {
-                //console.log(err);
-                return;
+                can_paste = (this.jsonClipboard != "");
             }
 
             button = document.getElementById('undo-button');
@@ -1073,82 +1089,153 @@ export default
             Module.cwrap('OnRedo', 'void', [])();
         },
 
-        onCut()
+        async onCut()
         {
             this.contextMenu.hide();
             Module.cwrap('OnCut', 'void', [])();
             const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
             const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
-            navigator.clipboard.write([
-                new ClipboardItem({
-                    'text/plain': new Blob([clipboard_text], 
-                    {
-                        type: 'text/plain'
-                    }),
-                    'web yutovo/elements': new Blob([clipboard_json], 
-                    {
-                        type: 'web yutovo/elements'
-                    })
-                })
-            ]);
+
+            try
+            {
+                if (navigator.userAgent.toLowerCase().includes('firefox'))
+                {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/plain': new Blob([clipboard_text], 
+                            {
+                                type: 'text/plain'
+                            })
+                        })
+                    ]);
+
+                    this.jsonClipboard = clipboard_json;
+                }
+                else
+                {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/plain': new Blob([clipboard_text], 
+                            {
+                                type: 'text/plain'
+                            }),
+                            'web yutovo/elements': new Blob([clipboard_json], 
+                            {
+                                type: 'web yutovo/elements'
+                            })
+                        })
+                    ]);
+
+                    this.jsonClipboard = "";
+                }
+            }
+            catch (err)
+            {
+                this.jsonClipboard = clipboard_json; //in case of locked clipboard
+            }
+
             canvas.focus();
         },
 
-        onCopy()
+        async onCopy()
         {
             this.contextMenu.hide();
             Module.cwrap('OnCopy', 'void', [])();
             const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
             const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
-            navigator.clipboard.write([
-                new ClipboardItem({
-                    'text/plain': new Blob([clipboard_text], 
-                    {
-                        type: 'text/plain'
-                    }),
-                    'web yutovo/elements': new Blob([clipboard_json], 
-                    {
-                        type: 'web yutovo/elements'
-                    })
-                })
-            ]);
+
+            try
+            {
+                if (navigator.userAgent.toLowerCase().includes('firefox'))
+                {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/plain': new Blob([clipboard_text], 
+                            {
+                                type: 'text/plain'
+                            })
+                        })
+                    ]);
+
+                    this.jsonClipboard = clipboard_json;
+                }
+                else
+                {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/plain': new Blob([clipboard_text], 
+                            {
+                                type: 'text/plain'
+                            }),
+                            'web yutovo/elements': new Blob([clipboard_json], 
+                            {
+                                type: 'web yutovo/elements'
+                            })
+                        })
+                    ]);
+
+                    this.jsonClipboard = "";
+                }
+            }
+            catch (err)
+            {
+                this.jsonClipboard = clipboard_json; //in case of locked clipboard
+            }
+
             canvas.focus();
         },
 
         async onPaste()
         {
             this.contextMenu.hide();
+
             Module.cwrap('SetClipboardText', 'void', ['string'])('');
             Module.cwrap('SetClipboardJson', 'void', ['string'])('');
-            const data = await navigator.clipboard.read();
-            for (let i = 0; i < data.length; i++)
+
+            try
             {
-                if (data[i].types.includes('web yutovo/elements'))
+                if (navigator.userAgent.toLowerCase().includes('firefox') && this.jsonClipboard != "")
                 {
-                    const blob = await data[i].getType('web yutovo/elements');
-                    const text = await blob.text();
-                    Module.cwrap('SetClipboardJson', 'void', ['string'])(text);
+                    Module.cwrap('SetClipboardJson', 'void', ['string'])(this.jsonClipboard);
                 }
-                else if (data[i].types.includes('image/png'))
+                else
                 {
-                    const blob = await data[i].getType('image/png');
-                    var reader = new FileReader();
-                    reader.readAsDataURL(blob); 
-                    reader.onloadend = function()
+                    const data = await navigator.clipboard.read();
+                    for (let i = 0; i < data.length; i++)
+                    {
+                        if (data[i].types.includes('web yutovo/elements'))
                         {
-                            var text = reader.result;
-                            Module.cwrap('SetClipboardImage', 'void', ['string'])(text);
-                            Module.cwrap('OnPaste', 'void', [])();
-                            canvas.focus();
+                            const blob = await data[i].getType('web yutovo/elements');
+                            const text = await blob.text();
+                            Module.cwrap('SetClipboardJson', 'void', ['string'])(text);
                         }
-                }
-                else if (data[i].types.includes('text/plain'))
-                {
-                    const blob = await data[i].getType('text/plain');
-                    const text = await blob.text();
-                    Module.cwrap('SetClipboardText', 'void', ['string'])(text);
+                        else if (data[i].types.includes('image/png'))
+                        {
+                            const blob = await data[i].getType('image/png');
+                            var reader = new FileReader();
+                            reader.readAsDataURL(blob); 
+                            reader.onloadend = function()
+                                {
+                                    var text = reader.result;
+                                    Module.cwrap('SetClipboardImage', 'void', ['string'])(text);
+                                    Module.cwrap('OnPaste', 'void', [])();
+                                    canvas.focus();
+                                }
+                        }
+                        else if (data[i].types.includes('text/plain'))
+                        {
+                            const blob = await data[i].getType('text/plain');
+                            const text = await blob.text();
+                            Module.cwrap('SetClipboardText', 'void', ['string'])(text);
+                        }
+                    }
                 }
             }
+            catch (err)
+            {
+                Module.cwrap('SetClipboardJson', 'void', ['string'])(this.jsonClipboard); //in case of locked clipboard
+            }
+
             Module.cwrap('OnPaste', 'void', [])();
             canvas.focus();
         },
@@ -1507,6 +1594,7 @@ export default
             }
             catch (err)
             {
+                can_paste = (this.jsonClipboard != ""); //in case of locked clipboard
             }
 
             var paste_menu = document.getElementById('paste-menu');
@@ -1576,6 +1664,19 @@ export default
             m = document.getElementById('set-unit-menu');
             if (window.Module.cwrap('HasUnit', 'int', [])())
                 m.style.display = '';
+        },
+
+        async getClipboardPermission()
+        {
+            try
+            {
+                await navigator.permissions.query({ name: "clipboard-read" });
+            }
+            catch (err)
+            {
+                return false;
+            }
+            return true;
         },
 
         onPresentAsAuto()

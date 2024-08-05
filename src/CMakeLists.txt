@@ -1,23 +1,28 @@
 cmake_minimum_required(VERSION 3.17)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 set(CMAKE_DEBUG_POSTFIX d)
 
-set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
-set(yutovo_logger_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_logger/)
-
-find_package(PkgConfig REQUIRED)
-find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-find_package(yutovo_logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(CMAKE_FIND_ROOT_PATH ${INSTALL_PATH}/wasm/cmake/)
 find_package(Boost 1.81.0 REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(Boost 1.81.0 COMPONENTS serialization PATHS ${INSTALL_PATH}/wasm/)
+
+set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
+set(yutovo_service_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_service/)
+set(yutovo_calculator_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_calculator/)
+set(yutovo_logger_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_logger/)
+
+find_package(PkgConfig REQUIRED)
+find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo_service REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo_calculator REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo_logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 
@@ -54,7 +59,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_TABLE_GROWTH=1")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s TOTAL_MEMORY=1024MB")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s MODULARIZE=1")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s EXPORT_NAME='yutovo_web'")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_DISABLE_EXCEPTION_CATCHING")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_DISABLE_EXCEPTION_CATCHING")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s EXPORTED_RUNTIME_METHODS=\"['cwrap','ccall']\"")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s LLD_REPORT_UNDEFINED")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s MALLOC=emmalloc")
@@ -83,10 +88,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    stdc++
+    ${INSTALL_PATH}/wasm/libmpfr.a
+    ${INSTALL_PATH}/wasm/libgmp.a
     yutovo_editor
+    yutovo_service
     yutovo_logger
     pthread
-    stdc++
     ${Boost_SERIALIZATION_LIBRARY_RELEASE}
 )
 

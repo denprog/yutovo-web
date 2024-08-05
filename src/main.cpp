@@ -289,7 +289,7 @@ void MainLoop(void* arg)
 
     if (window->save_ready)
     {
-        std::string s = ToBasicString(save_json);
+        std::string s = yutovo::ToBasicString(save_json);
         SaveDocument(s.c_str(), s.size());
         window->save_ready = false;
     }
@@ -482,7 +482,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document_id)
 {
     if (document)
-        document->LoadJson(ToUtfString(std::string(json)), document_id);
+        document->LoadJson(yutovo::ToUtfString(std::string(json)), document_id);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSave()
@@ -588,12 +588,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardJson()
 
 extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardText(const char* value)
 {
-    clipboard_text = ToUtfString(value);
+    clipboard_text = yutovo::ToUtfString(value);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardJson(const char* value)
 {
-    clipboard_json = ToUtfString(value);
+    clipboard_json = yutovo::ToUtfString(value);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardImage(const char* value)
@@ -731,7 +731,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 void FillUnits(const std::string system)
 {
     DocumentPtr d = cast_units_document;
-    std::u32string s = ToUtfString(system);
+    std::u32string s = yutovo::ToUtfString(system);
 
     for (size_t i = 0; i < cast_units.size(); ++i)
     {
@@ -807,7 +807,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
 
     for (auto& s : systems)
     {
-        std::string _s = ToBasicString(s);
+        std::string _s = yutovo::ToBasicString(s);
         AddCastUnitSystem(_s.c_str(), _s.size());
     }
 }
@@ -817,7 +817,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnits(const char* system)
     if (cast_unit_id.empty())
         return;
     
-    cast_unit_system = ToUtfString(system);
+    cast_unit_system = yutovo::ToUtfString(system);
 
     stop_cast_units_thread = true;
     if (cast_units_thread.joinable())
@@ -1071,7 +1071,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnJustifyAlign(int checked)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file, const int document_id)
 {
-    auto s = ToUtfString(file);
+    auto s = yutovo::ToUtfString(file);
     document->LoadJson(s, document_id);
 }
 
@@ -1081,7 +1081,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFilePart(const char* part_file, const
     file += part_file;
     if (finish)
     {
-        auto _s = ToUtfString(file);
+        auto _s = yutovo::ToUtfString(file);
         file = "";
         document->LoadJson(_s, document_id);
     }
@@ -1089,7 +1089,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFilePart(const char* part_file, const
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 {
-    auto s = ToUtfString(language);
+    auto s = yutovo::ToUtfString(language);
     if (s == U"\"en\"")
         document->SetLocale(yutovo_calculator::Language::English, true);
     else if (s == U"\"ru\"")

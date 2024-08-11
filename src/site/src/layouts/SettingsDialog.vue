@@ -291,9 +291,6 @@ export default {
 </script>
 
 <style scoped>
-.my-input {
-    max-width: 150px
-}
 .grid-container {
     display: grid;
     grid-template-columns: auto auto;

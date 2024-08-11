@@ -4,14 +4,20 @@
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
-                    <q-form @submit="onSubmit" @reset="onReset">
-                        <div class="text-blue text-h5">Login</div>
-                        <q-input ref="loginRef" square v-model="login" lazy-rules :rules="[this.required]" id="username" type="username" label="user name" />
-                        <q-input ref="passwordRef" square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" label="password" />
+                    <q-form @submit="onSubmit" @reset="onReset" class="q-sm">
+                        <div class="text-blue text-h5">{{ $t('Login') }}</div>
+                        <q-input ref="loginRef" square class="q-pa-none" v-model="login" lazy-rules :rules="[this.required]" id="username" type="username" 
+                            v-bind:label="$t('user name')" />
+                        <q-input ref="passwordRef" square class="q-pa-none" v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" 
+                            v-bind:label="$t('password')" />
+                        <br/>
+                        <q-img :src="captchaImageRef" />
+                        <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
+                        <q-input class="q-pa-none" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]" />
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="Login" />
-                            <q-btn unelevated class="text-blue" type="reset" label="Cancel" />
+                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('Login')" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>
                 </q-card-section>
@@ -38,6 +44,9 @@ export default {
         const loginRef = ref(null);
         const password = ref('');
         const passwordRef = ref(null);
+        const captchaImageRef = ref(null);
+        const captcha = ref('');
+        const captchaRef = ref(null);
         const loginDialog = ref(null);
         const store = useStore();
 
@@ -59,6 +68,20 @@ export default {
 
         const router = useRouter();
 
+        api.post('/auth/get-captcha', {})
+            .then(
+                function(response)
+                {
+                    console.log(response);
+                    captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
+                }
+            ).catch(
+                function(response)
+                {
+                    console.log(response);
+                }
+            );
+
         const onSubmit = () =>
         {
             loginRef.value.validate();
@@ -70,6 +93,7 @@ export default {
                 {
                     login: login.value,
                     password: password.value,
+                    captcha: captcha.value,
                     load_last: empty
                 }
                 ).then(
@@ -97,7 +121,8 @@ export default {
                         }
 
                         store.commit('editor/setLanguage', response.data.language);
-                        store.commit('editor/setSettings', JSON.parse(response.data.settings));
+                        if (response.data.settings != "")
+                            store.commit('editor/setSettings', JSON.parse(response.data.settings));
 
                         console.log(store.state.editor.settings);
                         
@@ -108,7 +133,10 @@ export default {
                     {
                         console.log(response);
                         store.dispatch('login/updateAccessToken', '');
-                        store.commit('login/setLastError', 'Login failed');
+                        if (response.response.data.error != '')
+                            store.commit('login/setLastError', response.response.data.error);
+                        else
+                            store.commit('login/setLastError', 'Login failed');
                     }
                 );
         }
@@ -119,6 +147,9 @@ export default {
             loginRef,
             password,
             passwordRef,
+            captchaImageRef,
+            captcha,
+            captchaRef,
             lastErrorState,
             required,
             onSubmit,

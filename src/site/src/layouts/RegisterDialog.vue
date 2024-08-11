@@ -5,16 +5,23 @@
             <q-card square bordered class="q-sm">
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
-                        <div class="text-blue text-h5">Registration</div>
-                        <q-input square v-model="login" lazy-rules :rules="[this.required]" type="username" label="login" />
-                        <q-input square v-model="name" type="username" label="name" />
-                        <q-input square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" label="email" />
-                        <q-input square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" label="password" />
-                        <q-input ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
-                            id="repassword" type="password" label="repeate password" />
+                        <div class="text-blue text-h5">{{ $t('Registration') }}</div>
+                        <q-input class="q-pa-none" square v-model="login" lazy-rules :rules="[this.required]" type="username" 
+                            v-bind:label="$t('login')" />
+                        <q-input class="q-pa-none" square v-model="name" type="username" v-bind:label="$t('user name')" />
+                        <q-input class="q-pa-none" square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" 
+                            v-bind:label="$t('email')" />
+                        <q-input class="q-pa-none" square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" 
+                            v-bind:label="$t('password')" />
+                        <q-input class="q-pb-lg" ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
+                            id="repassword" type="password" v-bind:label="$t('repeate password')" />
+                        <q-img class="q-pa-none" :src="captchaImageRef" />
+                        <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
+                        <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]" />
+                        <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" id="submit" label="Register" />
-                            <q-btn unelevated class="text-blue" type="reset" label="Cancel" v-close-popup />
+                            <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
                         </div>
                     </q-form>
                 </q-card-section>
@@ -30,6 +37,7 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { Cookies } from 'quasar'
+import { computed } from 'vue'
 
 export default {
     name: 'RegisterDialog',
@@ -43,14 +51,23 @@ export default {
         const repassword = ref(null);
         const repasswordRef = ref(null);
         const registerDialog = ref(null);
+        const captchaImageRef = ref(null);
+        const captcha = ref('');
+        const captchaRef = ref(null);
         const closed = ref(false);
-        const $store = useStore();
+        const store = useStore();
         const router = useRouter();
+
+        store.commit('login/setLastError', '');
 
         const required = (val) => 
         {
             return (val && val.length > 0 || 'The field must be filled');
         };
+
+        const lastErrorState = computed({
+            get: () => (store.state.login.last_error)
+        });
 
         const isEmail = (val) => 
         {
@@ -63,6 +80,20 @@ export default {
             return (val === password.value || 'Passwords are not identical');
         };
 
+        api.post('/auth/get-captcha', {})
+            .then(
+                function(response)
+                {
+                    console.log(response);
+                    captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
+                }
+            ).catch(
+                function(response)
+                {
+                    console.log(response);
+                }
+            );
+
         const onSubmit = () =>
         {
             repasswordRef.value.validate();
@@ -72,7 +103,8 @@ export default {
                     login: login.value,
                     name: name.value,
                     email: email.value,
-                    password: password.value
+                    password: password.value,
+                    captcha: captcha.value
                 }
                 ).then(
                     function()
@@ -80,13 +112,16 @@ export default {
                         api.post('/auth/login', 
                             {
                                 login: login.value,
-                                password: password.value
+                                password: password.value,
+                                captcha: captcha.value
                             }
                             ).then(
                                 function(response)
                                 {
-                                    $store.dispatch('login/updateAccessToken', response.headers['access_token']);
-                                    $store.commit('editor/setSettings', JSON.parse(response.data.settings));
+                                    console.log(response);
+                                    store.dispatch('login/updateAccessToken', response.headers['access_token']);
+                                    if (response.data.settings != "")
+                                        store.commit('editor/setSettings', JSON.parse(response.data.settings));
                                     registerDialog.value.hide();
 
                                     router.push({ path: '/document/' + response.data.document_id });
@@ -95,8 +130,11 @@ export default {
                             ).catch(
                                 function(response)
                                 {
-                                    $store.dispatch('login/updateAccessToken', '');
-                                    console.log(response);
+                                    store.dispatch('login/updateAccessToken', '');
+                                    if (response.response.data.error != '')
+                                        store.commit('login/setLastError', response.response.data.error);
+                                    else
+                                        store.commit('login/setLastError', 'Login failed');
                                 }
                             );
                     }
@@ -104,6 +142,11 @@ export default {
                     function(response)
                     {
                         console.log(response);
+                        store.dispatch('login/updateAccessToken', '');
+                        if (response.response.data.error != '')
+                            store.commit('login/setLastError', response.response.data.error);
+                        else
+                            store.commit('login/setLastError', 'Login failed');
                     }
                 );
         };
@@ -123,6 +166,10 @@ export default {
             password,
             repassword,
             repasswordRef,
+            captchaImageRef,
+            captcha,
+            captchaRef,
+            lastErrorState,
             required,
             isEmail,
             diffPassword,

@@ -13,7 +13,11 @@
                         <br/>
                         <q-img :src="captchaImageRef" />
                         <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
-                        <q-input class="q-pa-none" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]" />
+                        <q-input class="q-pa-none" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
+                            <template v-slot:append>
+                                <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
+                            </template>
+                        </q-input>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('Login')" />
@@ -64,6 +68,23 @@ export default {
         const onReset = () =>
         {
             loginDialog.value.hide();
+        };
+
+        const onRefreshCaptcha = () =>
+        {
+            api.post('/auth/get-captcha', {})
+                .then(
+                    function(response)
+                    {
+                        console.log(response);
+                        captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
         };
 
         const router = useRouter();
@@ -154,6 +175,7 @@ export default {
             required,
             onSubmit,
             onReset,
+            onRefreshCaptcha,
             router
         }
     }

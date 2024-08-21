@@ -14,13 +14,13 @@ find_package(Boost 1.81.0 REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(Boost 1.81.0 COMPONENTS serialization PATHS ${INSTALL_PATH}/wasm/)
 
 set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
-set(yutovo_service_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_service/)
+set(yutovo_solver_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_solver/)
 set(yutovo_calculator_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_calculator/)
 set(yutovo_logger_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_logger/)
 
 find_package(PkgConfig REQUIRED)
 find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-find_package(yutovo_service REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo_solver REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(yutovo_calculator REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(yutovo_logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 
@@ -92,7 +92,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     ${INSTALL_PATH}/wasm/libmpfr.a
     ${INSTALL_PATH}/wasm/libgmp.a
     yutovo_editor
-    yutovo_service
+    yutovo_solver
     yutovo_logger
     pthread
     ${Boost_SERIALIZATION_LIBRARY_RELEASE}

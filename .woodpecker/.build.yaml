@@ -6,7 +6,7 @@ steps:
   - name: build_web
     image: emscripten/emsdk:3.0.1
     commands:
-      - apt update && apt install -y build-essential
+      - apt update && apt install -y build-essential pkg-config
       - apt remove -y cmake
       - mkdir /opt/cmake
       - wget https://github.com/Kitware/CMake/releases/download/v3.30.2/cmake-3.30.2-linux-x86_64.sh

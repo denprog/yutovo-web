@@ -1240,7 +1240,7 @@ int main(int argc, char* argv[])
     yutovo_web::WebWindow window;
     yutovo::Config config;
     config.service_ip = "yutovo.ru";
-    config.service_port = 8000;
+    config.service_port = 9002;
     document.reset(new yutovo::Document(&window, config));
     document->Start();
 

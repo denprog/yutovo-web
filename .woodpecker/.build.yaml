@@ -19,8 +19,10 @@ steps:
       - emcmake cmake -DCMAKE_BUILD_TYPE=Debug ..
       - make -sj4 && make install
 
-      - npm install n -g
-      - n stable
+      - curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+      - source ~/.bashrc
+      - nvm install 20.17.0
+      - nvm use 20.17.0
       - npm i -g @quasar/cli
       - cd ../src/site
       - quasar build

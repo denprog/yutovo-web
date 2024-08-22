@@ -24,7 +24,6 @@ steps:
       - nvm install 20.17.0
       - nvm use 20.17.0
       - npm i -g @quasar/cli
-      - npm i -g @quasar/app
       - cd ../src/site
       - npm install
       - quasar build

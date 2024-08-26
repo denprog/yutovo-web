@@ -73,6 +73,8 @@ public:
     virtual void OnSaveResult(const uint task_id, IOResult result);
     virtual void OnLoadResult(const uint task_id, IOResult result, const int document_id);
 
+    virtual void OnIdentifiersReceived(std::string json);
+
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
@@ -103,6 +105,7 @@ public:
     std::atomic_bool fill_cache{false};
     std::atomic_bool load_ready{false};
     std::atomic_bool update_identifiers{false};
+    std::atomic_bool identifiers_ready{false};
 
     SDL_Renderer* renderer = nullptr;
 
@@ -110,6 +113,8 @@ public:
 
     std::mutex results_mutex;
     std::queue<std::pair<IOResult, int>> load_results;
+
+    std::string identifers_json;
 
 private:
     friend struct DrawTextTask;

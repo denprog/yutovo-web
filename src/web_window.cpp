@@ -298,6 +298,13 @@ void WebWindow::OnLoadResult(const uint task_id, IOResult result, const int docu
     load_ready = true;
 }
 
+void WebWindow::OnIdentifiersReceived(std::string json)
+{
+    std::lock_guard<std::mutex> lock(results_mutex);
+    identifers_json = json;
+    identifiers_ready = true;
+}
+
 int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;

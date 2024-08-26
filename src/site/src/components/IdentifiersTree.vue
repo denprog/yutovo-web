@@ -28,15 +28,18 @@ export default {
 
     created()
     {
+        window.remote_solver = this.$REMOTE_SOLVER;
         if (window.addEventListener)
         {
             window.addEventListener('updateIdentifiersTree', this.updateIdentifiersTree, false);
             window.addEventListener('updateLanguage', this.updateLanguage, false);
+            window.addEventListener('listIdentifiersTree', this.listIdentifiersTree, false);
         }
         else
         {
             window.attachEvent('updateIdentifiersTree', this.updateIdentifiersTree);
             window.attachEvent('updateLanguage', this.updateLanguage);
+            window.attachEvent('listIdentifiersTree', this.listIdentifiersTree);
         }
     },
 
@@ -113,26 +116,33 @@ export default {
             last_code_id = code_id;
             last_solver_guid = solver_guid;
 
-            api.post('/service/list-identifiers', 
-                {
-                    'code_id': code_id,
-                    'guid': solver_guid,
-                    'solver_type': 1
-                }
-                ).then(
-                    function(response)
+            if (window.remote_solver)
+            {
+                api.post('/service/list-identifiers', 
                     {
-                        identifiers.value = [];
-                        if (response.data.error == null)
-                            addIdentifiers(response.data, identifiers.value, '/', t, false);
+                        'code_id': code_id,
+                        'guid': solver_guid,
+                        'solver_type': 1
                     }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                        identifiers.value = [];
-                    }
-                );
+                    ).then(
+                        function(response)
+                        {
+                            identifiers.value = [];
+                            if (response.data.error == null)
+                                addIdentifiers(response.data, identifiers.value, '/', t, false);
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                            identifiers.value = [];
+                        }
+                    );
+            }
+            else
+            {
+                window.Module.cwrap('ListIdentifiers', 'void', ['int'])(code_id);
+            }
         };
 
         const onIdentifierSelected = (target) =>
@@ -146,6 +156,13 @@ export default {
             canvas.focus();
         };
 
+        const listIdentifiers = (json, t) =>
+        {
+            identifiers.value = [];
+            var c = JSON.parse(json);
+            addIdentifiers(c, identifiers.value, '/', t, false);
+        };
+
         return {
             identifiersFilter,
             identifiersFilterRef,
@@ -155,7 +172,8 @@ export default {
             identifiersRef,
             selectedIdentifier: ref(null),
             onIdentifierSelected,
-            loadIdentifiers
+            loadIdentifiers,
+            listIdentifiers
         }
     },
 
@@ -169,6 +187,11 @@ export default {
         updateLanguage()
         {
             this.loadIdentifiers(-1, -1, this.$t);
+        },
+
+        listIdentifiersTree(event)
+        {
+            this.listIdentifiers(event.detail.json, this.$t);
         }
     }
 }

@@ -11,7 +11,6 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(CMAKE_FIND_ROOT_PATH ${INSTALL_PATH}/wasm/cmake/)
 find_package(Boost 1.81.0 REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-find_package(Boost 1.81.0 COMPONENTS serialization PATHS ${INSTALL_PATH}/wasm/)
 
 set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
 set(yutovo_solver_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_solver/)

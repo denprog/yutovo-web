@@ -93,6 +93,17 @@ EM_JS(void, UpdateIdentifiersTree, (unsigned int code_id, const char* solver_gui
             }));
     });
 
+EM_JS(void, ListIdentifiersTree, (const char* json, size_t json_size),
+    {
+        window.dispatchEvent(new CustomEvent('listIdentifiersTree', 
+            {
+                'detail': 
+                {
+                    'json': json == 0 ? "" : UTF8ToString(json, json_size)
+                }
+            }));
+    });
+
 EM_JS(void, SaveDocument, (const char* json, size_t json_size),
     {
         window.dispatchEvent(new CustomEvent('saveDocument', 
@@ -267,6 +278,12 @@ void MainLoop(void* arg)
             document->GetSolverGuid(guid);
             UpdateIdentifiersTree(code_id, guid.c_str(), guid.size());
         }
+    }
+
+    if (window->identifiers_ready)
+    {
+        window->identifiers_ready = false;
+        ListIdentifiersTree(window->identifers_json.c_str(), window->identifers_json.size());
     }
 
     if (window->needs_render)
@@ -1199,6 +1216,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
 {
     document_text = document->ToText();
     return (char*)document_text.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void ListIdentifiers(int code_id)
+{
+    document->ListIdentifiers(code_id);
 }
 
 int main(int argc, char* argv[])

@@ -6,6 +6,7 @@ export interface EditorInterface
     settings: string;
     document_name: string;
     last_error: string;
+    loading: boolean;
 }
 
 function state(): EditorInterface
@@ -16,7 +17,8 @@ function state(): EditorInterface
         config: '',
         settings: '',
         document_name: '',
-        last_error: ''
+        last_error: '',
+        loading: true
     };
 }
 

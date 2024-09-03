@@ -40,6 +40,11 @@ const mutation: MutationTree<EditorInterface> =
     setLastError(state, last_error)
     {
         state.last_error = last_error;
+    },
+    
+    setLoading(state, loading)
+    {
+        state.loading = loading;
     }
 };
 

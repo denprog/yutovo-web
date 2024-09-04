@@ -410,14 +410,21 @@ void DrawWavyLineTask::Execute()
     else
         SDL_RenderSetClipRect(web_window->renderer, nullptr);
     SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
+
     int x = x1;
     while (x <= x1 + width)
     {
-        DrawArc(x, y1, radius, 0, -180);
+        if (draw_doc)
+            DrawArc(x - web_window->document_point.x, y1 - web_window->document_point.y, radius, 0, -180);
+        else
+            DrawArc(x, y1, radius, 0, -180);
         x += radius * 2;
         if (x >= x1 + width)
             break;
-        DrawArc(x, y1, radius, 0, 180);
+        if (draw_doc)
+            DrawArc(x - web_window->document_point.x, y1 - web_window->document_point.y, radius, 0, 180);
+        else
+            DrawArc(x, y1, radius, 0, 180);
         x += radius * 2;
     }
 }
@@ -631,6 +638,14 @@ void DrawFillPathTask::Execute()
         SDL_RenderSetClipRect(web_window->renderer, nullptr);
     SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
 
+    if (draw_doc)
+    {
+        for (Point& p : path)
+        {
+            p.x = p.x - web_window->document_point.x;
+            p.y = p.y - web_window->document_point.y;
+        }
+    }
     std::vector<Point> _path{std::make_move_iterator(std::begin(path)), std::make_move_iterator(std::end(path))};
     DrawFillPath(_path, color);
 }
@@ -652,6 +667,14 @@ void DrawBezierTask::Execute()
         SDL_RenderSetClipRect(web_window->renderer, nullptr);
     SDL_SetRenderDrawColor(web_window->renderer, color.r, color.g, color.b, color.a);
 
+    if (draw_doc)
+    {
+        for (Point& p : path)
+        {
+            p.x = p.x - web_window->document_point.x;
+            p.y = p.y - web_window->document_point.y;
+        }
+    }
     DrawBezier();
 }
 

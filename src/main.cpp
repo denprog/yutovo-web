@@ -493,7 +493,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFocusOut()
 extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 {
     if (document)
+    {
         document->New();
+        document->InsertCode(false, true);
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document_id)
@@ -1265,6 +1268,7 @@ int main(int argc, char* argv[])
     config.service_port = 9002;
     document.reset(new yutovo::Document(&window, config));
     document->Start();
+    document->InsertCode(false, true);
 
     document->SetDefaultPageFormat(2, 2, 22, 22, 10);
 

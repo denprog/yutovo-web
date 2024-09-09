@@ -993,11 +993,12 @@ export default
         onDelete()
         {
             var s = this.store;
+            var t = this.$t;
             var get_last_document = this.getLastDocument;
             var last_documents = this.last_documents;
             this.$q.dialog({
-                title: 'Confirm',
-                message: 'Delete the document?',
+                title: t('Confirm'),
+                message: t('Delete the document?'),
                 cancel: true
             }).onOk(() => {
                 api.post('/service/delete-document', {}, 

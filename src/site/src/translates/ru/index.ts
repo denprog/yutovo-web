@@ -89,10 +89,12 @@ export default {
     'Tasks': 'Задачи',
     'Identifiers': 'Идентификаторы',
 
+    'Confirm': 'Подтвержедение',
     'Error saving the document: ': 'Ошибка сохранения документа: ',
     'Document size is more then limit': 'Размер документа больше лимита',
     'Error creating the document: ': 'Ошибка создания документа: ',
     'Max files count exceed': 'Превышено максимальное количество файлов',
+    'Delete the document?': 'Удалить документ?',
 
     'Download PC version': 'Скачать версию для ПК',
     'Terms of use': 'Правила использования',
@@ -101,6 +103,7 @@ export default {
     'Target OS': 'Для ОС',
 
     'Login': 'Логин',
+    'Logout': 'Выход',
     'user name': 'имя пользователя',
     'password': 'пароль',
     'Type the symbols above:': 'Введите символы сверху',
@@ -110,7 +113,9 @@ export default {
     'login': 'логин',
     'email': 'почта',
     'repeate password': 'повторите пароль',
-    'Register': 'Зарегистрироваться',
+    'Register': 'Регистрация',
+
+    'Settings': 'Настройки',
 
     'About': 'О проекте',
     about_yutovo: 'Ютово - это мощный калькулятор для решения различных математических, физических и повседневных задач.\

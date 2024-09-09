@@ -41,7 +41,6 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { Cookies } from 'quasar'
-import { computed } from 'vue'
 
 export default {
     name: 'RegisterDialog',
@@ -68,10 +67,6 @@ export default {
         {
             return (val && val.length > 0 || 'The field must be filled');
         };
-
-        const lastErrorState = computed({
-            get: () => (store.state.login.last_error)
-        });
 
         const isEmail = (val) => 
         {
@@ -141,7 +136,7 @@ export default {
                                 {
                                     console.log(response);
                                     store.dispatch('login/updateAccessToken', response.headers['access_token']);
-                                    if (response.data.settings != "")
+                                    if (response.data.settings != '')
                                         store.commit('editor/setSettings', JSON.parse(response.data.settings));
                                     registerDialog.value.hide();
 

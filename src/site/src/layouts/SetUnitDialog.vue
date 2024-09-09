@@ -35,7 +35,6 @@
 </template>
 
 <script lang="ts">
-import { computed } from 'vue';
 import { ref } from 'vue'
 
 export default {

@@ -415,7 +415,7 @@ export default
             get: () => (store.state.editor.loading)
         });
 
-        var jsonClipboard = "";
+        var jsonClipboard = '';
 
         return {
             style,
@@ -526,7 +526,7 @@ export default
 
         this.getClipboardPermission().then(result => 
             {
-                console.log("Clipboard permission: ", result);
+                console.log('Clipboard permission: ', result);
             }
         );
 
@@ -599,7 +599,7 @@ export default
                         {
                             if (!Cookies.has('app_initialized'))
                             {
-                                console.log("Loading the first page ", s.state.editor.language);
+                                console.log('Loading the first page ', s.state.editor.language);
                                 window.dispatchEvent(new CustomEvent('loadTask', 
                                     {
                                         'detail': 
@@ -695,12 +695,12 @@ export default
         {
             //update all but language and result settings
             var c = JSON.parse(JSON.stringify(this.store.state.editor.settings));
-            delete c["language"];
-            delete c["auto_result"];
-            delete c["real_result"];
-            delete c["integer_result"];
-            delete c["rational_result"];
-            delete c["complex_result"];
+            delete c['language'];
+            delete c['auto_result'];
+            delete c['real_result'];
+            delete c['integer_result'];
+            delete c['rational_result'];
+            delete c['complex_result'];
             Module.cwrap('OnSettings', 'void', ['string'])(JSON.stringify(c));
             canvas.focus();
         },
@@ -749,20 +749,20 @@ export default
                             }
                         }}
                         ).catch(
-                            function(err)
+                            function()
                             {
-                                can_paste = (this.jsonClipboard != ""); //in case of locked clipboard
+                                can_paste = (this.jsonClipboard != ''); //in case of locked clipboard
                             }
                         );
                 }
                 catch (err)
                 {
-                    can_paste = (this.jsonClipboard != ""); //in case of locked clipboard
+                    can_paste = (this.jsonClipboard != ''); //in case of locked clipboard
                 }
             }
             else
             {
-                can_paste = (this.jsonClipboard != "");
+                can_paste = (this.jsonClipboard != '');
             }
 
             button = document.getElementById('undo-button');
@@ -1093,7 +1093,7 @@ export default
                         })
                     ]);
 
-                    this.jsonClipboard = "";
+                    this.jsonClipboard = '';
                 }
             }
             catch (err)
@@ -1141,7 +1141,7 @@ export default
                         })
                     ]);
 
-                    this.jsonClipboard = "";
+                    this.jsonClipboard = '';
                 }
             }
             catch (err)
@@ -1161,7 +1161,7 @@ export default
 
             try
             {
-                if (navigator.userAgent.toLowerCase().includes('firefox') && this.jsonClipboard != "")
+                if (navigator.userAgent.toLowerCase().includes('firefox') && this.jsonClipboard != '')
                 {
                     Module.cwrap('SetClipboardJson', 'void', ['string'])(this.jsonClipboard);
                 }
@@ -1499,7 +1499,7 @@ export default
             else
             {
                 alert('Error loading the document');
-                this.store.commit('editor/setConfig', JSON.parse("{}"));
+                this.store.commit('editor/setConfig', JSON.parse('{}'));
             }
         },
 
@@ -1561,7 +1561,7 @@ export default
             }
             catch (err)
             {
-                can_paste = (this.jsonClipboard != ""); //in case of locked clipboard
+                can_paste = (this.jsonClipboard != ''); //in case of locked clipboard
             }
 
             var paste_menu = document.getElementById('paste-menu');
@@ -1637,7 +1637,7 @@ export default
         {
             try
             {
-                await navigator.permissions.query({ name: "clipboard-read" });
+                await navigator.permissions.query({ name: 'clipboard-read' });
             }
             catch (err)
             {
@@ -1709,7 +1709,7 @@ export default
                 prompt:
                 {
                     model: p,
-                    inputmode: "numeric",
+                    inputmode: 'numeric',
                     mask: '##',
                     min: 1,
                     max: 99,
@@ -1737,7 +1737,7 @@ export default
                 prompt:
                 {
                     model: p,
-                    inputmode: "numeric",
+                    inputmode: 'numeric',
                     mask: '##',
                     min: 1,
                     max: 99,

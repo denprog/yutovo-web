@@ -65,8 +65,6 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
-import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
@@ -86,7 +84,7 @@ export default {
             var b = color & 0xff,
                 g = (color & 0xff00) >>> 8,
                 r = (color & 0xff0000) >>> 16;
-            return "#" + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
+            return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
         };
 
         const settingsDialog = ref(null);
@@ -119,8 +117,6 @@ export default {
         {
             settingsDialog.value.hide();
         };
-
-        const router = useRouter();
 
         const onSubmit = () =>
         {
@@ -172,7 +168,7 @@ export default {
             required,
             onSubmit,
             onReset,
-            settingsTab: ref("colors"),
+            settingsTab: ref('colors'),
             codeBlockColor,
             numbersColor,
             variablesColor,

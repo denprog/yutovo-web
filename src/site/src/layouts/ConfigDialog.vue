@@ -83,12 +83,7 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import { api } from 'boot/boot'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
-import { Cookies } from 'quasar'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'ConfigDialog',
@@ -136,7 +131,6 @@ export default {
         ];
         const rationalForm = ref(typeof store.state.editor.config.rational_result === 'undefined' ? 'Proper' : 
             rationalForms[store.state.editor.config.rational_result.fraction_form]);
-        const rationalFormRef = ref(null);
 
         const complexForms = [
             'Arithmetical',
@@ -173,8 +167,6 @@ export default {
         {
             configDialog.value.hide();
         };
-
-        const router = useRouter();
 
         const onSubmit = () =>
         {

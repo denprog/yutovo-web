@@ -142,7 +142,7 @@ export default {
                         }
 
                         store.commit('editor/setLanguage', response.data.language);
-                        if (response.data.settings != "")
+                        if (response.data.settings != '')
                             store.commit('editor/setSettings', JSON.parse(response.data.settings));
 
                         console.log(store.state.editor.settings);

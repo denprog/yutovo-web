@@ -66,7 +66,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind")
 
-target_link_options(${PROJECT_NAME} PUBLIC "-fexceptions")
+target_link_options(${PROJECT_NAME} PUBLIC "-fexceptions -sTEXTDECODER=0")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

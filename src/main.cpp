@@ -495,7 +495,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
     if (document)
     {
         document->New();
-        document->InsertCode(false, true);
+        document->WaitTask(document->InsertCode(false, true));
+        EditorState s{CaretState{ElementId{0, 0, 0, 0, 0, 0, 0, 0}}, SelectionState{}};
+        document->SetEditorState(s);
     }
 }
 

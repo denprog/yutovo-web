@@ -17,7 +17,11 @@
                             id="repassword" type="password" v-bind:label="$t('repeate password')" />
                         <q-img class="q-pa-none" :src="captchaImageRef" />
                         <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
-                        <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]" />
+                        <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
+                            <template v-slot:append>
+                                <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
+                            </template>
+                        </q-input>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
@@ -78,6 +82,23 @@ export default {
         const diffPassword = (val) =>
         {
             return (val === password.value || 'Passwords are not identical');
+        };
+
+        const onRefreshCaptcha = () =>
+        {
+            api.post('/auth/get-captcha', {})
+                .then(
+                    function(response)
+                    {
+                        console.log(response);
+                        captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
         };
 
         api.post('/auth/get-captcha', {})
@@ -169,6 +190,7 @@ export default {
             captchaImageRef,
             captcha,
             captchaRef,
+            onRefreshCaptcha,
             lastErrorState,
             required,
             isEmail,

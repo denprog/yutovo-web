@@ -803,6 +803,8 @@ export default
 
             button = document.getElementById('delete-button');
             button.disabled = !Cookies.has('document_id') || this.store.state.login.login == '';
+
+            document.title = this.$t('Yutovo');
         },
 
         onCode()

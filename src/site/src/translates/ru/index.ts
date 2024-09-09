@@ -1,5 +1,6 @@
 export default {
     yutovo_caption: 'Ютово',
+    Yutovo: 'Ютово',
 
     'Ok': 'Ok',
     'Unknown command': 'Неизвестная команда',

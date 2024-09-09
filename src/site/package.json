@@ -2,8 +2,8 @@
   "name": "yutovo",
   "version": "0.0.1",
   "description": "Yutovo project",
-  "productName": "Yutovo app",
-  "author": "Denis Gordenin <dgordenin@gmail.com>",
+  "productName": "Yutovo",
+  "author": "Denis Gordenin <support@yutovo.ru>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",

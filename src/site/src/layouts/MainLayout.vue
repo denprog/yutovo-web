@@ -324,6 +324,7 @@ export default
         onLanguage()
         {
             this.store.commit('editor/setLanguage', this.locale);
+            document.title = this.$t('Yutovo');
 
             if (this.store.state.login.login != '')
             {

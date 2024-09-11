@@ -1258,13 +1258,13 @@ export default
                 const blob = new Blob([event.detail.json], {type: 'text/csv'});
                 if (window.navigator.msSaveOrOpenBlob)
                 {
-                    window.navigator.msSaveBlob(blob, filename);
+                    window.navigator.msSaveBlob(blob, filename + '.yut');
                 }
                 else
                 {
                     const elem = window.document.createElement('a');
                     elem.href = window.URL.createObjectURL(blob);
-                    elem.download = filename;        
+                    elem.download = filename + '.yut';
                     document.body.appendChild(elem);
                     elem.click();        
                     document.body.removeChild(elem);

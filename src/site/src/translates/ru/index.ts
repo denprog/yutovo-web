@@ -82,6 +82,7 @@ export default {
     'Equation': 'Равенство',
     'rad': 'рад',
     'grad': 'град',
+    'Greek letters': 'Греческие буквы',
 
     'Filter': 'Фильтр',
 

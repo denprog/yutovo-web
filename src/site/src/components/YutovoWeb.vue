@@ -166,6 +166,73 @@
             <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }}</q-tooltip>
             </q-btn>
+            <div class="greek-letter-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Greek letters') }}</q-tooltip>
+                <q-btn-dropdown class="greek-letter-block" square dense no-caps label="α" @hide='onLettersHide()'>
+                    <table class="q-pt-md q-pb-md">
+                        <tr>
+                            <q-btn class="greek-letter" label="α" v-close-popup square dense no-caps @click="onGreekLetter('α');"/>
+                            <q-btn class="greek-letter" label="β" v-close-popup square dense no-caps @click="onGreekLetter('β');"/>
+                            <q-btn class="greek-letter" label="γ" v-close-popup square dense no-caps @click="onGreekLetter('γ');"/>
+                            <q-btn class="greek-letter" label="δ" v-close-popup square dense no-caps @click="onGreekLetter('δ');"/>
+                            <q-btn class="greek-letter" label="ε" v-close-popup square dense no-caps @click="onGreekLetter('ε');"/>
+                            <q-btn class="greek-letter" label="ζ" v-close-popup square dense no-caps @click="onGreekLetter('ζ');"/>
+                            <q-btn class="greek-letter" label="η" v-close-popup square dense no-caps @click="onGreekLetter('η');"/>
+                            <q-btn class="greek-letter" label="θ" v-close-popup square dense no-caps @click="onGreekLetter('θ');"/>
+                        </tr>
+                        <tr>
+                            <q-btn class="greek-letter" label="ι" v-close-popup square dense no-caps @click="onGreekLetter('ι');"/>
+                            <q-btn class="greek-letter" label="κ" v-close-popup square dense no-caps @click="onGreekLetter('κ');"/>
+                            <q-btn class="greek-letter" label="λ" v-close-popup square dense no-caps @click="onGreekLetter('λ');"/>
+                            <q-btn class="greek-letter" label="μ" v-close-popup square dense no-caps @click="onGreekLetter('μ');"/>
+                            <q-btn class="greek-letter" label="ν" v-close-popup square dense no-caps @click="onGreekLetter('ν');"/>
+                            <q-btn class="greek-letter" label="ξ" v-close-popup square dense no-caps @click="onGreekLetter('ξ');"/>
+                            <q-btn class="greek-letter" label="ο" v-close-popup square dense no-caps @click="onGreekLetter('ο');"/>
+                            <q-btn class="greek-letter" label="π" v-close-popup square dense no-caps @click="onGreekLetter('π');"/>
+                        </tr>
+                        <tr>
+                            <q-btn class="greek-letter" label="ρ" v-close-popup square dense no-caps @click="onGreekLetter('ρ');"/>
+                            <q-btn class="greek-letter" label="σ" v-close-popup square dense no-caps @click="onGreekLetter('σ');"/>
+                            <q-btn class="greek-letter" label="τ" v-close-popup square dense no-caps @click="onGreekLetter('τ');"/>
+                            <q-btn class="greek-letter" label="υ" v-close-popup square dense no-caps @click="onGreekLetter('υ');"/>
+                            <q-btn class="greek-letter" label="φ" v-close-popup square dense no-caps @click="onGreekLetter('φ');"/>
+                            <q-btn class="greek-letter" label="χ" v-close-popup square dense no-caps @click="onGreekLetter('χ');"/>
+                            <q-btn class="greek-letter" label="ψ" v-close-popup square dense no-caps @click="onGreekLetter('ψ');"/>
+                            <q-btn class="greek-letter" label="ω" v-close-popup square dense no-caps @click="onGreekLetter('ω');"/>
+                        </tr>
+                        <tr>
+                            <q-btn class="greek-letter" label="Α" v-close-popup square dense no-caps @click="onGreekLetter('Α');"/>
+                            <q-btn class="greek-letter" label="Β" v-close-popup square dense no-caps @click="onGreekLetter('Β');"/>
+                            <q-btn class="greek-letter" label="Γ" v-close-popup square dense no-caps @click="onGreekLetter('Γ');"/>
+                            <q-btn class="greek-letter" label="Δ" v-close-popup square dense no-caps @click="onGreekLetter('Δ');"/>
+                            <q-btn class="greek-letter" label="Ε" v-close-popup square dense no-caps @click="onGreekLetter('Ε');"/>
+                            <q-btn class="greek-letter" label="Ζ" v-close-popup square dense no-caps @click="onGreekLetter('Ζ');"/>
+                            <q-btn class="greek-letter" label="Η" v-close-popup square dense no-caps @click="onGreekLetter('Η');"/>
+                            <q-btn class="greek-letter" label="Θ" v-close-popup square dense no-caps @click="onGreekLetter('Θ');"/>
+                        </tr>
+                        <tr>
+                            <q-btn class="greek-letter" label="Ι" v-close-popup square dense no-caps @click="onGreekLetter('Ι');"/>
+                            <q-btn class="greek-letter" label="Κ" v-close-popup square dense no-caps @click="onGreekLetter('Κ');"/>
+                            <q-btn class="greek-letter" label="Λ" v-close-popup square dense no-caps @click="onGreekLetter('Λ');"/>
+                            <q-btn class="greek-letter" label="Μ" v-close-popup square dense no-caps @click="onGreekLetter('Μ');"/>
+                            <q-btn class="greek-letter" label="Ν" v-close-popup square dense no-caps @click="onGreekLetter('Ν');"/>
+                            <q-btn class="greek-letter" label="Ξ" v-close-popup square dense no-caps @click="onGreekLetter('Ξ');"/>
+                            <q-btn class="greek-letter" label="Ο" v-close-popup square dense no-caps @click="onGreekLetter('Ο');"/>
+                            <q-btn class="greek-letter" label="Π" v-close-popup square dense no-caps @click="onGreekLetter('Π');"/>
+                        </tr>
+                        <tr>
+                            <q-btn class="greek-letter" label="Ρ" v-close-popup square dense no-caps @click="onGreekLetter('Ρ');"/>
+                            <q-btn class="greek-letter" label="Σ" v-close-popup square dense no-caps @click="onGreekLetter('Σ');"/>
+                            <q-btn class="greek-letter" label="Τ" v-close-popup square dense no-caps @click="onGreekLetter('Τ');"/>
+                            <q-btn class="greek-letter" label="Υ" v-close-popup square dense no-caps @click="onGreekLetter('Υ');"/>
+                            <q-btn class="greek-letter" label="Φ" v-close-popup square dense no-caps @click="onGreekLetter('Φ');"/>
+                            <q-btn class="greek-letter" label="Χ" v-close-popup square dense no-caps @click="onGreekLetter('Χ');"/>
+                            <q-btn class="greek-letter" label="Ψ" v-close-popup square dense no-caps @click="onGreekLetter('Ψ');"/>
+                            <q-btn class="greek-letter" label="Ω" v-close-popup square dense no-caps @click="onGreekLetter('Ω');"/>
+                        </tr>
+                    </table>
+                </q-btn-dropdown>
+            </div>
         </q-btn-group>
     </div>
 
@@ -1893,6 +1960,17 @@ export default
             canvas.focus();
         },
 
+        onLettersHide()
+        {
+            canvas.focus();
+        },
+
+        onGreekLetter(letter)
+        {
+            Module.cwrap('InsertString', 'void', ['string'])(letter);
+            canvas.focus();
+        },
+
         onCloseContextMenu()
         {
             canvas.focus();
@@ -1933,6 +2011,18 @@ canvas.emscripten {
 }
 
 #scroll-space {
+}
+
+.greek-letter-block {
+    border: 0px none;
+    overflow: hidden;
+}
+
+.greek-letter {
+    size: 16px;
+    width: 20px;
+    border: 0px none;
+    overflow: hidden;
 }
 
 .q-pa-md {

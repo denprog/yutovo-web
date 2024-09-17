@@ -52,6 +52,7 @@ export default {
     'Copy': 'Скопировать',
     'Paste': 'Вставить',
     'Insert code': 'Вставить код',
+    'Recalculate the document': 'Пересчитать документ',
     'Paragraph format': 'Формат параграфа',
     'Font family': 'Шрифт',
     'Font size': 'Размер шрифта',

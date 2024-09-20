@@ -593,7 +593,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()
     }
     else if (!clipboard_image.empty())
     {
-        document->PasteImage(clipboard_image, 0, 0);
+        document->PasteImage(clipboard_image);
         clipboard_image = "";
     }
 }

@@ -179,7 +179,7 @@ int WebWindow::GetFontAscent(const StringFormatPtr format)
     return TTF_FontAscent(font);
 }
 
-Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture, const int width, const int height)
+Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture)
 {
     SDL_RWops* p = SDL_RWFromConstMem(&picture[0], picture.size());
     if (!p)

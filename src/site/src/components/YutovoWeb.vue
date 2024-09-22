@@ -1615,14 +1615,18 @@ export default
             var can_paste = false;
             try
             {
-                const data = await navigator.clipboard.read();
-                for (let i = 0; i < data.length; i++)
+                if (navigator.userAgent.toLowerCase().includes('chrome') || 
+                    (navigator.userAgent.toLowerCase().includes('firefox') && await this.getClipboardPermission()))
                 {
-                    if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain') || 
-                        data[i].types.includes('image/png') || data[i].types.includes('image/jpeg' || data[i].types.includes('image/bmp')))
+                    const data = await navigator.clipboard.read();
+                    for (let i = 0; i < data.length; i++)
                     {
-                        can_paste = true;
-                        break;
+                        if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain') || 
+                            data[i].types.includes('image/png') || data[i].types.includes('image/jpeg' || data[i].types.includes('image/bmp')))
+                        {
+                            can_paste = true;
+                            break;
+                        }
                     }
                 }
             }

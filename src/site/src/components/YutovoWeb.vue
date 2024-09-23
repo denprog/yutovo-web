@@ -494,7 +494,7 @@ export default
 
             font_family_model: ref('Arial'),
             font_family: [
-                '', 'Arial', 'Courier New', 'Free Mono', 'Times New Roman', 'DejaVu Serif'
+                'Arial', 'Courier New', 'Free Mono', 'Times New Roman', 'DejaVu Serif'
             ],
 
             font_size_model: ref('14'),

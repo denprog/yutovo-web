@@ -59,6 +59,20 @@ export default
                 return;
             for (var prop in obj)
             {
+                if (prop != 'files')
+                {
+                    let p = path + prop + '/';
+                    t.push({
+                        'id': p,
+                        'label': prop,
+                        'selectable': false,
+                        'children': []
+                    });
+                    updateTasks(obj[prop], t[t.length - 1]['children'], p);
+                }
+            }
+            for (var prop in obj)
+            {
                 if (prop == 'files')
                 {
                     for (var i = 0; i < obj[prop].length; ++i)
@@ -70,17 +84,6 @@ export default
                             'selectable': true
                         });
                     }
-                }
-                else
-                {
-                    let p = path + prop + '/';
-                    t.push({
-                        'id': p,
-                        'label': prop,
-                        'selectable': false,
-                        'children': []
-                    });
-                    updateTasks(obj[prop], t[t.length - 1]['children'], p);
                 }
             }
         };

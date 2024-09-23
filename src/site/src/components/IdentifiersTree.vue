@@ -13,7 +13,7 @@
             </div>
             <div style="height:90%;width:100%;overflow:auto;">
                 <q-tree :nodes="identifiers" dense v-model:selected="selectedIdentifier" ref="identifiersRef" node-key="id" label-key="label" 
-                    :filter="identifiersFilter" @update:selected="onIdentifierSelected" default-expand-all no-selection-unset/>
+                    :filter="identifiersFilter" @update:selected="onIdentifierSelected" no-selection-unset/>
             </div>
         </div>
     </div>
@@ -54,6 +54,7 @@ export default {
         ];
         const identifiers = ref(identifiersNodes);
         const identifiersRef = ref(null);
+        const selectedIdentifier = ref(null);
 
         var last_code_id;
         var last_solver_guid;
@@ -152,6 +153,7 @@ export default {
                 window.Module.cwrap('InsertFunction', 'void', ['string'])(s[2]);
             else
                 window.Module.cwrap('InsertString', 'void', ['string'])(s[s.length - 1]);
+            selectedIdentifier.value = '';
             var canvas = document.getElementById('canvas');
             canvas.focus();
         };
@@ -170,7 +172,7 @@ export default {
             identifiersNodes,
             identifiers,
             identifiersRef,
-            selectedIdentifier: ref(null),
+            selectedIdentifier,
             onIdentifierSelected,
             loadIdentifiers,
             listIdentifiers

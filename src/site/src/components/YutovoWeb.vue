@@ -777,6 +777,15 @@ export default
             var c = JSON.parse(JSON.stringify(this.store.state.editor.config));
             Module.cwrap('OnConfig', 'void', ['string'])(JSON.stringify(c));
             canvas.focus();
+        },
+
+        'store.state.editor.resizing': function()
+        {
+            if (this.store.state.editor.resizing)
+            {
+                this.store.commit('editor/setResizing', false);
+                this.onResize();
+            }
         }
     },
 

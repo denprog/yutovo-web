@@ -74,6 +74,8 @@
             </q-footer>
         </q-layout>
     </div>
+
+    <q-resize-observer @resize="onResize" />
 </template>
 
 <script>
@@ -212,6 +214,10 @@ export default
             },
 
             store,
+
+            onResize() {
+                store.commit('editor/setResizing', true);
+            },
 
             loginState,
             logoutState,

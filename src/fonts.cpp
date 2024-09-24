@@ -39,7 +39,9 @@ TTF_Font* Fonts::Get(const yutovo::StringFormatPtr format)
         });
     if (it == fonts.end())
     {
-        TTF_Font* font = TTF_OpenFont((base_dir + font_file->second).c_str(), format->size);
+        auto file_name = base_dir + font_file->second;
+        //printf("Opening font: %s, size: %d\n", file_name.c_str(), format->size);
+        TTF_Font* font = TTF_OpenFont(file_name.c_str(), format->size);
         if (!font)
         {
             printf("Font not open: %s\n", TTF_GetError());

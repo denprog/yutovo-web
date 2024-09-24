@@ -45,6 +45,11 @@ const mutation: MutationTree<EditorInterface> =
     setLoading(state, loading)
     {
         state.loading = loading;
+    },
+
+    setResizing(state, resizing)
+    {
+        state.resizing = resizing;
     }
 };
 

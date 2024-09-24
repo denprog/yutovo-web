@@ -7,6 +7,7 @@ export interface EditorInterface
     document_name: string;
     last_error: string;
     loading: boolean;
+    resizing: boolean;
 }
 
 function state(): EditorInterface
@@ -18,7 +19,8 @@ function state(): EditorInterface
         settings: '',
         document_name: '',
         last_error: '',
-        loading: true
+        loading: true,
+        resizing: false
     };
 }
 

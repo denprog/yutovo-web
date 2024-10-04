@@ -20,6 +20,7 @@ export default {
     'Argument is over': 'Переполнение аргумента',
     'Units are incompatible': 'Размерности несовместимы',
     'Conversion does not fit': 'Преобразование невозможно',
+    'Solving time exceeded': 'Превышено время вычисления',
 
     'Functions': 'Функции',
     'Variables': 'Переменные',

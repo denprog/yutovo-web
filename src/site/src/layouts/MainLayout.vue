@@ -36,12 +36,12 @@
 
             <div style="height:100%;">
                 <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
-                    <div style="height:calc(85vh);">
+                    <div style="height:calc(82vh);">
                         <div style="height:50%;margin-bottom:30px;" v-if="loginStr != ''">
                             <documents-tree v-if="loginStr != ''">
                             </documents-tree>
                         </div>
-                        <div style="height:50%;">
+                        <div v-bind:style="loginStr != '' ? 'height:50%;' : ''">
                             <tasks-tree>
                             </tasks-tree>
                         </div>

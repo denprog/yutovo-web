@@ -36,7 +36,15 @@ add_executable(${PROJECT_NAME}
     task.cpp
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message("Debug build")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
+else()
+    message("Release build")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL_TTF=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL_IMAGE=2")

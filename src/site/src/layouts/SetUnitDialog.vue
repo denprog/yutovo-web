@@ -3,15 +3,15 @@
     <div class="row">
         <q-card class="q-dialog-plugin" style="min-width: 250px">
             <q-card-section>
-                <div class="text-blue text-h5">Units</div>
+                <div class="text-blue text-h5">{{ $t('Units') }}</div>
                 <q-tabs v-model="systemsTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
-                    <q-tab v-for="(item, index) in systems" :key="index" :label=item :name=item clickable @click="onUnitSystemClick(index)" />
+                    <q-tab v-for="(item, index) in systems" :key="index" :label="$t(item)" :name=item clickable @click="onUnitSystemClick(index)" />
                 </q-tabs>
 
                 <q-separator />
 
                 <q-tab-panels v-model="systemsTab">
-                    <q-tab-panel v-for="(item, index) in systems" :key="index" :name=item>
+                    <q-tab-panel v-for="(item, index) in systems" :key=index :name=item>
                         <div style='border: 1px solid black; max-height: 200px; overflow-y: auto;'>
                             <q-list dense bordered class="q-pa-none">
                                 <q-item dense v-for="(unit, unitIndex) in units" :key="unitIndex" clickable @click="onUnitClick(unitIndex)" 
@@ -25,8 +25,8 @@
                     </q-tab-panel>
                 </q-tab-panels>
                 <div class="q-pa-md q-gutter-sm" style="min-width: 200px">
-                    <q-btn unelevated class="bg-primary text-white" label="OK" @click="onOKClick" />
-                    <q-btn unelevated class="text-blue" label="Cancel" @click="onCancelClick" />                        
+                    <q-btn unelevated class="bg-primary text-white" v-bind:label="$t('OK')" @click="onOKClick" />
+                    <q-btn unelevated class="text-blue" v-bind:label="$t('Cancel')" @click="onCancelClick" />
                 </div>
             </q-card-section>
         </q-card>

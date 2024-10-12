@@ -59,6 +59,31 @@ export default {
     'Text color': 'Цвет текста',
     'Text background color': 'Цвет фона текста',
 
+    'Present as': 'Представить как',
+    'Auto': 'Автоподбор',
+    'Real': 'Вещественные',
+    'Integer': 'Целые',
+    'Rational': 'Дробные',
+    'Complex': 'Комплексные',
+
+    'Precision': 'Точность',
+    'Exponent order': 'Порядок экспоненты',
+    'Notation': 'Система счисления',
+
+    'Binary': 'Двоичная',
+    'Octal': 'Восьмеричная',
+    'Decimal': 'Десятичная',
+    'Hexadecimal': 'Шестнадцатиричная',
+
+    'Fraction form': 'Тип дроби',
+    'Proper': 'Правильная',
+    'Improper': 'Неправильная',
+
+    'Complex form': 'Комплексная форма',
+    'Arithmetic': 'Арифметическая',
+    'Trigonometric': 'Тригонометрическая',
+    'Exponential': 'Экспоненциальная',
+
     'Plus': 'Плюс',
     'Minus': 'Минус',
     'Multiply': 'Умножение',

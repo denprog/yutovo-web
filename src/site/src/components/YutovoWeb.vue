@@ -243,19 +243,19 @@
             <q-menu ref="contextMenu" touch-position square context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
                 <q-list dense style="min-width: 100px">
                     <q-item id="copy-menu" clickable @click='onCopy();'>
-                        <q-item-section>Copy</q-item-section>
+                        <q-item-section>{{ $t('Copy') }}</q-item-section>
                     </q-item>
                     <q-item id="paste-menu" clickable @click='onPaste();'>
-                        <q-item-section>Paste</q-item-section>
+                        <q-item-section>{{ $t('Paste') }}</q-item-section>
                     </q-item>
                     <q-item id="cut-menu" clickable @click='onCut();'>
-                        <q-item-section>Cut</q-item-section>
+                        <q-item-section>{{ $t('Cut') }}</q-item-section>
                     </q-item>
 
                     <q-separator/>
 
                     <q-item auto-close id="present-as-menu" clickable style='display:none;'>
-                        <q-item-section square>Present as</q-item-section>
+                        <q-item-section square>{{ $t('Present as') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right"/>
                         </q-item-section>
@@ -264,38 +264,38 @@
                             <q-list>
                                 <q-item id="present-as-auto-menu" dense clickable @click='onPresentAsAuto();'>
                                     <div v-if="autoMenuChecked == true">&check;</div>
-                                    <q-item-section>Auto</q-item-section>
+                                    <q-item-section>{{ $t('Auto') }}</q-item-section>
                                 </q-item>
                                 <q-item id="present-as-real-menu" dense clickable @click='onPresentAsReal();'>
                                     <div v-if="realMenuChecked == true">&check;</div>
-                                    <q-item-section>Real</q-item-section>
+                                    <q-item-section>{{ $t('Real') }}</q-item-section>
                                 </q-item>
                                 <q-item id="present-as-integer-menu" dense clickable @click='onPresentAsInteger();'>
                                     <div v-if="integerMenuChecked == true">&check;</div>
-                                    <q-item-section>Integer</q-item-section>
+                                    <q-item-section>{{ $t('Integer') }}</q-item-section>
                                 </q-item>
                                 <q-item id="present-as-rational-menu" dense clickable @click='onPresentAsRational();'>
                                     <div v-if="rationalMenuChecked == true">&check;</div>
-                                    <q-item-section>Rational</q-item-section>
+                                    <q-item-section>{{ $t('Rational') }}</q-item-section>
                                 </q-item>
                                 <q-item id="present-as-complex-menu" dense clickable @click='onPresentAsComplex();'>
                                     <div v-if="complexMenuChecked == true">&check;</div>
-                                    <q-item-section>Complex</q-item-section>
+                                    <q-item-section>{{ $t('Complex') }}</q-item-section>
                                 </q-item>
                             </q-list>
                         </q-menu>
                     </q-item>
 
                     <q-item id="set-precision-menu" clickable style='display:none;' @click='onSetPrecision();'>
-                        <q-item-section>Set precision</q-item-section>
+                        <q-item-section>{{ $t('Precision') }}</q-item-section>
                     </q-item>
 
                     <q-item id="set-exp-menu" clickable style='display:none;' @click='onSetExp();'>
-                        <q-item-section>Set exponent order</q-item-section>
+                        <q-item-section>{{ $t('Exponent order') }}</q-item-section>
                     </q-item>
 
                     <q-item id="set-notation-menu" clickable style='display:none;'>
-                        <q-item-section>Set notation</q-item-section>
+                        <q-item-section>{{ $t('Notation') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right"/>
                         </q-item-section>
@@ -304,26 +304,26 @@
                             <q-list>
                                 <q-item id="set-binary-notation-menu" dense clickable @click='onSetBinaryNotation();'>
                                     <div v-if="binaryMenuChecked == true">&check;</div>
-                                    <q-item-section>Binary</q-item-section>
+                                    <q-item-section>{{ $t('Binary') }}</q-item-section>
                                 </q-item>
                                 <q-item id="set-octal-notation-menu" dense clickable @click='onSetOctalNotation();'>
                                     <div v-if="octalMenuChecked == true">&check;</div>
-                                    <q-item-section>Octal</q-item-section>
+                                    <q-item-section>{{ $t('Octal') }}</q-item-section>
                                 </q-item>
                                 <q-item id="set-decimal-notation-menu" dense clickable @click='onSetDecimalNotation();'>
                                     <div v-if="decimalMenuChecked == true">&check;</div>
-                                    <q-item-section>Decimal</q-item-section>
+                                    <q-item-section>{{ $t('Decimal') }}</q-item-section>
                                 </q-item>
                                 <q-item id="set-hexadecimal-notation-menu" dense clickable @click='onSetHexadecimalNotation();'>
                                     <div v-if="hexadecimalMenuChecked == true">&check;</div>
-                                    <q-item-section>Hexadecimal</q-item-section>
+                                    <q-item-section>{{ $t('Hexadecimal') }}</q-item-section>
                                 </q-item>
                             </q-list>
                         </q-menu>
                     </q-item>
 
                     <q-item id="set-fraction-form-menu" clickable style='display:none;'>
-                        <q-item-section>Set fraction form</q-item-section>
+                        <q-item-section>{{ $t('Fraction form') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right"/>
                         </q-item-section>
@@ -332,18 +332,18 @@
                             <q-list>
                                 <q-item id="set-fraction-form-proper-menu" dense clickable @click='onProperFractionForm();'>
                                     <div v-if="properMenuChecked == true">&check;</div>
-                                    <q-item-section>Proper</q-item-section>
+                                    <q-item-section>{{ $t('Proper') }}</q-item-section>
                                 </q-item>
                                 <q-item id="set-fraction-form-improper-menu" dense clickable @click='onImproperFractionForm();'>
                                     <div v-if="improperMenuChecked == true">&check;</div>
-                                    <q-item-section>Improper</q-item-section>
+                                    <q-item-section>{{ $t('Improper') }}</q-item-section>
                                 </q-item>
                             </q-list>
                         </q-menu>
                     </q-item>
 
                     <q-item id="set-complex-form-menu" clickable style='display:none;'>
-                        <q-item-section>Set complex form</q-item-section>
+                        <q-item-section>{{ $t('Complex form') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right"/>
                         </q-item-section>
@@ -352,22 +352,22 @@
                             <q-list>
                                 <q-item id="set-arithmetic-complex-form-menu" dense clickable @click='onArithmeticComplexForm();'>
                                     <div v-if="arithmeticMenuChecked == true">&check;</div>
-                                    <q-item-section>Arithmetic</q-item-section>
+                                    <q-item-section>{{ $t('Arithmetic') }}</q-item-section>
                                 </q-item>
                                 <q-item id="set-trigonometric-complex-form-menu" dense clickable @click='onTrigonometricComplexForm();'>
                                     <div v-if="trigonometricMenuChecked == true">&check;</div>
-                                    <q-item-section>Trigonometric</q-item-section>
+                                    <q-item-section>{{ $t('Trigonometric') }}</q-item-section>
                                 </q-item>
                                 <q-item id="set-exponential-complex-form-menu" dense clickable @click='onExponentialComplexForm();'>
                                     <div v-if="exponentialMenuChecked == true">&check;</div>
-                                    <q-item-section>Exponential</q-item-section>
+                                    <q-item-section>{{ $t('Exponential') }}</q-item-section>
                                 </q-item>
                             </q-list>
                         </q-menu>
                     </q-item>
 
                     <q-item id="set-unit-menu" clickable style='display:none;' @click='onSetUnit();'>
-                        <q-item-section>Set unit</q-item-section>
+                        <q-item-section>{{ $t('Unit') }}</q-item-section>
                     </q-item>
                 </q-list>
             </q-menu>

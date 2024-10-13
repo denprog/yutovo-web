@@ -141,6 +141,19 @@ export default {
 
     'Settings': 'Настройки',
 
+    'Document settings': 'Настройки документа',
+    'Result': 'Результат',
+    'Locale': 'Язык',
+    'Language': 'Язык',
+    'Exponential threshold': 'Порядок экспоненты',
+    'Default angle measure': 'Мера угла по умолчанию',
+    'Result angle measure': 'Мера угла результата',
+    'Default numeral system': 'Система счисления по умолчанию',
+    'Result numeral system': 'Система счисления результата',
+    'Show result numeral system': 'Показывать систему счисления результата',
+    'Show angle measure': 'Показывать меру угла',
+    'Maximum count of results': 'Максимальное количество результатов',
+
     'Units': 'Размерности',
     'SI': 'СИ',
     'RUS': 'Русская',

@@ -4,11 +4,11 @@
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
-                    <div class="text-blue text-h5">Document configuration</div>
+                    <div class="text-blue text-h5">{{ $t('Document settings') }}</div>
 
                     <q-tabs v-model="configTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
-                        <q-tab name="result" label="Result" />
-                        <q-tab name="locale" label="Locale" />
+                        <q-tab name="result" v-bind:label="$t('Result')" />
+                        <q-tab name="locale" v-bind:label="$t('Locale')" />
                     </q-tabs>
 
                     <q-separator />
@@ -17,52 +17,60 @@
                         <q-tab-panel name="result">
                             <q-card>
                                 <q-tabs v-model="resultTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
-                                    <q-tab name="real" label="Real" />
-                                    <q-tab name="integer" label="Integer" />
-                                    <q-tab name="rational" label="Rational" />
-                                    <q-tab name="complex" label="Complex" />
+                                    <q-tab name="real" v-bind:label="$t('Real')" />
+                                    <q-tab name="integer" v-bind:label="$t('Integer')" />
+                                    <q-tab name="rational" v-bind:label="$t('Rational')" />
+                                    <q-tab name="complex" v-bind:label="$t('Complex')" />
                                 </q-tabs>
 
                                 <q-separator />
 
                                 <q-tab-panels v-model="resultTab">
                                     <q-tab-panel name="real">
-                                        <q-input ref="realPrecisionRef" square v-model="realPrecision" :rules="[this.intRequired]" label="precision"/>
-                                        <q-input ref="realExpRef" square v-model="realExp" :rules="[this.intRequired]" label="exponential threshold"/>
+                                        <q-input ref="realPrecisionRef" square v-model="realPrecision" :rules="[this.intRequired]" v-bind:label="$t('Precision')"/>
+                                        <q-input ref="realExpRef" square v-model="realExp" :rules="[this.intRequired]" v-bind:label="$t('Exponential threshold')"/>
                                         <q-select v-model="realDefaultAngleMeasure" :options="angleMeasures" 
-                                            label="default angle measure" dense options-dense borderless/>
+                                            v-bind:label="$t('Default angle measure')" dense options-dense borderless :option-label="measure => $t(measure)"/>
                                         <q-select v-model="realResultAngleMeasure" :options="angleMeasures" 
-                                            label="result angle measure" dense options-dense borderless/>
-                                        <q-checkbox v-model="realShowAngleMeasure" label="show angle measure"/>
+                                            v-bind:label="$t('Result angle measure')" dense options-dense borderless :option-label="measure => $t(measure)"/>
+                                        <q-checkbox v-model="realShowAngleMeasure" v-bind:label="$t('Show angle measure')"/>
                                     </q-tab-panel>
 
                                     <q-tab-panel name="integer">
                                         <q-select ref="integerDefaultNotationRef" :options="integerNotations" square v-model="integerDefaultNotation" 
-                                            lazy-rules label="Default numeral system"/>
-                                        <q-input ref="integerResultNotationRef" square v-model="integerResultNotation" lazy-rules 
-                                            :rules="[this.intRequired]" label="Result numeral system"/>
-                                        <q-checkbox ref="integerShowNotationRef" v-model="integerShowNotation" label="show result numeral system"/>
+                                            lazy-rules v-bind:label="$t('Default numeral system')" :option-label="notation => $t(notation)"/>
+                                        <q-select ref="integerResultNotationRef" :options="integerNotations" square v-model="integerResultNotation" 
+                                            lazy-rules v-bind:label="$t('Result numeral system')" :option-label="notation => $t(notation)"/>
+                                        <q-checkbox ref="integerShowNotationRef" v-model="integerShowNotation" v-bind:label="$t('Show result numeral system')"/>
                                     </q-tab-panel>
 
                                     <q-tab-panel name="rational">
-                                        <q-select v-model="rationalForm" :options="rationalForms" label="fraction form" dense options-dense borderless/>
+                                        <q-select v-model="rationalForm" :options="rationalForms" v-bind:label="$t('Fraction form')" 
+                                            dense options-dense borderless :option-label="form => $t(form)"/>
                                     </q-tab-panel>
 
                                     <q-tab-panel name="complex">
-                                        <q-input ref="complexPrecisionRef" square v-model="complexPrecision" lazy-rules :rules="[this.intRequired]" label="precision"/>
-                                        <q-input ref="complexExpRef" square v-model="complexExp" lazy-rules :rules="[this.intRequired]" label="exponential threshold"/>
-                                        <q-select v-model="complexForm" :options="complexForms" label="complex form" dense options-dense borderless/>
-                                        <q-input ref="complexCountRef" square v-model="complexCount" lazy-rules :rules="[this.intRequired]" label="maximum count of results"/>
-                                        <q-select v-model="complexDefaultAngleMeasure" :options="angleMeasures" label="default angle measure" dense options-dense borderless/>
-                                        <q-select v-model="complexResultAngleMeasure" :options="angleMeasures" label="result angle measure" dense options-dense borderless/>
-                                        <q-checkbox v-model="complexShowAngleMeasure" label="show angle measure"/>
+                                        <q-input ref="complexPrecisionRef" square v-model="complexPrecision" lazy-rules :rules="[this.intRequired]" 
+                                            v-bind:label="$t('Precision')"/>
+                                        <q-input ref="complexExpRef" square v-model="complexExp" lazy-rules :rules="[this.intRequired]" 
+                                            v-bind:label="$t('Exponential threshold')"/>
+                                        <q-select v-model="complexForm" :options="complexForms" v-bind:label="$t('Complex form')" 
+                                            dense options-dense borderless :option-label="form => $t(form)"/>
+                                        <q-input ref="complexCountRef" square v-model="complexCount" lazy-rules :rules="[this.intRequired]" 
+                                            v-bind:label="$t('Maximum count of results')"/>
+                                        <q-select v-model="complexDefaultAngleMeasure" :options="angleMeasures" v-bind:label="$t('Default angle measure')" 
+                                            dense options-dense borderless :option-label="measure => $t(measure)"/>
+                                        <q-select v-model="complexResultAngleMeasure" :options="angleMeasures" v-bind:label="$t('Result angle measure')" 
+                                            dense options-dense borderless :option-label="measure => $t(measure)"/>
+                                        <q-checkbox v-model="complexShowAngleMeasure" v-bind:label="$t('Show angle measure')"/>
                                     </q-tab-panel>
                                 </q-tab-panels>
                             </q-card>
                         </q-tab-panel>
 
                         <q-tab-panel name="locale">
-                            <q-select v-model="language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense label="language" />
+                            <q-select v-model="language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense 
+                                v-bind:label="$t('Language')" />
                         </q-tab-panel>
                     </q-tab-panels>
 
@@ -70,8 +78,8 @@
 
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
-                            <q-btn unelevated class="text-blue" type="reset" label="Cancel" />
+                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('OK')" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>
                 </q-card-section>
@@ -133,9 +141,9 @@ export default {
             rationalForms[store.state.editor.config.rational_result.fraction_form]);
 
         const complexForms = [
-            'Arithmetical',
+            'Arithmetic',
             'Trigonometric',
-            'Scientific'
+            'Exponential'
         ];
         const complexPrecisionRef = ref(null);
         const complexPrecision = ref(typeof store.state.editor.config.complex_result === 'undefined' ? 3 : store.state.editor.config.complex_result.precision);

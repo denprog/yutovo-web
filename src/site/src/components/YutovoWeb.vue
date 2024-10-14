@@ -1785,7 +1785,7 @@ export default
                 return;
 
             this.$q.dialog({
-                title: '<div class="text-blue text-h5">Set precision</div>',
+                title: '<div class="text-blue text-h5">' + this.$t('Precision') + '</div>',
                 prompt:
                 {
                     model: p,
@@ -1813,7 +1813,7 @@ export default
                 return;
 
             this.$q.dialog({
-                title: '<div class="text-blue text-h5">Set exponent order</div>',
+                title: '<div class="text-blue text-h5">' + this.$t('Exponent order') + '</div>',
                 prompt:
                 {
                     model: p,

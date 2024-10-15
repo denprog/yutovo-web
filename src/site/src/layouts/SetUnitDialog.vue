@@ -1,5 +1,5 @@
 <template>
-<q-dialog ref="dialog" @hide="onDialogHide">
+<q-dialog ref="dialog" @show="onDialogShow" @hide="onDialogHide">
     <div class="row">
         <q-card class="q-dialog-plugin" style="min-width: 250px">
             <q-card-section>
@@ -136,6 +136,12 @@ export default {
         hide()
         {
             this.$refs.dialog.hide();
+        },
+
+        onDialogShow()
+        {
+            this.systemsTab = this.systems[0];
+            this.onUnitSystemClick(0);
         },
 
         onDialogHide()

@@ -753,6 +753,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 void FillUnits(const std::string system)
 {
     DocumentPtr d = cast_units_document;
+    d->WaitTask(d->Resize(1, 1));
     std::u32string s = yutovo::ToUtfString(system);
 
     for (size_t i = 0; i < cast_units.size(); ++i)
@@ -768,17 +769,23 @@ void FillUnits(const std::string system)
             continue;
         
         //draw this unit
-        d->WaitTask(d->Resize(1, 1));
-        d->MoveCaretToDocumentBegin(false);
+        d->WaitTask(d->MoveCaretToDocumentBegin(false));
         d->WaitTask(d->DeleteElements(false, false));
-        d->WaitTask(d->InsertUnit(unit));
+        d->WaitTask(d->InsertUnit(unit, false));
         ElementPtr t = d->GetElement({0, 0});
         d->WaitTask(d->Resize(t->rect.width, t->rect.height));
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         d->WaitTask(d->Redraw(ElementId{0}, false));
 
         while (!cast_units_window.needs_render)
+        {
+            if (stop_cast_units_thread)
+            {
+                cast_units_ready = true;
+                return;
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
 
         std::vector<unsigned char> picture;
         cast_units_window.Render(picture); //get unit's picture

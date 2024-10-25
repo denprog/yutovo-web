@@ -666,13 +666,13 @@ export default
                         {
                             if (!Cookies.has('app_initialized'))
                             {
-                                console.log('Loading the first page ', s.state.editor.language);
+                                var lang = navigator.language.startsWith('ru') ? 'ru' : 'en';
                                 window.dispatchEvent(new CustomEvent('loadTask', 
                                     {
                                         'detail': 
                                         {
-                                            task: '/first_page', 
-                                            language: navigator.language.startsWith('ru') ? 'ru' : 'en'
+                                            task: '/' + (lang == 'ru' ? 'Первая страница' : 'First page'), 
+                                            language: lang
                                         }
                                     }));
                             }

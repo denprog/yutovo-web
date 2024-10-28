@@ -104,8 +104,11 @@ export default
     {
         if (!this.$q.cookies.has('app_initialized'))
         {
+            this.locale = navigator.language.startsWith('ru') ? 'ru' : 'en';
+            const store = useStore();
+            store.commit('editor/setLanguage', this.locale);
             this.$q.notify({
-                message: this.$t('This website uses cookies for normal functioning.'),
+                message: this.$t('cookies_use'),
                 color: 'blue-9',
                 multiLine: true,
                 timeout: 0,

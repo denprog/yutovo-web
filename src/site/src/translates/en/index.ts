@@ -7,6 +7,8 @@ export default {
         Because Yutovo is an all-in-one solution to everything from everyday arithmetic to engineering solving.',
     support: 'Support',
 
+    cookies_use: 'This website uses cookies for normal functioning.',
+
     terms_of_use: 'yutovo.ru service and desktop application come with no warranty, explicit or implied, of any purpose whatsoever.<br/>\
         The provider of the yutovo.ru service and desktop application takes no responsibility, financial or otherwise, for any damage or loss resulting \
         from the use of the yutovo.ru service or desktop application, including but not limited to damage to the user\'s hardware and software.<br/>\

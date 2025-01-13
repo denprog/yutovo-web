@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
-#include "utils.h"
+#include "web_utils.h"
 #include "web_window.h"
 
 namespace yutovo_web

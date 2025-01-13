@@ -6,7 +6,7 @@
 #include <yutovo_editor/document.h>
 #include "web_window.h"
 #include "command_map.h"
-#include "utils.h"
+#include "web_utils.h"
 
 using emscripten::val;
 using namespace yutovo;
@@ -1147,35 +1147,35 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsAuto()
 {
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
-        document->SetResult(s.caret_state.id, ResultType::AUTO, true);
+        document->SetResultType(s.caret_state.id, ResultType::AUTO, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsReal()
 {
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
-        document->SetResult(s.caret_state.id, ResultType::REAL, true);
+        document->SetResultType(s.caret_state.id, ResultType::REAL, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsInteger()
 {
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
-        document->SetResult(s.caret_state.id, ResultType::INTEGER, true);
+        document->SetResultType(s.caret_state.id, ResultType::INTEGER, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsRational()
 {
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
-        document->SetResult(s.caret_state.id, ResultType::RATIONAL, true);
+        document->SetResultType(s.caret_state.id, ResultType::RATIONAL, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsComplex()
 {
     EditorState s = document->GetEditorState();
     if (!s.caret_state.IsEmpty())
-        document->SetResult(s.caret_state.id, ResultType::COMPLEX, true);
+        document->SetResultType(s.caret_state.id, ResultType::COMPLEX, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSetPrecision(int precision)

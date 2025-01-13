@@ -1,5 +1,5 @@
 #include "web_window.h"
-#include "utils.h"
+#include <web_utils.h>
 #include <emscripten/em_js.h>
 #include <SDL2/SDL_image.h>
 #include <chrono>

@@ -30,7 +30,7 @@ set(CMAKE_EXECUTABLE_SUFFIX ".js")
 add_executable(${PROJECT_NAME}
     main.cpp
     web_window.cpp
-    utils.cpp
+    web_utils.cpp
     command_map.cpp
     fonts.cpp
     task.cpp

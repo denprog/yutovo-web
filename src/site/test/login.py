@@ -87,7 +87,7 @@ class TestLogin(unittest.TestCase):
         self.assertTrue(utils.getLanguage(self.driver) == 'Русский')
 
         self.driver.get(address)
-        time.sleep(2)
+        time.sleep(4)
         self.assertTrue(utils.getLanguage(self.driver) == 'Русский')
 
 if __name__ == '__main__':

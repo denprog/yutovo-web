@@ -17,11 +17,13 @@
                             id="repassword" type="password" v-bind:label="$t('repeate password')" />
                         <q-img class="q-pa-none" :src="captchaImageRef" />
                         <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
-                        <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
-                            <template v-slot:append>
-                                <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
-                            </template>
-                        </q-input>
+                        <template v-if="isProduction">
+                            <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
+                                <template v-slot:append>
+                                    <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
+                                </template>
+                            </q-input>
+                        </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
@@ -39,11 +41,19 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Cookies } from 'quasar'
 
 export default {
     name: 'RegisterDialog',
+
+    data()
+    {
+        return {
+            isProduction: this.$q.config.production === true
+        }
+    },
 
     setup()
     {
@@ -67,6 +77,10 @@ export default {
         {
             return (val && val.length > 0 || 'The field must be filled');
         };
+
+        const lastErrorState = computed({
+            get: () => (store.state.login.last_error)
+        })
 
         const isEmail = (val) => 
         {

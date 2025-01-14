@@ -590,6 +590,7 @@ export default
         window.socket_id = 1;
         var r = this.router;
         var s = this.store;
+        var q = this.$q;
 
         this.getClipboardPermission().then(result => 
             {
@@ -664,7 +665,7 @@ export default
                         }
                         else
                         {
-                            if (!Cookies.has('app_initialized'))
+                            if (q.config.production && !Cookies.has('app_initialized'))
                             {
                                 var lang = navigator.language.startsWith('ru') ? 'ru' : 'en';
                                 window.dispatchEvent(new CustomEvent('loadTask', 

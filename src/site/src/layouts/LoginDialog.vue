@@ -13,11 +13,13 @@
                         <br/>
                         <q-img :src="captchaImageRef" />
                         <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
-                        <q-input class="q-pa-none" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
-                            <template v-slot:append>
-                                <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
-                            </template>
-                        </q-input>
+                        <template v-if="isProduction">
+                            <q-input class="q-pa-none" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
+                                <template v-slot:append>
+                                    <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
+                                </template>
+                            </q-input>
+                        </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('Login')" />
@@ -41,6 +43,13 @@ import { useRouter } from 'vue-router'
 
 export default {
     name: 'LoginDialog',
+
+    data()
+    {
+        return {
+            isProduction: this.$q.config.production === true
+        }
+    },
 
     setup()
     {

@@ -22,7 +22,7 @@
                     
                     <q-space />
 
-                    <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();" 
+                    <q-select v-model="locale" class="language-select" id="language" :options="localeOptions" @update:model-value="onLanguage();" 
                         dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
 
                     <q-btn id='settings' dense no-caps flat @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>

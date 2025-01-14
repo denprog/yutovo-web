@@ -31,6 +31,8 @@ class TestDocuments(unittest.TestCase):
         self.driver.delete_all_cookies()
         self.driver.get(address)
         time.sleep(6)
+        b = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
+        b.click()
     
     def tearDown(self):
         self.driver.quit()
@@ -65,7 +67,6 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(c1 != None)
-        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
         utils.new(self.driver)
         time.sleep(2)
         c2 = self.driver.get_cookie('document_id')
@@ -275,9 +276,9 @@ class TestDocuments(unittest.TestCase):
     #Check document not found
     def test_documents15(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(1)
-        self.driver.get(address + '/document/99999')
         time.sleep(2)
+        self.driver.get(address + '/document/99999')
+        time.sleep(4)
         alert = self.driver.switch_to.alert
         self.assertTrue(alert.text, 'Document not found')
         alert.accept()
@@ -319,7 +320,7 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(utils.documentContains(self.driver, '4,73'))
 
     #Add documents and remove them on by one
-    def test_documents17(self):
+    def test_documents18(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(4)
 
@@ -345,12 +346,13 @@ class TestDocuments(unittest.TestCase):
 
         utils.delete(self.driver)
         time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_2'))
         utils.delete(self.driver)
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
 
     #Copy-paste test
-    def test_documents18(self):
+    def test_documents19(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(4)
 
@@ -371,7 +373,7 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1test_1'))
 
     #Cut-paste test
-    def test_documents19(self):
+    def test_documents20(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(4)
 

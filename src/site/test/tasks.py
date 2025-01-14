@@ -30,20 +30,20 @@ class TestTasks(unittest.TestCase):
     #Load a task and save as a document
     def test_tasks1(self):
         utils.login(self.driver, 'test1', '11')
-        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Momentum of force')
+        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Moment of force')
         time.sleep(2)
-        self.assertTrue(utils.documentContains(self.driver, 'Newton'))
-        self.assertTrue(self.driver.current_url == address + '/task/en%5CPhysics%5CDynamics%5CMomentum%20of%20force')
-        self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Momentum of force')
+        self.assertTrue(utils.documentContains(self.driver, 'Data'))
+        self.assertTrue(self.driver.current_url == address + '/task/en%5CPhysics%5CDynamics%5CMoment%20of%20force')
+        self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force')
         utils.save(self.driver)
         time.sleep(2)
         utils.clickCategory(self.driver, 'Physics')
         time.sleep(1)
-        utils.clickDocument(self.driver, 'Momentum of force')
+        utils.clickDocument(self.driver, 'Moment of force')
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
-        self.assertTrue(utils.documentContains(self.driver, 'Newton'))
+        self.assertTrue(utils.documentContains(self.driver, 'Data'))
 
     #Load a damaged task
     def test_tasks2(self):
@@ -64,17 +64,17 @@ class TestTasks(unittest.TestCase):
         time.sleep(1)
         utils.save(self.driver)
 
-        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Momentum of force')
+        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Moment of force')
         time.sleep(2)
-        self.assertTrue(utils.documentContains(self.driver, 'Newton'))
+        self.assertTrue(utils.documentContains(self.driver, 'Data'))
 
         utils.clickDocument(self.driver, 'document_1')
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
 
-        utils.clickCategory(self.driver, 'Momentum of force')
+        utils.clickCategory(self.driver, 'Moment of force')
         time.sleep(2)
-        self.assertTrue(utils.documentContains(self.driver, 'Newton'))
+        self.assertTrue(utils.documentContains(self.driver, 'Data'))
 
 if __name__ == '__main__':
     unittest.main()

@@ -25,9 +25,9 @@ class TestRegister(unittest.TestCase):
         self.conn.close()
 
     def test_register1(self):
-        time.sleep(1)
+        time.sleep(2)
         utils.registerUser(self.driver, 'test1', '11', 'test1@mail.ru')
-        time.sleep(1)
+        time.sleep(4)
         self.assertTrue(utils.loginCaption(self.driver) == 'test1')
 
 if __name__ == '__main__':

@@ -115,7 +115,6 @@ def insertCode(driver):
 def clickIdentifier(driver, category):
     arr = category.split('/')
     for i in range(len(arr)):
-        print(arr[i])
         b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + arr[i] + '\')]')))
         b.click()
         time.sleep(1)
@@ -125,14 +124,14 @@ def getDocumentName(driver):
     return b.text
 
 def setLanguage(driver, language):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language-select')))
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language')))
     b.click()
     time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
     b.click()
 
 def getLanguage(driver):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language-select')))
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language')))
     return b.text
 
 def getDbConnection():

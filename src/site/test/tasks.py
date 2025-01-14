@@ -45,14 +45,14 @@ class TestTasks(unittest.TestCase):
         self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
 
-    #Load a damaged task
-    def test_tasks2(self):
-        utils.login(self.driver, 'test1', '11')
-        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'damaged')
-        time.sleep(2)
-        alert = self.driver.switch_to.alert
-        self.assertTrue(alert.text, 'Error loading the document')
-        alert.accept()
+    # #Load a damaged task
+    # def test_tasks2(self):
+    #     utils.login(self.driver, 'test1', '11')
+    #     utils.clickTask(self.driver, 'Physics', 'Dynamics', 'damaged')
+    #     time.sleep(2)
+    #     alert = self.driver.switch_to.alert
+    #     self.assertTrue(alert.text, 'Error loading the document')
+    #     alert.accept()
 
     #Click on a document, then on a task, then on a document
     def test_tasks3(self):

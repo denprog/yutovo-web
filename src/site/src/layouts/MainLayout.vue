@@ -347,12 +347,22 @@ export default
                             access_token: this.store.state.login.access_token
                         }
                     }
+                    ).then(
+                        function(response)
+                        {
+                            window.dispatchEvent(new CustomEvent('updateLanguage', 
+                                {
+                                    'detail': 
+                                    {
+                                    }
+                                }));
+                        }
                     ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                    }
-                );
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
             }
         },
 

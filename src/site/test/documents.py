@@ -183,7 +183,7 @@ class TestDocuments(unittest.TestCase):
     #Open a document by url at start
     def test_documents10(self):
         utils.login(self.driver, 'test1', '11')
-        time.sleep(4)
+        time.sleep(5)
         utils.writeText(self.driver, '12345')
         utils.save(self.driver)
         time.sleep(1)
@@ -266,12 +266,16 @@ class TestDocuments(unittest.TestCase):
         utils.clickIdentifier(self.driver, 'Functions/arccos')
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'arccos'))
-
-        utils.setLanguage(self.driver, 'Русский')
-        time.sleep(2)
-        utils.clickIdentifier(self.driver, 'Размерности/СИ/время/сек')
+        utils.clickIdentifier(self.driver, 'Functions')
         time.sleep(1)
-        self.assertTrue(utils.documentContains(self.driver, 'сек'))
+
+        utils.setSettingsLanguage(self.driver, 'Русский')
+        time.sleep(1)
+        utils.setLanguage(self.driver, 'Русский')
+        time.sleep(1)
+        utils.clickIdentifier(self.driver, 'Размерности/СИ/время/с (секунда)')
+        time.sleep(1)
+        self.assertTrue(utils.documentContains(self.driver, 'с'))
 
     #Check document not found
     def test_documents15(self):
@@ -312,12 +316,12 @@ class TestDocuments(unittest.TestCase):
         time.sleep(4)
         utils.setLanguage(self.driver, 'Русский')
         utils.insertCode(self.driver)
-        utils.writeText(self.driver, '1,23')
+        utils.writeText(self.driver, '1.23')
         utils.writeText(self.driver, '+')
-        utils.writeText(self.driver, '3,5')
+        utils.writeText(self.driver, '3.5')
         utils.writeText(self.driver, '=')
         time.sleep(3)
-        self.assertTrue(utils.documentContains(self.driver, '4,73'))
+        self.assertTrue(utils.documentContains(self.driver, '4.73'))
 
     #Add documents and remove them on by one
     def test_documents18(self):

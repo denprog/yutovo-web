@@ -1,5 +1,5 @@
 <template>
-<q-dialog ref="configDialog">
+<q-dialog id="config-dialog" ref="configDialog">
     <div class="column row justify-center items-center">
         <div class="row">
             <q-card square bordered class="q-sm">
@@ -69,7 +69,7 @@
                         </q-tab-panel>
 
                         <q-tab-panel name="locale">
-                            <q-select v-model="language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense 
+                            <q-select v-model="language" id="language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense 
                                 v-bind:label="$t('Language')" />
                         </q-tab-panel>
                     </q-tab-panels>

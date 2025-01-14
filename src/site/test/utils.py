@@ -115,9 +115,9 @@ def insertCode(driver):
 def clickIdentifier(driver, category):
     arr = category.split('/')
     for i in range(len(arr)):
-        b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + arr[i] + '\')]')))
-        b.click()
+        b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[@id=\'identifiers-tree\']//*[contains(text(), \'' + arr[i] + '\')]')))
         time.sleep(1)
+        b.click()
 
 def getDocumentName(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'document-name')))
@@ -133,6 +133,20 @@ def setLanguage(driver, language):
 def getLanguage(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language')))
     return b.text
+
+def setSettingsLanguage(driver, language):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'settings-button')))
+    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Locale\')]')))
+    b.click()
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[@id=\'config-dialog\']//*[contains(text(), \'English\')]')))
+    b.click()
+    time.sleep(1)
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
+    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
+    b.click()
 
 def getDbConnection():
     return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "11", port = 5432)

@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pa-md" style="height:100%;">
+    <div id="identifiers-tree" class="q-pa-md" style="height:100%;">
         <div class="row">
             <div class="text-blue no-margin no-padding text-h6">{{ $t('Identifiers') }}</div>
         </div>

@@ -65,7 +65,6 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 
 export default {

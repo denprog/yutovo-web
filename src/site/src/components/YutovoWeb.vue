@@ -92,16 +92,20 @@
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text background color') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
-            <q-btn size="14px" id="left-align-button" square dense :color="left_align_button_color" @click="onLeftAlign();" icon="img:/images/format/align_left.png">
+            <q-btn size="14px" id="left-align-button" square dense :color="left_align_button_color" @click="onLeftAlign();" 
+                icon="img:/images/format/align_left.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Left align') }}</q-tooltip>
             </q-btn>
-            <q-btn size="14px" id="center-align-button" square dense :color="center_align_button_color" @click="onCenterAlign();" icon="img:/images/format/align_center.png">
+            <q-btn size="14px" id="center-align-button" square dense :color="center_align_button_color" @click="onCenterAlign();" 
+                icon="img:/images/format/align_center.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Center align') }}</q-tooltip>
             </q-btn>
-            <q-btn size="14px" id="right-align-button" square dense :color="right_align_button_color" @click="onRightAlign();" icon="img:/images/format/align_right.png">
+            <q-btn size="14px" id="right-align-button" square dense :color="right_align_button_color" @click="onRightAlign();" 
+                icon="img:/images/format/align_right.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Right align') }}</q-tooltip>
             </q-btn>
-            <q-btn size="14px" id="justify-align-button" square dense :color="justify_align_button_color" @click="onJustifyAlign();" icon="img:/images/format/align_justify.png">
+            <q-btn size="14px" id="justify-align-button" square dense :color="justify_align_button_color" @click="onJustifyAlign();" 
+                icon="img:/images/format/align_justify.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Justify align') }}</q-tooltip>
             </q-btn>
         </q-btn-group>
@@ -803,10 +807,10 @@ export default
             this.strikethrough_button_color = (event.detail.strikethrough == 1 ? 'blue' : 'white');
             this.text_color = event.detail.text_color;
             this.text_bg_color = event.detail.text_bg_color;
-            this.left_align_button_color = (event.detail.left_align == 1 ? 'blue' : 'white');
-            this.center_align_button_color = (event.detail.center_align == 1 ? 'blue' : 'white');
-            this.right_align_button_color = (event.detail.right_align == 1 ? 'blue' : 'white');
-            this.justify_align_button_color = (event.detail.justify_align == 1 ? 'blue' : 'white');
+            this.left_align_button_color = (event.detail.left_align == 1 && !event.detail.code_block ? 'blue' : 'white');
+            this.center_align_button_color = (event.detail.center_align == 1 && !event.detail.code_block ? 'blue' : 'white');
+            this.right_align_button_color = (event.detail.right_align == 1 && !event.detail.code_block ? 'blue' : 'white');
+            this.justify_align_button_color = (event.detail.justify_align == 1 && !event.detail.code_block ? 'blue' : 'white');
 
             var button = document.getElementById('copy-button');
             button.disabled = !Module.cwrap('CanCopy', 'bool', [])();
@@ -880,6 +884,15 @@ export default
 
             button = document.getElementById('delete-button');
             button.disabled = !Cookies.has('document_id') || this.store.state.login.login == '';
+
+            button = document.getElementById('left-align-button');
+            button.disabled = event.detail.code_block;
+            button = document.getElementById('center-align-button');
+            button.disabled = event.detail.code_block;
+            button = document.getElementById('right-align-button');
+            button.disabled = event.detail.code_block;
+            button = document.getElementById('justify-align-button');
+            button.disabled = event.detail.code_block;
 
             document.title = this.$t('Yutovo');
         },

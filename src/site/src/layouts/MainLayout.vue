@@ -42,8 +42,8 @@
                             </documents-tree>
                         </div>
                         <div v-bind:style="loginStr != '' ? 'height:50%;' : ''">
-                            <tasks-tree>
-                            </tasks-tree>
+                            <library-tree>
+                            </library-tree>
                         </div>
                     </div>
                     <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
@@ -82,7 +82,7 @@
 import { ref } from 'vue'
 import LoginDialog from 'layouts/LoginDialog.vue';
 import RegisterDialog from 'layouts/RegisterDialog.vue';
-import TasksTree from 'components/TasksTree.vue';
+import LibraryTree from 'components/LibraryTree.vue';
 import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
 import AboutDialog from 'layouts/AboutDialog.vue';
@@ -98,7 +98,7 @@ import { useI18n } from 'vue-i18n'
 
 export default
 {
-    components: { IdentifiersTree, TasksTree, DocumentsTree },
+    components: { IdentifiersTree, LibraryTree, DocumentsTree },
 
     mounted()
     {

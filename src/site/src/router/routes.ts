@@ -23,8 +23,8 @@ export default [
         ]
     },
     {
-        path: '/task/:param',
-        name: 'task',
+        path: '/library/:param',
+        name: 'library',
         component: MainLayout,
         children: [
             {

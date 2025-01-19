@@ -111,7 +111,7 @@ export default
 
         const onDocumentSelected = (target) =>
         {
-            window.dispatchEvent(new CustomEvent('clearTaskSelection', {}));
+            window.dispatchEvent(new CustomEvent('clearLibraryDocumentSelection', {}));
             window.dispatchEvent(new CustomEvent('loadDocument', 
                 {
                     detail: 

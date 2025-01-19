@@ -415,7 +415,7 @@ export default
             window.addEventListener('saveDocument', this.saveDocument, false);
             window.addEventListener('openDocument', this.openDocument, false);
             window.addEventListener('loadDocument', this.loadDocument, false);
-            window.addEventListener('loadTask', this.loadTask, false);
+            window.addEventListener('loadLibraryDocument', this.loadLibraryDocument, false);
             window.addEventListener('loadResult', this.loadResult, false);
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
             window.addEventListener('translateString', this.translateString, false);
@@ -431,7 +431,7 @@ export default
             window.attachEvent('saveDocument', this.saveDocument);
             window.attachEvent('openDocument', this.openDocument);
             window.attachEvent('loadDocument', this.loadDocument);
-            window.attachEvent('loadTask', this.loadTask);
+            window.attachEvent('loadLibraryDocument', this.loadLibraryDocument);
             window.attachEvent('loadResult', this.loadResult);
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
             window.attachEvent('translateString', this.translateString);
@@ -454,8 +454,6 @@ export default
 
         const store = useStore();
         const router = useRouter();
-
-        var current_task;
 
         const yutovo_file_model = ref(null);
         const yutovo_file = ref(null);
@@ -555,8 +553,6 @@ export default
 
             last_documents: [],
 
-            current_task,
-
             yutovo_file_model,
             yutovo_file,
 
@@ -653,16 +649,16 @@ export default
                             });
                         
                         var route = r.currentRoute.value;
-                        if (route.path.substring(0, 5) == '/task')
+                        if (route.path.substring(0, 8) == '/library')
                         {
-                            var task = route.params.param.replaceAll(/\\/g, '/');
-                            var lang = task.substring(0, 2);
-                            task = task.substring(2);
-                            window.dispatchEvent(new CustomEvent('loadTask', 
+                            var doc = route.params.param.replaceAll(/\\/g, '/');
+                            var lang = doc.substring(0, 2);
+                            doc = doc.substring(2);
+                            window.dispatchEvent(new CustomEvent('loadLibraryDocument', 
                                 {
                                     'detail': 
                                     {
-                                        task: task, 
+                                        document: doc, 
                                         language: lang
                                     }
                                 }));
@@ -672,11 +668,11 @@ export default
                             if (q.config.production && !Cookies.has('app_initialized'))
                             {
                                 var lang = navigator.language.startsWith('ru') ? 'ru' : 'en';
-                                window.dispatchEvent(new CustomEvent('loadTask', 
+                                window.dispatchEvent(new CustomEvent('loadLibraryDocument', 
                                     {
                                         'detail': 
                                         {
-                                            task: '/' + (lang == 'ru' ? 'Первая страница' : 'First page'), 
+                                            document: '/' + (lang == 'ru' ? 'Первая страница' : 'First page'), 
                                             language: lang
                                         }
                                     }));
@@ -1367,15 +1363,15 @@ export default
             var json = JSON.parse(event.detail.json);
             var r = this.router;
             var t = this.$t;
-            if (r.currentRoute.value.path.substring(0, 5) == '/task') //save the current task as a new user document
+            if (r.currentRoute.value.path.substring(0, 8) == '/library') //save the current library document as a new user document
             {
                 var route = r.currentRoute.value;
-                var task = route.params.param.replaceAll(/\\/g, '/');
-                var lang = task.substring(0, 2);
-                task = task.substring(2);
-                api.post('/service/save-task', 
+                var doc = route.params.param.replaceAll(/\\/g, '/');
+                var lang = doc.substring(0, 2);
+                doc = doc.substring(2);
+                api.post('/service/save-library-document', 
                     {
-                        task: task,
+                        document: doc,
                         language: lang
                     },
                     {
@@ -1511,21 +1507,20 @@ export default
             window.dispatchEvent(new CustomEvent('listDocuments', {}));
         },
 
-        async loadTask(event)
+        async loadLibraryDocument(event)
         {
-            var task = event.detail.task;
+            var doc = event.detail.document;
             var language = event.detail.language;
-            console.log('loadTask ', task, ' ', language);
-            if (task == null)
+            if (doc == null)
                 return;
             
-            this.current_task = task;
+            this.current_document = doc;
             var s = this.store;
             if (language == 'undefined')
                 language = s.state.editor.language == '' ? 'en' : s.state.editor.language;
-            api.post('/service/load-task', 
+            api.post('/service/load-library-document', 
                 {
-                    task: task,
+                    document: doc,
                     language: language
                 },
                 {
@@ -1542,17 +1537,17 @@ export default
                         for (; i < json.length - 1024 * 10; i += 1024 * 10)
                         {
                             var s = json.substr(i, 1024 * 10);
-                            window.Module.cwrap('OnTaskFilePart', 'void', ['string', 'int', 'int'])(s, 0, 0);
+                            window.Module.cwrap('OnLibraryFilePart', 'void', ['string', 'int', 'int'])(s, 0, 0);
                         }
                         var s = json.substr(i);
-                        window.Module.cwrap('OnTaskFilePart', 'void', ['string', 'int', 'int'])(s, 0, 1);
+                        window.Module.cwrap('OnLibraryFilePart', 'void', ['string', 'int', 'int'])(s, 0, 1);
                         canvas.focus();
                     }
                 ).catch(
                     function(response)
                     {
                         console.log(response);
-                        alert('Error loading the task');
+                        alert('Error loading the library document');
                     }
                 );
         },
@@ -1567,12 +1562,12 @@ export default
             {
                 if (id == 0)
                 {
-                    //it is a task
-                    var task = this.current_task;
-                    window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: task}}));
+                    //it is a library document
+                    var doc = this.current_document;
+                    window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: doc}}));
                     var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
-                    task = task.replaceAll(/\//g, '%5C');
-                    this.router.push({ path: '/task/' + language + task });
+                    doc = doc.replaceAll(/\//g, '%5C');
+                    this.router.push({ path: '/library/' + language + doc });
                     Cookies.remove('document_id', {path: '/'});
                 }
                 else

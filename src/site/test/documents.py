@@ -194,8 +194,9 @@ class TestDocuments(unittest.TestCase):
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
         self.driver = webdriver.Chrome(options = opts)
+        print(c['value'])
         self.driver.get(address + '/document/' + c['value'])
-        time.sleep(2)
+        time.sleep(4)
         self.assertTrue(utils.documentContains(self.driver, '12345'))
 
     #Open the last document at start

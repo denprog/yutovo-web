@@ -86,7 +86,7 @@ def clickCategory(driver, name):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + name + '\')]')))
     b.click()
 
-def clickTask(driver, category1, category2, name):
+def clickLibrary(driver, category1, category2, name):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category1 + '\')]')))
     b.click()
     time.sleep(1)

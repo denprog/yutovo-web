@@ -1,19 +1,19 @@
 <template>
     <div class="q-pa-md" style="height:100%;">
         <div class="row">
-            <div class="text-blue no-margin no-padding text-h6">{{ $t('Tasks') }}</div>
+            <div class="text-blue no-margin no-padding text-h6">{{ $t('Library') }}</div>
         </div>
         <div class="row" style="height:100%;">
             <div style="overflow-y:hidden;">
-                <q-input class="q-pa-none" dense ref="tasksFilterRef" v-model="tasksFilter" v-bind:label="$t('Filter')">
+                <q-input class="q-pa-none" dense ref="documentsFilterRef" v-model="documentsFilter" v-bind:label="$t('Filter')">
                     <template v-slot:append>
-                        <q-icon v-if="tasksFilter !== ''" name="clear" class="cursor-pointer" @click="resetTasksFilter" />
+                        <q-icon v-if="documentsFilter !== ''" name="clear" class="cursor-pointer" @click="resetLibraryFilter" />
                     </template>
                 </q-input>
             </div>
             <div style="height:85%;width:100%;overflow:auto;">
-                <q-tree :nodes="tasks" dense v-model:selected="selectedTask" ref="tasksRef" node-key="id" label-key="label" 
-                    :filter="tasksFilter" @update:selected="onTaskSelected" default-expand-all no-selection-unset />
+                <q-tree :nodes="library" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
+                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset />
             </div>
         </div>
     </div>
@@ -30,30 +30,30 @@ export default
     {
         if (window.addEventListener)
         {
-            window.addEventListener('clearTaskSelection', this.clearTaskSelection, false);
+            window.addEventListener('clearLibraryDocumentSelection', this.clearLibraryDocumentSelection, false);
         }
         else
         {
-            window.attachEvent('clearTaskSelection', this.clearTaskSelection);
+            window.attachEvent('clearLibraryDocumentSelection', this.clearLibraryDocumentSelection);
         }
     },
 
     setup()
     {
-        const tasksFilter = ref('');
-        const tasksFilterRef = ref(null);
-        const tasksNodes = [
+        const documentsFilter = ref('');
+        const documentsFilterRef = ref(null);
+        const libraryNodes = [
             {
-                label: 'Tasks'
+                label: 'Library'
             }
         ];
-        const tasks = ref(tasksNodes);
-        const tasksRef = ref(null);
-        const selectedTask = ref(null);
+        const library = ref(libraryNodes);
+        const documentsRef = ref(null);
+        const selectedDocument = ref(null);
 
         const store = useStore();
 
-        const updateTasks = (obj, t, path) =>
+        const updateLibrary = (obj, t, path) =>
         {
             if (obj == null)
                 return;
@@ -68,7 +68,7 @@ export default
                         'selectable': false,
                         'children': []
                     });
-                    updateTasks(obj[prop], t[t.length - 1]['children'], p);
+                    updateLibrary(obj[prop], t[t.length - 1]['children'], p);
                 }
             }
             for (var prop in obj)
@@ -88,23 +88,23 @@ export default
             }
         };
 
-        const resetTasksFilter = () =>
+        const resetLibraryFilter = () =>
         {
-            tasksFilter.value = '';
-            tasksFilterRef.value.focus();
+            documentsFilter.value = '';
+            documentsFilterRef.value.focus();
         };
 
-        const loadTasks = () =>
+        const loadLibrary = () =>
         {
-            api.post('/service/get-tasks', 
+            api.post('/service/get-library-documents', 
                 {
                     language: store.state.editor.language == '' ? 'en' : store.state.editor.language
                 }
                 ).then(
                     function(response)
                     {
-                        tasks.value = [];
-                        updateTasks(response.data, tasks.value, '/');
+                        library.value = [];
+                        updateLibrary(response.data, library.value, '/');
                     }
                 ).catch(
                     function(response)
@@ -114,38 +114,38 @@ export default
                 );
         };
 
-        const onTaskSelected = (target) =>
+        const onDocumentSelected = (target) =>
         {
             window.dispatchEvent(new CustomEvent('clearDocumentSelection', {}));
-            window.dispatchEvent(new CustomEvent('loadTask', 
+            window.dispatchEvent(new CustomEvent('loadLibraryDocument', 
                 {
                     'detail': 
                     {
-                        task: target, 
+                        document: target, 
                         language: store.state.editor.language == '' ? 'en' : store.state.editor.language
                     }
                 }));
         };
 
-        const clearTaskSelection = () =>
+        const clearLibraryDocumentSelection = () =>
         {
-            selectedTask.value = ref(null);
+            selectedDocument.value = ref(null);
         };
 
-        loadTasks();
+        loadLibrary();
 
         return {
             store,
-            tasksFilter,
-            tasksFilterRef,
-            resetTasksFilter,
-            tasksNodes,
-            tasks,
-            tasksRef,
-            selectedTask,
-            onTaskSelected,
-            clearTaskSelection,
-            loadTasks
+            documentsFilter,
+            documentsFilterRef,
+            resetLibraryFilter,
+            libraryNodes,
+            library,
+            documentsRef,
+            selectedDocument,
+            onDocumentSelected,
+            clearLibraryDocumentSelection,
+            loadLibrary
         }
     },
 
@@ -153,7 +153,7 @@ export default
     {
         'store.state.editor.language': function()
         {
-            this.loadTasks();
+            this.loadLibrary();
             canvas.focus();
         }
     }

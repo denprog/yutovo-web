@@ -9,7 +9,7 @@ import utils
 
 address = 'https://yutovo.ru'
 
-class TestTasks(unittest.TestCase):
+class TestLibrary(unittest.TestCase):
     def setUp(self):
         opts = ChromeOptions()
         opts.add_argument("--window-size=1100,900")
@@ -27,35 +27,35 @@ class TestTasks(unittest.TestCase):
         self.driver.quit()
         self.conn.close()
     
-    #Load a task and save as a document
-    def test_tasks1(self):
+    #Load a library document and save as a user document
+    def test_library1(self):
         utils.login(self.driver, 'test1', '11')
-        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Moment of force')
+        utils.clickLibrary(self.driver, 'Physics', 'Dynamics', 'Moment of force')
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
-        self.assertTrue(self.driver.current_url == address + '/task/en%5CPhysics%5CDynamics%5CMoment%20of%20force')
+        self.assertTrue(self.driver.current_url == address + '/library/en%5CPhysics%5CDynamics%5CMoment%20of%20force')
         self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force')
         utils.save(self.driver)
         time.sleep(2)
         utils.clickCategory(self.driver, 'Physics')
-        time.sleep(1)
+        time.sleep(2)
         utils.clickDocument(self.driver, 'Moment of force')
         time.sleep(2)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
 
-    # #Load a damaged task
-    # def test_tasks2(self):
+    # #Load a damaged library document
+    # def test_library2(self):
     #     utils.login(self.driver, 'test1', '11')
-    #     utils.clickTask(self.driver, 'Physics', 'Dynamics', 'damaged')
+    #     utils.clickLibrary(self.driver, 'Physics', 'Dynamics', 'damaged')
     #     time.sleep(2)
     #     alert = self.driver.switch_to.alert
     #     self.assertTrue(alert.text, 'Error loading the document')
     #     alert.accept()
 
-    #Click on a document, then on a task, then on a document
-    def test_tasks3(self):
+    #Click on a document, then on a library document, then on a user document
+    def test_library3(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(4)
         c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
@@ -64,7 +64,7 @@ class TestTasks(unittest.TestCase):
         time.sleep(1)
         utils.save(self.driver)
 
-        utils.clickTask(self.driver, 'Physics', 'Dynamics', 'Moment of force')
+        utils.clickLibrary(self.driver, 'Physics', 'Dynamics', 'Moment of force')
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
 

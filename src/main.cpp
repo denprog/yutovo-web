@@ -1100,13 +1100,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnJustifyAlign(int checked)
     document->ChangeParagraphFormat(ParagraphFormat::Alignment::Justify, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFile(const char* file, const int document_id)
-{
-    auto s = yutovo::ToUtfString(file);
-    document->LoadJson(s, document_id);
-}
-
-extern "C" EMSCRIPTEN_KEEPALIVE void OnTaskFilePart(const char* part_file, const int document_id, const int finish)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnLibraryFilePart(const char* part_file, const int document_id, const int finish)
 {
     static std::string file;
     file += part_file;

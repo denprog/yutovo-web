@@ -110,7 +110,7 @@ export default {
     'Filter': 'Фильтр',
 
     'Documents': 'Документы',
-    'Tasks': 'Задачи',
+    'Library': 'Библиотека',
     'Identifiers': 'Идентификаторы',
 
     'Confirm': 'Подтвержедение',

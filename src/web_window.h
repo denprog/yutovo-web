@@ -75,6 +75,8 @@ public:
 
     virtual void OnIdentifiersReceived(std::string json);
 
+    virtual void OnLinkClicked(const ElementId& id, const std::u32string& url);
+
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
@@ -91,6 +93,7 @@ public:
     int GetCachedSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline);
     void CacheTasks();
     bool GetLoadResult(IOResult& result, int& document_id);
+    void GetClickedLink(std::string& url);
 
 public:
     std::mutex draw_mutex;
@@ -106,6 +109,7 @@ public:
     std::atomic_bool load_ready{false};
     std::atomic_bool update_identifiers{false};
     std::atomic_bool identifiers_ready{false};
+    std::atomic_bool link_ready{false};
 
     SDL_Renderer* renderer = nullptr;
 
@@ -115,6 +119,8 @@ public:
     std::queue<std::pair<IOResult, int>> load_results;
 
     std::string identifers_json;
+
+    std::string link_clicked;
 
 private:
     friend struct DrawTextTask;

@@ -58,6 +58,7 @@ export default {
     'Underline': 'Подчеркнутый',
     'Text color': 'Цвет текста',
     'Text background color': 'Цвет фона текста',
+    'Link': 'Ссылка',
 
     'Present as': 'Представить как',
     'Auto': 'Автоподбор',

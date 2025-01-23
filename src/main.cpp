@@ -36,6 +36,7 @@ const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 yutovo_web::WebWindow cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
+std::string link_json;
 
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
@@ -170,6 +171,11 @@ EM_JS(void, AddCastUnit, (const char* unit, size_t unit_size),
                     'unit': UTF8ToString(unit, unit_size)
                 }
             }));
+    });
+
+EM_JS(void, OpenLink, (const char* url, size_t url_size),
+    {
+        window.open(UTF8ToString(url, url_size), '_blank').focus();
     });
 
 void MainLoop(void* arg)
@@ -361,6 +367,14 @@ void MainLoop(void* arg)
         cast_units_images.clear();
         cast_units_ready = false;
     }
+
+    if (window->link_ready)
+    {
+        window->link_ready = false;
+        std::string url;
+        window->GetClickedLink(url);
+        OpenLink(url.c_str(), url.size());
+    }
 }
 
 struct EventArgs
@@ -403,7 +417,12 @@ EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void
 EM_JS(void, SetCursor, (int type), 
     {
         var scroll_container = document.getElementById('scroll-container');
-        scroll_container.style.cursor = (type == 1 ? 'text' : 'default');
+        if (type == 1)
+            scroll_container.style.cursor = 'text';
+        else if (type == 2)
+            scroll_container.style.cursor = 'pointer';
+        else if (type == 0)
+            scroll_container.style.cursor = 'default';
     });
 
 EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
@@ -413,7 +432,12 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     yutovo_web::ElementId id;
     args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, id);
     if (args->document->IsString(id))
-        SetCursor(1);
+    {
+        if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
+            SetCursor(2);
+        else
+            SetCursor(1);
+    }
     else
         SetCursor(0);
     if (mouse_event->buttons == 1)
@@ -431,7 +455,7 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     auto p = args->window->GetDocumentPoint();
     if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
-        args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+        args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y, mouse_event->ctrlKey);
     }
     if (mouse_event->button == 0)
     {
@@ -752,6 +776,17 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
     return document->HasUnit(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
+{
+    EditorState s = document->GetEditorState();
+    std::u32string link_str, link_url;
+    if (document->GetLink(s.caret_state.id, link_str, link_url))
+        link_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
+    else
+        link_json = "";
+    return (char*)link_json.c_str();
+}
+
 void FillUnits(const std::string system)
 {
     DocumentPtr d = cast_units_document;
@@ -1070,6 +1105,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTextBgColor(const char* color)
     if (!document)
         return;
     document->SetBgColor(yutovo::Color::FromHex(color));
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnLink(const char* text, const char* url)
+{
+    if (!document)
+        return;
+    document->InsertLink(ToUtfString(text), ToUtfString(url), true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnLeftAlign(int checked)

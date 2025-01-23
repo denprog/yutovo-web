@@ -67,7 +67,7 @@ export default {
                 {
                     $store.commit('editor/setDialogColor', value);
                 }
-            })
+            });
 
         return {
             colorModel

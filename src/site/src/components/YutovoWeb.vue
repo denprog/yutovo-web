@@ -91,6 +91,9 @@
             <q-btn size="14px" id="text-bg-color-button" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text background color') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" id="link-button" square dense @click="onLink();" icon="img:/images/format/link.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Link') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" id="left-align-button" square dense :color="left_align_button_color" @click="onLeftAlign();" 
                 icon="img:/images/format/align_left.png">
@@ -397,6 +400,7 @@ import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';
 import ConfigDialog from  'layouts/ConfigDialog.vue';
 import SetUnitDialog from  'layouts/SetUnitDialog.vue';
+import LinkDialog from 'layouts/LinkDialog.vue';
 
 export default
 {
@@ -988,6 +992,36 @@ export default
             .onOk(() => {
                 Module.cwrap('OnTextBgColor', 'void', ['string'])(this.store.state.editor.dialog_color);
             })
+            canvas.focus();
+        },
+
+        onLink()
+        {
+            var link_json = UTF8ToString(Module.cwrap('GetLink', 'number')());
+            if (link_json == '')
+            {
+                this.$q.dialog(
+                    {
+                        component: LinkDialog, 
+                        parent: this, 
+                        apiResponse: this.resp
+                    });
+            }
+            else
+            {
+                var json = JSON.parse(link_json);
+                this.$q.dialog(
+                    {
+                        component: LinkDialog, 
+                        parent: this, 
+                        apiResponse: this.resp,
+                        componentProps: 
+                        {
+                            text_prop: json.text,
+                            url_prop: json.url
+                        }
+                    });
+            }
             canvas.focus();
         },
 

@@ -305,6 +305,13 @@ void WebWindow::OnIdentifiersReceived(std::string json)
     identifiers_ready = true;
 }
 
+void WebWindow::OnLinkClicked(const ElementId& id, const std::u32string& url)
+{
+    std::lock_guard<std::mutex> lock(results_mutex);
+    link_clicked = ToBasicString(url);
+    link_ready = true;
+}
+
 int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;
@@ -574,6 +581,12 @@ bool WebWindow::GetLoadResult(IOResult& result, int& document_id)
     document_id = p.second;
     load_results.pop();
     return true;
+}
+
+void WebWindow::GetClickedLink(std::string& url)
+{
+    std::lock_guard<std::mutex> lock(results_mutex);
+    url = link_clicked;
 }
 
 }

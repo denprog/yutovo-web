@@ -175,7 +175,23 @@ EM_JS(void, AddCastUnit, (const char* unit, size_t unit_size),
 
 EM_JS(void, OpenLink, (const char* url, size_t url_size),
     {
-        window.open(UTF8ToString(url, url_size), '_blank').focus();
+        var _url = UTF8ToString(url, url_size);
+        //check if this link is internal or no
+        try
+        {
+            var r = URL.parse(_url);
+            if (r.host == 'yutovo.ru' || r.host == 'yutovo.com')
+                window.open(_url, '_self').focus();
+            else
+                window.open(_url, '_blank').focus();
+        }
+        catch (err)
+        {
+            if (_url.startsWith('/document') || _url.startsWith('/library'))
+                window.open(_url, '_self').focus();
+            else
+                window.open(_url, '_blank').focus();
+        }
     });
 
 void MainLoop(void* arg)

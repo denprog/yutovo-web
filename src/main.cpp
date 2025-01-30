@@ -549,12 +549,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document
         document->LoadJson(yutovo::ToUtfString(std::string(json)), document_id);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnSave()
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSave(const int document_id)
 {
     if (document)
     {
         save_json = U"";
-        document->SaveJson(save_json);
+        document->SaveJson(save_json, document_id);
     }
 }
 

@@ -70,7 +70,7 @@ public:
 
     virtual void OnLanguageChanged(const yutovo_calculator::Language language);
 
-    virtual void OnSaveResult(const uint task_id, IOResult result);
+    virtual void OnSaveResult(const uint task_id, IOResult result, const int document_id);
     virtual void OnLoadResult(const uint task_id, IOResult result, const int document_id);
 
     virtual void OnIdentifiersReceived(std::string json);

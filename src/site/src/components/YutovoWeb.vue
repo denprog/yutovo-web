@@ -1086,7 +1086,7 @@ export default
 
         onSave()
         {
-            Module.cwrap('OnSave', 'void', [])();
+            Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
             canvas.focus();
         },
 
@@ -1100,7 +1100,7 @@ export default
         {
             console.log('onDownload');
             this.downloading = true;
-            Module.cwrap('OnSave', 'void', [])();
+            Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
             canvas.focus();
         },
 

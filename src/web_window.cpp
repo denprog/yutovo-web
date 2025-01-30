@@ -283,7 +283,7 @@ void WebWindow::OnLanguageChanged(const yutovo_calculator::Language language)
     update_language = true;
 }
 
-void WebWindow::OnSaveResult(const uint task_id, IOResult result)
+void WebWindow::OnSaveResult(const uint task_id, IOResult result, const int document_id)
 {
     printf("OnSaveResult: %d\n", (int)result);
     if (result == IOResult::Success)

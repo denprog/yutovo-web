@@ -146,11 +146,6 @@ export default {
                             access_token: store.state.login.access_token
                         }
                     }
-                    ).then(
-                        function(response)
-                        {
-                            console.log(response);
-                        }
                     ).catch(
                         function(response)
                         {

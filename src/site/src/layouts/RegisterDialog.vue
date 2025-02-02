@@ -99,7 +99,6 @@ export default {
                 .then(
                     function(response)
                     {
-                        console.log(response);
                         captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
                     }
                 ).catch(
@@ -114,7 +113,6 @@ export default {
             .then(
                 function(response)
                 {
-                    console.log(response);
                     captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
                 }
             ).catch(
@@ -148,7 +146,6 @@ export default {
                             ).then(
                                 function(response)
                                 {
-                                    console.log(response);
                                     store.dispatch('login/updateAccessToken', response.headers['access_token']);
                                     if (response.data.settings != '')
                                         store.commit('editor/setSettings', JSON.parse(response.data.settings));

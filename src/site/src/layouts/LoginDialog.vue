@@ -85,7 +85,6 @@ export default {
                 .then(
                     function(response)
                     {
-                        console.log(response);
                         captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
                     }
                 ).catch(
@@ -102,7 +101,6 @@ export default {
             .then(
                 function(response)
                 {
-                    console.log(response);
                     captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
                 }
             ).catch(
@@ -129,7 +127,6 @@ export default {
                 ).then(
                     function(response)
                     {
-                        console.log(response);
                         store.dispatch('login/updateAccessToken', response.headers['access_token']);
                         store.commit('login/setLastError', '');
                         loginDialog.value.hide();

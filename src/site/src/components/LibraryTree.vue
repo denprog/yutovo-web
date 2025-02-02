@@ -57,33 +57,33 @@ export default
         {
             if (obj == null)
                 return;
-            for (var prop in obj)
+
+            if (obj['dirs'] != null)
             {
-                if (prop != 'files')
+                for (var i = 0; i < obj['dirs'].length; ++i)
                 {
-                    let p = path + prop + '/';
+                    var dir = obj['dirs'][i];
+                    var p = path + dir['name'] + '/';
                     t.push({
                         'id': p,
-                        'label': prop,
+                        'label': dir['name'],
                         'selectable': false,
                         'children': []
                     });
-                    updateLibrary(obj[prop], t[t.length - 1]['children'], p);
+                    updateLibrary(dir, t[t.length - 1]['children'], p);
                 }
             }
-            for (var prop in obj)
+
+            if (obj['files'] != null)
             {
-                if (prop == 'files')
+                for (var i = 0; i < obj['files'].length; ++i)
                 {
-                    for (var i = 0; i < obj[prop].length; ++i)
-                    {
-                        let p = path + obj[prop][i];
-                        t.push({
-                            'id': p,
-                            'label': obj[prop][i],
-                            'selectable': true
-                        });
-                    }
+                    let p = path + obj['files'][i];
+                    t.push({
+                        'id': p,
+                        'label': obj['files'][i],
+                        'selectable': true
+                    });
                 }
             }
         };

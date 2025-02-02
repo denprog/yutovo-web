@@ -62,7 +62,6 @@ export default {
                 ).then(
                     function(response)
                     {
-                        console.log(response);
                         //load the new document
                         window.dispatchEvent(new CustomEvent('loadDocument', 
                             {

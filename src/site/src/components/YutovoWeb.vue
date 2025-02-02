@@ -709,7 +709,6 @@ export default
                                         ).then(
                                             function(response)
                                             {
-                                                console.log(response);
                                                 s.commit('editor/setSettings', response.data);
                                             }
                                         ).catch(
@@ -1131,7 +1130,6 @@ export default
                     ).then(
                         function(response)
                         {
-                            console.log(response);
                             var id = Cookies.get('document_id');
                             const i = last_documents.indexOf(id);
                             if (i > -1)
@@ -1417,7 +1415,6 @@ export default
                     ).then(
                         function(response)
                         {
-                            console.log(response);
                             r.push({ path: '/document/' + response.data.document_id });
                             Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
                             window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
@@ -1444,7 +1441,6 @@ export default
                     ).then(
                         function(response)
                         {
-                            console.log(response);
                             r.push({path: '/document/' + response.data.document_id});
                             Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
                             window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));

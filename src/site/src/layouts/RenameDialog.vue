@@ -62,7 +62,6 @@ export default {
                 ).then(
                     function(response)
                     {
-                        console.log(response);
                         window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: Cookies.get('document_id')}}));
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));
                         renameDialog.value.hide();

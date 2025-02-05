@@ -676,7 +676,7 @@ export default
                                     {
                                         'detail': 
                                         {
-                                            document: '/' + (lang == 'ru' ? 'Первая страница' : 'First page'), 
+                                            document: (lang == 'ru' ? '/Другое/Первая страница' : '/Others/First page'), 
                                             language: lang
                                         }
                                     }));

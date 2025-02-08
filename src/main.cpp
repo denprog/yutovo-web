@@ -47,6 +47,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
 
+void FillUnits(const std::string system);
+ElementId GetResultId();
+
 EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value), 
     {
         var scroll_space = document.getElementById('scroll-space');
@@ -756,6 +759,22 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetExp()
     return document->GetExp(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetDefaultAngleMeasure()
+{
+    ElementId id = GetResultId();
+    if (id.empty())
+        return -1;
+    return (int)document->GetDefaultAngleMeasure(id);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE int GetResultAngleMeasure()
+{
+    ElementId id = GetResultId();
+    if (id.empty())
+        return -1;
+    return (int)document->GetResultAngleMeasure(id);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE int GetResultNotation()
 {
     ElementId id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
@@ -801,71 +820,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
     else
         link_json = "";
     return (char*)link_json.c_str();
-}
-
-void FillUnits(const std::string system)
-{
-    DocumentPtr d = cast_units_document;
-    d->WaitTask(d->Resize(1, 1));
-    std::u32string s = yutovo::ToUtfString(system);
-
-    for (size_t i = 0; i < cast_units.size(); ++i)
-    {
-        if (stop_cast_units_thread)
-        {
-            cast_units_ready = true;
-            break;
-        }
-        
-        Unit& unit = cast_units[i];
-        if (unit.system != s)
-            continue;
-        
-        //draw this unit
-        d->WaitTask(d->MoveCaretToDocumentBegin(false));
-        d->WaitTask(d->DeleteElements(false, false));
-        d->WaitTask(d->InsertUnit(unit, false));
-        ElementPtr t = d->GetElement({0, 0});
-        d->WaitTask(d->Resize(t->rect.width, t->rect.height));
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        d->WaitTask(d->Redraw(ElementId{0}, false));
-
-        while (!cast_units_window.needs_render)
-        {
-            if (stop_cast_units_thread)
-            {
-                cast_units_ready = true;
-                return;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }
-
-        std::vector<unsigned char> picture;
-        cast_units_window.Render(picture); //get unit's picture
-
-        //convert the picture to base64 and send it to JS
-        std::string image_base64;
-
-        int val = 0, valb = -6;
-        for (unsigned char c : picture)
-        {
-            val = (val << 8) + c;
-            valb += 8;
-            while (valb >= 0)
-            {
-                image_base64.push_back(base[(val >> valb) & 0x3F]);
-                valb -= 6;
-            }
-        }
-        if (valb > -6)
-            image_base64.push_back(base[((val << 8) >> (valb + 8)) & 0x3F]);
-        while (image_base64.size() % 4)
-            image_base64.push_back('=');
-
-        std::lock_guard<std::mutex> lock(cast_units_mutex);
-        cast_units_images.push_back(image_base64);
-        cast_units_ready = true;
-    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
@@ -1246,6 +1200,24 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSetExp(int exp)
         document->SetExp(s.caret_state.id, exp, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDefaultAngleMeasure(int angle_measure)
+{
+    ElementId id = GetResultId();
+    if (id.empty())
+        return;
+    AngleMeasure m = document->GetDefaultAngleMeasure(id);
+    document->SetAngleMeasure(id, (AngleMeasure)angle_measure, m, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnResultAngleMeasure(int angle_measure)
+{
+    ElementId id = GetResultId();
+    if (id.empty())
+        return;
+    AngleMeasure m = document->GetResultAngleMeasure(id);
+    document->SetAngleMeasure(id, m, (AngleMeasure)angle_measure, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnNotation(int notation)
 {
     EditorState s = document->GetEditorState();
@@ -1287,6 +1259,81 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
 extern "C" EMSCRIPTEN_KEEPALIVE void ListIdentifiers(int code_id)
 {
     document->ListIdentifiers(code_id);
+}
+
+void FillUnits(const std::string system)
+{
+    DocumentPtr d = cast_units_document;
+    d->WaitTask(d->Resize(1, 1));
+    std::u32string s = yutovo::ToUtfString(system);
+
+    for (size_t i = 0; i < cast_units.size(); ++i)
+    {
+        if (stop_cast_units_thread)
+        {
+            cast_units_ready = true;
+            break;
+        }
+        
+        Unit& unit = cast_units[i];
+        if (unit.system != s)
+            continue;
+        
+        //draw this unit
+        d->WaitTask(d->MoveCaretToDocumentBegin(false));
+        d->WaitTask(d->DeleteElements(false, false));
+        d->WaitTask(d->InsertUnit(unit, false));
+        ElementPtr t = d->GetElement({0, 0});
+        d->WaitTask(d->Resize(t->rect.width, t->rect.height));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        d->WaitTask(d->Redraw(ElementId{0}, false));
+
+        while (!cast_units_window.needs_render)
+        {
+            if (stop_cast_units_thread)
+            {
+                cast_units_ready = true;
+                return;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
+        std::vector<unsigned char> picture;
+        cast_units_window.Render(picture); //get unit's picture
+
+        //convert the picture to base64 and send it to JS
+        std::string image_base64;
+
+        int val = 0, valb = -6;
+        for (unsigned char c : picture)
+        {
+            val = (val << 8) + c;
+            valb += 8;
+            while (valb >= 0)
+            {
+                image_base64.push_back(base[(val >> valb) & 0x3F]);
+                valb -= 6;
+            }
+        }
+        if (valb > -6)
+            image_base64.push_back(base[((val << 8) >> (valb + 8)) & 0x3F]);
+        while (image_base64.size() % 4)
+            image_base64.push_back('=');
+
+        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        cast_units_images.push_back(image_base64);
+        cast_units_ready = true;
+    }
+}
+
+ElementId GetResultId()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    return id;
 }
 
 int main(int argc, char* argv[])

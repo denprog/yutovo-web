@@ -301,6 +301,54 @@
                         <q-item-section>{{ $t('Exponent order') }}</q-item-section>
                     </q-item>
 
+                    <q-item auto-close id="set-default-angle-measure-menu" clickable style='display:none;'>
+                        <q-item-section square>{{ $t('Default angle measure') }}</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="set-default-radian-angle-measure-menu" dense clickable @click='onSetDefaultRadianAngleMeasure();'>
+                                    <div v-if="defaultRadianMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Radian') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-default-degree-angle-measure-menu" dense clickable @click='onSetDefaultDegreeAngleMeasure();'>
+                                    <div v-if="defaultDegreeMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Degree') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-default-grad-angle-measure-menu" dense clickable @click='onSetDefaultGradAngleMeasure();'>
+                                    <div v-if="defaultGradMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Grad') }}</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-item>
+
+                    <q-item auto-close id="set-result-angle-measure-menu" clickable style='display:none;'>
+                        <q-item-section square>{{ $t('Result angle measure') }}</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="set-result-radian-angle-measure-menu" dense clickable @click='onSetResultRadianAngleMeasure();'>
+                                    <div v-if="resultRadianMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Radian') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-result-degree-angle-measure-menu" dense clickable @click='onSetResultDegreeAngleMeasure();'>
+                                    <div v-if="resultDegreeMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Degree') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-result-grad-angle-measure-menu" dense clickable @click='onSetResultGradAngleMeasure();'>
+                                    <div v-if="resultGradMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Grad') }}</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-item>
+
                     <q-item id="set-notation-menu" clickable style='display:none;'>
                         <q-item-section>{{ $t('Notation') }}</q-item-section>
                         <q-item-section side>
@@ -1714,6 +1762,20 @@ export default
                     m.style.display = '';
                     m = document.getElementById('set-exp-menu');
                     m.style.display = '';
+
+                    m = document.getElementById('set-default-angle-measure-menu');
+                    m.style.display = '';
+                    r = window.Module.cwrap('GetDefaultAngleMeasure', 'int', [])();
+                    this.defaultRadianMenuChecked = r == 0;
+                    this.defaultDegreeMenuChecked = r == 1;
+                    this.defaultGradMenuChecked = r == 2;
+
+                    m = document.getElementById('set-result-angle-measure-menu');
+                    m.style.display = '';
+                    r = window.Module.cwrap('GetResultAngleMeasure', 'int', [])();
+                    this.resultRadianMenuChecked = r == 0;
+                    this.resultDegreeMenuChecked = r == 1;
+                    this.resultGradMenuChecked = r == 2;
                 }
 
                 if (r == 3)
@@ -1869,6 +1931,36 @@ export default
                 window.Module.cwrap('OnSetExp', 'void', ['int'])(res);
             });
             canvas.focus();
+        },
+
+        onSetDefaultRadianAngleMeasure()
+        {
+            window.Module.cwrap('OnDefaultAngleMeasure', 'void', ['int'])(0);
+        },
+
+        onSetDefaultDegreeAngleMeasure()
+        {
+            window.Module.cwrap('OnDefaultAngleMeasure', 'void', ['int'])(1);
+        },
+
+        onSetDefaultGradAngleMeasure()
+        {
+            window.Module.cwrap('OnDefaultAngleMeasure', 'void', ['int'])(2);
+        },
+
+        onSetResultRadianAngleMeasure()
+        {
+            window.Module.cwrap('OnResultAngleMeasure', 'void', ['int'])(0);
+        },
+
+        onSetResultDegreeAngleMeasure()
+        {
+            window.Module.cwrap('OnResultAngleMeasure', 'void', ['int'])(1);
+        },
+
+        onSetResultGradAngleMeasure()
+        {
+            window.Module.cwrap('OnResultAngleMeasure', 'void', ['int'])(2);
         },
 
         onSetBinaryNotation()

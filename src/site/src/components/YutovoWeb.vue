@@ -538,19 +538,6 @@ export default
         const yutovo_file_model = ref(null);
         const yutovo_file = ref(null);
 
-        const autoMenuChecked = ref(null);
-        const realMenuChecked = ref(null);
-        const integerMenuChecked = ref(null);
-        const rationalMenuChecked = ref(null);
-        const complexMenuChecked = ref(null);
-
-        const properMenuChecked = ref(null);
-        const improperMenuChecked = ref(null);
-
-        const arithmeticMenuChecked = ref(null);
-        const trigonometricMenuChecked = ref(null);
-        const exponentialMenuChecked = ref(null);
-
         const contextMenu = ref(null);
 
         var downloading = false;
@@ -636,19 +623,6 @@ export default
             downloading,
 
             jsonClipboard,
-
-            autoMenuChecked,
-            realMenuChecked,
-            integerMenuChecked,
-            rationalMenuChecked,
-            complexMenuChecked,
-
-            properMenuChecked,
-            improperMenuChecked,
-
-            arithmeticMenuChecked,
-            trigonometricMenuChecked,
-            exponentialMenuChecked, 
 
             loading
         };

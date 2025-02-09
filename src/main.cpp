@@ -48,7 +48,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
 
 void FillUnits(const std::string system);
-ElementId GetResultId();
+ElementId GetRealResultId();
 
 EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value), 
     {
@@ -761,7 +761,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetExp()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetDefaultAngleMeasure()
 {
-    ElementId id = GetResultId();
+    ElementId id = GetRealResultId();
     if (id.empty())
         return -1;
     return (int)document->GetDefaultAngleMeasure(id);
@@ -769,10 +769,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetDefaultAngleMeasure()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetResultAngleMeasure()
 {
-    ElementId id = GetResultId();
+    ElementId id = GetRealResultId();
     if (id.empty())
         return -1;
     return (int)document->GetResultAngleMeasure(id);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE int GetDefaultNotation()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
+    if (id.empty())
+        return -1;
+    return (int)document->GetDefaultNotation(id);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetResultNotation()
@@ -1202,7 +1210,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSetExp(int exp)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnDefaultAngleMeasure(int angle_measure)
 {
-    ElementId id = GetResultId();
+    ElementId id = GetRealResultId();
     if (id.empty())
         return;
     AngleMeasure m = document->GetDefaultAngleMeasure(id);
@@ -1211,21 +1219,31 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDefaultAngleMeasure(int angle_measure)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnResultAngleMeasure(int angle_measure)
 {
-    ElementId id = GetResultId();
+    ElementId id = GetRealResultId();
     if (id.empty())
         return;
     AngleMeasure m = document->GetResultAngleMeasure(id);
     document->SetAngleMeasure(id, m, (AngleMeasure)angle_measure, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnNotation(int notation)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDefaultNotation(int notation)
 {
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
     auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
     if (_el)
-        document->SetNotation(s.caret_state.id, document->GetDefaultNotation(_el->id), (Notation)notation, true);
+        document->SetNotation(_el->id, (Notation)notation, document->GetResultNotation(_el->id), true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnResultNotation(int notation)
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (_el)
+        document->SetNotation(_el->id, document->GetDefaultNotation(_el->id), (Notation)notation, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnFractionForm(int fraction_form)
@@ -1326,7 +1344,7 @@ void FillUnits(const std::string system)
     }
 }
 
-ElementId GetResultId()
+ElementId GetRealResultId()
 {
     ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
     if (id.empty())

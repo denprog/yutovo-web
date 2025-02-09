@@ -38,9 +38,9 @@
 
                                     <q-tab-panel name="integer">
                                         <q-select ref="integerDefaultNotationRef" :options="integerNotations" square v-model="integerDefaultNotation" 
-                                            lazy-rules v-bind:label="$t('Default numeral system')" :option-label="notation => $t(notation)"/>
+                                            lazy-rules v-bind:label="$t('Default notation')" :option-label="notation => $t(notation)"/>
                                         <q-select ref="integerResultNotationRef" :options="integerNotations" square v-model="integerResultNotation" 
-                                            lazy-rules v-bind:label="$t('Result numeral system')" :option-label="notation => $t(notation)"/>
+                                            lazy-rules v-bind:label="$t('Result notation')" :option-label="notation => $t(notation)"/>
                                         <q-checkbox ref="integerShowNotationRef" v-model="integerShowNotation" v-bind:label="$t('Show result numeral system')"/>
                                     </q-tab-panel>
 

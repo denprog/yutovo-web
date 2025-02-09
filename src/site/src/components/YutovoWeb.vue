@@ -349,28 +349,56 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-notation-menu" clickable style='display:none;'>
-                        <q-item-section>{{ $t('Notation') }}</q-item-section>
+                    <q-item id="set-default-notation-menu" clickable style='display:none;'>
+                        <q-item-section>{{ $t('Default notation') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right"/>
                         </q-item-section>
 
                         <q-menu auto-close anchor="top end" self="top start">
                             <q-list>
-                                <q-item id="set-binary-notation-menu" dense clickable @click='onSetBinaryNotation();'>
-                                    <div v-if="binaryMenuChecked == true">&check;</div>
+                                <q-item id="set-default-binary-notation-menu" dense clickable @click='onSetDefaultBinaryNotation();'>
+                                    <div v-if="defaultBinaryMenuChecked == true">&check;</div>
                                     <q-item-section>{{ $t('Binary') }}</q-item-section>
                                 </q-item>
-                                <q-item id="set-octal-notation-menu" dense clickable @click='onSetOctalNotation();'>
-                                    <div v-if="octalMenuChecked == true">&check;</div>
+                                <q-item id="set-default-octal-notation-menu" dense clickable @click='onSetDefaultOctalNotation();'>
+                                    <div v-if="defaultOctalMenuChecked == true">&check;</div>
                                     <q-item-section>{{ $t('Octal') }}</q-item-section>
                                 </q-item>
-                                <q-item id="set-decimal-notation-menu" dense clickable @click='onSetDecimalNotation();'>
-                                    <div v-if="decimalMenuChecked == true">&check;</div>
+                                <q-item id="set-default-decimal-notation-menu" dense clickable @click='onSetDefaultDecimalNotation();'>
+                                    <div v-if="defaultDecimalMenuChecked == true">&check;</div>
                                     <q-item-section>{{ $t('Decimal') }}</q-item-section>
                                 </q-item>
-                                <q-item id="set-hexadecimal-notation-menu" dense clickable @click='onSetHexadecimalNotation();'>
-                                    <div v-if="hexadecimalMenuChecked == true">&check;</div>
+                                <q-item id="set-default-hexadecimal-notation-menu" dense clickable @click='onSetDefaultHexadecimalNotation();'>
+                                    <div v-if="defaultHexadecimalMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Hexadecimal') }}</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-item>
+
+                    <q-item id="set-result-notation-menu" clickable style='display:none;'>
+                        <q-item-section>{{ $t('Result notation') }}</q-item-section>
+                        <q-item-section side>
+                            <q-icon name="keyboard_arrow_right"/>
+                        </q-item-section>
+
+                        <q-menu auto-close anchor="top end" self="top start">
+                            <q-list>
+                                <q-item id="set-result-binary-notation-menu" dense clickable @click='onSetResultBinaryNotation();'>
+                                    <div v-if="resultBinaryMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Binary') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-result-octal-notation-menu" dense clickable @click='onSetResultOctalNotation();'>
+                                    <div v-if="resultOctalMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Octal') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-result-decimal-notation-menu" dense clickable @click='onSetResultDecimalNotation();'>
+                                    <div v-if="resultDecimalMenuChecked == true">&check;</div>
+                                    <q-item-section>{{ $t('Decimal') }}</q-item-section>
+                                </q-item>
+                                <q-item id="set-result-hexadecimal-notation-menu" dense clickable @click='onSetResultHexadecimalNotation();'>
+                                    <div v-if="resultHexadecimalMenuChecked == true">&check;</div>
                                     <q-item-section>{{ $t('Hexadecimal') }}</q-item-section>
                                 </q-item>
                             </q-list>
@@ -516,11 +544,6 @@ export default
         const rationalMenuChecked = ref(null);
         const complexMenuChecked = ref(null);
 
-        const binaryMenuChecked = ref(null);
-        const octalMenuChecked = ref(null);
-        const decimalMenuChecked = ref(null);
-        const hexadecimalMenuChecked = ref(null);
-
         const properMenuChecked = ref(null);
         const improperMenuChecked = ref(null);
 
@@ -619,11 +642,6 @@ export default
             integerMenuChecked,
             rationalMenuChecked,
             complexMenuChecked,
-
-            binaryMenuChecked,
-            octalMenuChecked,
-            decimalMenuChecked,
-            hexadecimalMenuChecked,
 
             properMenuChecked,
             improperMenuChecked,
@@ -1780,13 +1798,21 @@ export default
 
                 if (r == 3)
                 {
-                    m = document.getElementById('set-notation-menu');
+                    m = document.getElementById('set-default-notation-menu');
+                    m.style.display = '';
+                    r = window.Module.cwrap('GetDefaultNotation', 'int', [])();
+                    this.defaultBinaryMenuChecked = r == 0;
+                    this.defaultOctalMenuChecked = r == 1;
+                    this.defaultDecimalMenuChecked = r == 2;
+                    this.defaultHexadecimalMenuChecked = r == 3;
+
+                    m = document.getElementById('set-result-notation-menu');
                     m.style.display = '';
                     r = window.Module.cwrap('GetResultNotation', 'int', [])();
-                    this.binaryMenuChecked = r == 0;
-                    this.octalMenuChecked = r == 1;
-                    this.decimalMenuChecked = r == 2;
-                    this.hexadecimalMenuChecked = r == 3;
+                    this.resultBinaryMenuChecked = r == 0;
+                    this.resultOctalMenuChecked = r == 1;
+                    this.resultDecimalMenuChecked = r == 2;
+                    this.resultHexadecimalMenuChecked = r == 3;
                 }
 
                 if (r == 4)
@@ -1963,24 +1989,44 @@ export default
             window.Module.cwrap('OnResultAngleMeasure', 'void', ['int'])(2);
         },
 
-        onSetBinaryNotation()
+        onSetDefaultBinaryNotation()
         {
-            window.Module.cwrap('OnNotation', 'void', ['int'])(0);
+            window.Module.cwrap('OnDefaultNotation', 'void', ['int'])(0);
         },
 
-        onSetOctalNotation()
+        onSetDefaultOctalNotation()
         {
-            window.Module.cwrap('OnNotation', 'void', ['int'])(1);
+            window.Module.cwrap('OnDefaultNotation', 'void', ['int'])(1);
         },
 
-        onSetDecimalNotation()
+        onSetDefaultDecimalNotation()
         {
-            window.Module.cwrap('OnNotation', 'void', ['int'])(2);
+            window.Module.cwrap('OnDefaultNotation', 'void', ['int'])(2);
         },
 
-        onSetHexadecimalNotation()
+        onSetDefaultHexadecimalNotation()
         {
-            window.Module.cwrap('OnNotation', 'void', ['int'])(3);
+            window.Module.cwrap('OnDefaultNotation', 'void', ['int'])(3);
+        },
+
+        onSetResultBinaryNotation()
+        {
+            window.Module.cwrap('OnResultNotation', 'void', ['int'])(0);
+        },
+
+        onSetResultOctalNotation()
+        {
+            window.Module.cwrap('OnResultNotation', 'void', ['int'])(1);
+        },
+
+        onSetResultDecimalNotation()
+        {
+            window.Module.cwrap('OnResultNotation', 'void', ['int'])(2);
+        },
+
+        onSetResultHexadecimalNotation()
+        {
+            window.Module.cwrap('OnResultNotation', 'void', ['int'])(3);
         },
 
         onSetUnit()

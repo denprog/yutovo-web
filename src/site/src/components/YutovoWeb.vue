@@ -653,10 +653,6 @@ export default
                     function()
                     {
                         var canvas = document.getElementById('canvas');
-
-                        // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-                        // application robust, you may want to override this behavior before shipping!
-                        // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
                         canvas.addEventListener('webglcontextlost', 
                             function(e)
                             {
@@ -1176,13 +1172,33 @@ export default
                             const i = last_documents.indexOf(id);
                             if (i > -1)
                                 last_documents.splice(i, 1);
-                            //open previous document or create a new one
+                            //open previous document or load a first one
                             get_last_document().then(_last_document_id =>
                                 {
                                     Cookies.remove('document_id', {path: '/'});
                                     if (_last_document_id == 0)
                                     {
-                                        window.dispatchEvent(new CustomEvent('onNew', {}));
+                                        api.post('/service/list-documents', {}, 
+                                            {
+                                                headers:
+                                                {
+                                                    access_token: s.state.login.access_token
+                                                }
+                                            }
+                                            ).then(
+                                                function(response)
+                                                {
+                                                    if (response.data.length == 0)
+                                                        window.dispatchEvent(new CustomEvent('newDocument'));
+                                                    else
+                                                        window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: response.data[0].id}}));
+                                                }
+                                            ).catch(
+                                                function(response)
+                                                {
+                                                    console.log(response);
+                                                }
+                                            );
                                     }
                                     else
                                         window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: _last_document_id}}));
@@ -1369,7 +1385,7 @@ export default
 
         async newDocument(event)
         {
-            console.log('newDocument ', event);
+            console.log('newDocument');
             var s = this.store;
             var t = this.$t;
             api.post('/service/new-document', event.detail == null ? {} : 
@@ -1567,7 +1583,7 @@ export default
                         get_last_document().then(_last_document_id =>
                             {
                                 if (_last_document_id == 0 || _last_document_id == id)
-                                    window.dispatchEvent(new CustomEvent('onNew', {}));
+                                    window.dispatchEvent(new CustomEvent('newDocument'));
                                 else
                                     window.dispatchEvent(new CustomEvent('loadDocument', {detail: {document_id: _last_document_id}}));
                             });

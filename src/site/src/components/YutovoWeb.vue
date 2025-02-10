@@ -495,6 +495,7 @@ export default
             window.addEventListener('saveDocument', this.saveDocument, false);
             window.addEventListener('openDocument', this.openDocument, false);
             window.addEventListener('loadDocument', this.loadDocument, false);
+            window.addEventListener('loadDocumentById', this.loadDocumentById, false);
             window.addEventListener('loadLibraryDocument', this.loadLibraryDocument, false);
             window.addEventListener('loadResult', this.loadResult, false);
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
@@ -511,6 +512,7 @@ export default
             window.attachEvent('saveDocument', this.saveDocument);
             window.attachEvent('openDocument', this.openDocument);
             window.attachEvent('loadDocument', this.loadDocument);
+            window.attachEvent('loadDocumentById', this.loadDocumentById);
             window.attachEvent('loadLibraryDocument', this.loadLibraryDocument);
             window.attachEvent('loadResult', this.loadResult);
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
@@ -1534,16 +1536,13 @@ export default
             return last_document_id;
         },
 
-        async loadDocument(event)
+        async loadDocumentById(event)
         {
             var id = event.detail.document_id;
-            console.log('loadDocument ', id);
-            if (id == null)
-                return;
             var get_last_document = this.getLastDocument;
             api.post('/service/load-document', 
                 {
-                    document_id: id
+                    document_id: id,
                 },
                 {
                     headers:
@@ -1575,6 +1574,40 @@ export default
                     }
                 );
             window.dispatchEvent(new CustomEvent('listDocuments', {}));
+        },
+
+        async loadDocument(event)
+        {
+            if (typeof event.detail.name !== 'undefined' && event.detail.name != '')
+            {
+                //get document id by name
+                api.post('/service/get-document-id', 
+                    {
+                        name: event.detail.name
+                    },
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).then(
+                        function(response)
+                        {
+                            window.dispatchEvent(new CustomEvent('loadDocumentById', {detail: {document_id: response.data.document_id}}));
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                            alert('Document not found');
+                        }
+                    );
+            }
+            else
+            {
+                window.dispatchEvent(new CustomEvent('loadDocumentById', {detail: {document_id: event.detail.document_id}}));
+            }
         },
 
         async loadLibraryDocument(event)
@@ -1634,8 +1667,10 @@ export default
                 {
                     //it is a library document
                     var doc = this.current_document;
+                    window.library_document = doc; //save for opening a link
                     window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: doc}}));
                     var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
+                    window.language = language;
                     doc = doc.replaceAll(/\//g, '%5C');
                     this.router.push({ path: '/library/' + language + doc });
                     Cookies.remove('document_id', {path: '/'});
@@ -1645,6 +1680,8 @@ export default
                     Cookies.set('document_id', id, {path: '/', expires: '1d'});
                     this.router.push({path: '/document/' + id});
                     window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
+                    window.library_document = '';
+                    window.user_document = id; //save for opening a link
                     if (last_document_id != 0)
                         this.last_documents.push(last_document_id);
                 }

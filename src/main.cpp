@@ -193,7 +193,23 @@ EM_JS(void, OpenLink, (const char* url, size_t url_size),
             if (_url.startsWith('/document') || _url.startsWith('/library'))
                 window.open(_url, '_self').focus();
             else
-                window.open(_url, '_blank').focus();
+            {
+                if (typeof window.library_document !== 'undefined' && window.library_document != "")
+                {
+                    //open a relative library link
+                    var p = window.library_document.lastIndexOf('/');
+                    if (p == -1)
+                        return;
+                    var path = window.library_document.substring(0, p + 1);
+                    path = '/library/' + window.language + path.replace(/[/]/g, '%5C') + _url.replace(/[/]/g, '%5C');
+                    window.open(path, '_self').focus();
+                }
+                else
+                {
+                    //open a relative user document link
+                    window.dispatchEvent(new CustomEvent('loadDocument', {detail: {name: _url}}));
+                }
+            }
         }
     });
 

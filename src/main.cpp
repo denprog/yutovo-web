@@ -837,12 +837,28 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
 {
+    link_json = "";
     EditorState s = document->GetEditorState();
     std::u32string link_str, link_url;
     if (document->GetLink(s.caret_state.id, link_str, link_url))
         link_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
     else
-        link_json = "";
+    {
+        if (s.selection_state.state.size() == 1)
+        {
+            auto t = document->GetElementType(s.caret_state.id);
+            if (t == ElementType::STRING)
+            {
+                std::u32string str = document->ToText(s.caret_state.id);
+                ElementSelectionState& el_s = s.selection_state.state[0];
+                if (str.length() >= el_s.start + el_s.size)
+                {
+                    str = str.substr(el_s.start, el_s.size);
+                    link_json = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
+                }
+            }
+        }
+    }
     return (char*)link_json.c_str();
 }
 

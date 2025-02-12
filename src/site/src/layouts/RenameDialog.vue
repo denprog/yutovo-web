@@ -5,8 +5,9 @@
             <q-card square bordered class="q-sm">
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
-                        <div class="text-blue text-h5">Rename document</div>
-                        <q-input ref="filenameRef" square v-model="filename" lazy-rules :rules="[this.required]" id="filename" type="filename" label="File name" />
+                        <div class="text-blue text-h5">{{ $t('Rename document') }}</div>
+                        <q-input ref="filenameRef" square v-model="filename" lazy-rules :rules="[this.required]" id="filename" type="filename" 
+                            v-bind:label="$t('File name')" />
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />

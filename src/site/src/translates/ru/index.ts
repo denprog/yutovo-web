@@ -154,6 +154,7 @@ export default {
     'Show result numeral system': 'Показывать систему счисления результата',
     'Show angle measure': 'Показывать меру угла',
     'Maximum count of results': 'Максимальное количество результатов',
+    'File name': 'Имя файла',
 
     'Units': 'Размерности',
     'SI': 'СИ',

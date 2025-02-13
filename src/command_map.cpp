@@ -106,11 +106,11 @@ bool ShortcutsMap::Call(const KeySequence& shortcut, char32_t symbol, const Edit
                 switch (m.context)
                 {
                 case CommandContext::Formula:
-                    if (!document->FindParent(editor_state.caret_state.id, ElementType::CODE_BLOCK))
+                    if (document->GetParentId(editor_state.caret_state.id, ElementType::CODE_BLOCK) == ElementId{})
                         return;
                     break;
                 case CommandContext::Text:
-                    if (document->FindParent(editor_state.caret_state.id, ElementType::CODE_BLOCK))
+                    if (document->GetParentId(editor_state.caret_state.id, ElementType::CODE_BLOCK) != ElementId{})
                         return;
                     break;
                 case CommandContext::Everywhere:

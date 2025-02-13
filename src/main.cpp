@@ -250,7 +250,7 @@ void MainLoop(void* arg)
         if (c.id.empty() || (c.id.size() == 1))
             return;
         ElementId _id = GetParent(c.id);
-        int code_block = document->FindParent(c.id, ElementType::CODE_BLOCK) != nullptr;
+        int code_block = document->GetParentId(c.id, ElementType::CODE_BLOCK) != ElementId{};
         if (!document->IsString(document->GetElement(_id)) && !document->IsRow(document->GetElement(_id)))
         {
             format.Reset();
@@ -1263,9 +1263,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDefaultNotation(int notation)
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
-    if (_el)
-        document->SetNotation(_el->id, (Notation)notation, document->GetResultNotation(_el->id), true);
+    auto _id = document->GetParentId(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (!_id.empty())
+        document->SetNotation(_id, (Notation)notation, document->GetResultNotation(_id), true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnResultNotation(int notation)
@@ -1273,9 +1273,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnResultNotation(int notation)
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::INTEGER_RESULT);
-    if (_el)
-        document->SetNotation(_el->id, document->GetDefaultNotation(_el->id), (Notation)notation, true);
+    auto _id = document->GetParentId(s.caret_state.id, ElementType::INTEGER_RESULT);
+    if (!_id.empty())
+        document->SetNotation(_id, document->GetDefaultNotation(_id), (Notation)notation, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnFractionForm(int fraction_form)
@@ -1283,9 +1283,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFractionForm(int fraction_form)
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::RATIONAL_RESULT);
-    if (_el)
-        document->SetFractionForm(s.caret_state.id, (FractionForm)fraction_form, true);
+    auto _id = document->GetParentId(s.caret_state.id, ElementType::RATIONAL_RESULT);
+    if (!_id.empty())
+        document->SetFractionForm(_id, (FractionForm)fraction_form, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
@@ -1293,9 +1293,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    auto _el = document->FindParent(s.caret_state.id, ElementType::COMPLEX_RESULT);
-    if (_el)
-        document->SetComplexForm(s.caret_state.id, (ComplexForm)complex_form, true);
+    auto _id = document->GetParentId(s.caret_state.id, ElementType::COMPLEX_RESULT);
+    if (!_id.empty())
+        document->SetComplexForm(_id, (ComplexForm)complex_form, true);
 }
 
 std::u32string document_text;

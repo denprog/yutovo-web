@@ -9,13 +9,14 @@ export default {
 
     cookies_use: 'This website uses cookies for normal functioning.',
 
-    terms_of_use: 'yutovo.ru service and desktop application come with no warranty, explicit or implied, of any purpose whatsoever.<br/>\
-        The provider of the yutovo.ru service and desktop application takes no responsibility, financial or otherwise, for any damage or loss resulting \
-        from the use of the yutovo.ru service or desktop application, including but not limited to damage to the user\'s hardware and software.<br/>\
-        Documents saved on yutovo.ru account are private to logged in account.<br/>\
-        The provider of the yutovo.ru service reserves the right to use all uploaded documents, software logs, results of calculations, \
-        and input data within the yutovo.ru service, for purposes of maintaining, developing and testing the yutovo.ru service.<br/>\
-        The provider of the yutovo.ru service reserves the right to change these Terms of Use at any time.',
+    terms_of_use: 'yutovo.ru, yutovo.com service (hereinafter referred to as yutovo) and desktop application come with no warranty, \
+        explicit or implied, of any purpose whatsoever.<br/>\
+        The provider of the yutovo service and desktop application takes no responsibility, financial or otherwise, for any damage or loss resulting \
+        from the use of the yutovo service or desktop application, including but not limited to damage to the user\'s hardware and software.<br/>\
+        Documents saved on yutovo account are private to logged in account.<br/>\
+        The provider of the yutovo service reserves the right to use all uploaded documents, software logs, results of calculations, \
+        and input data within the yutovo service, for purposes of maintaining, developing and testing the yutovo service.<br/>\
+        The provider of the yutovo service reserves the right to change these Terms of Use at any time.',
     
     privacy_policy: 
         '1. Types of information to collect<br/>\
@@ -30,7 +31,7 @@ export default {
         We may use personal information for security purposes to protect users and the website. We may use information as otherwise permitted by law.<br/>\
         4. User rights over his data<br/>\
         You can request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, \
-        legal, or security purposes. You can send your request for data deletion at <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>.<br/>\
+        legal, or security purposes. You can send your request for data deletion at <a href="mailto:support{\'@\'}yutovo.com">support{\'@\'}yutovo.com</a>.<br/>\
         5. Disclamer<br/>\
         You assume all responsibility and risk with respect to your use of the website, which is provided “as is” without warranties, \
         representations or conditions of any kind, either express or implied, with regard to information accessed from or via the website, \

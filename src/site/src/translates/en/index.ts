@@ -5,7 +5,8 @@ export default {
         Unlike any other such programs, Yutovo does calculations the same way you do them on paper.\
         That’s because it uses conventional graphical mathematics syntax instead of string one.\
         Because Yutovo is an all-in-one solution to everything from everyday arithmetic to engineering solving.',
-    support: 'Support',
+    support: 'Support: e-mail: <a href="mailto:support{\'@\'}yutovo.com">support{\'@\'}yutovo.com</a>, \
+        Telegram: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.',
 
     cookies_use: 'This website uses cookies for normal functioning.',
 

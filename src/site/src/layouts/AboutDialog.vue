@@ -5,10 +5,10 @@
             <q-card square bordered class="q-sm">
                 <q-card-section>
                     <q-form @submit="onSubmit">
-                        <div class="q-pb-md text-blue text-h5" style="text-align: center">{{$t('About')}}</div>
+                        <div class="q-pb-md text-blue text-h5" style="text-align: center">{{ $t('About') }}</div>
                         <div class="text-h10">
                             {{ $t('about_yutovo') }}<br/>
-                            {{ $t('support') }}: <a class="q-pa-none" href="mailto:support@yutovo.ru">support@yutovo.ru</a>.
+                            <span v-html=support></span>
                         </div>
                         <div class="q-pt-md q-gutter-sm" style="text-align: center">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'AboutDialog',
@@ -39,6 +40,14 @@ export default {
         return {
             aboutDialog,
             onSubmit
+        }
+    },
+
+    data()
+    {
+        const { t } = useI18n();
+        return {
+            support: t('support')
         }
     }
 }

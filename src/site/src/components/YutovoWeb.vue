@@ -1687,8 +1687,6 @@ export default
                     window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: doc}}));
                     var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
                     window.language = language;
-                    doc = doc.replaceAll(/\//g, '%5C');
-                    this.router.push({ path: '/library/' + language + doc });
                     Cookies.remove('document_id', {path: '/'});
                 }
                 else
@@ -1714,16 +1712,41 @@ export default
         async updateDocumentName(event)
         {
             var s = this.store;
+            var r = this.router;
             if (event.detail.name != undefined)
             {
-                s.commit('editor/setDocumentName', event.detail.name);
+                api.post('/service/get-document-name', 
+                    {
+                        name: event.detail.name,
+                        lang: this.store.state.editor.language
+                    },
+                    {
+                        headers:
+                        {
+                            access_token: this.store.state.login.access_token
+                        }
+                    }
+                    ).then(
+                        function(response)
+                        {
+                            var doc = s.state.editor.language + response.data.name;
+                            doc = '/library/' + doc.replaceAll(/\//g, '%5C');
+                            console.log('doc ', doc);
+                            r.push({ path: doc });
+                            s.commit('editor/setDocumentName', response.data.name);
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                        }
+                    );
                 return;
             }
 
-            var id = event.detail.document_id;
             api.post('/service/get-document-name', 
                 {
-                    document_id: id
+                    document_id: event.detail.document_id
                 },
                 {
                     headers:

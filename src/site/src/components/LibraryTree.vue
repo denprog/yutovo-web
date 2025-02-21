@@ -31,10 +31,12 @@ export default
         if (window.addEventListener)
         {
             window.addEventListener('clearLibraryDocumentSelection', this.clearLibraryDocumentSelection, false);
+            window.addEventListener('libraryDocumentOpen', this.libraryDocumentOpen, false);
         }
         else
         {
             window.attachEvent('clearLibraryDocumentSelection', this.clearLibraryDocumentSelection);
+            window.attachEvent('libraryDocumentOpen', this.libraryDocumentOpen);
         }
     },
 
@@ -132,6 +134,23 @@ export default
             selectedDocument.value = ref(null);
         };
 
+        const libraryDocumentOpen = (event) =>
+        {
+            var s = event.detail.name;
+            var node = documentsRef.value.getNodeByKey(s);
+            if (typeof node !== 'undefined')
+            {
+                var i = s.lastIndexOf('/');
+                if (i != -1)
+                {
+                    s = s.substr(0, i) + '/';
+                    node = documentsRef.value.getNodeByKey(s);
+                    if (typeof node !== 'undefined')
+                        documentsRef.value.setExpanded(s, true);
+                }
+            }
+        };
+
         loadLibrary();
 
         return {
@@ -145,6 +164,7 @@ export default
             selectedDocument,
             onDocumentSelected,
             clearLibraryDocumentSelection,
+            libraryDocumentOpen,
             loadLibrary
         }
     },

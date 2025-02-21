@@ -1729,11 +1729,15 @@ export default
                     ).then(
                         function(response)
                         {
-                            var doc = s.state.editor.language + response.data.name;
+                            var n = response.data.name;
+                            var doc = s.state.editor.language + n;
                             doc = '/library/' + doc.replaceAll(/\//g, '%5C');
                             console.log('doc ', doc);
                             r.push({ path: doc });
-                            s.commit('editor/setDocumentName', response.data.name);
+                            s.commit('editor/setDocumentName', n);
+                            if (n.slice(-4) == '.yut')
+                                n = n.substr(0, n.length - 4);
+                            window.dispatchEvent(new CustomEvent('libraryDocumentOpen', {detail: {name: n}}));
                         }
                     ).catch(
                         function(response)

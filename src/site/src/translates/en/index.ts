@@ -10,6 +10,8 @@ export default {
 
     cookies_use: 'This website uses cookies for normal functioning.',
 
+    register_email_message: 'Request of user registration from yutovo.com. Enter this code: REGISTER_CODE in the dialog of registration.',
+
     terms_of_use: 'yutovo.ru, yutovo.com service (hereinafter referred to as yutovo) and desktop application come with no warranty, \
         explicit or implied, of any purpose whatsoever.<br/>\
         The provider of the yutovo service and desktop application takes no responsibility, financial or otherwise, for any damage or loss resulting \

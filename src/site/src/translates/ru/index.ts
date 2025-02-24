@@ -162,6 +162,24 @@ export default {
 
     'First page': 'Первая страница',
 
+    'Register code': 'Код регистрации',
+    register_email_message: 'Запрос регистрации пользователя с сайта yutovo.ru. Введите этот код: REGISTER_CODE в диалоге регистрации.',
+
+    'Login failed': 'Ошибка входа',
+    'Sending registration code failed': 'Отправка регистрационного кода не удалась',
+    'Getting captcha failed': 'Получение капчи не удалось',
+    'Passwords are not identical': 'Пароли не идентичны',
+    'The field must be filled': 'Поле должно быть заполнено',
+    'Enter a correct e-mail': 'Введите правильный адрес электронной почты',
+    'Login or e-mail already exists': 'Логин или адрес электронной почты уже существует',
+    'Fields must not be empty': 'Поля не должны быть пустыми',
+    'Wrong captcha': 'Неправильная капча',
+    'Wrong register code': 'Неправильный код регистрации',
+    'Wrong json in the request': 'Неправильный json в запросе',
+    'Json not found in the request': 'Json не найден в запросе',
+    'User not found': 'Пользователь не найден',
+    'Login not found': 'Логин не найден',
+
     'About': 'О проекте',
     about_yutovo: 'Ютово - это мощный калькулятор для решения различных математических, физических и повседневных задач.\
         В отличии от других программ, Ютово делает вычисления так же, как вы их делаете на бумаге.\

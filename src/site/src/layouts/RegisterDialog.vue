@@ -26,7 +26,14 @@
                         </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn ref="Register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
+                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" 
+                                :disabled="login == '' || name == '' || email == '' || password == '' || repassword == '' || captcha == ''" 
+                                v-bind:label="$t('Send code')" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
+                        </div>
+                        <q-input ref="registerCodeRef" v-model="registerCode" square v-if="registerCodeSent == true" v-bind:label="$t('Enter code from the e-mail')" />
+                        <div class="q-pa-md q-gutter-sm" v-if="registerCodeSent == true">
+                            <q-btn ref="register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
                         </div>
                     </q-form>
@@ -44,6 +51,7 @@ import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Cookies } from 'quasar'
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'RegisterDialog',
@@ -70,44 +78,12 @@ export default {
         const closed = ref(false);
         const store = useStore();
         const router = useRouter();
+        const registerCode = ref('');
+        const registerCodeRef = ref(null);
+        const registerCodeSent = ref(false);
+        const tr = useI18n();
 
         store.commit('login/setLastError', '');
-
-        const required = (val) => 
-        {
-            return (val && val.length > 0 || 'The field must be filled');
-        };
-
-        const lastErrorState = computed({
-            get: () => (store.state.login.last_error)
-        })
-
-        const isEmail = (val) => 
-        {
-            const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
-            return (emailPattern.test(val) || 'Enter a correct e-mail');
-        };
-
-        const diffPassword = (val) =>
-        {
-            return (val === password.value || 'Passwords are not identical');
-        };
-
-        const onRefreshCaptcha = () =>
-        {
-            api.post('/auth/get-captcha', {})
-                .then(
-                    function(response)
-                    {
-                        captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
-                    }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                    }
-                );
-        };
 
         api.post('/auth/get-captcha', {})
             .then(
@@ -119,11 +95,86 @@ export default {
                 function(response)
                 {
                     console.log(response);
+                    if (response.response.data.error != '')
+                        store.commit('login/setLastError', tr.t(response.response.data.error));
+                    else
+                        store.commit('login/setLastError', tr.t('Getting captcha failed'));
                 }
             );
 
+        const required = (val) => 
+        {
+            return (val && val.length > 0 || tr.t('The field must be filled'));
+        };
+
+        const lastErrorState = computed({
+            get: () => (tr.t(store.state.login.last_error))
+        })
+
+        const isEmail = (val) => 
+        {
+            const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
+            return (emailPattern.test(val) || tr.t('Enter a correct e-mail'));
+        };
+
+        const diffPassword = (val) =>
+        {
+            return (val === password.value || tr.t('Passwords are not identical'));
+        };
+
+        const onRefreshCaptcha = () =>
+        {
+            store.commit('login/setLastError', '');
+            api.post('/auth/get-captcha', {})
+                .then(
+                    function(response)
+                    {
+                        captchaImageRef.value = 'data:image/jpeg;base64, ' + response.data.captcha;
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                        if (response.response.data.error != '')
+                            store.commit('login/setLastError', tr.t(response.response.data.error));
+                        else
+                            store.commit('login/setLastError', tr.t('Getting captcha failed'));
+                    }
+                );
+        };
+
+        const onSendCode = () =>
+        {
+            store.commit('login/setLastError', '');
+            api.post('/auth/send-register-code', 
+                {
+                    login: login.value,
+                    name: name.value,
+                    email: email.value,
+                    subject: tr.t('Register code'),
+                    message: tr.t('register_email_message'),
+                    captcha: captcha.value
+                }
+                ).then(
+                    function(response)
+                    {
+                        registerCodeSent.value = true;
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                        if (response.response.data.error != '')
+                            store.commit('login/setLastError', tr.t(response.response.data.error));
+                        else
+                            store.commit('login/setLastError', tr.t('Sending registration code failed'));
+                    }
+                );
+        };
+
         const onSubmit = () =>
         {
+            store.commit('login/setLastError', '');
             repasswordRef.value.validate();
 
             api.post('/auth/register', 
@@ -132,7 +183,8 @@ export default {
                     name: name.value,
                     email: email.value,
                     password: password.value,
-                    captcha: captcha.value
+                    captcha: captcha.value,
+                    register_code: registerCode.value
                 }
                 ).then(
                     function()
@@ -159,9 +211,9 @@ export default {
                                 {
                                     store.dispatch('login/updateAccessToken', '');
                                     if (response.response.data.error != '')
-                                        store.commit('login/setLastError', response.response.data.error);
+                                        store.commit('login/setLastError', tr.t(response.response.data.error));
                                     else
-                                        store.commit('login/setLastError', 'Login failed');
+                                        store.commit('login/setLastError', tr.t('Login failed'));
                                 }
                             );
                     }
@@ -171,9 +223,9 @@ export default {
                         console.log(response);
                         store.dispatch('login/updateAccessToken', '');
                         if (response.response.data.error != '')
-                            store.commit('login/setLastError', response.response.data.error);
+                            store.commit('login/setLastError', tr.t(response.response.data.error));
                         else
-                            store.commit('login/setLastError', 'Login failed');
+                            store.commit('login/setLastError', tr.t('Login failed'));
                     }
                 );
         };
@@ -196,15 +248,20 @@ export default {
             captchaImageRef,
             captcha,
             captchaRef,
+            registerCode,
+            registerCodeRef,
             onRefreshCaptcha,
             lastErrorState,
             required,
             isEmail,
             diffPassword,
+            registerCodeSent,
+            onSendCode,
             onSubmit,
             onReset,
             closed,
-            router
+            router,
+            tr
         }
     }
 }

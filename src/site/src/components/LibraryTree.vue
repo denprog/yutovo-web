@@ -146,7 +146,15 @@ export default
                     s = s.substr(0, i) + '/';
                     node = documentsRef.value.getNodeByKey(s);
                     if (typeof node !== 'undefined')
-                        documentsRef.value.setExpanded(s, true);
+                    {
+                        const nodes = s.split('/');
+                        var n = '/';
+                        for (i = 1; i < nodes.length - 1; ++i)
+                        {
+                            n = n + nodes[i] + '/';
+                            documentsRef.value.setExpanded(n, true);
+                        }
+                    }
                 }
             }
         };

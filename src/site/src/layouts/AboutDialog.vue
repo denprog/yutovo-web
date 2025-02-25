@@ -7,7 +7,7 @@
                     <q-form @submit="onSubmit">
                         <div class="q-pb-md text-blue text-h5" style="text-align: center">{{ $t('About') }}</div>
                         <div class="text-h10">
-                            {{ $t('about_yutovo') }}<br/>
+                            <span v-html=about_yutovo></span>
                             <span v-html=support></span>
                         </div>
                         <div class="q-pt-md q-gutter-sm" style="text-align: center">
@@ -47,6 +47,7 @@ export default {
     {
         const { t } = useI18n();
         return {
+            about_yutovo: t('about_yutovo'),
             support: t('support')
         }
     }

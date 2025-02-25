@@ -764,11 +764,6 @@ export default
                                 }
                             );
                         }
-                        else
-                        {
-                            //set system language
-                            s.commit('editor/setLanguage', '');
-                        }
 
                         s.commit('editor/setLoading', false);
                     }

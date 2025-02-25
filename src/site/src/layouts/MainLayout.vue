@@ -118,6 +118,18 @@ export default
                     }
                 ]
             });
+            return;
+        }
+
+        if (this.$q.cookies.has('language'))
+        {
+            var lang = Cookies.get('language');
+            if (lang == 'ru_RU')
+                this.locale = 'ru';
+            else
+                this.locale = 'en';
+            const store = useStore();
+            store.commit('editor/setLanguage', this.locale);
         }
     },
 
@@ -334,6 +346,7 @@ export default
         {
             this.store.commit('editor/setLanguage', this.locale);
             document.title = this.$t('Yutovo');
+            Cookies.set('language', this.locale == 'ru' ? 'ru_RU' : 'en_EN', {path: '/', expires: '1y'});
 
             if (this.store.state.login.login != '')
             {

@@ -13,6 +13,16 @@ export default [
         ]
     },
     {
+        path: '/:file',
+        component: IndexPage,
+        children: [
+            {
+                path: '/',
+                component: IndexPage
+            }
+        ]
+    },
+    {
         path: '/document/:param',
         component: MainLayout,
         children: [
@@ -23,13 +33,21 @@ export default [
         ]
     },
     {
-        path: '/library/:param',
+        path: '/library/:language',
         name: 'library',
         component: MainLayout,
         children: [
             {
-                path: '',
-                component: IndexPage
+                path: ':dir1/:filename',
+                component: IndexPage,
+            },
+            {
+                path: ':dir1/:dir2/:filename',
+                component: IndexPage,
+            },
+            {
+                path: ':dir1/:dir2/:dir3/:filename',
+                component: IndexPage,
             }
         ]
     },

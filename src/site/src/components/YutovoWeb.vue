@@ -693,15 +693,24 @@ export default
                         var route = r.currentRoute.value;
                         if (route.path.substring(0, 8) == '/library')
                         {
-                            var doc = route.params.param.replaceAll(/\\/g, '/');
-                            var lang = doc.substring(0, 2);
+                            var doc = route.params.language + "/";
+                            if (typeof route.params.dir1 !== 'undefined')
+                                doc += route.params.dir1 + "/";
+                            if (typeof route.params.dir2 !== 'undefined')
+                                doc += route.params.dir2 + "/";
+                            if (typeof route.params.dir3 !== 'undefined')
+                                doc += route.params.dir3 + "/";
+                            doc += route.params.filename;
+                            doc = doc.replaceAll(/\\/g, '/');
                             doc = doc.substring(2);
+                            if (route.params.language == 'en' || route.params.language == 'ru')
+                                s.commit('editor/setLanguage', route.params.language);
                             window.dispatchEvent(new CustomEvent('loadLibraryDocument', 
                                 {
                                     'detail': 
                                     {
                                         document: doc, 
-                                        language: lang
+                                        language: route.params.language
                                     }
                                 }));
                         }
@@ -1451,13 +1460,20 @@ export default
             if (r.currentRoute.value.path.substring(0, 8) == '/library') //save the current library document as a new user document
             {
                 var route = r.currentRoute.value;
-                var doc = route.params.param.replaceAll(/\\/g, '/');
-                var lang = doc.substring(0, 2);
+                var doc = route.params.language + "/";
+                if (typeof route.params.dir1 !== 'undefined')
+                    doc += route.params.dir1 + "/";
+                if (typeof route.params.dir2 !== 'undefined')
+                    doc += route.params.dir2 + "/";
+                if (typeof route.params.dir3 !== 'undefined')
+                    doc += route.params.dir3 + "/";
+                doc += route.params.filename;
+                doc = doc.replaceAll(/\\/g, '/');
                 doc = doc.substring(2);
                 api.post('/service/save-library-document', 
                     {
                         document: doc,
-                        language: lang
+                        language: route.params.language
                     },
                     {
                         headers:
@@ -1470,7 +1486,13 @@ export default
                         {
                             r.push({ path: '/document/' + response.data.document_id });
                             Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
-                            window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
+                            window.dispatchEvent(new CustomEvent('updateDocumentName', 
+                                {
+                                    detail: 
+                                    {
+                                        document_id: response.data.document_id
+                                    }
+                                }));
                             canvas.focus();
                             window.dispatchEvent(new CustomEvent('listDocuments', {}));
                         }
@@ -1496,7 +1518,13 @@ export default
                         {
                             r.push({path: '/document/' + response.data.document_id});
                             Cookies.set('document_id', response.data.document_id, {path: '/', expires: '1d'});
-                            window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: response.data.document_id}}));
+                            window.dispatchEvent(new CustomEvent('updateDocumentName', 
+                                {
+                                    detail: 
+                                    {
+                                        document_id: response.data.document_id
+                                    }
+                                }));
                             canvas.focus();
                         }
                     ).catch(
@@ -1679,7 +1707,13 @@ export default
                     //it is a library document
                     var doc = this.current_document;
                     window.library_document = doc; //save for opening a link
-                    window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {name: doc}}));
+                    window.dispatchEvent(new CustomEvent('updateDocumentName', 
+                        {
+                            detail: 
+                            {
+                                name: doc
+                            }
+                        }));
                     var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
                     window.language = language;
                     Cookies.remove('document_id', {path: '/'});
@@ -1688,7 +1722,13 @@ export default
                 {
                     Cookies.set('document_id', id, {path: '/', expires: '1d'});
                     this.router.push({path: '/document/' + id});
-                    window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: id}}));
+                    window.dispatchEvent(new CustomEvent('updateDocumentName', 
+                        {
+                            detail: 
+                            {
+                                document_id: id
+                            }
+                        }));
                     window.library_document = '';
                     window.user_document = id; //save for opening a link
                     if (last_document_id != 0)
@@ -1726,7 +1766,7 @@ export default
                         {
                             var n = response.data.name;
                             var doc = s.state.editor.language + n;
-                            doc = '/library/' + doc.replaceAll(/\//g, '%5C');
+                            doc = '/library/' + doc.replaceAll(/\\/g, '/');
                             console.log('doc ', doc);
                             r.push({ path: doc });
                             s.commit('editor/setDocumentName', n);

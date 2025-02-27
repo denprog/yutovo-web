@@ -201,7 +201,7 @@ EM_JS(void, OpenLink, (const char* url, size_t url_size),
                     if (p == -1)
                         return;
                     var path = window.library_document.substring(0, p + 1);
-                    path = '/library/' + window.language + path.replace(/[/]/g, '%5C') + _url.replace(/[/]/g, '%5C');
+                    path = '/library/' + window.language + path + _url;
                     window.open(path, '_self').focus();
                 }
                 else

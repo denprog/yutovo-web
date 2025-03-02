@@ -35,7 +35,7 @@ export default {
         We may use personal information for security purposes to protect users and the website. We may use information as otherwise permitted by law.<br/>\
         4. User rights over his data<br/>\
         You can request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, \
-        legal, or security purposes. You can send your request for data deletion at <a href="mailto:support{\'@\'}yutovo.com">support{\'@\'}yutovo.com</a>.<br/>\
+        legal, or security purposes. You can send your request for data deletion at: <a href="mailto:support{\'@\'}yutovo.com">support{\'@\'}yutovo.com</a>.<br/>\
         5. Disclamer<br/>\
         You assume all responsibility and risk with respect to your use of the website, which is provided “as is” without warranties, \
         representations or conditions of any kind, either express or implied, with regard to information accessed from or via the website, \

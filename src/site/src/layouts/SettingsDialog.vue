@@ -66,12 +66,15 @@ import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'SettingsDialog',
 
     setup()
     {
+        const tr = useI18n();
+
         const colorToInt = (color) =>
         {
             return parseInt(color.substr(1, 6), 16) + 0xff000000;
@@ -109,7 +112,7 @@ export default {
 
         const required = (val) =>
         {
-            return  (val && val.length > 0 || 'The field must be filled');
+            return  (val && val.length > 0 || tr.t('The field must be filled'));
         };
 
         const onReset = () =>
@@ -172,7 +175,8 @@ export default {
             errorMarksColor,
             formulaBgColor,
             bgSelectionColor,
-            colorToInt
+            colorToInt,
+            tr
         }
     },
 

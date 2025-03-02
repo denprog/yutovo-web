@@ -27,6 +27,7 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { Cookies } from 'quasar'
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'RenameDialog',
@@ -37,12 +38,13 @@ export default {
         const filename = ref('');
         const filenameRef = ref(null);
         const store = useStore();
+        const tr = useI18n();
 
         store.commit('editor/setLastError', '');
 
         const required = (val) =>
         {
-            return (val && val.length > 0 || 'The field must be filled');
+            return (val && val.length > 0 || tr.t('The field must be filled'));
         };
 
         const onSubmit = () =>
@@ -93,7 +95,8 @@ export default {
             onReset,
             required,
             filenameRef,
-            lastErrorState
+            lastErrorState,
+            tr
         }
     }
 }

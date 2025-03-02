@@ -24,6 +24,7 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'LinkDialog',
@@ -72,10 +73,11 @@ export default {
     setup(text_val)
     {
         const linkDialog = ref(null);
+        const tr = useI18n();
 
         const required = (val) =>
         {
-            return (val && val.length > 0 || 'The field must be filled');
+            return (val && val.length > 0 || tr.t('The field must be filled'));
         };
 
         const onReset = () =>
@@ -86,7 +88,8 @@ export default {
         return {
             linkDialog,
             onReset,
-            required
+            required,
+            tr
         }
     },
 

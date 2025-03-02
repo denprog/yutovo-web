@@ -92,6 +92,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 export default {
     name: 'ConfigDialog',
@@ -100,7 +101,7 @@ export default {
     {
         const configDialog = ref(null);
         const store = useStore();
-
+        const tr = useI18n();
         const resultTab = ref('real');
 
         const angleMeasures = [
@@ -168,7 +169,7 @@ export default {
 
         const intRequired = (val) =>
         {
-            return  (val && val > 0 || 'The field must be filled');
+            return  (val && val > 0 || tr.t('The field must be filled'));
         };
 
         const onReset = () =>
@@ -243,7 +244,9 @@ export default {
             complexShowAngleMeasure,
 
             language,
-            languages
+            languages,
+
+            tr
         }
     }
 }

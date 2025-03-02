@@ -40,8 +40,10 @@ import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
-export default {
+export default
+{
     name: 'LoginDialog',
 
     data()
@@ -62,12 +64,13 @@ export default {
         const captchaRef = ref(null);
         const loginDialog = ref(null);
         const store = useStore();
+        const tr = useI18n();
 
         store.commit('login/setLastError', '');
 
         const required = (val) =>
         {
-            return  (val && val.length > 0 || 'The field must be filled');
+            return  (val && val.length > 0 || tr.t('The field must be filled'));
         };
 
         const lastErrorState = computed({
@@ -182,7 +185,8 @@ export default {
             onSubmit,
             onReset,
             onRefreshCaptcha,
-            router
+            router,
+            tr
         }
     }
 }

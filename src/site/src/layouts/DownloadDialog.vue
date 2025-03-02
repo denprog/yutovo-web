@@ -22,7 +22,7 @@
                         </div>
                     </q-card-section>
                     <div class="q-pa-md q-gutter-sm" style="text-align: center">
-                        <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="Close" />
+                        <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('Close')"/>
                     </div>
                 </q-form>
             </q-card>
@@ -35,7 +35,8 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 
-export default {
+export default
+{
     name: 'DownloadDialog',
 
     setup()

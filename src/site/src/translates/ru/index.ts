@@ -126,6 +126,7 @@ export default {
     'Privacy policy': 'Политика конфеденциальности',
     'Download': 'Скачать',
     'Target OS': 'Для ОС',
+    'Close': 'Закрыть',
 
     'Login': 'Логин',
     'Logout': 'Выход',

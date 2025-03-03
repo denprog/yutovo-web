@@ -68,7 +68,8 @@ import { useStore } from 'vuex'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import { useI18n } from 'vue-i18n'
 
-export default {
+export default
+{
     name: 'SettingsDialog',
 
     setup()
@@ -139,7 +140,7 @@ export default {
 
             if (store.state.login.login != '')
             {
-                api.post('/service/set-settings', 
+                api.post('/service/set-user-settings', 
                     {
                         settings: JSON.stringify(store.state.editor.settings)
                     },

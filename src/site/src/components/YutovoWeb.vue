@@ -746,7 +746,7 @@ export default
                                     s.commit('login/setLastError', '');
 
                                     //get user settings
-                                    api.post('/service/get-settings', {},
+                                    api.post('/service/get-user-settings', {},
                                         {
                                             headers:
                                             {
@@ -756,7 +756,7 @@ export default
                                         ).then(
                                             function(response)
                                             {
-                                                s.commit('editor/setSettings', response.data);
+                                                s.commit('editor/setSettings', response.data.settings);
                                             }
                                         ).catch(
                                             function(response)

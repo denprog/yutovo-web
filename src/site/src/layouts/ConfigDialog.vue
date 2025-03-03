@@ -1,5 +1,5 @@
 <template>
-<q-dialog id="config-dialog" ref="configDialog">
+<q-dialog ref="configDialog">
     <div class="column row justify-center items-center">
         <div class="row">
             <q-card square bordered class="q-sm">
@@ -94,7 +94,8 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
-export default {
+export default
+{
     name: 'ConfigDialog',
 
     setup()

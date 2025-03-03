@@ -143,6 +143,14 @@ export default {
 
     'Settings': 'Настройки',
 
+    'User account': 'Учетная запись пользователя',
+    'Name': 'Имя',
+    'e-mail': 'Почта',
+    'Password': 'Пароль',
+    'Change name': 'Сменить имя',
+    'Change e-mail': 'Сменить почту',
+    'Change password': 'Сменить пароль',
+
     'Document settings': 'Настройки документа',
     'Result': 'Результат',
     'Locale': 'Язык',

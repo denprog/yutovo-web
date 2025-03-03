@@ -25,11 +25,11 @@
                     <q-select v-model="locale" class="language-select" id="language" :options="localeOptions" @update:model-value="onLanguage();" 
                         dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
 
-                    <q-btn id='settings' dense no-caps flat @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>
-                    <div class="text-white q-pa-sm" id='login_caption' v-if="loginStr != ''">{{ loginStr }}</div>
-                    <q-btn id='login' dense no-caps flat v-if="loginState" @click="showLoginDialog">{{ $t('Login') }}</q-btn>
-                    <q-btn id='register' dense no-caps flat v-if="loginState" @click="showRegisterDialog">{{ $t('Register') }}</q-btn>
-                    <q-btn id='logout' dense no-caps flat v-if="logoutState" @click="logout">{{ $t('Logout') }}</q-btn>
+                    <q-btn dense no-caps flat @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>
+                    <q-btn dense no-caps flat v-if="loginStr != ''" @click="showUserAccountDialog">{{ loginStr }}</q-btn>
+                    <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">{{ $t('Login') }}</q-btn>
+                    <q-btn dense no-caps flat v-if="loginState" @click="showRegisterDialog">{{ $t('Register') }}</q-btn>
+                    <q-btn dense no-caps flat v-if="logoutState" @click="logout">{{ $t('Logout') }}</q-btn>
                     <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
                 </q-toolbar>
             </q-header>
@@ -90,6 +90,7 @@ import LicenseDialog from 'layouts/LicenseDialog.vue';
 import PrivacyDialog from 'layouts/PrivacyDialog.vue';
 import DownloadDialog from 'layouts/DownloadDialog.vue';
 import SettingsDialog from 'layouts/SettingsDialog.vue';
+import UserAccountDialog from 'layouts/UserAccountDialog.vue';
 import { Cookies } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
@@ -312,9 +313,19 @@ export default
 
         showSettingsDialog()
         {
-            this.settingsDialog = this.$q
-                .dialog({
+            this.settingsDialog = this.$q.dialog(
+                {
                     component: SettingsDialog,
+                    parent: this,
+                    apiResponse: this.resp
+                })
+        },
+
+        showUserAccountDialog()
+        {
+            this.userAccountDialog = this.$q.dialog(
+                {
+                    component: UserAccountDialog,
                     parent: this,
                     apiResponse: this.resp
                 })

@@ -1419,7 +1419,10 @@ export default
                     function(response)
                     {
                         console.log(response);
-                        alert(t('Error creating the document: ') + t(response.response.data.error));
+                        if (typeof response.response.data.error !== 'undefined')
+                            alert(t('Error creating the document: ') + t(response.response.data.error));
+                        else
+                            alert(t('Error creating the document: ') + t(response.response.data));
                     }
                 );
         },
@@ -1500,7 +1503,10 @@ export default
                         function(response)
                         {
                             console.log(response);
-                            alert(t('Error saving the document: ') + t(response.response.data.error));
+                            if (typeof response.response.data.error !== 'undefined')
+                                alert(t('Error saving the document: ') + t(response.response.data.error));
+                            else
+                                alert(t('Error saving the document: ') + t(response.response.data));
                         }
                     );
             }
@@ -1538,7 +1544,10 @@ export default
                             }
                             else
                             {
-                                alert(t('Error saving the document: ') + t(response.response.data.error));
+                                if (typeof response.response.data.error !== 'undefined')
+                                    alert(t('Error saving the document: ') + t(response.response.data.error));
+                                else
+                                    alert(t('Error saving the document: ') + t(response.response.data));
                             }
                         }
                     );

@@ -108,17 +108,18 @@ export default
             this.locale = navigator.language.startsWith('ru') ? 'ru' : 'en';
             const store = useStore();
             store.commit('editor/setLanguage', this.locale);
-            this.$q.notify({
-                message: this.$t('cookies_use'),
-                color: 'blue-9',
-                multiLine: true,
-                timeout: 0,
-                actions: [
-                    {
-                        label: 'OK', color: 'white', handler: () => { /* ... */ }
-                    }
-                ]
-            });
+            this.$q.notify(
+                {
+                    message: this.$t('cookies_use'),
+                    color: 'blue-9',
+                    multiLine: true,
+                    timeout: 0,
+                    actions: [
+                        {
+                            label: 'OK', color: 'white', handler: () => { /* ... */ }
+                        }
+                    ]
+                });
             return;
         }
 
@@ -333,8 +334,8 @@ export default
 
         showLoginDialog()
         {
-            this.loginDialog = this.$q
-                .dialog({
+            this.loginDialog = this.$q.dialog(
+                {
                     component: LoginDialog,
 
                     // optional if you want to have access to

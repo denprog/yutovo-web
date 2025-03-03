@@ -150,6 +150,8 @@ export default {
     'Change name': 'Сменить имя',
     'Change e-mail': 'Сменить почту',
     'Change password': 'Сменить пароль',
+    'old password': 'старый пароль',
+    'new password': 'новый пароль',
 
     'Document settings': 'Настройки документа',
     'Result': 'Результат',
@@ -172,7 +174,12 @@ export default {
     'First page': 'Первая страница',
 
     'Register code': 'Код регистрации',
-    register_email_message: 'Запрос регистрации пользователя с сайта yutovo.ru. Введите этот код: REGISTER_CODE в диалоге регистрации.',
+    'Send code' : 'Выслать код',
+    register_email_message: 'Запрос регистрации пользователя с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге регистрации.',
+
+    'Password change code': 'Код смены пароля',
+    'Enter code from the e-mail': 'Введите код из письма',
+    password_email_message: 'Запрос смены пароля с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
 
     'Login failed': 'Ошибка входа',
     'Sending registration code failed': 'Отправка регистрационного кода не удалась',
@@ -188,6 +195,9 @@ export default {
     'Json not found in the request': 'Json не найден в запросе',
     'User not found': 'Пользователь не найден',
     'Login not found': 'Логин не найден',
+    'Submit failed': 'Операция неудачна',
+    'Login or password are incorrect': 'Логин или пароль неправильны',
+    'Error getting settings': 'Ошибка получения настроек',
 
     'About': 'О проекте',
     about_yutovo: 'Ютово - это мощный калькулятор для решения различных математических, физических и повседневных задач.\

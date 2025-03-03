@@ -62,6 +62,7 @@ import { Cookies } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/boot'
 import ChangePasswordDialog from 'layouts/ChangePasswordDialog.vue';
+import { useQuasar } from 'quasar'
 
 export default
 {
@@ -74,6 +75,7 @@ export default
         const loginStr = ref('');
         const nameStr = ref('');
         const emailStr = ref('');
+        const $q = useQuasar();
 
         //get user settings
         api.post('/service/get-user-settings', {},
@@ -94,6 +96,10 @@ export default
                 function(response)
                 {
                     console.log(response);
+                    if (typeof response.response.data.error !== 'undefined')
+                        alert(t('Error getting settings: ') + t(response.response.data.error));
+                    else
+                        alert(t('Error getting settings: ') + t(response.response.data));
                 }
             );
 
@@ -115,7 +121,7 @@ export default
                     }
                 }
                 ).then(
-                    function()
+                    function(response)
                     {
                         store.dispatch('login/updateAccessToken', '');
                         Cookies.remove('document_id');
@@ -131,10 +137,21 @@ export default
                 );
         };
 
+        const onChangePassword = () =>
+        {
+            $q.dialog(
+                {
+                    component: ChangePasswordDialog,
+                    parent: this
+                })
+            userAccountDialog.value.hide();
+        };
+
         return {
             userAccountDialog,
             onClose,
             onLogout,
+            onChangePassword,
             loginStr,
             nameStr,
             emailStr

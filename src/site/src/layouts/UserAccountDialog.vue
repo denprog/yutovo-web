@@ -22,7 +22,7 @@
                                     <div class="q-pa-sm">{{ nameStr }}</div>
                                 </td>
                                 <td class="q-pl-md">
-                                    <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" @click="onChangeUserName();">{{ $t('Change name') }}</q-btn>
+                                    <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" @click="onChangeName();">{{ $t('Change name') }}</q-btn>
                                 </td>
                             </tr>
                             <tr>
@@ -62,6 +62,7 @@ import { Cookies } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { api } from 'boot/boot'
 import ChangePasswordDialog from 'layouts/ChangePasswordDialog.vue';
+import ChangeNameDialog from 'layouts/ChangeNameDialog.vue'
 import { useQuasar } from 'quasar'
 
 export default
@@ -137,6 +138,16 @@ export default
                 );
         };
 
+        const onChangeName = () => 
+        {
+            $q.dialog(
+                {
+                    component: ChangeNameDialog,
+                    parent: this
+                })
+            userAccountDialog.value.hide();
+        };
+
         const onChangePassword = () =>
         {
             $q.dialog(
@@ -151,6 +162,7 @@ export default
             userAccountDialog,
             onClose,
             onLogout,
+            onChangeName,
             onChangePassword,
             loginStr,
             nameStr,

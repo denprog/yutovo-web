@@ -139,12 +139,6 @@ export default
                     subject: tr.t('Password change code'),
                     message: tr.t('password_email_message'),
                     captcha: captcha.value
-                },
-                {
-                    headers:
-                    {
-                        access_token: store.state.login.access_token
-                    }
                 }
                 ).then(
                     function(response)

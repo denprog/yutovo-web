@@ -126,12 +126,6 @@ export default
                     subject: tr.t('E-mail change code'),
                     message: tr.t('email_email_message'),
                     captcha: captcha.value
-                },
-                {
-                    headers:
-                    {
-                        access_token: store.state.login.access_token
-                    }
                 }
                 ).then(
                     function(response)

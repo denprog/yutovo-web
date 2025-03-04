@@ -1,17 +1,12 @@
 <template>
-<q-dialog ref="changePasswordDialog">
+<q-dialog ref="changeEmailDialog">
     <div class="column row justify-center items-center">
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset" class="q-sm">
-                        <div class="text-blue text-h5">{{ $t('Change password') }}</div>
-                        <q-input class="q-pa-none" square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" 
-                            v-bind:label="$t('old password')" />
-                        <q-input class="q-pa-none" square v-model="newPassword" lazy-rules :rules="[this.required]" id="newPassword" type="password" 
-                            v-bind:label="$t('new password')" />
-                        <q-input class="q-pb-lg" ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
-                            id="repassword" type="password" v-bind:label="$t('repeate password')" />
+                        <div class="text-blue text-h5">{{ $t('e-mail') }}</div>
+                        <q-input class="q-pa-none" square ref="newEmailRef" v-model="newEmail" lazy-rules :rules="[this.required]" v-bind:label="$t('new e-mail')" />
                         <br/>
                         <q-img class="q-pa-none" :src="captchaImageRef" />
                         <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
@@ -24,14 +19,12 @@
                         </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" 
-                                :disabled="password == '' || newPassword == '' || repassword == '' || captcha == ''" 
-                                v-bind:label="$t('Send code')" />
+                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" :disabled="newEmail == '' || captcha == ''" v-bind:label="$t('Send code')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
                         </div>
                         <q-input ref="emailCodeRef" v-model="emailCode" square v-if="emailCodeSent == true" v-bind:label="$t('Enter code from the e-mail')" />
                         <div class="q-pa-md q-gutter-sm" v-if="emailCodeSent == true">
-                            <q-btn ref="changePassword" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Change password')" />
+                            <q-btn ref="changeEmail" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Change e-mail')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
                         </div>
                     </q-form>
@@ -52,7 +45,7 @@ import { useI18n } from 'vue-i18n'
 
 export default
 {
-    name: 'ChangePasswordDialog',
+    name: 'ChangeEmailDialog',
 
     data()
     {
@@ -63,11 +56,9 @@ export default
 
     setup()
     {
-        const changePasswordDialog = ref(null);
-        const password = ref('');
-        const newPassword = ref('');
-        const repassword = ref(null);
-        const repasswordRef = ref(null);
+        const changeEmailDialog = ref(null);
+        const newEmail = ref('');
+        const newEmailRef = ref(null);
         const captcha = ref('');
         const captchaRef = ref(null);
         const captchaImageRef = ref(null);
@@ -105,11 +96,6 @@ export default
                 get: () => (tr.t(store.state.login.last_error))
             });
 
-        const diffPassword = (val) =>
-        {
-            return (val === newPassword.value || tr.t('Passwords are not identical'));
-        };
-
         const onRefreshCaptcha = () =>
         {
             store.commit('login/setLastError', '');
@@ -136,8 +122,9 @@ export default
             store.commit('login/setLastError', '');
             api.post('/auth/send-email-code', 
                 {
-                    subject: tr.t('Password change code'),
-                    message: tr.t('password_email_message'),
+                    email: newEmail.value,
+                    subject: tr.t('E-mail change code'),
+                    message: tr.t('email_email_message'),
                     captcha: captcha.value
                 },
                 {
@@ -166,12 +153,11 @@ export default
         const onSubmit = () =>
         {
             store.commit('login/setLastError', '');
-            repasswordRef.value.validate();
+            newEmailRef.value.validate();
 
             api.post('/service/set-user-settings', 
                 {
-                    old_password: password.value,
-                    password: newPassword.value,
+                    email: newEmail.value,
                     captcha: captcha.value,
                     email_code: emailCode.value
                 },
@@ -184,7 +170,7 @@ export default
                 ).then(
                     function(response)
                     {
-                        changePasswordDialog.value.hide();
+                        changeEmailDialog.value.hide();
                     }
                 ).catch(
                     function(response)
@@ -201,22 +187,19 @@ export default
 
         const onReset = () =>
         {
-            changePasswordDialog.value.hide();
+            changeEmailDialog.value.hide();
         };
 
         return {
-            changePasswordDialog,
+            changeEmailDialog,
+            newEmail,
             required,
             lastErrorState,
-            diffPassword,
             onSubmit,
             onReset,
             onSendCode,
             onRefreshCaptcha,
-            password,
-            newPassword,
-            repassword,
-            repasswordRef,
+            newEmailRef,
             captchaImageRef,
             captcha,
             captchaRef,

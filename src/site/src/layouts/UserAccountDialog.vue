@@ -63,6 +63,7 @@ import { useI18n } from 'vue-i18n'
 import { api } from 'boot/boot'
 import ChangePasswordDialog from 'layouts/ChangePasswordDialog.vue';
 import ChangeNameDialog from 'layouts/ChangeNameDialog.vue'
+import ChangeEmailDialog from 'layouts/ChangeEmailDialog.vue'
 import { useQuasar } from 'quasar'
 
 export default
@@ -148,6 +149,16 @@ export default
             userAccountDialog.value.hide();
         };
 
+        const onChangeEmail = () =>
+        {
+            $q.dialog(
+                {
+                    component: ChangeEmailDialog,
+                    parent: this
+                })
+            userAccountDialog.value.hide();
+        };
+
         const onChangePassword = () =>
         {
             $q.dialog(
@@ -163,6 +174,7 @@ export default
             onClose,
             onLogout,
             onChangeName,
+            onChangeEmail,
             onChangePassword,
             loginStr,
             nameStr,

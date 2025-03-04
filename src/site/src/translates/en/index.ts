@@ -17,6 +17,8 @@ export default {
 
     email_email_message: 'Request of e-mail changing from yutovo.com. Enter this code: EMAIL_CODE in the dialog.',
 
+    recover_password_email_message: 'Request of recovering password from yutovo.com. Enter this code: EMAIL_CODE in the dialog.',
+
     terms_of_use: 'yutovo.ru, yutovo.com service (hereinafter referred to as yutovo) and desktop application come with no warranty, \
         explicit or implied, of any purpose whatsoever.<br/>\
         The provider of the yutovo service and desktop application takes no responsibility, financial or otherwise, for any damage or loss resulting \

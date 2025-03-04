@@ -11,6 +11,8 @@
                         <q-input ref="passwordRef" square class="q-pa-none" v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" 
                             v-bind:label="$t('password')" />
                         <br/>
+                        <a href="#" onclick="return false;" @click="onRecoverPassword">{{ $t('Recover password') }}</a>
+                        <br/>
                         <q-img :src="captchaImageRef" />
                         <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
                         <template v-if="isProduction">
@@ -22,7 +24,7 @@
                         </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('Login')" />
+                            <q-btn unelevated class="bg-primary text-white" type="submit" v-bind:label="$t('Login')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>
@@ -41,6 +43,8 @@ import { computed } from 'vue'
 import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
+import RecoverPasswordDialog from 'layouts/RecoverPasswordDialog.vue'
 
 export default
 {
@@ -65,6 +69,7 @@ export default
         const loginDialog = ref(null);
         const store = useStore();
         const tr = useI18n();
+        const $q = useQuasar();
 
         store.commit('login/setLastError', '');
 
@@ -74,7 +79,7 @@ export default
         };
 
         const lastErrorState = computed({
-            get: () => (store.state.login.last_error)
+            get: () => (tr.t(store.state.login.last_error))
         })
 
         const onReset = () =>
@@ -96,6 +101,17 @@ export default
                         console.log(response);
                     }
                 );
+        };
+
+        const onRecoverPassword = () =>
+        {
+            console.log('onRecoverPassword');
+            $q.dialog(
+                {
+                    component: RecoverPasswordDialog,
+                    parent: this
+                })
+            loginDialog.value.hide();
         };
 
         const router = useRouter();
@@ -185,9 +201,16 @@ export default
             onSubmit,
             onReset,
             onRefreshCaptcha,
+            onRecoverPassword,
             router,
             tr
         }
     }
 }
 </script>
+
+<style scoped>
+a {
+    color: blue;
+}
+</style>

@@ -197,6 +197,7 @@ export default {
     'Login not found': 'Логин не найден',
     'Submit failed': 'Операция неудачна',
     'Login or password are incorrect': 'Логин или пароль неправильны',
+    'Login or email are incorrect': 'Логин или почта неправильны',
     'Error getting settings': 'Ошибка получения настроек',
 
     'name': 'имя',
@@ -204,6 +205,11 @@ export default {
     'new e-mail': 'новая почта',
 
     email_email_message: 'Запрос смены почты с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
+
+    'Password recovery code': 'Код восстановления пароля',
+    'Recover password': 'Восстановление пароля',
+    'login or e-mail': 'логин или почта',
+    recover_password_email_message: 'Запрос восстановления пароля с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
 
     'About': 'О проекте',
     about_yutovo: 'Ютово - это мощный калькулятор для решения различных математических, физических и повседневных задач.\

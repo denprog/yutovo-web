@@ -138,7 +138,8 @@ export default
                 {
                     subject: tr.t('Password change code'),
                     message: tr.t('password_email_message'),
-                    captcha: captcha.value
+                    captcha: captcha.value,
+                    recover: true
                 }
                 ).then(
                     function(response)

@@ -7,12 +7,12 @@
 
                     <div>
                         <q-toolbar-title>
-                            <q-btn no-caps dense flat @click="$router.push('/')">
+                            <q-btn no-caps dense flat @click="$router.push({path: '/'}); $router.go();">
                                 <q-avatar>
                                     <img src="yutovo.png">
                                 </q-avatar>
                             </q-btn>
-                            <q-btn no-caps dense flat size="15pt" @click="$router.push('/')">
+                            <q-btn no-caps dense flat size="15pt" @click="$router.push({path: '/'}); $router.go();">
                                 {{ $t('yutovo_caption') }}
                             </q-btn>
                         </q-toolbar-title>

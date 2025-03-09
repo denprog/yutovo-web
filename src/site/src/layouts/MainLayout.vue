@@ -96,6 +96,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
 import { useI18n } from 'vue-i18n'
+import { useMeta } from 'quasar'
 
 export default
 {
@@ -145,6 +146,31 @@ export default
         const rightDrawerWidth = ref(200);
 
         const store = useStore();
+
+        if (Cookies.has('language'))
+        {
+            var lang = Cookies.get('language');
+            if (lang == 'ru_RU')
+            {
+                useMeta(
+                    {
+                        meta:
+                        {
+                            keywords: { name: 'keywords', content: 'калькулятор, математика, физика, вычисления, расчеты, арифметика' }
+                        }
+                    })
+            }
+            else
+            {
+                useMeta(
+                    {
+                        meta:
+                        {
+                            keywords: { name: 'keywords', content: 'calculator, mathematics, physics, calculations, solvings, arithmetics' }
+                        }
+                    })
+            }
+        }
 
         const loginState = computed({
             get: () => (store.state.login.login == '')

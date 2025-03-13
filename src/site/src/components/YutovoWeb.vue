@@ -59,16 +59,16 @@
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
-            <q-select class="toolbar-select" v-model="paragraph_format_model" :options="paragraph_format" @update:model-value="onParagraphFormat();" 
-                dense options-dense borderless>
+            <q-select class="toolbar-select" style="white-space: nowrap;" v-model="paragraph_format_model" :options="paragraph_format" 
+                @update:model-value="onParagraphFormat();" dense options-dense borderless>
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paragraph format') }}</q-tooltip>
             </q-select>
             <q-separator vertical/>
-            <q-select class="toolbar-select" v-model="font_family_model" :options="font_family" @update:model-value="onFontFamily();" 
+            <q-select class="toolbar-select" style="white-space: nowrap;" v-model="font_family_model" :options="font_family" @update:model-value="onFontFamily();" 
                 dense options-dense borderless>
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Font family') }}</q-tooltip>
             </q-select>
-            <q-select class="toolbar-select" v-model="font_size_model" :options="font_size" @update:model-value="onFontSize();" 
+            <q-select class="toolbar-select" style="white-space: nowrap;" v-model="font_size_model" :options="font_size" @update:model-value="onFontSize();" 
                 dense options-dense borderless>
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Font size') }}</q-tooltip>
             </q-select>

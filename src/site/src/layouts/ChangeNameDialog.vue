@@ -25,7 +25,6 @@ import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
-import { Cookies } from 'quasar'
 import { useI18n } from 'vue-i18n'
 
 export default
@@ -62,7 +61,7 @@ export default
                     }
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         //load the new document
                         changeNameDialog.value.hide();

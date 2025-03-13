@@ -59,7 +59,6 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { Cookies } from 'quasar'
-import { useI18n } from 'vue-i18n'
 import { api } from 'boot/boot'
 import ChangePasswordDialog from 'layouts/ChangePasswordDialog.vue';
 import ChangeNameDialog from 'layouts/ChangeNameDialog.vue'
@@ -123,7 +122,7 @@ export default
                     }
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         store.dispatch('login/updateAccessToken', '');
                         Cookies.remove('document_id');

@@ -693,13 +693,13 @@ export default
                         var route = r.currentRoute.value;
                         if (route.path.substring(0, 8) == '/library')
                         {
-                            var doc = route.params.language + "/";
+                            var doc = route.params.language + '/';
                             if (typeof route.params.dir1 !== 'undefined')
-                                doc += route.params.dir1 + "/";
+                                doc += route.params.dir1 + '/';
                             if (typeof route.params.dir2 !== 'undefined')
-                                doc += route.params.dir2 + "/";
+                                doc += route.params.dir2 + '/';
                             if (typeof route.params.dir3 !== 'undefined')
-                                doc += route.params.dir3 + "/";
+                                doc += route.params.dir3 + '/';
                             doc += route.params.filename;
                             doc = doc.replaceAll(/\\/g, '/');
                             doc = doc.substring(2);
@@ -1171,7 +1171,7 @@ export default
                         }
                     }
                     ).then(
-                        function(response)
+                        function()
                         {
                             var id = Cookies.get('document_id');
                             const i = last_documents.indexOf(id);
@@ -1464,13 +1464,13 @@ export default
             if (r.currentRoute.value.path.substring(0, 8) == '/library') //save the current library document as a new user document
             {
                 var route = r.currentRoute.value;
-                var doc = route.params.language + "/";
+                var doc = route.params.language + '/';
                 if (typeof route.params.dir1 !== 'undefined')
-                    doc += route.params.dir1 + "/";
+                    doc += route.params.dir1 + '/';
                 if (typeof route.params.dir2 !== 'undefined')
-                    doc += route.params.dir2 + "/";
+                    doc += route.params.dir2 + '/';
                 if (typeof route.params.dir3 !== 'undefined')
-                    doc += route.params.dir3 + "/";
+                    doc += route.params.dir3 + '/';
                 doc += route.params.filename;
                 doc = doc.replaceAll(/\\/g, '/');
                 doc = doc.substring(2);

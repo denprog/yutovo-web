@@ -22,8 +22,6 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import { api } from 'boot/boot'
-import { computed } from 'vue';
 import { useI18n } from 'vue-i18n'
 
 export default {
@@ -70,7 +68,7 @@ export default {
         }
     },
 
-    setup(text_val)
+    setup()
     {
         const linkDialog = ref(null);
         const tr = useI18n();

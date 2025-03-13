@@ -399,7 +399,7 @@ export default
                         }
                     }
                     ).then(
-                        function(response)
+                        function()
                         {
                             window.dispatchEvent(new CustomEvent('updateLanguage', 
                                 {

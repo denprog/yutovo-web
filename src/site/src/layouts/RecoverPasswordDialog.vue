@@ -44,7 +44,6 @@ import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 export default
@@ -71,7 +70,6 @@ export default
         const emailCode = ref('');
         const emailCodeRef = ref(null);
         const emailCodeSent = ref(false);
-        const router = useRouter();
         const tr = useI18n();
         const store = useStore();
 
@@ -140,7 +138,7 @@ export default
                     recover: true
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         emailCodeSent.value = true;
                     }
@@ -167,7 +165,7 @@ export default
                     email_code: emailCode.value
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         recoverPasswordDialog.value.hide();
                     }

@@ -63,7 +63,7 @@ export default {
                     }
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         window.dispatchEvent(new CustomEvent('updateDocumentName', {detail: {document_id: Cookies.get('document_id')}}));
                         window.dispatchEvent(new CustomEvent('listDocuments', {}));

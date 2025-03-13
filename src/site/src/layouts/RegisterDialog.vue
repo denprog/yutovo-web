@@ -156,7 +156,7 @@ export default {
                     captcha: captcha.value
                 }
                 ).then(
-                    function(response)
+                    function()
                     {
                         emailCodeSent.value = true;
                     }

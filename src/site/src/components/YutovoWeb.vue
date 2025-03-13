@@ -1110,7 +1110,8 @@ export default
         {
             if (this.store.state.login.login == '')
             {
-                Module.cwrap('OnNew', 'void', [])(); //for unregisted use just reset the document
+                Module.cwrap('OnNew', 'void', [])(); //for unregisted just reset the document
+                this.store.commit('editor/setDocumentName', '');
                 canvas.focus();
                 return;
             }

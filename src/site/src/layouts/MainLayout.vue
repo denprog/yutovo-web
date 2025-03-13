@@ -104,7 +104,7 @@ export default
 
     mounted()
     {
-        if (!this.$q.cookies.has('app_initialized'))
+        if (!this.$q.cookies.has('app_initialized') || !this.$q.cookies.has('language'))
         {
             this.locale = navigator.language.startsWith('ru') ? 'ru' : 'en';
             const store = useStore();

@@ -1777,7 +1777,6 @@ export default
                             var n = response.data.name;
                             var doc = s.state.editor.language + n;
                             doc = '/library/' + doc.replaceAll(/\\/g, '/');
-                            console.log('doc ', doc);
                             r.push({ path: doc });
                             s.commit('editor/setDocumentName', n);
                             if (n.slice(-4) == '.yut')

@@ -6,7 +6,7 @@ export default {
         That’s because it uses conventional graphical mathematics syntax instead of string one.\
         Because Yutovo is an all-in-one solution to everything from everyday arithmetic to engineering solving.<br/><br/>\
         Technologies and libraries used: WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, Quasar, jwt-cpp, spdlog, rapidjson.<br/><br/>',
-    support: 'Support: e-mail: <a href="mailto:support{\'@\'}yutovo.com">support{\'@\'}yutovo.com</a>, \
+    support: 'Support: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
         Telegram: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.',
 
     cookies_use: 'This website uses cookies for normal functioning.',
@@ -41,7 +41,7 @@ export default {
         We may use personal information for security purposes to protect users and the website. We may use information as otherwise permitted by law.<br/>\
         4. User rights over his data<br/>\
         You can request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, \
-        legal, or security purposes. You can send your request for data deletion at: <a href="mailto:support{\'@\'}yutovo.com">support{\'@\'}yutovo.com</a>.<br/>\
+        legal, or security purposes. You can send your request for data deletion at: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>.<br/>\
         5. Disclamer<br/>\
         You assume all responsibility and risk with respect to your use of the website, which is provided “as is” without warranties, \
         representations or conditions of any kind, either express or implied, with regard to information accessed from or via the website, \

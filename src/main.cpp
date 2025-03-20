@@ -21,7 +21,7 @@ yutovo::Point left_click_pos;
 std::u32string clipboard_json, clipboard_text;
 std::string clipboard_image;
 
-std::u32string save_json;
+std::string save_json;
 
 std::string user_settings = "{}";
 
@@ -115,7 +115,7 @@ EM_JS(void, SaveDocument, (const char* json, size_t json_size),
             {
                 'detail': 
                 {
-                    'json': UTF8ToString(json, json_size)
+                    'gzip': new Uint8Array(Module['HEAPU8'].buffer, json, json_size)
                 }
             }));
     });
@@ -349,8 +349,7 @@ void MainLoop(void* arg)
 
     if (window->save_ready)
     {
-        std::string s = yutovo::ToBasicString(save_json);
-        SaveDocument(s.c_str(), s.size());
+        SaveDocument(save_json.c_str(), save_json.size());
         window->save_ready = false;
     }
 
@@ -565,15 +564,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document_id)
 {
     if (document)
-        document->LoadJson(yutovo::ToUtfString(std::string(json)), document_id);
+        document->LoadJson(std::string(json), document_id);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSave(const int document_id)
 {
     if (document)
     {
-        save_json = U"";
-        document->SaveJson(save_json, document_id);
+        save_json = "";
+        document->SaveJson(save_json, document_id, true);
     }
 }
 
@@ -1158,7 +1157,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLibraryFilePart(const char* part_file, co
     file += part_file;
     if (finish)
     {
-        auto _s = yutovo::ToUtfString(file);
+        auto _s = std::string(file);
         file = "";
         document->LoadJson(_s, document_id);
     }

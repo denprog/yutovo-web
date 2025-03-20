@@ -1439,16 +1439,20 @@ export default
                 if (filename == '' || typeof filename == 'undefined')
                     return;
 
-                const blob = new Blob([event.detail.json], {type: 'text/csv'});
+                if (filename.slice(-4) != '.yut')
+                    filename += '.yut';
+                console.log(event.detail);
+                let arr = Uint8Array.from(event.detail.gzip);
+                const blob = new Blob([arr], {type: 'application/octet-stream'});
                 if (window.navigator.msSaveOrOpenBlob)
                 {
-                    window.navigator.msSaveBlob(blob, filename + '.yut');
+                    window.navigator.msSaveBlob(blob, filename);
                 }
                 else
                 {
                     const elem = window.document.createElement('a');
                     elem.href = window.URL.createObjectURL(blob);
-                    elem.download = filename + '.yut';
+                    elem.download = filename;
                     document.body.appendChild(elem);
                     elem.click();        
                     document.body.removeChild(elem);

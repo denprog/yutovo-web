@@ -477,6 +477,7 @@ import RenameDialog from 'layouts/RenameDialog.vue';
 import ConfigDialog from  'layouts/ConfigDialog.vue';
 import SetUnitDialog from  'layouts/SetUnitDialog.vue';
 import LinkDialog from 'layouts/LinkDialog.vue';
+import pako from 'pako';
 
 export default
 {
@@ -602,17 +603,37 @@ export default
                 reader.onload = function() {
                     if (yutovo_file_model.value)
                     {
-                        window.dispatchEvent(new CustomEvent('newDocument', 
-                            {
-                                detail:
+                        var arr = new Uint8Array(reader.result);
+                        try
+                        {
+                            //try to open as compressed
+                            const output = pako.ungzip(arr);
+                            var str = new TextDecoder().decode(output);
+                            window.dispatchEvent(new CustomEvent('newDocument', 
                                 {
-                                    name: yutovo_file_model.value.name,
-                                    json: reader.result
-                                }
-                            }));
+                                    detail:
+                                    {
+                                        name: yutovo_file_model.value.name,
+                                        json: str
+                                    }
+                                }));
+                        }
+                        catch (err)
+                        {
+                            //try to open as decompressed
+                            const text = new TextDecoder().decode(reader.result);
+                            window.dispatchEvent(new CustomEvent('newDocument', 
+                                {
+                                    detail:
+                                    {
+                                        name: yutovo_file_model.value.name,
+                                        json: text
+                                    }
+                                }));
+                        }
                     }
                 }
-                reader.readAsText(yutovo_file_model.value);
+                reader.readAsArrayBuffer(yutovo_file_model.value);
             },
 
             last_documents: [],

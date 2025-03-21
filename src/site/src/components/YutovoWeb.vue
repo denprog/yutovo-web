@@ -1163,7 +1163,7 @@ export default
         {
             console.log('onDownload');
             this.downloading = true;
-            Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
+            Module.cwrap('OnDownload', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
             canvas.focus();
         },
 
@@ -1462,8 +1462,7 @@ export default
 
                 if (filename.slice(-4) != '.yut')
                     filename += '.yut';
-                console.log(event.detail);
-                let arr = Uint8Array.from(event.detail.gzip);
+                let arr = Uint8Array.from(event.detail.json);
                 const blob = new Blob([arr], {type: 'application/octet-stream'});
                 if (window.navigator.msSaveOrOpenBlob)
                 {
@@ -1483,7 +1482,8 @@ export default
                 return;
             }
 
-            var json = JSON.parse(event.detail.json);
+            let arr = Uint8Array.from(event.detail.json);
+            var json = JSON.parse(new TextDecoder().decode(arr));
             var r = this.router;
             var t = this.$t;
             if (r.currentRoute.value.path.substring(0, 8) == '/library') //save the current library document as a new user document

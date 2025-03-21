@@ -115,7 +115,7 @@ EM_JS(void, SaveDocument, (const char* json, size_t json_size),
             {
                 'detail': 
                 {
-                    'gzip': new Uint8Array(Module['HEAPU8'].buffer, json, json_size)
+                    'json': new Uint8Array(Module['HEAPU8'].buffer, json, json_size)
                 }
             }));
     });
@@ -568,6 +568,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSave(const int document_id)
+{
+    if (document)
+    {
+        save_json = "";
+        document->SaveJson(save_json, document_id, false);
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDownload(const int document_id)
 {
     if (document)
     {

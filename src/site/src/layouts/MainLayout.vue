@@ -109,6 +109,7 @@ export default
             this.locale = navigator.language.startsWith('ru') ? 'ru' : 'en';
             const store = useStore();
             store.commit('editor/setLanguage', this.locale);
+            Cookies.set('language', this.locale == 'ru' ? 'ru_RU' : 'en_EN', {path: '/', expires: '1y'});
             this.$q.notify(
                 {
                     message: this.$t('cookies_use'),

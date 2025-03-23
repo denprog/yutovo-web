@@ -236,7 +236,7 @@ export default {
         В отличии от других программ, Ютово делает вычисления так же, как вы их делаете на бумаге.\
         Это потому, что используется общепринятый математический синтакс, а не строковый.\
         Ютово - это решение для широкого круга арифметических, инженерных и других задач.<br/><br/>\
-        Использованные технологии и библиотеки: WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, Quasar, jwt-cpp, spdlog, rapidjson.<br/><br/>',
+        Использованные технологии и библиотеки: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Quasar, jwt-cpp, spdlog, rapidjson.<br/><br/>',
     support: 'Поддержка: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
         Телеграм: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.',
 

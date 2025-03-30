@@ -81,7 +81,7 @@
         construct: "Metrika2",
         callbackPostfix: "2",
         version: "4ivl6rytpn3xrexc8771w4v85yhn",
-        host: "yutovo.ru/cors/mc.yandex.ru"
+        host: window.location.host + "/cors/mc.yandex.ru"
     };
 
     function oa(a, b) {

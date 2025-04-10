@@ -157,6 +157,8 @@ export default
                     {
                         meta:
                         {
+                            title: { name: 'title', content: 'Ютово калькулятор' },
+                            description: { name: 'description', content: 'Удобный графический (как на бумаге) калькулятор в текстовом редакторе' },
                             keywords: { name: 'keywords', content: 'калькулятор, математика, физика, вычисления, расчеты, арифметика' }
                         }
                     })
@@ -167,6 +169,8 @@ export default
                     {
                         meta:
                         {
+                            title: { name: 'title', content: 'Yutovo calculator' },
+                            description: { name: 'description', content: 'Convenient graphical (as on paper) calculator in a text editor', },
                             keywords: { name: 'keywords', content: 'calculator, mathematics, physics, calculations, solvings, arithmetics' }
                         }
                     })

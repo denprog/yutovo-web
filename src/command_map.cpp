@@ -52,6 +52,9 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(DOM_VK_BACK_SPACE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document.get(), true, true)));
     Add(KeySequence(DOM_VK_RETURN), "", std::function<void ()>(std::bind(&Document::InsertParagraph, document.get(), true)));
 
+    Add(KeySequence(DOM_VK_TAB), "", std::function<void ()>(std::bind(static_cast<uint(Document::*)(const std::u32string&, bool)>(&Document::InsertString), 
+        document.get(), U"	", true)));
+
     Add(KeySequence(DOM_VK_Z, true, false, false), "", std::function<void ()>(std::bind(&Document::Undo, document.get())));
     Add(KeySequence(DOM_VK_Y, true, false, false), "", std::function<void ()>(std::bind(&Document::Redo, document.get())));
 

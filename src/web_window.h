@@ -77,6 +77,8 @@ public:
 
     virtual void OnLinkClicked(const ElementId& id, const std::u32string& url);
 
+    virtual void OnSolverAction(const std::string& json);
+
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
@@ -110,6 +112,7 @@ public:
     std::atomic_bool update_identifiers{false};
     std::atomic_bool identifiers_ready{false};
     std::atomic_bool link_ready{false};
+    std::atomic_bool solver_action_ready{false};
 
     SDL_Renderer* renderer = nullptr;
 
@@ -121,6 +124,9 @@ public:
     std::string identifers_json;
 
     std::string link_clicked;
+
+    std::mutex solver_actions_mutex;
+    std::queue<std::string> solver_actions;
 
 private:
     friend struct DrawTextTask;

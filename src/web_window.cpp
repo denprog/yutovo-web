@@ -312,6 +312,13 @@ void WebWindow::OnLinkClicked(const ElementId& id, const std::u32string& url)
     link_ready = true;
 }
 
+void WebWindow::OnSolverAction(const std::string& json)
+{
+    std::lock_guard<std::mutex> lock(solver_actions_mutex);
+    solver_actions.emplace(json);
+    solver_action_ready = true;
+}
+
 int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;

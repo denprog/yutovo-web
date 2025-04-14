@@ -213,6 +213,17 @@ EM_JS(void, OpenLink, (const char* url, size_t url_size),
         }
     });
 
+EM_JS(void, SolverAction, (const char* json, size_t json_size),
+    {
+        window.dispatchEvent(new CustomEvent('solverAction', 
+            {
+                'detail': 
+                {
+                    'json': json == 0 ? "" : UTF8ToString(json, json_size)
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
@@ -408,6 +419,18 @@ void MainLoop(void* arg)
         std::string url;
         window->GetClickedLink(url);
         OpenLink(url.c_str(), url.size());
+    }
+
+    if (window->solver_action_ready)
+    {
+        std::lock_guard<std::mutex> lock(window->solver_actions_mutex);
+        window->solver_action_ready = false;
+        while (!window->solver_actions.empty())
+        {
+            auto json = window->solver_actions.front();
+            SolverAction(json.c_str(), json.size());
+            window->solver_actions.pop();
+        }
     }
 }
 

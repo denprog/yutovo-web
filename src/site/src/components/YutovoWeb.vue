@@ -501,6 +501,7 @@ export default
             window.addEventListener('loadResult', this.loadResult, false);
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
             window.addEventListener('translateString', this.translateString, false);
+            window.addEventListener('solverAction', this.solverAction, false);
         }
         else
         {
@@ -518,6 +519,7 @@ export default
             window.attachEvent('loadResult', this.loadResult);
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
             window.attachEvent('translateString', this.translateString);
+            window.attachEvent('solverAction', this.solverAction);
         }
     },
 
@@ -1832,6 +1834,19 @@ export default
                     {
                         s.commit('editor/setDocumentName', response.data.name);
                     }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                    }
+                );
+        },
+
+        async solverAction(event)
+        {
+            api.post('/service/solver-action', JSON.parse(event.detail.json),
+                {
+                }
                 ).catch(
                     function(response)
                     {

@@ -964,7 +964,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void StopCastUnits()
     stop_cast_units_thread = true;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnCode()
+extern "C" EMSCRIPTEN_KEEPALIVE void OnInsertCalculator()
 {
     if (!document)
         return;

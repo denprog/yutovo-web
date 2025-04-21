@@ -51,8 +51,8 @@
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paste') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
-            <q-btn size="14px" id="code-button" square dense @click="onCode();" icon="img:/images/format/code.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert code') }}</q-tooltip>
+            <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert calculator') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
@@ -961,9 +961,9 @@ export default
             document.title = this.$t('Yutovo');
         },
 
-        onCode()
+        onInsertCalculator()
         {
-            Module.cwrap('OnCode', 'void', [])();
+            Module.cwrap('OnInsertCalculator', 'void', [])();
             canvas.focus();
         },
 

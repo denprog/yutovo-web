@@ -109,7 +109,7 @@ def writeText(driver, text):
     c.send_keys(text)
 
 def insertCode(driver):
-    c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'code-button')))
+    c = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'insert-calculator-button')))
     c.click()
 
 def clickIdentifier(driver, category):

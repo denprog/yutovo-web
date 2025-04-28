@@ -48,6 +48,14 @@ export default [
             {
                 path: ':dir1/:dir2/:dir3/:filename',
                 component: IndexPage,
+            },
+            {
+                path: ':dir1/:dir2/:dir3/:dir4/:filename',
+                component: IndexPage,
+            },
+            {
+                path: ':dir1/:dir2/:dir3/:dir4/:dir5/:filename',
+                component: IndexPage,
             }
         ]
     },

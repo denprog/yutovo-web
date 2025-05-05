@@ -6,7 +6,7 @@
                 <q-color v-model="colorModel" square/>
                 <div class="q-pa-md q-gutter-sm">
                     <q-btn unelevated class="bg-primary text-white" label="OK" @click="onOKClick" />
-                    <q-btn unelevated class="text-blue" label="Cancel" @click="onCancelClick" />                        
+                    <q-btn unelevated class="text-blue" v-bind:label="$t('Cancel')" @click="onCancelClick" />                        
                 </div>
             </q-card-section>
         </q-card>

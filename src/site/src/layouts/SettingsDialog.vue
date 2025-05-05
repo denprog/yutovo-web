@@ -4,10 +4,10 @@
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
-                    <div class="text-blue text-h5">Settings</div>
+                    <div class="text-blue text-h5">{{ $t('Settings') }}</div>
 
                     <q-tabs v-model="settingsTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
-                        <q-tab name="colors" label="Colors" />
+                        <q-tab name="colors" v-bind:label="$t('Colors')" />
                     </q-tabs>
 
                     <q-separator />
@@ -15,31 +15,31 @@
                     <q-tab-panels v-model="settingsTab">
                         <q-tab-panel name="colors">
                             <q-card>
-                                <div>Code block frame
+                                <div>{{ $t('Calculator block frame') }}
                                     <q-btn :style="{ 'background-color': codeBlockColor }" @click='onCodeBlockColor();'></q-btn>
                                 </div>
-                                <div>Numbers
+                                <div>{{ $t('Numbers') }}
                                     <q-btn :style="{ 'background-color': numbersColor }" @click='onNumbersColor();'></q-btn>
                                 </div>
-                                <div>Variables color
+                                <div>{{ $t('Variables') }}
                                     <q-btn :style="{ 'background-color': variablesColor }" @click='onVariablesColor();'></q-btn>
                                 </div>
-                                <div>Functions color
+                                <div>{{ $t('Functions') }}
                                     <q-btn :style="{ 'background-color': functionsColor }" @click='onFunctionsColor();'></q-btn>
                                 </div>
-                                <div>Units color
+                                <div>{{ $t('Units') }}
                                     <q-btn :style="{ 'background-color': unitsColor }" @click='onUnitsColor();'></q-btn>
                                 </div>
-                                <div>Shapes color
+                                <div>{{ $t('Shapes') }}
                                     <q-btn :style="{ 'background-color': shapesColor }" @click='onShapesColor();'></q-btn>
                                 </div>
-                                <div>Error marks color
+                                <div>{{ $t('Error marks') }}
                                     <q-btn :style="{ 'background-color': errorMarksColor }" @click='onErrorMarksColor();'></q-btn>
                                 </div>
-                                <div>Formula background color
+                                <div>{{ $t('Formula background') }}
                                     <q-btn :style="{ 'background-color': formulaBgColor }" @click='onFormulaBgColor();'></q-btn>
                                 </div>
-                                <div>Background selection color
+                                <div>{{ $t('Background selection') }}
                                     <q-btn :style="{ 'background-color': bgSelectionColor }" @click='onBgSelectionColor();'></q-btn>
                                 </div>
                             </q-card>
@@ -51,7 +51,7 @@
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
-                            <q-btn unelevated class="text-blue" type="reset" label="Cancel" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>
                 </q-card-section>

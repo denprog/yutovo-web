@@ -5,12 +5,12 @@
             <q-card square bordered class="q-sm">
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
-                        <div class="text-blue text-h5">Link</div>
-                        <q-input ref="textRef" square v-model="text" lazy-rules :rules="[this.required]" id="text" label="Text" />
-                        <q-input ref="urlRef" square v-model="url" lazy-rules :rules="[this.required]" id="url" label="Url" />
+                        <div class="text-blue text-h5">{{ $t('Link') }}</div>
+                        <q-input ref="textRef" square v-model="text" lazy-rules :rules="[this.required]" id="text" v-bind:label="$t('Text')" />
+                        <q-input ref="urlRef" square v-model="url" lazy-rules :rules="[this.required]" id="url" v-bind:label="$t('Url')" />
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
-                            <q-btn unelevated class="text-blue" type="reset" label="Cancel" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>
                 </q-card-section>

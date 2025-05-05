@@ -225,6 +225,17 @@ export default {
 
     'new e-mail': 'новая почта',
 
+    'Text' : 'Текст',
+    'Url': 'Адрес',
+
+    'Colors' : 'Цвета',
+    'Calculator block frame': 'Рамка блока калькулятора',
+    'Numbers': 'Числа',
+    'Shapes': 'Графические элементы',
+    'Error marks': 'Отметки ошибок',
+    'Formula background': 'Фон формул',
+    'Background selection': 'Фон выделения',
+
     email_email_message: 'Запрос смены почты с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
 
     'Password recovery code': 'Код восстановления пароля',

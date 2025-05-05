@@ -1504,6 +1504,7 @@ export default
                 api.post('/service/save-library-document', 
                     {
                         document: doc,
+                        json: JSON.stringify(json),
                         language: route.params.language
                     },
                     {

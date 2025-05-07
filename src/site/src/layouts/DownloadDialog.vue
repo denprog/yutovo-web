@@ -13,9 +13,17 @@
                                     <th></th>
                                 </tr>
                                 <tr>
-                                    <td>Ubuntu 22.04 amd64</td>
+                                    <td>Ubuntu 24</td>
                                     <td class="q-pl-md">
-                                        <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" @click="onDownloadUbuntu22_04();">{{ $t('Download') }}</q-btn>
+                                        <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
+                                            @click="onDownload('yutovo-desktop_1.0.2-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Windows 10</td>
+                                    <td class="q-pl-md">
+                                        <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
+                                            @click="onDownload('yutovo-desktop_1.0.2-1_win10_amd64.exe');">{{ $t('Download') }}</q-btn>
                                     </td>
                                 </tr>
                             </table>
@@ -48,12 +56,10 @@ export default
             downloadDialog.value.hide();
         };
 
-        const onDownloadUbuntu22_04 = () =>
+        const onDownload = (filename) =>
         {
-            console.log('onDownloadUbuntu22_04()');
             var d = downloadDialog;
-
-            api.get('/downloads/yutovo-desktop_1.0.1-1_amd64.deb', 
+            api.get('/downloads/' + filename, 
                 {
                     responseType: 'blob'
                 }
@@ -63,7 +69,7 @@ export default
                         const href = URL.createObjectURL(response.data);
                         const link = document.createElement('a');
                         link.href = href;
-                        link.setAttribute('download', 'yutovo-desktop_1.0.1-1_amd64.deb');
+                        link.setAttribute('download', filename);
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -76,7 +82,7 @@ export default
         return {
             downloadDialog,
             onSubmit,
-            onDownloadUbuntu22_04
+            onDownload
         }
     }
 }

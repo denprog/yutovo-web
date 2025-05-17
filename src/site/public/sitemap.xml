@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
       <loc>https://yutovo.ru/</loc>
-      <lastmod>2025-03-27T09:45:29+00:00</lastmod>
+      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
+    </url>
+    <url>
+      <loc>http://yutovo.ru/downloads/yutovo-desktop_1.0.2-1_win10_amd64.exe</loc>
+      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
+    </url>
+    <url>
+      <loc>http://yutovo.ru/downloads/yutovo-desktop_1.0.2-1_ubuntu24_amd64.deb</loc>
+      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
     </url>
 </urlset>

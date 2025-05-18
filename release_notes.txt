@@ -1,0 +1,36 @@
+1.0.3 - 07.05.2025
+-----
+
+Features
+- Adding of meta tags.
+- Printing tabs.
+- Sending Solver actions for logs.
+- Saving of an edited library document.
+
+Bug fixes
+- Fix of long paths.
+
+Others
+- Adding translations.
+
+
+
+1.0.2 - 03.04.2025
+-----
+
+Features
+- Using current host for ru and com.
+
+Bug fixes
+- Fix of icons.
+
+Others
+- Remove Yandex Metrica.
+
+
+
+1.0.1 - 26.03.2025
+-----
+
+Features
+- Init version.

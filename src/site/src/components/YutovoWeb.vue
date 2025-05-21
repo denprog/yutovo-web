@@ -958,7 +958,7 @@ export default
             button = document.getElementById('justify-align-button');
             button.disabled = event.detail.code_block;
 
-            document.title = this.$t('Yutovo');
+            document.title = this.$t('Yutovo - visual online calculator');
         },
 
         onInsertCalculator()

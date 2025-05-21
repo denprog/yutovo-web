@@ -2,6 +2,8 @@ export default {
     yutovo_caption: 'Ютово',
     Yutovo: 'Ютово',
 
+    'Yutovo - visual online calculator': 'Ютово - наглядный онлайн калькулятор',
+
     'Ok': 'Ok',
     'Unknown command': 'Неизвестная команда',
     'Json error': 'Ошибка JSON',

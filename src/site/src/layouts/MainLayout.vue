@@ -388,7 +388,7 @@ export default
         onLanguage()
         {
             this.store.commit('editor/setLanguage', this.locale);
-            document.title = this.$t('Yutovo');
+            document.title = this.$t('Yutovo - visual online calculator');
             Cookies.set('language', this.locale == 'ru' ? 'ru_RU' : 'en_EN', {path: '/', expires: '1y'});
 
             if (this.store.state.login.login != '')

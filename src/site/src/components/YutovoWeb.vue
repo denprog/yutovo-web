@@ -759,6 +759,12 @@ export default
 
                         Cookies.set('app_initialized', true, {path: '/', expires: '30d'});
 
+                        if (Cookies.has('language'))
+                        {
+                            //update the expire date
+                            Cookies.set('language', Cookies.get('language'), {path: '/', expires: '30d'});
+                        }
+
                         if (Cookies.has('refresh_token'))
                         {
                             //auto-login

@@ -16,14 +16,14 @@
                                     <td>Ubuntu 24</td>
                                     <td class="q-pl-md">
                                         <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.0.2-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
+                                            @click="onDownload('yutovo-desktop_1.0.3-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Windows 10</td>
                                     <td class="q-pl-md">
                                         <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.0.2-1_win10_amd64.exe');">{{ $t('Download') }}</q-btn>
+                                            @click="onDownload('yutovo-desktop_1.0.3-1_win10_amd64.exe');">{{ $t('Download') }}</q-btn>
                                     </td>
                                 </tr>
                             </table>

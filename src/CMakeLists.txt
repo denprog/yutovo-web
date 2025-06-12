@@ -125,9 +125,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/yutovo_web.wasm ${CMAKE_CURRENT_SOURCE_DIR}/site/public
 )
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/yutovo_web.worker.js ${CMAKE_CURRENT_SOURCE_DIR}/site/public
-)
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/site/public/fonts ${CMAKE_CURRENT_BINARY_DIR}/fonts/
 )

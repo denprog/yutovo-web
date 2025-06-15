@@ -85,6 +85,14 @@
                 icon="img:/images/format/strikethrough.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Strikethrough') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" id="subscript-button" square dense :color="subscript_button_color" @click="onTextSubscript();" 
+                icon="img:/images/format/subscript.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Subscript') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" id="superscript-button" square dense :color="superscript_button_color" @click="onTextSuperscript();" 
+                icon="img:/images/format/superscript.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Superscript') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" id="text-color-button" square dense @click="onTextColor();" icon="img:/images/format/text_color.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text color') }}</q-tooltip>
             </q-btn>
@@ -822,6 +830,8 @@ export default
             italic_button_color: 'white',
             underline_button_color: 'white',
             strikethrough_button_color: 'white',
+            subscript_button_color: 'white',
+            superscript_button_color: 'white',
             text_color: '#000000',
             text_bg_color: '#ffffff',
             left_align_button_color: 'white',
@@ -875,6 +885,8 @@ export default
             this.italic_button_color = (event.detail.italic == 1 ? 'blue' : 'white');
             this.underline_button_color = (event.detail.underline == 1 ? 'blue' : 'white');
             this.strikethrough_button_color = (event.detail.strikethrough == 1 ? 'blue' : 'white');
+            this.subscript_button_color = (event.detail.subscript == 1 ? 'blue' : 'white');
+            this.superscript_button_color = (event.detail.superscript == 1 ? 'blue' : 'white');
             this.text_color = event.detail.text_color;
             this.text_bg_color = event.detail.text_bg_color;
             this.left_align_button_color = (event.detail.left_align == 1 && !event.detail.code_block ? 'blue' : 'white');
@@ -939,6 +951,12 @@ export default
 
             button = document.getElementById('strikethrough-button');
             button.disabled = (event.detail.strikethrough < 0);
+
+            button = document.getElementById('subscript-button');
+            button.disabled = (event.detail.subscript < 0);
+
+            button = document.getElementById('superscript-button');
+            button.disabled = (event.detail.superscript < 0);
 
             button = document.getElementById('text-color-button');
             button.disabled = (this.text_color == '');
@@ -1034,6 +1052,32 @@ export default
             else
                 this.strikethrough_button_color = 'blue';
             Module.cwrap('OnStrikethrough', 'void', [])(this.strikethrough_button_color == 'blue');
+            canvas.focus();
+        },
+
+        onTextSubscript()
+        {
+            if (this.subscript_button_color == 'blue')
+                this.subscript_button_color = 'white';
+            else
+            {
+                this.subscript_button_color = 'blue';
+                this.superscript_button_color = 'white';
+            }
+            Module.cwrap('OnTextSubscript', 'void', [])(this.subscript_button_color == 'blue');
+            canvas.focus();
+        },
+
+        onTextSuperscript()
+        {
+            if (this.superscript_button_color == 'blue')
+                this.superscript_button_color = 'white';
+            else
+            {
+                this.superscript_button_color = 'blue';
+                this.subscript_button_color = 'white';
+            }
+            Module.cwrap('OnTextSuperscript', 'void', [])(this.superscript_button_color == 'blue');
             canvas.focus();
         },
 

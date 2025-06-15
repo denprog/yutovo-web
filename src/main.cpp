@@ -61,7 +61,7 @@ EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value)
     });
 
 EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
-    unsigned int font_size, int bold, int italic, int underline, int strikethrough, const char* text_color, size_t text_color_size, 
+    unsigned int font_size, int bold, int italic, int underline, int strikethrough, int subscript, int superscript, const char* text_color, size_t text_color_size, 
     const char* text_bg_color, size_t text_bg_color_size, int left_align, int center_align, int right_align, int justify_align, int code_block),
     {
         window.dispatchEvent(new CustomEvent('setStandardToolbar', 
@@ -75,6 +75,8 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'italic': italic, 
                     'underline': underline,
                     'strikethrough': strikethrough,
+                    'subscript': subscript,
+                    'superscript': superscript,
                     'text_color': UTF8ToString(text_color, text_color_size),
                     'text_bg_color': UTF8ToString(text_bg_color, text_bg_color_size),
                     'left_align': left_align,
@@ -267,7 +269,7 @@ void MainLoop(void* arg)
             format.Reset();
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block);
+                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block);
         }
         else if (document->GetStringFormat(_id, format))
         {
@@ -296,8 +298,8 @@ void MainLoop(void* arg)
             }
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, format.bold, format.italic, format.underline, format.strikethrough, text_color.c_str(), text_color.size(), 
-                text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left, 
+                format.size, format.bold, format.italic, format.underline, format.strikethrough, format.subscript, format.superscript, text_color.c_str(), 
+                text_color.size(), text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left, 
                 paragraph_format.alignment == ParagraphFormat::Alignment::Center, paragraph_format.alignment == ParagraphFormat::Alignment::Right, 
                 paragraph_format.alignment == ParagraphFormat::Alignment::Justify, code_block);
         }
@@ -1132,6 +1134,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnStrikethrough(int checked)
     if (!document)
         return;
     document->SetStrikethrough(checked);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTextSubscript(int checked)
+{
+    if (!document)
+        return;
+    document->SetSubscript(checked);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnTextSuperscript(int checked)
+{
+    if (!document)
+        return;
+    document->SetSuperscript(checked);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTextColor(const char* color)

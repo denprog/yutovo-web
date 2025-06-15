@@ -176,7 +176,12 @@ int WebWindow::GetFontAscent(const StringFormatPtr format)
     TTF_Font* font = fonts.Get(format);
     if (!font)
         return 0;
-    return TTF_FontAscent(font);
+    int r = TTF_FontAscent(font);
+    if (format->subscript)
+        r -= format->size / 3;
+    else if (format->superscript)
+        r = format->size + format->size / 3;
+    return r;
 }
 
 Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture)
@@ -508,7 +513,7 @@ int WebWindow::GetCachedSize(const char32_t symbol, const int height, const std:
     std::string str = boost::locale::conv::utf_to_utf<char>(std::u32string(1, symbol));
     baseline = 0;
     std::vector<SymbolSize>& v = s_it->second;
-    StringFormatPtr format(new StringFormat(family_name, font_size, false, false, false, false, Color::Black(), Color::White(), Color::Blue()));
+    StringFormatPtr format(new StringFormat(family_name, font_size, false, false, false, false, false, false, Color::Black(), Color::White(), Color::Blue()));
     while (s.height < height)
     {
         auto v_it = std::find_if(v.begin(), v.end(), 

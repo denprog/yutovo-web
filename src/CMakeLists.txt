@@ -103,6 +103,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     ${INSTALL_PATH}/wasm/libmpfr.a
     ${INSTALL_PATH}/wasm/libgmp.a
     ${INSTALL_PATH}/wasm/libboost_iostreams.a
+    ${INSTALL_PATH}/wasm/libpython3.14.a
     yutovo_editor
     yutovo_solver
     yutovo_logger

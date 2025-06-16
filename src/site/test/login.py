@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
@@ -14,7 +15,8 @@ class TestLogin(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)
         self.conn = utils.getDbConnection()
         utils.clearTestUser(self.conn)
@@ -28,13 +30,13 @@ class TestLogin(unittest.TestCase):
     def test_login1(self):
         time.sleep(1)
         utils.login(self.driver, 'test1', '11')
-        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'login_caption')))
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'login')))
         self.assertTrue(c.text == 'test1')
         utils.logout(self.driver)
         time.sleep(1)
         c1 = self.driver.get_cookie('document_id')
         self.assertTrue(c1 == None)
-        c = self.driver.find_elements(By.ID, 'login_caption')
+        c = self.driver.find_elements(By.ID, 'login')
         self.assertTrue(len(c) == 0)
 
     #login and logout two users

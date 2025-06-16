@@ -8,6 +8,7 @@ from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
@@ -27,12 +28,12 @@ class TestDocuments(unittest.TestCase):
         }
         opts.add_experimental_option('prefs', prefs)
 
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.delete_all_cookies()
         self.driver.get(address)
+        self.driver.add_cookie({'name' : 'app_initialized', 'value' : 'true', 'path' : '/'})
         time.sleep(6)
-        b = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
-        b.click()
     
     def tearDown(self):
         self.driver.quit()
@@ -50,6 +51,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
         c = self.driver.get_cookie('document_id')
         self.assertTrue(c != None)
+        time.sleep(1)
         self.assertTrue(utils.fileContains(self.conn, c['value'], "12345"))
         self.assertTrue(self.driver.current_url == address + '/document/' + c['value'])
         time.sleep(1)
@@ -193,7 +195,8 @@ class TestDocuments(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address + '/document/' + c['value'])
         time.sleep(4)
         self.assertTrue(utils.documentContains(self.driver, '12345'))
@@ -213,7 +216,8 @@ class TestDocuments(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)
         time.sleep(1)
         self.driver.add_cookie(c1)
@@ -411,7 +415,8 @@ class TestDocuments(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         time.sleep(1)
         self.driver.get(address + '/document/' + c['value'])
         self.driver.add_cookie(r)
@@ -427,7 +432,8 @@ class TestDocuments(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address + '/document/' + c['value'])
         time.sleep(4)
         self.assertTrue(utils.documentContains(self.driver, '12345555'))

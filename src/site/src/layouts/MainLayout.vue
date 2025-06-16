@@ -26,10 +26,10 @@
                         dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
 
                     <q-btn dense no-caps flat @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>
-                    <q-btn dense no-caps flat v-if="loginStr != ''" @click="showUserAccountDialog">{{ loginStr }}</q-btn>
+                    <q-btn id="login" dense no-caps flat v-if="loginStr != ''" @click="showUserAccountDialog">{{ loginStr }}</q-btn>
                     <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">{{ $t('Login') }}</q-btn>
-                    <q-btn dense no-caps flat v-if="loginState" @click="showRegisterDialog">{{ $t('Register') }}</q-btn>
-                    <q-btn dense no-caps flat v-if="logoutState" @click="logout">{{ $t('Logout') }}</q-btn>
+                    <q-btn id="register" dense no-caps flat v-if="loginState" @click="showRegisterDialog">{{ $t('Register') }}</q-btn>
+                    <q-btn id="logout" dense no-caps flat v-if="logoutState" @click="logout">{{ $t('Logout') }}</q-btn>
                     <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
                 </q-toolbar>
             </q-header>

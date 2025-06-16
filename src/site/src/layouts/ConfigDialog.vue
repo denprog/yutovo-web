@@ -1,5 +1,5 @@
 <template>
-<q-dialog ref="configDialog">
+<q-dialog ref="configDialog" id="config-dialog">
     <div class="column row justify-center items-center">
         <div class="row">
             <q-card square bordered class="q-sm">

@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
@@ -15,7 +16,8 @@ class TestLibrary(unittest.TestCase):
         opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.delete_all_cookies()
         self.driver.get(address)
         self.conn = utils.getDbConnection()
@@ -30,11 +32,12 @@ class TestLibrary(unittest.TestCase):
     #Load a library document and save as a user document
     def test_library1(self):
         utils.login(self.driver, 'test1', '11')
+        time.sleep(2)
         utils.clickLibrary(self.driver, 'Physics', 'Dynamics', 'Moment of force')
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
-        self.assertTrue(self.driver.current_url == address + '/library/en%5CPhysics%5CDynamics%5CMoment%20of%20force')
-        self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force')
+        self.assertTrue(self.driver.current_url == address + '/library/en/Physics/Dynamics/Moment%20of%20force.yut')
+        self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force.yut')
         utils.save(self.driver)
         time.sleep(2)
         utils.clickCategory(self.driver, 'Physics')

@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
@@ -16,7 +17,8 @@ class TestRegister(unittest.TestCase):
         opts = ChromeOptions()
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
-        self.driver = webdriver.Chrome(options = opts)
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)
         self.conn = utils.getDbConnection()
 

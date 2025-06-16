@@ -24,7 +24,7 @@
                         </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" type="submit" v-bind:label="$t('Login')" />
+                            <q-btn unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Login')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>

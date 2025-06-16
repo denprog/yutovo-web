@@ -20,6 +20,13 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>Flatpak</td>
+                                    <td class="q-pl-md">
+                                        <a class="q-pa-none" target="_blank" rel="noopener noreferrer" 
+                                            href="https://flathub.org/apps/com.yutovo.yutovo">{{ $t('Link') }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>Windows 10</td>
                                     <td class="q-pl-md">
                                         <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 

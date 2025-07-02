@@ -9,6 +9,7 @@
                     <q-tabs v-model="configTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
                         <q-tab name="result" v-bind:label="$t('Result')" />
                         <q-tab name="locale" v-bind:label="$t('Locale')" />
+                        <q-tab name="include_documents" v-bind:label="$t('Include documents')" />
                     </q-tabs>
 
                     <q-separator />
@@ -72,6 +73,66 @@
                             <q-select v-model="language" id="language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense 
                                 v-bind:label="$t('Language')" />
                         </q-tab-panel>
+
+                        <q-tab-panel name="include_documents">
+                            <div class="row items-center">
+                                <q-list bordered padding>
+                                    <q-item 
+                                        v-for="(item, index) in includesRef"
+                                        :key="index"
+                                        clickable
+                                        :active="selectedIndex === index"
+                                        active-class="bg-blue-2"
+                                        @click="selectItem(index)"
+                                        >
+                                        <q-item-section>
+                                            <q-input
+                                                ref="inputRef"
+                                                v-model="editValue"
+                                                dense
+                                                v-show="editIndex === index"
+                                                @keyup.enter="() => saveEditDeferred(index)"
+                                                @keyup.esc="cancelEdit"
+                                                />
+                                            <q-item-label
+                                                v-show="editIndex !== index"
+                                                @dblclick="startEdit(index)"
+                                                class="cursor-pointer"
+                                                >
+                                                {{ item }}
+                                            </q-item-label>                                        
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item>
+                                        <q-item-section>
+                                            <q-input
+                                                v-model="newItem"
+                                                v-bind:placeholder="$t('Add...')"
+                                                dense
+                                                @keyup.enter="addItem"
+                                                @blur="addItem"
+                                                />
+                                        </q-item-section>
+                                    </q-item>                                
+                                </q-list>
+
+                                <div class="q-ml-md flex column justify-center items-center">
+                                    <q-btn
+                                        icon="arrow_upward"
+                                        flat dense round
+                                        @click="moveSelectedUp"
+                                        :disable="selectedIndex === null || selectedIndex === 0"
+                                        class="q-mb-sm"
+                                        />
+                                    <q-btn
+                                        icon="arrow_downward"
+                                        flat dense round
+                                        @click="moveSelectedDown"
+                                        :disable="selectedIndex === null || selectedIndex === includesRef.length - 1"
+                                        />
+                                </div>
+                            </div>
+                        </q-tab-panel>
                     </q-tab-panels>
 
                     <q-separator />
@@ -90,7 +151,7 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 
@@ -104,6 +165,86 @@ export default
         const store = useStore();
         const tr = useI18n();
         const resultTab = ref('real');
+
+        const editIndex = ref(null);
+        const editValue = ref('');
+        const originalValue = ref('');
+        const newItem = ref('');
+        const selectedIndex = ref(null);
+        const inputRef = ref(null);
+
+        const includesRef = ref([]);
+        const includes = store.state.editor.config.include_documents === 'undefined' ? null : store.state.editor.config.include_documents;
+        if (includes != null)
+        {
+            for (var i = 0; i < includes.length; ++i)
+                includesRef.value.push(includes[i].file_name);
+        }
+
+        const selectItem = (index) => {
+            selectedIndex.value = index
+        }
+
+        const startEdit = (index) => {
+            editIndex.value = index;
+            editValue.value = includesRef.value[index];
+            originalValue.value = includesRef.value[index];
+            selectedIndex.value = index;
+        }
+
+        const saveEdit = async (index) => {
+            const trimmed = editValue.value.trim();
+            editIndex.value = null;
+            await nextTick();
+
+            if (trimmed === '')
+            {
+                includesRef.value.splice(index, 1);
+                if (selectedIndex.value === index)
+                    selectedIndex.value = null;
+                else if (selectedIndex.value > index)
+                    selectedIndex.value--;
+                return
+            }
+
+            includesRef.value[index] = trimmed;
+        }
+
+        const saveEditDeferred = (index) => {
+            requestAnimationFrame(() => saveEdit(index));
+        }
+
+        const cancelEdit = (event) => {
+            editValue.value = originalValue.value;
+            editIndex.value = null;
+            event.stopPropagation();
+        }
+
+        const addItem = () => {
+            if (newItem.value.trim() !== '')
+            {
+                includesRef.value.push(newItem.value);
+                newItem.value = '';
+            }
+        }
+
+        const moveSelectedUp = () => {
+            const i = selectedIndex.value
+            if (i > 0)
+            {
+                [includesRef.value[i - 1], includesRef.value[i]] = [includesRef.value[i], includesRef.value[i - 1]];
+                selectedIndex.value--;
+            }
+        }
+
+        const moveSelectedDown = () => {
+            const i = selectedIndex.value;
+            if (i < includesRef.value.length - 1)
+            {
+                [includesRef.value[i + 1], includesRef.value[i]] = [includesRef.value[i], includesRef.value[i + 1]];
+                selectedIndex.value++;
+            }
+        }
 
         const angleMeasures = [
             'Radian',
@@ -183,6 +324,13 @@ export default
             if (realPrecision.value <= 0 || realExp.value <= 0 || complexPrecision.value <= 0 || complexExp.value <= 0 || complexCount.value <= 0)
                 return;
 
+            var inc = '';
+            for (var i = 0; i < includesRef.value.length; ++i)
+            {
+                inc += '{' + '"file_name":"' + includesRef.value[i] + '"}';
+                if (i < includesRef.value.length - 1)
+                    inc += ',';
+            }
             var json = 
                 '{' + 
                     '"real_result":{"precision":' + realPrecision.value + ',"exp":' + realExp.value + 
@@ -196,7 +344,10 @@ export default
                         ',"default_angle_measure":' + angleMeasures.indexOf(complexDefaultAngleMeasure.value) + 
                         ',"result_angle_measure":' + angleMeasures.indexOf(complexResultAngleMeasure.value) + 
                         ',"form":' + complexForms.indexOf(complexForm.value) + ',"show_angle_measure":' + complexShowAngleMeasure.value + '},' + 
-                    '"language":' + (languages.indexOf(language.value) + 1) + 
+                    '"language":' + (languages.indexOf(language.value) + 1) + ',' +
+                    '"include_documents":[' + 
+                        inc +
+                        ']' +
                 '}';
             store.commit('editor/setConfig', JSON.parse(json));
 
@@ -246,6 +397,21 @@ export default
 
             language,
             languages,
+
+            includesRef,
+            editIndex,
+            editValue,
+            selectedIndex,
+            newItem,
+            selectItem,
+            startEdit,
+            saveEdit,
+            cancelEdit,
+            addItem,
+            inputRef,
+            moveSelectedUp,
+            moveSelectedDown,
+            saveEditDeferred,
 
             tr
         }

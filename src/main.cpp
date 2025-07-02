@@ -38,6 +38,9 @@ DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
 std::string link_json;
 
+typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
+std::vector<WebWindowPtr> include_windows;
+
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
@@ -222,6 +225,18 @@ EM_JS(void, SolverAction, (const char* json, size_t json_size),
                 'detail': 
                 {
                     'json': json == 0 ? "" : UTF8ToString(json, json_size)
+                }
+            }));
+    });
+
+EM_JS(void, IncludeDocument, (const char* filename, size_t filename_size, const int document_id),
+    {
+        window.dispatchEvent(new CustomEvent('includeDocument', 
+            {
+                'detail': 
+                {
+                    'name': UTF8ToString(filename, filename_size),
+                    'document_id': document_id
                 }
             }));
     });
@@ -434,6 +449,15 @@ void MainLoop(void* arg)
             window->solver_actions.pop();
         }
     }
+
+    if (window->include_documents_ready)
+    {
+        window->include_documents_ready = false;
+        std::vector<std::pair<std::string, int>> files;
+        window->GetIncludeDocuments(files);
+        for (auto& f : files)
+            IncludeDocument(f.first.c_str(), f.first.size(), f.second);
+    }
 }
 
 struct EventArgs
@@ -590,6 +614,16 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document
 {
     if (document)
         document->LoadJson(std::string(json), document_id);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnOpenInclude(const char* json, const int document_id)
+{
+    if (document)
+    {
+        WebWindowPtr w(new yutovo_web::WebWindow());
+        include_windows.push_back(w);
+        document->LoadJsonInclude(std::string(json), document_id, w.get());
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSave(const int document_id)

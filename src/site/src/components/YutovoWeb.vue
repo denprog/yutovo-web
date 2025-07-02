@@ -506,6 +506,7 @@ export default
             window.addEventListener('loadDocument', this.loadDocument, false);
             window.addEventListener('loadDocumentById', this.loadDocumentById, false);
             window.addEventListener('loadLibraryDocument', this.loadLibraryDocument, false);
+            window.addEventListener('includeDocument', this.includeDocument, false);
             window.addEventListener('loadResult', this.loadResult, false);
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
             window.addEventListener('translateString', this.translateString, false);
@@ -524,6 +525,7 @@ export default
             window.attachEvent('loadDocument', this.loadDocument);
             window.attachEvent('loadDocumentById', this.loadDocumentById);
             window.attachEvent('loadLibraryDocument', this.loadLibraryDocument);
+            window.attachEvent('includeDocument', this.includeDocument, false);
             window.attachEvent('loadResult', this.loadResult);
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
             window.attachEvent('translateString', this.translateString);
@@ -812,6 +814,8 @@ export default
                         }
 
                         s.commit('editor/setLoading', false);
+
+                        this.current_document = '';
                     }
             };
         
@@ -1181,10 +1185,11 @@ export default
 
         onNew()
         {
-            if (this.store.state.login.login == '')
+            Module.cwrap('OnNew', 'void', [])();
+            this.store.commit('editor/setDocumentName', '');
+
+            if (this.store.state.login.login == '')  //for unregistered just reset the document
             {
-                Module.cwrap('OnNew', 'void', [])(); //for unregisted just reset the document
-                this.store.commit('editor/setDocumentName', '');
                 canvas.focus();
                 return;
             }
@@ -1705,6 +1710,7 @@ export default
 
         async loadDocument(event)
         {
+            this.current_document = '';
             if (typeof event.detail.name !== 'undefined' && event.detail.name != '')
             {
                 //get document id by name
@@ -1778,6 +1784,40 @@ export default
                     {
                         console.log(response);
                         alert('Error loading the library document');
+                    }
+                );
+        },
+
+        async includeDocument(event)
+        {
+            console.log('includeDocument');
+            var name = event.detail.name;
+            var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
+            var s = this.store;
+            var id = event.detail.document_id;
+            api.post('/service/load-include-document', 
+                {
+                    name: name,
+                    current_document: this.current_document,
+                    language: language
+                },
+                {
+                    headers:
+                    {
+                        access_token: s.state.login.access_token
+                    }
+                }
+                ).then(
+                    function(response)
+                    {
+                        window.Module.cwrap('OnOpenInclude', 'void', ['string', 'int'])(JSON.stringify(response.data), id);
+                        canvas.focus();
+                    }
+                ).catch(
+                    function(response)
+                    {
+                        console.log(response);
+                        alert('Error loading the include document');
                     }
                 );
         },

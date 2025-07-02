@@ -73,6 +73,8 @@ public:
     virtual void OnSaveResult(const uint task_id, IOResult result, const int document_id);
     virtual void OnLoadResult(const uint task_id, IOResult result, const int document_id);
 
+    virtual void OnLoadInclude(const std::string& file_name, const int document_id);
+
     virtual void OnIdentifiersReceived(std::string json);
 
     virtual void OnLinkClicked(const ElementId& id, const std::u32string& url);
@@ -96,6 +98,7 @@ public:
     void CacheTasks();
     bool GetLoadResult(IOResult& result, int& document_id);
     void GetClickedLink(std::string& url);
+    void GetIncludeDocuments(std::vector<std::pair<std::string, int>>& documents);
 
 public:
     std::mutex draw_mutex;
@@ -113,6 +116,7 @@ public:
     std::atomic_bool identifiers_ready{false};
     std::atomic_bool link_ready{false};
     std::atomic_bool solver_action_ready{false};
+    std::atomic_bool include_documents_ready{false};
 
     SDL_Renderer* renderer = nullptr;
 
@@ -120,6 +124,7 @@ public:
 
     std::mutex results_mutex;
     std::queue<std::pair<IOResult, int>> load_results;
+    std::vector<std::pair<std::string, int>> include_documents;
 
     std::string identifers_json;
 

@@ -179,6 +179,7 @@ export default {
     'Result': 'Результат',
     'Locale': 'Язык',
     'Language': 'Язык',
+    'Include documents' : 'Подключенные документы',
     'Exponential threshold': 'Порядок экспоненты',
     'Default angle measure': 'Мера угла по умолчанию',
     'Result angle measure': 'Мера угла результата',
@@ -188,6 +189,7 @@ export default {
     'Show angle measure': 'Показывать меру угла',
     'Maximum count of results': 'Максимальное количество результатов',
     'File name': 'Имя файла',
+    'Add...': 'Добавить...',
 
     'Units': 'Размерности',
     'SI': 'СИ',

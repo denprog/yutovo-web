@@ -303,6 +303,14 @@ void WebWindow::OnLoadResult(const uint task_id, IOResult result, const int docu
     load_ready = true;
 }
 
+void WebWindow::OnLoadInclude(const std::string& file_name, const int document_id)
+{
+    printf("OnLoadInclude: %s\n", file_name.c_str());
+    std::lock_guard<std::mutex> lock(results_mutex);
+    include_documents.emplace_back(file_name, document_id);
+    include_documents_ready = true;
+}
+
 void WebWindow::OnIdentifiersReceived(std::string json)
 {
     std::lock_guard<std::mutex> lock(results_mutex);
@@ -599,6 +607,13 @@ void WebWindow::GetClickedLink(std::string& url)
 {
     std::lock_guard<std::mutex> lock(results_mutex);
     url = link_clicked;
+}
+
+void WebWindow::GetIncludeDocuments(std::vector<std::pair<std::string, int>>& documents)
+{
+    std::lock_guard<std::mutex> lock(results_mutex);
+    documents = include_documents;
+    include_documents.clear();
 }
 
 }

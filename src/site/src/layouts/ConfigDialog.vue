@@ -100,7 +100,7 @@
                                                 class="cursor-pointer"
                                                 >
                                                 {{ item }}
-                                            </q-item-label>                                        
+                                            </q-item-label>
                                         </q-item-section>
                                     </q-item>
                                     <q-item>

@@ -13,7 +13,13 @@
             </div>
             <div style="height:85%;width:100%;overflow:auto;">
                 <q-tree :nodes="library" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
-                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset />
+                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset>
+                    <template v-slot:default-header="props">
+                        <a :href="props.node.link" class="text-body text-decoration-none" target="_blank">
+                            {{ props.node.label }}
+                        </a>
+                    </template>
+                </q-tree>
             </div>
         </div>
     </div>

@@ -3,19 +3,27 @@
     xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
       <loc>https://yutovo.ru/</loc>
-      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
+      <lastmod>2025-06-10T09:45:29+00:00</lastmod>
     </url>
     <url>
-      <loc>http://yutovo.ru/downloads/yutovo-desktop_1.0.2-1_win10_amd64.exe</loc>
-      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
+      <loc>https://yutovo.com/library/en/Help/Introduction/About.yut</loc>
+      <lastmod>2025-06-10T09:45:29+00:00</lastmod>
+    </url>
+    <url>
+      <loc>https://yutovo.com/library/en/Help/Getting started/User interface.yut</loc>
+      <lastmod>2025-06-10T09:45:29+00:00</lastmod>
+    </url>
+    <url>
+      <loc>https://yutovo.com/library/en/Help/Getting started/Cursor.yut</loc>
+      <lastmod>2025-06-10T09:45:29+00:00</lastmod>
     </url>
     <url>
       <loc>https://yutovo.com/library/ru/Справка/Введение/О Ютово.yut</loc>
-      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
+      <lastmod>2025-06-10T09:45:29+00:00</lastmod>
     </url>
     <url>
       <loc>https://yutovo.com/library/ru/Справка/Введение/Политика конфиденциальности.yut</loc>
-      <lastmod>2025-05-17T09:45:29+00:00</lastmod>
+      <lastmod>2025-06-10T09:45:29+00:00</lastmod>
     </url>
     <url>
       <loc>https://yutovo.com/library/ru/Справка/Введение/Правила использования.yut</loc>

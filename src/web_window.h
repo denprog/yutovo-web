@@ -99,6 +99,7 @@ public:
     bool GetLoadResult(IOResult& result, int& document_id);
     void GetClickedLink(std::string& url);
     void GetIncludeDocuments(std::vector<std::pair<std::string, int>>& documents);
+    void GetSolverActions(std::vector<std::string>& _solver_actions);
 
 public:
     std::mutex draw_mutex;
@@ -131,7 +132,7 @@ public:
     std::string link_clicked;
 
     std::mutex solver_actions_mutex;
-    std::queue<std::string> solver_actions;
+    std::vector<std::string> solver_actions;
 
 private:
     friend struct DrawTextTask;

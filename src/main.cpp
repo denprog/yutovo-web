@@ -440,14 +440,10 @@ void MainLoop(void* arg)
 
     if (window->solver_action_ready)
     {
-        std::lock_guard<std::mutex> lock(window->solver_actions_mutex);
-        window->solver_action_ready = false;
-        while (!window->solver_actions.empty())
-        {
-            auto json = window->solver_actions.front();
-            SolverAction(json.c_str(), json.size());
-            window->solver_actions.pop();
-        }
+        std::vector<std::string> solver_actions;
+        window->GetSolverActions(solver_actions);
+        for (auto& s : solver_actions)
+            SolverAction(s.c_str(), s.size());
     }
 
     if (window->include_documents_ready)

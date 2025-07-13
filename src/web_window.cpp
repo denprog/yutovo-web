@@ -328,7 +328,7 @@ void WebWindow::OnLinkClicked(const ElementId& id, const std::u32string& url)
 void WebWindow::OnSolverAction(const std::string& json)
 {
     std::lock_guard<std::mutex> lock(solver_actions_mutex);
-    solver_actions.emplace(json);
+    solver_actions.push_back(json);
     solver_action_ready = true;
 }
 
@@ -614,6 +614,13 @@ void WebWindow::GetIncludeDocuments(std::vector<std::pair<std::string, int>>& do
     std::lock_guard<std::mutex> lock(results_mutex);
     documents = include_documents;
     include_documents.clear();
+}
+
+void WebWindow::GetSolverActions(std::vector<std::string>& _solver_actions)
+{
+    std::lock_guard<std::mutex> lock(solver_actions_mutex);
+    _solver_actions = solver_actions;
+    solver_actions.clear();
 }
 
 }

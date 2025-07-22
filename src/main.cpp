@@ -599,6 +599,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 {
     if (document)
     {
+        document->RemoveSolver(1);
         document->New();
         document->WaitTask(document->InsertCode(false, true));
         EditorState s{CaretState{ElementId{0, 0, 0, 0, 0, 0, 0, 0}}, SelectionState{}};

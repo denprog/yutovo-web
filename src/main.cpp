@@ -609,7 +609,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document_id)
 {
     if (document)
+    {
+        document->RemoveSolver(1);
         document->LoadJson(std::string(json), document_id);
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnOpenInclude(const char* json, const int document_id)

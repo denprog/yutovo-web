@@ -1185,11 +1185,10 @@ export default
 
         onNew()
         {
-            Module.cwrap('OnNew', 'void', [])();
-            this.store.commit('editor/setDocumentName', '');
-
             if (this.store.state.login.login == '')  //for unregistered just reset the document
             {
+                Module.cwrap('OnNew', 'void', [])();
+                this.store.commit('editor/setDocumentName', '');
                 canvas.focus();
                 return;
             }

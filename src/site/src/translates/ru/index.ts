@@ -175,6 +175,8 @@ export default {
     'old password': 'старый пароль',
     'new password': 'новый пароль',
 
+    'Page not found': 'Страница не найдена',
+
     'Document settings': 'Настройки документа',
     'Result': 'Результат',
     'Locale': 'Язык',

@@ -65,33 +65,28 @@ export default
             downloadDialog.value.hide();
         };
 
-        const onDownload = (filename) =>
+        const onDownload = async (filename) =>
         {
-            var d = downloadDialog;
-            api.get('/downloads/' + filename, 
-                {
-                    responseType: 'blob'
-                }
-                ).then(
-                    function(response)
-                    {
-                        const href = URL.createObjectURL(response.data);
-                        const link = document.createElement('a');
-                        link.href = href;
-                        link.setAttribute('download', filename);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(href);
-                        d.value.hide();
-                    }
-                ).catch(
-                    function(err)
-                    {
-                        console.error('Error downloading file:', err);
-                        alert(t('Error downloading file'));
-                    }
-                );
+            const url = `/downloads/${encodeURIComponent(filename)}`;
+            try
+            {
+                const resp = await fetch(url, { method: 'HEAD' });
+                if (!resp.ok)
+                    throw new Error(`${resp.status} ${resp.statusText}`);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            catch (err)
+            {
+                console.error('Error downloading file:', err);
+                alert(t('Error downloading file'));
+            }
+            downloadDialog.value.hide();
         };
 
         return {

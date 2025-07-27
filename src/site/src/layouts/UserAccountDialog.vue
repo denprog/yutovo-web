@@ -64,6 +64,7 @@ import ChangePasswordDialog from 'layouts/ChangePasswordDialog.vue';
 import ChangeNameDialog from 'layouts/ChangeNameDialog.vue'
 import ChangeEmailDialog from 'layouts/ChangeEmailDialog.vue'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 
 export default
 {
@@ -77,6 +78,7 @@ export default
         const nameStr = ref('');
         const emailStr = ref('');
         const $q = useQuasar();
+        const { t } = useI18n();
 
         //get user settings
         api.post('/service/get-user-settings', {},

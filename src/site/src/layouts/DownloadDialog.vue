@@ -49,6 +49,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { api } from 'boot/boot'
+import { useI18n } from 'vue-i18n'
 
 export default
 {
@@ -57,6 +58,7 @@ export default
     setup()
     {
         const downloadDialog = ref(null);
+        const { t } = useI18n();
 
         const onSubmit = () =>
         {
@@ -82,6 +84,12 @@ export default
                         document.body.removeChild(link);
                         URL.revokeObjectURL(href);
                         d.value.hide();
+                    }
+                ).catch(
+                    function(err)
+                    {
+                        console.error('Error downloading file:', err);
+                        alert(t('Error downloading file'));
                     }
                 );
         };

@@ -149,6 +149,7 @@ export default {
     'Download': 'Скачать',
     'Target OS': 'Для ОС',
     'Close': 'Закрыть',
+    'Error downloading file': 'Ошибка загрузки файла',
 
     'Login': 'Логин',
     'Logout': 'Выход',

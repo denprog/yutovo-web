@@ -1074,7 +1074,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFences()
 {
     if (!document)
         return;
-    document->InsertFences(true);
+    document->InsertRoundBrackets(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSum()

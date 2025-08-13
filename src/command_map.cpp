@@ -85,8 +85,14 @@ void ShortcutsMap::Init(DocumentPtr _document)
         CommandContext::Formula);
     Add(KeySequence(), "\\eq_comp", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::COMPLEX, true)), 
         CommandContext::Formula);
-    Add(KeySequence(), '(', "\\open_fence", std::function<void ()>(std::bind(&Document::InsertOpenFence, document.get(), true)), CommandContext::Formula);
-    Add(KeySequence(), ')', "\\close_fence", std::function<void ()>(std::bind(&Document::InsertCloseFence, document.get(), true)), CommandContext::Formula);
+    Add(KeySequence(), '(', "", std::function<void ()>(std::bind(&Document::InsertOpenRoundBracket, document.get(), true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), ')', "", std::function<void ()>(std::bind(&Document::InsertCloseRoundBracket, document.get(), true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), '[', "", std::function<void ()>(std::bind(&Document::InsertOpenSquareBracket, document.get(), true)), 
+        CommandContext::Formula);
+    Add(KeySequence(), ']', "", std::function<void ()>(std::bind(&Document::InsertCloseSquareBracket, document.get(), true)), 
+        CommandContext::Formula);
     Add(KeySequence(), ':', "\\assign", std::function<void ()>(std::bind(&Document::InsertAssignment, document.get(), true)), CommandContext::Formula);
     Add(KeySequence(), '~', "\\unit", std::function<void ()>(std::bind(static_cast<uint(Document::*)(bool)>(&Document::InsertUnit), 
         document.get(), true)), CommandContext::Formula);

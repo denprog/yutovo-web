@@ -1,9 +1,16 @@
+/*
+ * Yutovo Web
+ * Copyright (C) 2022-2025 Yutovo developers. All rights reserved.
+ * This file is a part of the Yutovo project
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 #include <stdio.h>
 #include <emscripten.h>
 #include <emscripten/val.h>
 #include <emscripten/html5.h>
 #include <emscripten/key_codes.h>
-#include <yutovo_editor/document.h>
+#include <yutovo-editor/document.h>
 #include "web_window.h"
 #include "command_map.h"
 #include "web_utils.h"

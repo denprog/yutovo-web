@@ -1,9 +1,16 @@
+/*
+ * Yutovo Web
+ * Copyright (C) 2022-2025 Yutovo developers. All rights reserved.
+ * This file is a part of the Yutovo project
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 #ifndef __FONTS_H__
 #define __FONTS_H__
 
 #include <vector>
 #include <map>
-#include <yutovo_editor/style.h>
+#include <yutovo-editor/style.h>
 #include <SDL2/SDL_ttf.h>
 
 namespace yutovo_web

@@ -11,16 +11,16 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(CMAKE_FIND_ROOT_PATH ${INSTALL_PATH}/wasm/cmake/)
 
-set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_editor/)
-set(yutovo_solver_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_solver/)
-set(yutovo_calculator_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_calculator/)
+set(yutovo_editor_DIR ${INSTALL_PATH}/wasm/cmake/yutovo-editor/)
+set(yutovo_solver_DIR ${INSTALL_PATH}/wasm/cmake/yutovo-solver/)
+set(yutovo_calculator_DIR ${INSTALL_PATH}/wasm/cmake/yutovo-calculator/)
 set(yutovo_logger_DIR ${INSTALL_PATH}/wasm/cmake/yutovo_logger/)
 
 find_package(PkgConfig REQUIRED)
-find_package(yutovo_editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-find_package(yutovo_solver REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-find_package(yutovo_calculator REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
-find_package(yutovo_logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo-editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo-solver REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo-calculator REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(yutovo-logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 
@@ -103,9 +103,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     ${INSTALL_PATH}/wasm/libmpfr.a
     ${INSTALL_PATH}/wasm/libgmp.a
     ${INSTALL_PATH}/wasm/libboost_iostreams.a
-    yutovo_editor
-    yutovo_solver
-    yutovo_logger
+    yutovo-editor
+    yutovo-solver
+    yutovo-logger
     pthread
 )
 

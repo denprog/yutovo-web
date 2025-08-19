@@ -1,7 +1,14 @@
+/*
+ * Yutovo Web
+ * Copyright (C) 2022-2025 Yutovo developers. All rights reserved.
+ * This file is a part of the Yutovo project
+ * SPDX-License-Identifier: GPL-3.0-only
+ */
+
 #ifndef __TASK_H__
 #define __TASK_H__
 
-#include <yutovo_editor/window.h>
+#include <yutovo-editor/window.h>
 #include "fonts.h"
 
 namespace yutovo_web

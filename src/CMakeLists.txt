@@ -83,7 +83,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${THIRD_PARTY_PATH}
     ${INSTALL_PATH}/include
 )
 

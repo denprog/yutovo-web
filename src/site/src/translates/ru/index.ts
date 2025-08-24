@@ -143,6 +143,7 @@ export default {
     'Max files count exceed': 'Превышено максимальное количество файлов',
     'Delete the document?': 'Удалить документ?',
 
+    'Source code': 'Исходный код',
     'Download PC version': 'Скачать версию для ПК',
     'Terms of use': 'Правила использования',
     'Privacy policy': 'Политика конфеденциальности',

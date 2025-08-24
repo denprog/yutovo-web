@@ -66,6 +66,8 @@
 
             <q-footer id="footer" class="bg-blue-9 q-pa-none text-white">
                 <div style="float:right;">
+                    <q-btn class="q-pl-sm text-white" size="1em" id='source' dense no-caps flat target="_blank" 
+                        href="https://github.com/denprog/yutovo-web">{{$t('Source code')}}</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='download' dense no-caps flat @click="showDownloadDialog">{{$t('Download PC version')}}</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='license' dense no-caps flat @click="showLicenseDialog">{{$t('Terms of use')}}</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='privacy' dense no-caps flat @click="showPrivacyDialog">{{$t('Privacy policy')}}</q-btn>

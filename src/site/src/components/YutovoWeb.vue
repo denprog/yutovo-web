@@ -736,7 +736,7 @@ export default
                             doc += route.params.filename;
                             doc = doc.replaceAll(/\\/g, '/');
                             doc = doc.substring(2);
-                            if (route.params.language == 'en' || route.params.language == 'ru')
+                            if (route.params.language == 'en' || route.params.language == 'ru' || route.params.language == 'es')
                                 s.commit('editor/setLanguage', route.params.language);
                             window.dispatchEvent(new CustomEvent('loadLibraryDocument', 
                                 {
@@ -751,12 +751,29 @@ export default
                         {
                             if (q.config.production && !Cookies.has('app_initialized'))
                             {
-                                var lang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+                                var lang = 'en';
+                                if (navigator.language.startsWith('ru'))
+                                    lang = 'ru';
+                                else if (navigator.language.startsWith('es'))
+                                    lang = 'es';
+                                var first_page = '';
+                                switch (lang)
+                                {
+                                case 'ru':
+                                    first_page = '/Другое/Первая страница';
+                                    break;
+                                case 'es':
+                                    first_page = '/Otros/Primera página';
+                                    break;
+                                default:
+                                    first_page = '/Others/First page';
+                                    break;
+                                }
                                 window.dispatchEvent(new CustomEvent('loadLibraryDocument', 
                                     {
                                         'detail': 
                                         {
-                                            document: (lang == 'ru' ? '/Другое/Первая страница' : '/Others/First page'), 
+                                            document: first_page, 
                                             language: lang
                                         }
                                     }));

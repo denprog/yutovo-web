@@ -108,10 +108,22 @@ export default
     {
         if (!this.$q.cookies.has('app_initialized') || !this.$q.cookies.has('language'))
         {
-            this.locale = navigator.language.startsWith('ru') ? 'ru' : 'en';
+            var lang = 'en_EN';
+            this.locale = 'en';
+            if (navigator.language.startsWith('ru'))
+            {
+                lang = 'ru_RU';
+                this.locale = 'ru';
+            }
+            else if (navigator.language.startsWith('es'))
+            {
+                lang = 'es_ES';
+                this.locale = 'es';
+            }
+
             const store = useStore();
             store.commit('editor/setLanguage', this.locale);
-            Cookies.set('language', this.locale == 'ru' ? 'ru_RU' : 'en_EN', {path: '/', expires: '30d'});
+            Cookies.set('language', lang, {path: '/', expires: '30d'});
             this.$q.notify(
                 {
                     message: this.$t('cookies_use'),
@@ -132,6 +144,8 @@ export default
             var lang = Cookies.get('language');
             if (lang == 'ru_RU')
                 this.locale = 'ru';
+            else if (lang == 'es_ES')
+                this.locale = 'es';
             else
                 this.locale = 'en';
             const store = useStore();
@@ -278,7 +292,8 @@ export default
             locale,
             localeOptions: [
                 { value: 'en', label: 'English' },
-                { value: 'ru', label: 'Русский' }
+                { value: 'ru', label: 'Русский' },
+                { value: 'es', label: 'Español' }
             ]
         }
     },
@@ -391,13 +406,23 @@ export default
         {
             this.store.commit('editor/setLanguage', this.locale);
             document.title = this.$t('Yutovo - visual online calculator');
-            Cookies.set('language', this.locale == 'ru' ? 'ru_RU' : 'en_EN', {path: '/', expires: '30d'});
+            var lang = 'en_EN';
+            switch (this.locale)
+            {
+            case 'ru':
+                lang = 'ru_RU';
+                break;
+            case 'es':
+                lang = 'es_ES';
+                break;
+            }
+            Cookies.set('language', lang, {path: '/', expires: '30d'});
 
             if (this.store.state.login.login != '')
             {
                 api.post('/auth/set-language', 
                     {
-                        language: this.locale == 'ru' ? 'ru_RU' : 'en_EN'
+                        language: lang
                     },
                     {
                         headers:

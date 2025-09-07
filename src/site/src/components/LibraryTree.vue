@@ -15,7 +15,7 @@
                 <q-tree :nodes="library" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
                     :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset>
                     <template v-slot:default-header="props">
-                        <a :href="props.node.link" class="text-body text-decoration-none" target="_blank">
+                        <a :href="props.node.link" class="text-body text-decoration-none">
                             {{ props.node.label }}
                         </a>
                     </template>

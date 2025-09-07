@@ -881,7 +881,8 @@ export default
         'store.state.editor.config': function()
         {
             var c = JSON.parse(JSON.stringify(this.store.state.editor.config));
-            Module.cwrap('OnConfig', 'void', ['string'])(JSON.stringify(c));
+            Module.cwrap('OnConfig', 'void', ['string', 'bool'])(JSON.stringify(c), !window.loading);
+            window.loading = false;
             canvas.focus();
         },
 
@@ -1482,11 +1483,45 @@ export default
             canvas.focus();
         },
 
+        async checkDocumentChanged()
+        {
+            var t = this.$t;
+            if (window.Module.cwrap('IsChanged', 'bool', [])())
+            {
+                const dialog = this.$q.dialog(
+                    {
+                        title: t('Confirm'),
+                        message: t('Save the document?'),
+                        cancel: true
+                    });
+
+                try
+                {
+                    await new Promise((resolve, reject) => 
+                        {
+                            dialog.onOk(resolve);
+                            dialog.onCancel(reject);
+                        });
+                    window.Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
+                    return false;
+                }
+                catch (error)
+                {
+                    return false;
+                }
+            }
+            return true;
+        },
+
         async newDocument(event)
         {
             console.log('newDocument');
+
+            window.newDocument = true;
+            if (!(await this.checkDocumentChanged()))
+                return;
+
             var s = this.store;
-            var t = this.$t;
             api.post('/service/new-document', event.detail == null ? {} : 
                 {
                     json: event.detail.json,
@@ -1652,6 +1687,25 @@ export default
                         }
                     );
             }
+
+            //continue broken operation
+            if (window.newDocument)
+            {
+                window.dispatchEvent(new CustomEvent('newDocument'));
+                window.newDocument = false;
+            }
+            else if (window.load_document_id !== 'undefined' && window.load_document_id != 0)
+            {
+                window.dispatchEvent(new CustomEvent('loadDocument', 
+                    {
+                        detail: 
+                        {
+                            document_id: window.load_document_id,
+                            last_document: Cookies.get('document_id')
+                        }
+                    }));
+                window.load_document_id = 0;
+            }
         },
 
         async translateString(event)
@@ -1726,6 +1780,10 @@ export default
 
         async loadDocument(event)
         {
+            window.load_document_id = event.detail.document_id;
+            if (!(await this.checkDocumentChanged()))
+                return;
+
             this.current_document = '';
             if (typeof event.detail.name !== 'undefined' && event.detail.name != '')
             {
@@ -1879,6 +1937,7 @@ export default
                         this.last_documents.push(last_document_id);
                 }
 
+                window.loading = true;
                 this.store.commit('editor/setConfig', JSON.parse(config));
             }
             else

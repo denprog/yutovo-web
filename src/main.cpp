@@ -608,7 +608,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
     {
         document->RemoveSolver(1);
         document->New();
-        document->WaitTask(document->InsertCode(false, true));
+        document->WaitTask(document->InsertCode(false, false));
         EditorState s{CaretState{ElementId{0, 0, 0, 0, 0, 0, 0, 0}}, SelectionState{}};
         document->SetEditorState(s);
     }
@@ -798,6 +798,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
 {
     EditorState s = document->GetEditorState();
     return !s.selection_state.IsEmpty();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE bool IsChanged()
+{
+    return document->IsChanged();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE bool IsEmpty()
@@ -1267,9 +1272,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSettings(const char* settings)
     document->SetConfig(user_settings, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config, bool with_undo)
 {
-    document->SetConfig(std::string(config), true);
+    document->SetConfig(std::string(config), with_undo);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
@@ -1516,7 +1521,7 @@ int main(int argc, char* argv[])
     config.service_port = 9002;
     document.reset(new yutovo::Document(&window, config));
     document->Start();
-    document->InsertCode(false, true);
+    document->InsertCode(false, false);
 
     document->SetDefaultPageFormat(2, 2, 22, 22, 10);
 

@@ -142,6 +142,7 @@ export default {
     'Error creating the document: ': 'Error al crear el documento: ',
     'Max files count exceed': 'Se excedió la cantidad máxima de archivos',
     'Delete the document?': '¿Eliminar el documento?',
+    'Save the document?': '¿Guardar el documento?',
 
     'Source code': 'Código fuente',
     'Download PC version': 'Descargar versión para PC',

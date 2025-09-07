@@ -142,6 +142,7 @@ export default {
     'Error creating the document: ': 'Ошибка создания документа: ',
     'Max files count exceed': 'Превышено максимальное количество файлов',
     'Delete the document?': 'Удалить документ?',
+    'Save the document?': 'Сохранить документ?',
 
     'Source code': 'Исходный код',
     'Download PC version': 'Скачать версию для ПК',

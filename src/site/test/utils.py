@@ -21,7 +21,8 @@ def registerUser(driver, username, password, email):
 
 def login(driver, username, password):
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Login\')] | //*[contains(text(), \'Логин\')]')))
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Login\')] | //*[contains(text(), \'Логин\')] | '
+        '//*[contains(text(), \'Iniciar sesión\')]')))
     b.click()
     time.sleep(1)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'username\']')))
@@ -150,7 +151,7 @@ def setSettingsLanguage(driver, language):
     b.click()
 
 def getDbConnection():
-    return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "nom5Jouv", port = 5432)
+    return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "", port = 5432)
 
 def deleteTestUser(conn):
     cursor = conn.cursor()

@@ -153,7 +153,7 @@ export default {
     'Close': 'Cerrar',
     'Error downloading file': 'Error al descargar el archivo',
 
-    'Login': 'Iniciar sesión',
+    'Login': 'Acceder',
     'Logout': 'Cerrar sesión',
     'user name': 'nombre de usuario',
     'password': 'contraseña',

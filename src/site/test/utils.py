@@ -22,7 +22,7 @@ def registerUser(driver, username, password, email):
 def login(driver, username, password):
     time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Login\')] | //*[contains(text(), \'Логин\')] | '
-        '//*[contains(text(), \'Iniciar sesión\')]')))
+        '//*[contains(text(), \'Acceder\')]')))
     b.click()
     time.sleep(1)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'username\']')))

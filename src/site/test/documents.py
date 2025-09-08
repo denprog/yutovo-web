@@ -154,7 +154,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
 
-    #Make documents, reload page, delete the last document
+    #Create documents, reload page, delete the last document
     def test_documents8(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(4)
@@ -327,7 +327,7 @@ class TestDocuments(unittest.TestCase):
         time.sleep(3)
         self.assertTrue(utils.documentContains(self.driver, '4.73'))
 
-    #Add documents and remove them on by one
+    #Add documents and remove them one by one
     def test_documents18(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(4)
@@ -437,6 +437,25 @@ class TestDocuments(unittest.TestCase):
         self.driver.get(address + '/document/' + c['value'])
         time.sleep(4)
         self.assertTrue(utils.documentContains(self.driver, '12345555'))
+
+    #Create documents and save them
+    def test_documents22(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+
+        utils.new(self.driver)
+        time.sleep(1)
+        c1 = self.driver.get_cookie('document_id')
+        c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        c.send_keys('12345')
+        time.sleep(1)
+        utils.save(self.driver)
+        time.sleep(1)
+
+        c2 = self.driver.get_cookie('document_id')
+        self.assertTrue(c1['value'] == c2['value'])
+        self.assertTrue(self.driver.current_url == address + '/document/' + c2['value'])
+        self.assertTrue(utils.fileContains(self.conn, c2['value'], "12345"))
 
 if __name__ == '__main__':
     unittest.main()

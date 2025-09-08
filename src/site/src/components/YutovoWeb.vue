@@ -1520,6 +1520,7 @@ export default
             window.newDocument = true;
             if (!(await this.checkDocumentChanged()))
                 return;
+            window.newDocument = false;
 
             var s = this.store;
             api.post('/service/new-document', event.detail == null ? {} : 
@@ -1689,12 +1690,12 @@ export default
             }
 
             //continue broken operation
-            if (window.newDocument)
+            if (typeof window.newDocument !== 'undefined' && window.newDocument == true)
             {
                 window.dispatchEvent(new CustomEvent('newDocument'));
                 window.newDocument = false;
             }
-            else if (window.load_document_id !== 'undefined' && window.load_document_id != 0)
+            else if (typeof window.load_document_id !== 'undefined' && window.load_document_id != 0)
             {
                 window.dispatchEvent(new CustomEvent('loadDocument', 
                     {
@@ -1780,9 +1781,11 @@ export default
 
         async loadDocument(event)
         {
+            console.log('loadDocument');
             window.load_document_id = event.detail.document_id;
             if (!(await this.checkDocumentChanged()))
                 return;
+            window.load_document_id = 0;
 
             this.current_document = '';
             if (typeof event.detail.name !== 'undefined' && event.detail.name != '')

@@ -38,3 +38,21 @@ make -sj && make install
 cd ../../site
 quasar build
 ```
+
+Test the project. Firstly, in quasar.config.js change 
+
+```
+production: false
+```
+to remove capcha. The server must be built with "-DCMAKE_BUILD_TYPE=Debug" option for the same reason.
+
+Then run tests:
+
+```
+python -m unittest *
+```
+
+or for a group of tests:
+```
+python -m unittest login.*
+```

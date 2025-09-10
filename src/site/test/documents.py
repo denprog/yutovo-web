@@ -267,6 +267,8 @@ class TestDocuments(unittest.TestCase):
         utils.writeText(self.driver, '12345')
         utils.insertCode(self.driver)
         time.sleep(1)
+        utils.setLanguage(self.driver, 'English')
+        time.sleep(1)
         utils.clickIdentifier(self.driver, 'Functions/arccos')
         time.sleep(1)
         self.assertTrue(utils.documentContains(self.driver, 'arccos'))

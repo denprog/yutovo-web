@@ -196,7 +196,7 @@ export default {
     'File name': 'Nombre del archivo',
     'Add...': 'Agregar...',
 
-    'Units': 'Dimensiones',
+    'Units': 'Unidades',
     'SI': 'SI',
     'Russian': 'Rusa',
     'English': 'Inglesa',

@@ -459,5 +459,37 @@ class TestDocuments(unittest.TestCase):
         self.assertTrue(self.driver.current_url == address + '/document/' + c2['value'])
         self.assertTrue(utils.fileContains(self.conn, c2['value'], "12345"))
 
+    #Check the save dialog
+    def test_documents23(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(1)
+
+        utils.setLanguage(self.driver, 'English')
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(1)
+        c1 = self.driver.get_cookie('document_id')
+        c.send_keys('document_test_1')
+        time.sleep(1)
+        utils.new(self.driver)
+        time.sleep(1)
+        utils.saveDialogClick(self.driver, 'Yes')
+        time.sleep(2)
+        c2 = self.driver.get_cookie('document_id')
+        self.driver.get(address + '/document/' + c1['value'])
+        time.sleep(2)
+        self.assertTrue(utils.fileContains(self.conn, c1['value'], "document_test_1"))
+
+        self.driver.get(address + '/document/' + c2['value'])
+        time.sleep(4)
+        c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        c.send_keys('document_test_2')
+        time.sleep(1)
+        utils.new(self.driver)
+        time.sleep(1)
+        utils.saveDialogClick(self.driver, 'No')
+        self.driver.get(address + '/document/' + c2['value'])
+        time.sleep(2)
+        self.assertTrue(utils.fileNotContains(self.conn, c2['value'], "document_test_2"))
+
 if __name__ == '__main__':
     unittest.main()

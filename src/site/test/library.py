@@ -33,6 +33,8 @@ class TestLibrary(unittest.TestCase):
     def test_library1(self):
         utils.login(self.driver, 'test1', '11')
         time.sleep(2)
+        utils.setLanguage(self.driver, 'English')
+        time.sleep(1)
         utils.clickLibrary(self.driver, 'Physics', 'Dynamics', 'Moment of force')
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
@@ -63,6 +65,8 @@ class TestLibrary(unittest.TestCase):
         time.sleep(4)
         c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
         time.sleep(2)
+        utils.setLanguage(self.driver, 'English')
+        time.sleep(1)
         c.send_keys('document_test_1')
         time.sleep(1)
         utils.save(self.driver)

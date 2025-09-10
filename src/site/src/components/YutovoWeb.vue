@@ -479,12 +479,14 @@ import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
 import { api } from 'boot/boot'
 import { computed } from 'vue'
+import { Dialog } from 'quasar'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';
 import ConfigDialog from  'layouts/ConfigDialog.vue';
 import SetUnitDialog from  'layouts/SetUnitDialog.vue';
 import LinkDialog from 'layouts/LinkDialog.vue';
+import ConfirmDialog from 'layouts/ConfirmDialog.vue';
 import pako from 'pako';
 
 export default
@@ -1488,22 +1490,42 @@ export default
             var t = this.$t;
             if (window.Module.cwrap('IsChanged', 'bool', [])())
             {
-                const dialog = this.$q.dialog(
-                    {
-                        title: t('Confirm'),
-                        message: t('Save the document?'),
-                        cancel: true
-                    });
-
                 try
                 {
-                    await new Promise((resolve, reject) => 
+                    const dialog = this.$q.dialog(
                         {
-                            dialog.onOk(resolve);
-                            dialog.onCancel(reject);
+                            component: ConfirmDialog,
+                            componentProps: {
+                                title: t('Confirm'),
+                                message: t('Save the document?')
+                            }
                         });
-                    window.Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
-                    return false;
+                    
+                    try
+                    {
+                        const result = await new Promise((resolve) => 
+                            {
+                                dialog.onOk((data) => 
+                                    {
+                                        resolve(data);
+                                    });
+                            });
+                        switch (result)
+                        {
+                        case 'yes':
+                            window.Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
+                            break;
+                        case 'no':
+                            return true;
+                        case 'cancel':
+                            return false;
+                        }
+                        return false;
+                    }
+                    catch (error)
+                    {
+                        return false;
+                    }
                 }
                 catch (error)
                 {
@@ -1542,7 +1564,8 @@ export default
                                 detail:
                                 {
                                     document_id: response.data.document_id,
-                                    last_document: Cookies.has('document_id') ? Cookies.get('document_id') : 0
+                                    last_document: Cookies.has('document_id') ? Cookies.get('document_id') : 0,
+                                    check_changed: false
                                 }
                             }));
                     }
@@ -1782,10 +1805,16 @@ export default
         async loadDocument(event)
         {
             console.log('loadDocument');
-            window.load_document_id = event.detail.document_id;
-            if (!(await this.checkDocumentChanged()))
-                return;
-            window.load_document_id = 0;
+            var check_changed = true;
+            if (typeof event.detail.check_changed !== 'undefined')
+                check_changed = event.detail.check_changed;
+            if (check_changed)
+            {
+                window.load_document_id = event.detail.document_id;
+                if (!(await this.checkDocumentChanged()))
+                    return;
+                window.load_document_id = 0;
+            }
 
             this.current_document = '';
             if (typeof event.detail.name !== 'undefined' && event.detail.name != '')

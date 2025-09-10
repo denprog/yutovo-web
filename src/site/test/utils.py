@@ -150,6 +150,10 @@ def setSettingsLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
     b.click()
 
+def saveDialogClick(driver, button):
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + button + '\')]')))
+    b.click()
+
 def getDbConnection():
     return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "", port = 5432)
 
@@ -173,6 +177,12 @@ def clearTestUser(conn):
 def fileContains(conn, document_id, str):
     cursor = conn.cursor()
     cursor.execute('select 1 from user_documents where document_id = %s and jsonb_path_exists(document, \'$.** ? (@.type() == "string" && @ like_regex "%s")\')', 
+        (document_id, AsIs(str)))
+    return cursor.fetchone() is not None
+
+def fileNotContains(conn, document_id, str):
+    cursor = conn.cursor()
+    cursor.execute('select 1 from user_documents where document_id = %s and not jsonb_path_exists(document, \'$.** ? (@.type() == "string" && @ like_regex "%s")\')', 
         (document_id, AsIs(str)))
     return cursor.fetchone() is not None
 

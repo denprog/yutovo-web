@@ -16,7 +16,7 @@
                                     <td>Ubuntu 24</td>
                                     <td class="q-pl-md">
                                         <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.1.2-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
+                                            @click="onDownload('yutovo-desktop_1.2.4-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
                                     </td>
                                 </tr>
                                 <tr>

@@ -21,6 +21,7 @@ find_package(yutovo-editor REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(yutovo-solver REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(yutovo-calculator REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 find_package(yutovo-logger REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
+find_package(MathGL2 REQUIRED PATHS ${INSTALL_PATH}/wasm/cmake/)
 
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 
@@ -106,6 +107,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     yutovo-solver
     yutovo-logger
     pthread
+    ${INSTALL_PATH}/wasm/libmgl.a
 )
 
 install(

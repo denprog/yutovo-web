@@ -515,6 +515,9 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 {
     EventArgs* args = (EventArgs*)user_data;
     auto p = args->window->GetDocumentPoint();
+    if (document->MouseMove(mouse_event->targetX + p.x, mouse_event->targetY + p.y))
+        return false;
+
     yutovo_web::ElementId id;
     args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, id);
     if (args->document->IsString(id))
@@ -537,8 +540,14 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
 {
     EventArgs* args = (EventArgs*)user_data;
-    EditorState s = args->document->GetEditorState();
     auto p = args->window->GetDocumentPoint();
+    if (mouse_event->button == 0)
+    {
+        if (document->MouseLButtonDown(mouse_event->targetX + p.x, mouse_event->targetY + p.y))
+            return false;
+    }
+
+    EditorState s = args->document->GetEditorState();
     if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
         args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y, mouse_event->ctrlKey);
@@ -551,11 +560,32 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     return false;
 }
 
+EM_BOOL OnMouseUp(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
+{
+    EventArgs* args = (EventArgs*)user_data;
+    auto p = args->window->GetDocumentPoint();
+    if (mouse_event->button == 0)
+        document->MouseLButtonUp(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+    return false;
+}
+
 EM_BOOL OnMouseDoubleClick(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
 {
     EventArgs* args = (EventArgs*)user_data;
     if (mouse_event->button == 0)
         args->document->SelectOut();
+    return false;
+}
+
+EM_BOOL OnMouseWheel(int event_type, const EmscriptenWheelEvent* wheel_event, void* user_data)
+{
+    EventArgs* args = (EventArgs*)user_data;
+    auto p = args->window->GetDocumentPoint();
+    if (document->MouseWheel(wheel_event->mouse.targetX + p.x, wheel_event->mouse.targetY + p.y, 
+        yutovo::Point{int(-wheel_event->deltaX / 8), int(-wheel_event->deltaY / 8)}, 
+        yutovo::Point{int(-wheel_event->deltaX / 8), int(-wheel_event->deltaY / 8)}))
+    {
+    }
     return false;
 }
 
@@ -1124,6 +1154,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnEquation()
     document->InsertEquation(ResultType::AUTO, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphLine()
+{
+    if (!document)
+        return;
+    document->InsertGraph(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
 {
     if (!document)
@@ -1541,7 +1578,9 @@ int main(int argc, char* argv[])
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
     emscripten_set_mousemove_callback("#scroll-container", &args, true, OnMouseMove);
     emscripten_set_mousedown_callback("#scroll-container", &args, true, OnMouseDown);
+    emscripten_set_mouseup_callback("#scroll-container", &args, true, OnMouseUp);
     emscripten_set_dblclick_callback("#scroll-container", &args, true, OnMouseDoubleClick);
+    emscripten_set_wheel_callback("#scroll-container", &args, true, OnMouseWheel);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);

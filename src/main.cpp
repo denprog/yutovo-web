@@ -43,7 +43,7 @@ const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 yutovo_web::WebWindow cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
-std::string link_json;
+std::string res_json;
 
 typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
 std::vector<WebWindowPtr> include_windows;
@@ -519,7 +519,7 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
         return false;
 
     yutovo_web::ElementId id;
-    args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, id);
+    args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, 0, id);
     if (args->document->IsString(id))
     {
         if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
@@ -944,13 +944,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
     return document->HasUnit(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
+{
+    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE)
+        return 1;
+    return document->FindCurrentParentByType(ElementType::GRAPH_LINE) != ElementId{};
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
 {
-    link_json = "";
+    res_json = "";
     EditorState s = document->GetEditorState();
     std::u32string link_str, link_url;
     if (document->GetLink(s.caret_state.id, link_str, link_url))
-        link_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
+        res_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
     else
     {
         if (s.selection_state.state.size() == 1)
@@ -963,12 +970,25 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
                 if (str.length() >= el_s.start + el_s.size)
                 {
                     str = str.substr(el_s.start, el_s.size);
-                    link_json = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
+                    res_json = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
                 }
             }
         }
     }
-    return (char*)link_json.c_str();
+    return (char*)res_json.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
+{
+    res_json = "";
+    EditorState s = document->GetEditorState();
+    GraphFormat f;
+    if (document->GetGraphFormat(yutovo::GetParent(s.caret_state.id), f))
+    {
+        res_json = "{\"graph_width\":" + std::to_string(f.size.width) + ",\"graph_height\":" + std::to_string(f.size.height) + 
+            ",\"plot_color\":\"" + f.plot_color.ToHex() + "\",\"plot_width\":" + std::to_string(f.plot_width) + "}";
+    }
+    return (char*)res_json.c_str();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
@@ -1426,6 +1446,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
     auto _id = document->GetParentId(s.caret_state.id, ElementType::COMPLEX_RESULT);
     if (!_id.empty())
         document->SetComplexForm(_id, (ComplexForm)complex_form, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int graph_width, const int graph_height, const char* plot_color, const int plot_width)
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{graph_width, graph_height}, Color::FromHex(plot_color), (uint)plot_width});
 }
 
 std::u32string document_text;

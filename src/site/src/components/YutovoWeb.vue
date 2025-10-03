@@ -464,6 +464,10 @@
                     <q-item id="set-unit-menu" clickable style='display:none;' @click='onSetUnit();'>
                         <q-item-section>{{ $t('Unit') }}</q-item-section>
                     </q-item>
+                    
+                    <q-item id="graph-format" clickable style='display:none;' @click='onGraphFormat();'>
+                        <q-item-section>{{ $t('Graph format') }}</q-item-section>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -491,6 +495,7 @@ import ConfigDialog from  'layouts/ConfigDialog.vue';
 import SetUnitDialog from  'layouts/SetUnitDialog.vue';
 import LinkDialog from 'layouts/LinkDialog.vue';
 import ConfirmDialog from 'layouts/ConfirmDialog.vue';
+import GraphFormatDialog from 'layouts/GraphFormatDialog.vue';
 import pako from 'pako';
 
 export default
@@ -2178,6 +2183,10 @@ export default
             m = document.getElementById('set-unit-menu');
             if (window.Module.cwrap('HasUnit', 'int', [])())
                 m.style.display = '';
+
+            m = document.getElementById('graph-format');
+            if (window.Module.cwrap('IsGraph', 'int', [])())
+                m.style.display = '';
         },
 
         async getClipboardPermission()
@@ -2373,6 +2382,29 @@ export default
         {
             this.contextMenu.hide();
             this.$q.dialog({component: SetUnitDialog, parent: this, apiResponse: this.resp});
+            canvas.focus();
+        },
+
+        onGraphFormat()
+        {
+            this.contextMenu.hide();
+            var format_json = UTF8ToString(Module.cwrap('GetGraphFormat', 'number')());
+            if (format_json == '')
+                return;
+            var json = JSON.parse(format_json);
+            this.$q.dialog(
+                {
+                    component: GraphFormatDialog, 
+                    parent: this, 
+                    apiResponse: this.resp,
+                    componentProps: 
+                    {
+                        graph_width_prop: json.graph_width,
+                        graph_height_prop: json.graph_height,
+                        plot_color_prop: json.plot_color,
+                        plot_width_prop: json.plot_width
+                    }
+                });
             canvas.focus();
         },
 

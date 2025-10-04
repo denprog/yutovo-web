@@ -507,6 +507,14 @@ EM_JS(void, SetCursor, (int type),
             scroll_container.style.cursor = 'text';
         else if (type == 2)
             scroll_container.style.cursor = 'pointer';
+        else if (type == 3)
+            scroll_container.style.cursor = 'ew-resize';
+        else if (type == 4)
+            scroll_container.style.cursor = 'ns-resize';
+        else if (type == 5)
+            scroll_container.style.cursor = 'nwse-resize';
+        else if (type == 6)
+            scroll_container.style.cursor = 'nesw-resize';
         else if (type == 0)
             scroll_container.style.cursor = 'default';
     });
@@ -515,24 +523,72 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 {
     EventArgs* args = (EventArgs*)user_data;
     auto p = args->window->GetDocumentPoint();
-    if (document->MouseMove(mouse_event->targetX + p.x, mouse_event->targetY + p.y))
-        return false;
+    int x = mouse_event->targetX + p.x;
+    int y = mouse_event->targetY + p.y;
+    int m = document->config.resize_margin_width;
 
     yutovo_web::ElementId id;
-    args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, 0, id);
-    if (args->document->IsString(id))
+    if (args->document->GetElementAtCoords(x, y, m, id))
     {
-        if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
-            SetCursor(2);
-        else
-            SetCursor(1);
+        if (args->document->IsResizable(id))
+        {
+            Rect rect;
+            if (args->document->GetElementRect(id, rect))
+            {
+                if ((x <= rect.left + m && y <= rect.top + m) || (x >= rect.GetRight() - m && y >= rect.GetBottom() - m))
+                {
+                    SetCursor(5);
+                    args->document->MouseMove(x, y);
+                    return false;
+                }
+                if ((x >= rect.GetRight() - m && y <= rect.top + m) || (x <= rect.left + m && y >= rect.GetBottom() - m))
+                {
+                    SetCursor(6);
+                    args->document->MouseMove(x, y);
+                    return false;
+                }
+                if (x <= rect.left + m || (x <= rect.GetRight() + m && x >= rect.GetRight() - m))
+                {
+                    SetCursor(3);
+                    args->document->MouseMove(x, y);
+                    return false;
+                }
+                if (y <= rect.top + m || (y <= rect.GetBottom() + m && y >= rect.GetBottom() - m))
+                {
+                    SetCursor(4);
+                    args->document->MouseMove(x, y);
+                    return false;
+                }
+            }
+        }
     }
-    else
+
+    if (!args->document->GetElementAtCoords(x, y, 0, id))
+    {
         SetCursor(0);
+        return false;
+    }
+
+    if (args->document->MouseMove(x, y))
+        return false;
+    
+    if (args->document->GetElementAtCoords(x, y, 0, id))
+    {
+        if (args->document->IsString(id))
+        {
+            if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
+                SetCursor(2);
+            else
+                SetCursor(1);
+        }
+        else
+            SetCursor(0);
+    }
+
     if (mouse_event->buttons == 1)
     {
         //selection with mouse
-        args->document->Select(left_click_pos.x, left_click_pos.y, mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+        args->document->Select(left_click_pos.x, left_click_pos.y, x, y);
     }
     return false;
 }
@@ -541,21 +597,24 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 {
     EventArgs* args = (EventArgs*)user_data;
     auto p = args->window->GetDocumentPoint();
+    int x = mouse_event->targetX + p.x;
+    int y = mouse_event->targetY + p.y;
+
     if (mouse_event->button == 0)
     {
-        if (document->MouseLButtonDown(mouse_event->targetX + p.x, mouse_event->targetY + p.y))
+        if (document->MouseLButtonDown(x, y))
             return false;
     }
 
     EditorState s = args->document->GetEditorState();
     if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
-        args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y, mouse_event->ctrlKey);
+        args->document->MoveCaret(x, y, mouse_event->ctrlKey);
     }
     if (mouse_event->button == 0)
     {
         //start selection with mouse
-        left_click_pos = Point{mouse_event->targetX + p.x, mouse_event->targetY + p.y};
+        left_click_pos = Point{x, y};
     }
     return false;
 }

@@ -9,6 +9,7 @@
                         <div class="text-h10">
                             <span v-html=about_yutovo></span>
                             <span v-html=support></span>
+                            <span v-html=version></span>
                         </div>
                         <div class="q-pt-md q-gutter-sm" style="text-align: center">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
@@ -46,9 +47,11 @@ export default {
     data()
     {
         const { t } = useI18n();
+        const versionNumber = '1.3.1.';
         return {
             about_yutovo: t('about_yutovo'),
-            support: t('support')
+            support: t('support'),
+            version: t('version') + versionNumber
         }
     }
 }

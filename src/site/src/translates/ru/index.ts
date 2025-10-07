@@ -260,7 +260,8 @@ export default {
         Ютово - это решение для широкого круга арифметических, инженерных и других задач.<br/><br/>\
         Использованные технологии и библиотеки: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Quasar, jwt-cpp, spdlog, rapidjson.<br/><br/>',
     support: 'Поддержка: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
-        Телеграм: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.',
+        Телеграм: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.<br/><br/>',
+    version: 'Версия: ',
 
     cookies_use: 'Этот сайт использует куки для нормального фукционирования.',
 

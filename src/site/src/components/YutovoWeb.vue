@@ -487,7 +487,6 @@ import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
 import { api } from 'boot/boot'
 import { computed } from 'vue'
-import { Dialog } from 'quasar'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';

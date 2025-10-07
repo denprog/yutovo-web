@@ -1512,7 +1512,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int graph_width, const 
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{graph_width, graph_height}, Color::FromHex(plot_color), (uint)plot_width});
+    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{graph_width, graph_height}, 
+        Color::FromHex(plot_color), (uint)plot_width}, true);
 }
 
 std::u32string document_text;

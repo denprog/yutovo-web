@@ -80,6 +80,7 @@ export default {
     'Text color': 'Цвет текста',
     'Text background color': 'Цвет фона текста',
     'Link': 'Ссылка',
+    'Graph format': 'Формат графика',
 
     'Present as': 'Представить как',
     'Auto': 'Автоподбор',
@@ -202,6 +203,12 @@ export default {
     'English': 'Английская',
     'Others': 'Другие',
 
+    'Line graph': 'Линейный график',
+    'Graph width': 'Ширина графика',
+    'Graph height': 'Высота графика',
+    'Plot color': 'Цвет графика',
+    'Plot width': 'Толщина графика',
+
     'First page': 'Первая страница',
 
     'Register code': 'Код регистрации',
@@ -258,7 +265,7 @@ export default {
         В отличии от других программ, Ютово делает вычисления так же, как вы их делаете на бумаге.\
         Это потому, что используется общепринятый математический синтакс, а не строковый.\
         Ютово - это решение для широкого круга арифметических, инженерных и других задач.<br/><br/>\
-        Использованные технологии и библиотеки: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Quasar, jwt-cpp, spdlog, rapidjson.<br/><br/>',
+        Использованные технологии и библиотеки: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.<br/><br/>',
     support: 'Поддержка: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
         Телеграм: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.<br/><br/>',
     version: 'Версия: ',

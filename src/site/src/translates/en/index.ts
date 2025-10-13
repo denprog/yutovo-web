@@ -5,7 +5,7 @@ export default {
         Unlike any other such programs, Yutovo does calculations the same way you do them on paper.\
         That’s because it uses conventional graphical mathematics syntax instead of string one.\
         Because Yutovo is an all-in-one solution to everything from everyday arithmetic to engineering solving.<br/><br/>\
-        Technologies and libraries used: C++, WebAssembly, Emscripten, boost, MPFR, GMP, JavaScript, Drogon, Quasar, jwt-cpp, spdlog, rapidjson.<br/><br/>',
+        Technologies and libraries used: C++, WebAssembly, Emscripten, boost, MPFR, GMP, JavaScript, Drogon, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.<br/><br/>',
     support: 'Support: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
         Telegram: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.<br/><br/>',
     version: 'Version: ',

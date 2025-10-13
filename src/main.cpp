@@ -44,6 +44,7 @@ yutovo_web::WebWindow cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
 std::string res_json;
+ElementId mouse_capture_id;
 
 typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
 std::vector<WebWindowPtr> include_windows;
@@ -537,27 +538,31 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
             {
                 if ((x <= rect.left + m && y <= rect.top + m) || (x >= rect.GetRight() - m && y >= rect.GetBottom() - m))
                 {
-                    SetCursor(5);
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(5);
                     args->document->MouseMove(x, y);
-                    return false;
+                    return true;
                 }
                 if ((x >= rect.GetRight() - m && y <= rect.top + m) || (x <= rect.left + m && y >= rect.GetBottom() - m))
                 {
-                    SetCursor(6);
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(6);
                     args->document->MouseMove(x, y);
-                    return false;
+                    return true;
                 }
                 if (x <= rect.left + m || (x <= rect.GetRight() + m && x >= rect.GetRight() - m))
                 {
-                    SetCursor(3);
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(3);
                     args->document->MouseMove(x, y);
-                    return false;
+                    return true;
                 }
                 if (y <= rect.top + m || (y <= rect.GetBottom() + m && y >= rect.GetBottom() - m))
                 {
-                    SetCursor(4);
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(4);
                     args->document->MouseMove(x, y);
-                    return false;
+                    return true;
                 }
             }
         }
@@ -565,12 +570,13 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 
     if (!args->document->GetElementAtCoords(x, y, 0, id))
     {
-        SetCursor(0);
-        return false;
+        if (mouse_capture_id == ElementId{})
+            SetCursor(0);
+        return true;
     }
 
     if (args->document->MouseMove(x, y))
-        return false;
+        return true;
     
     if (args->document->GetElementAtCoords(x, y, 0, id))
     {
@@ -599,11 +605,40 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     auto p = args->window->GetDocumentPoint();
     int x = mouse_event->targetX + p.x;
     int y = mouse_event->targetY + p.y;
+    int m = document->config.resize_margin_width;
+
+    yutovo_web::ElementId id;
+    if (args->document->GetElementAtCoords(x, y, m, id))
+    {
+        if (args->document->IsResizable(id))
+        {
+            Rect rect;
+            if (args->document->GetElementRect(id, rect))
+            {
+                if ((x <= rect.left + m && y <= rect.top + m) || (x >= rect.GetRight() - m && y >= rect.GetBottom() - m))
+                {
+                    mouse_capture_id = id;
+                }
+                else if ((x >= rect.GetRight() - m && y <= rect.top + m) || (x <= rect.left + m && y >= rect.GetBottom() - m))
+                {
+                    mouse_capture_id = id;
+                }
+                else if (x <= rect.left + m || (x <= rect.GetRight() + m && x >= rect.GetRight() - m))
+                {
+                    mouse_capture_id = id;
+                }
+                else if (y <= rect.top + m || (y <= rect.GetBottom() + m && y >= rect.GetBottom() - m))
+                {
+                    mouse_capture_id = id;
+                }
+            }
+        }
+    }
 
     if (mouse_event->button == 0)
     {
         if (document->MouseLButtonDown(x, y))
-            return false;
+            return true;
     }
 
     EditorState s = args->document->GetEditorState();
@@ -616,16 +651,18 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
         //start selection with mouse
         left_click_pos = Point{x, y};
     }
-    return false;
+    return true;
 }
 
 EM_BOOL OnMouseUp(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
 {
+    bool r = !(mouse_capture_id == ElementId{});
+    mouse_capture_id = ElementId{};
     EventArgs* args = (EventArgs*)user_data;
     auto p = args->window->GetDocumentPoint();
     if (mouse_event->button == 0)
         document->MouseLButtonUp(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
-    return false;
+    return r;
 }
 
 EM_BOOL OnMouseDoubleClick(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)

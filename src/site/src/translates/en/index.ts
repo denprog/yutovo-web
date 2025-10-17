@@ -4,11 +4,13 @@ export default {
     about_yutovo: 'Yutovo is a powerful and simple calculator for solving various mathematical, physical and daily tasks.\
         Unlike any other such programs, Yutovo does calculations the same way you do them on paper.\
         That’s because it uses conventional graphical mathematics syntax instead of string one.\
-        Because Yutovo is an all-in-one solution to everything from everyday arithmetic to engineering solving.<br/><br/>\
-        Technologies and libraries used: C++, WebAssembly, Emscripten, boost, MPFR, GMP, JavaScript, Drogon, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.<br/><br/>',
+        Because Yutovo is an all-in-one solution to everything from everyday arithmetic to engineering solving.\
+        Technologies and libraries used: C++, WebAssembly, Emscripten, boost, MPFR, GMP, JavaScript, Drogon, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.',
     support: 'Support: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
-        Telegram: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.<br/><br/>',
+        Telegram: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.',
     version: 'Version: ',
+    license: 'Content on this site is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="license noopener">\
+        Creative Commons Attribution 4.0 International License (CC BY 4.0)</a>.',
 
     cookies_use: 'This website uses cookies for normal functioning.',
 

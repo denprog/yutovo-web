@@ -7,9 +7,10 @@
                     <q-form @submit="onSubmit">
                         <div class="q-pb-md text-blue text-h5" style="text-align: center">{{ $t('About') }}</div>
                         <div class="text-h10">
-                            <span v-html=about_yutovo></span>
-                            <span v-html=support></span>
-                            <span v-html=version></span>
+                            <span v-html=about_yutovo></span><br/><br/>
+                            <span v-html=support></span><br/><br/>
+                            <span v-html=version></span><br/><br/>
+                            <span v-html=license></span>
                         </div>
                         <div class="q-pt-md q-gutter-sm" style="text-align: center">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
@@ -51,7 +52,8 @@ export default {
         return {
             about_yutovo: t('about_yutovo'),
             support: t('support'),
-            version: t('version') + versionNumber
+            version: t('version') + versionNumber,
+            license: t('license'),
         }
     }
 }

@@ -264,11 +264,13 @@ export default {
     about_yutovo: 'Ютово - это мощный калькулятор для решения различных математических, физических и повседневных задач.\
         В отличии от других программ, Ютово делает вычисления так же, как вы их делаете на бумаге.\
         Это потому, что используется общепринятый математический синтакс, а не строковый.\
-        Ютово - это решение для широкого круга арифметических, инженерных и других задач.<br/><br/>\
-        Использованные технологии и библиотеки: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.<br/><br/>',
+        Ютово - это решение для широкого круга арифметических, инженерных и других задач.\
+        Использованные технологии и библиотеки: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.',
     support: 'Поддержка: e-mail: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
-        Телеграм: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.<br/><br/>',
+        Телеграм: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo">{\'@\'}yutovo</a>.',
     version: 'Версия: ',
+    license: 'Материалы этого сайта доступны по лицензии <a href="https://creativecommons.org/licenses/by/4.0/deed.ru" target="_blank" rel="license noopener">\
+        Creative Commons Attribution 4.0 International (CC BY 4.0)</a>.',
 
     cookies_use: 'Этот сайт использует куки для нормального фукционирования.',
 

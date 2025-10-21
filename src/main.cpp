@@ -681,6 +681,7 @@ EM_BOOL OnMouseWheel(int event_type, const EmscriptenWheelEvent* wheel_event, vo
         yutovo::Point{int(-wheel_event->deltaX / 8), int(-wheel_event->deltaY / 8)}, 
         yutovo::Point{int(-wheel_event->deltaX / 8), int(-wheel_event->deltaY / 8)}))
     {
+        return true;
     }
     return false;
 }

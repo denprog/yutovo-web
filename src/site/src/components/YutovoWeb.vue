@@ -248,6 +248,10 @@
                     </table>
                 </q-btn-dropdown>
             </div>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
+            </q-btn>
         </q-btn-group>
     </div>
 
@@ -460,6 +464,10 @@
                     <q-item id="set-unit-menu" clickable style='display:none;' @click='onSetUnit();'>
                         <q-item-section>{{ $t('Unit') }}</q-item-section>
                     </q-item>
+                    
+                    <q-item id="graph-format" clickable style='display:none;' @click='onGraphFormat();'>
+                        <q-item-section>{{ $t('Graph format') }}</q-item-section>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -479,7 +487,6 @@ import { Cookies } from 'quasar'
 import { useRouter } from 'vue-router'
 import { api } from 'boot/boot'
 import { computed } from 'vue'
-import { Dialog } from 'quasar'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';
@@ -487,6 +494,7 @@ import ConfigDialog from  'layouts/ConfigDialog.vue';
 import SetUnitDialog from  'layouts/SetUnitDialog.vue';
 import LinkDialog from 'layouts/LinkDialog.vue';
 import ConfirmDialog from 'layouts/ConfirmDialog.vue';
+import GraphFormatDialog from 'layouts/GraphFormatDialog.vue';
 import pako from 'pako';
 
 export default
@@ -2174,6 +2182,10 @@ export default
             m = document.getElementById('set-unit-menu');
             if (window.Module.cwrap('HasUnit', 'int', [])())
                 m.style.display = '';
+
+            m = document.getElementById('graph-format');
+            if (window.Module.cwrap('IsGraph', 'int', [])())
+                m.style.display = '';
         },
 
         async getClipboardPermission()
@@ -2372,6 +2384,29 @@ export default
             canvas.focus();
         },
 
+        onGraphFormat()
+        {
+            this.contextMenu.hide();
+            var format_json = UTF8ToString(Module.cwrap('GetGraphFormat', 'number')());
+            if (format_json == '')
+                return;
+            var json = JSON.parse(format_json);
+            this.$q.dialog(
+                {
+                    component: GraphFormatDialog, 
+                    parent: this, 
+                    apiResponse: this.resp,
+                    componentProps: 
+                    {
+                        graph_width_prop: json.graph_width,
+                        graph_height_prop: json.graph_height,
+                        plot_color_prop: json.plot_color,
+                        plot_width_prop: json.plot_width
+                    }
+                });
+            canvas.focus();
+        },
+
         onPlus()
         {
             Module.cwrap('OnPlus', 'void', [])();
@@ -2494,6 +2529,12 @@ export default
         onGreekLetter(letter)
         {
             Module.cwrap('InsertString', 'void', ['string'])(letter);
+            canvas.focus();
+        },
+
+        onGraphLine()
+        {
+            Module.cwrap('OnGraphLine', 'void', [])();
             canvas.focus();
         },
 

@@ -48,7 +48,6 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import { api } from 'boot/boot'
 import { useI18n } from 'vue-i18n'
 
 export default

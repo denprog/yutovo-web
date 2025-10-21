@@ -43,7 +43,8 @@ const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 yutovo_web::WebWindow cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
-std::string link_json;
+std::string res_json;
+ElementId mouse_capture_id;
 
 typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
 std::vector<WebWindowPtr> include_windows;
@@ -507,6 +508,14 @@ EM_JS(void, SetCursor, (int type),
             scroll_container.style.cursor = 'text';
         else if (type == 2)
             scroll_container.style.cursor = 'pointer';
+        else if (type == 3)
+            scroll_container.style.cursor = 'ew-resize';
+        else if (type == 4)
+            scroll_container.style.cursor = 'ns-resize';
+        else if (type == 5)
+            scroll_container.style.cursor = 'nwse-resize';
+        else if (type == 6)
+            scroll_container.style.cursor = 'nesw-resize';
         else if (type == 0)
             scroll_container.style.cursor = 'default';
     });
@@ -515,21 +524,77 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 {
     EventArgs* args = (EventArgs*)user_data;
     auto p = args->window->GetDocumentPoint();
+    int x = mouse_event->targetX + p.x;
+    int y = mouse_event->targetY + p.y;
+    int m = document->config.resize_margin_width;
+
     yutovo_web::ElementId id;
-    args->document->GetElementAtCoords(mouse_event->targetX + p.x, mouse_event->targetY + p.y, id);
-    if (args->document->IsString(id))
+    if (args->document->GetElementAtCoords(x, y, m, id))
     {
-        if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
-            SetCursor(2);
-        else
-            SetCursor(1);
+        if (args->document->IsResizable(id))
+        {
+            Rect rect;
+            if (args->document->GetElementRect(id, rect))
+            {
+                if ((x <= rect.left + m && y <= rect.top + m) || (x >= rect.GetRight() - m && y >= rect.GetBottom() - m))
+                {
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(5);
+                    args->document->MouseMove(x, y);
+                    return true;
+                }
+                if ((x >= rect.GetRight() - m && y <= rect.top + m) || (x <= rect.left + m && y >= rect.GetBottom() - m))
+                {
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(6);
+                    args->document->MouseMove(x, y);
+                    return true;
+                }
+                if (x <= rect.left + m || (x <= rect.GetRight() + m && x >= rect.GetRight() - m))
+                {
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(3);
+                    args->document->MouseMove(x, y);
+                    return true;
+                }
+                if (y <= rect.top + m || (y <= rect.GetBottom() + m && y >= rect.GetBottom() - m))
+                {
+                    if (mouse_capture_id == ElementId{})
+                        SetCursor(4);
+                    args->document->MouseMove(x, y);
+                    return true;
+                }
+            }
+        }
     }
-    else
-        SetCursor(0);
+
+    if (!args->document->GetElementAtCoords(x, y, 0, id))
+    {
+        if (mouse_capture_id == ElementId{})
+            SetCursor(0);
+        return true;
+    }
+
+    if (args->document->MouseMove(x, y))
+        return true;
+    
+    if (args->document->GetElementAtCoords(x, y, 0, id))
+    {
+        if (args->document->IsString(id))
+        {
+            if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
+                SetCursor(2);
+            else
+                SetCursor(1);
+        }
+        else
+            SetCursor(0);
+    }
+
     if (mouse_event->buttons == 1)
     {
         //selection with mouse
-        args->document->Select(left_click_pos.x, left_click_pos.y, mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+        args->document->Select(left_click_pos.x, left_click_pos.y, x, y);
     }
     return false;
 }
@@ -537,18 +602,67 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
 {
     EventArgs* args = (EventArgs*)user_data;
-    EditorState s = args->document->GetEditorState();
     auto p = args->window->GetDocumentPoint();
+    int x = mouse_event->targetX + p.x;
+    int y = mouse_event->targetY + p.y;
+    int m = document->config.resize_margin_width;
+
+    yutovo_web::ElementId id;
+    if (args->document->GetElementAtCoords(x, y, m, id))
+    {
+        if (args->document->IsResizable(id))
+        {
+            Rect rect;
+            if (args->document->GetElementRect(id, rect))
+            {
+                if ((x <= rect.left + m && y <= rect.top + m) || (x >= rect.GetRight() - m && y >= rect.GetBottom() - m))
+                {
+                    mouse_capture_id = id;
+                }
+                else if ((x >= rect.GetRight() - m && y <= rect.top + m) || (x <= rect.left + m && y >= rect.GetBottom() - m))
+                {
+                    mouse_capture_id = id;
+                }
+                else if (x <= rect.left + m || (x <= rect.GetRight() + m && x >= rect.GetRight() - m))
+                {
+                    mouse_capture_id = id;
+                }
+                else if (y <= rect.top + m || (y <= rect.GetBottom() + m && y >= rect.GetBottom() - m))
+                {
+                    mouse_capture_id = id;
+                }
+            }
+        }
+    }
+
+    if (mouse_event->button == 0)
+    {
+        if (document->MouseLButtonDown(x, y))
+            return true;
+    }
+
+    EditorState s = args->document->GetEditorState();
     if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
-        args->document->MoveCaret(mouse_event->targetX + p.x, mouse_event->targetY + p.y, mouse_event->ctrlKey);
+        args->document->MoveCaret(x, y, mouse_event->ctrlKey);
     }
     if (mouse_event->button == 0)
     {
         //start selection with mouse
-        left_click_pos = Point{mouse_event->targetX + p.x, mouse_event->targetY + p.y};
+        left_click_pos = Point{x, y};
     }
-    return false;
+    return true;
+}
+
+EM_BOOL OnMouseUp(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
+{
+    bool r = !(mouse_capture_id == ElementId{});
+    mouse_capture_id = ElementId{};
+    EventArgs* args = (EventArgs*)user_data;
+    auto p = args->window->GetDocumentPoint();
+    if (mouse_event->button == 0)
+        document->MouseLButtonUp(mouse_event->targetX + p.x, mouse_event->targetY + p.y);
+    return r;
 }
 
 EM_BOOL OnMouseDoubleClick(int event_type, const EmscriptenMouseEvent* mouse_event, void* user_data)
@@ -556,6 +670,19 @@ EM_BOOL OnMouseDoubleClick(int event_type, const EmscriptenMouseEvent* mouse_eve
     EventArgs* args = (EventArgs*)user_data;
     if (mouse_event->button == 0)
         args->document->SelectOut();
+    return false;
+}
+
+EM_BOOL OnMouseWheel(int event_type, const EmscriptenWheelEvent* wheel_event, void* user_data)
+{
+    EventArgs* args = (EventArgs*)user_data;
+    auto p = args->window->GetDocumentPoint();
+    if (document->MouseWheel(wheel_event->mouse.targetX + p.x, wheel_event->mouse.targetY + p.y, 
+        yutovo::Point{int(-wheel_event->deltaX / 8), int(-wheel_event->deltaY / 8)}, 
+        yutovo::Point{int(-wheel_event->deltaX / 8), int(-wheel_event->deltaY / 8)}))
+    {
+        return true;
+    }
     return false;
 }
 
@@ -914,13 +1041,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
     return document->HasUnit(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
+{
+    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE)
+        return 1;
+    return document->FindCurrentParentByType(ElementType::GRAPH_LINE) != ElementId{};
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
 {
-    link_json = "";
+    res_json = "";
     EditorState s = document->GetEditorState();
     std::u32string link_str, link_url;
     if (document->GetLink(s.caret_state.id, link_str, link_url))
-        link_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
+        res_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
     else
     {
         if (s.selection_state.state.size() == 1)
@@ -933,12 +1067,25 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
                 if (str.length() >= el_s.start + el_s.size)
                 {
                     str = str.substr(el_s.start, el_s.size);
-                    link_json = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
+                    res_json = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
                 }
             }
         }
     }
-    return (char*)link_json.c_str();
+    return (char*)res_json.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
+{
+    res_json = "";
+    EditorState s = document->GetEditorState();
+    GraphFormat f;
+    if (document->GetGraphFormat(yutovo::GetParent(s.caret_state.id), f))
+    {
+        res_json = "{\"graph_width\":" + std::to_string(f.size.width) + ",\"graph_height\":" + std::to_string(f.size.height) + 
+            ",\"plot_color\":\"" + f.plot_color.ToHex() + "\",\"plot_width\":" + std::to_string(f.plot_width) + "}";
+    }
+    return (char*)res_json.c_str();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
@@ -1122,6 +1269,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnEquation()
     if (!document)
         return;
     document->InsertEquation(ResultType::AUTO, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphLine()
+{
+    if (!document)
+        return;
+    document->InsertGraph(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
@@ -1391,6 +1545,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
         document->SetComplexForm(_id, (ComplexForm)complex_form, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int graph_width, const int graph_height, const char* plot_color, const int plot_width)
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{graph_width, graph_height}, 
+        Color::FromHex(plot_color), (uint)plot_width}, true);
+}
+
 std::u32string document_text;
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
@@ -1541,7 +1704,9 @@ int main(int argc, char* argv[])
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
     emscripten_set_mousemove_callback("#scroll-container", &args, true, OnMouseMove);
     emscripten_set_mousedown_callback("#scroll-container", &args, true, OnMouseDown);
+    emscripten_set_mouseup_callback("#scroll-container", &args, true, OnMouseUp);
     emscripten_set_dblclick_callback("#scroll-container", &args, true, OnMouseDoubleClick);
+    emscripten_set_wheel_callback("#scroll-container", &args, true, OnMouseWheel);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);

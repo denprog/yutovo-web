@@ -796,8 +796,13 @@ void DrawImageTask::Execute()
         surface = SDL_LoadBMP_RW(p, 1);
         if (!surface)
         {
-            printf("SDL_LoadBMP_RW error: %s\n", SDL_GetError());
-            return;
+            //try to load as plain RGBA data
+            surface = SDL_CreateRGBSurfaceFrom(&picture[0], rect.width, rect.height, 32, rect.width * 4, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            if (!surface)
+            {
+                printf("Error loading picture: %s\n", SDL_GetError());
+                return;
+            }
         }
     }
 

@@ -81,6 +81,7 @@ export default {
     'Text background color': 'Color de fondo del texto',
     'Link': 'Enlace',
     'Graph format': 'Formato de gráfico',
+    'Plot format': 'Formato de gráfico',
 
     'Present as': 'Presentar como',
     'Auto': 'Selección automática',
@@ -248,10 +249,11 @@ export default {
     'Background selection': 'Fondo de selección',
 
     'Line graph': 'Gráfica lineal',
-    'Graph width': 'Ancho del gráfico',
-    'Graph height': 'Altura del gráfico',
-    'Plot color': 'Color del gráfico',
-    'Plot width': 'Grosor del gráfico',
+    'Width': 'Ancho',
+    'Height': 'Altura',
+    'Grid thickness': 'Grosor de cuadrícula',
+    'Thickness': 'Grosor',
+    'Color': 'Color',
 
     email_email_message: 'Solicitud de cambio de correo desde el sitio yutovo.ru. Ingrese este código: EMAIL_CODE en el diálogo.',
 

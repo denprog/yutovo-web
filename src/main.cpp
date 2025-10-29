@@ -249,6 +249,18 @@ EM_JS(void, IncludeDocument, (const char* filename, size_t filename_size, const 
             }));
     });
 
+EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width),
+    {
+        window.dispatchEvent(new CustomEvent('plotFormatDialog', 
+            {
+                'detail': 
+                {
+                    'color': UTF8ToString(color, color_size),
+                    'width': width
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
@@ -637,8 +649,25 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
 
     if (mouse_event->button == 0)
     {
-        if (document->MouseLButtonDown(x, y))
-            return true;
+        MouseHoldType hold_type;
+        ElementId hold_id;
+        if (document->MouseLButtonDown(x, y, hold_type, hold_id))
+        {
+            switch (hold_type)
+            {
+            case MouseHoldType::PLOT_FORMAT_DIALOG:
+                {
+                    yutovo::PlotFormat f;
+                    if (!document->GetPlotFormat(hold_id, f))
+                        return true;
+                    std::string color = f.color.ToHex();
+                    PlotFormatDialog(color.c_str(), color.size(), f.width);
+                }
+                return true;
+            default:
+                return true;
+            }
+        }
     }
 
     EditorState s = args->document->GetEditorState();
@@ -1082,8 +1111,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
     GraphFormat f;
     if (document->GetGraphFormat(yutovo::GetParent(s.caret_state.id), f))
     {
-        res_json = "{\"graph_width\":" + std::to_string(f.size.width) + ",\"graph_height\":" + std::to_string(f.size.height) + 
-            ",\"plot_color\":\"" + f.plot_color.ToHex() + "\",\"plot_width\":" + std::to_string(f.plot_width) + "}";
+        res_json = "{\"width\":" + std::to_string(f.size.width) + ",\"height\":" + std::to_string(f.size.height) + 
+            ",\"color\":\"" + f.color.ToHex() + "\",\"grid_width\":" + std::to_string(f.grid_width) + "}";
     }
     return (char*)res_json.c_str();
 }
@@ -1545,13 +1574,21 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
         document->SetComplexForm(_id, (ComplexForm)complex_form, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int graph_width, const int graph_height, const char* plot_color, const int plot_width)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int width, const int height, const char* color, const int grid_width)
 {
     EditorState s = document->GetEditorState();
     if (s.caret_state.IsEmpty())
         return;
-    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{graph_width, graph_height}, 
-        Color::FromHex(plot_color), (uint)plot_width}, true);
+    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{width, height}, Color::FromHex(color), (uint)grid_width}, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int width)
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+    yutovo::PlotFormat f{Color::FromHex(color), (uint)width};
+    document->SetPlotFormat(yutovo::GetParent(s.caret_state.id), f, true);
 }
 
 std::u32string document_text;

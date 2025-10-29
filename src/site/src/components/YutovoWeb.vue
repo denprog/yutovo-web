@@ -495,6 +495,7 @@ import SetUnitDialog from  'layouts/SetUnitDialog.vue';
 import LinkDialog from 'layouts/LinkDialog.vue';
 import ConfirmDialog from 'layouts/ConfirmDialog.vue';
 import GraphFormatDialog from 'layouts/GraphFormatDialog.vue';
+import PlotFormatDialog from 'layouts/PlotFormatDialog.vue';
 import pako from 'pako';
 
 export default
@@ -521,6 +522,7 @@ export default
             window.addEventListener('updateDocumentName', this.updateDocumentName, false);
             window.addEventListener('translateString', this.translateString, false);
             window.addEventListener('solverAction', this.solverAction, false);
+            window.addEventListener('plotFormatDialog', this.plotFormatDialog, false);
         }
         else
         {
@@ -540,6 +542,7 @@ export default
             window.attachEvent('updateDocumentName', this.updateDocumentName, false);
             window.attachEvent('translateString', this.translateString);
             window.attachEvent('solverAction', this.solverAction);
+            window.attachEvent('plotFormatDialog', this.plotFormatDialog);
         }
     },
 
@@ -1904,7 +1907,6 @@ export default
 
         async includeDocument(event)
         {
-            console.log('includeDocument');
             var name = event.detail.name;
             var language = this.store.state.editor.language == '' ? 'en' : this.store.state.editor.language;
             var s = this.store;
@@ -2201,6 +2203,24 @@ export default
             return true;
         },
 
+        async plotFormatDialog()
+        {
+            var color = event.detail.color;
+            var width = event.detail.width;
+            this.$q.dialog(
+                {
+                    component: PlotFormatDialog, 
+                    parent: this, 
+                    apiResponse: this.resp,
+                    componentProps: 
+                    {
+                        width_prop: width,
+                        color_prop: color
+                    }
+                });
+            canvas.focus();
+        },
+
         onPresentAsAuto()
         {
             window.Module.cwrap('OnPresentAsAuto', 'void', [])();
@@ -2398,10 +2418,10 @@ export default
                     apiResponse: this.resp,
                     componentProps: 
                     {
-                        graph_width_prop: json.graph_width,
-                        graph_height_prop: json.graph_height,
-                        plot_color_prop: json.plot_color,
-                        plot_width_prop: json.plot_width
+                        width_prop: json.width,
+                        height_prop: json.height,
+                        color_prop: json.color,
+                        grid_width_prop: json.grid_width
                     }
                 });
             canvas.focus();

@@ -81,6 +81,7 @@ export default {
     'Text background color': 'Цвет фона текста',
     'Link': 'Ссылка',
     'Graph format': 'Формат графика',
+    'Plot format': 'Формат графика',
 
     'Present as': 'Представить как',
     'Auto': 'Автоподбор',
@@ -204,10 +205,12 @@ export default {
     'Others': 'Другие',
 
     'Line graph': 'Линейный график',
-    'Graph width': 'Ширина графика',
-    'Graph height': 'Высота графика',
+    'Width': 'Ширина',
+    'Height': 'Высота',
     'Plot color': 'Цвет графика',
     'Plot width': 'Толщина графика',
+    'Grid thickness': 'Толщина сетки',
+    'Color': 'Цвет',
 
     'First page': 'Первая страница',
 

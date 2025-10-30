@@ -18,6 +18,7 @@ namespace yutovo_web
 void ShortcutsMap::Init(DocumentPtr _document)
 {
     document = _document;
+    command_maps.clear();
 
     //caret moving
     Add(KeySequence(DOM_VK_LEFT), "", std::function<void ()>(std::bind(&Document::MoveCaretLeft, document.get(), false, false)));

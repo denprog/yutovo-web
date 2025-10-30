@@ -19,6 +19,10 @@ using emscripten::val;
 using namespace yutovo;
 
 yutovo::DocumentPtr document;
+yutovo_web::WebWindow window;
+yutovo::Config config;
+yutovo_web::ShortcutsMap shortcuts_map;
+
 std::atomic_bool set_document_point;
 yutovo::Point document_point{false};
 yutovo::Size last_document_size;
@@ -46,6 +50,10 @@ std::u32string cast_unit_system;
 std::string res_json;
 ElementId mouse_capture_id;
 
+std::atomic_bool create_document{false};
+std::string load_json;
+int load_document_id = 0;
+
 typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
 std::vector<WebWindowPtr> include_windows;
 
@@ -60,6 +68,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
 
 void FillUnits(const std::string system);
 ElementId GetRealResultId();
+void CreateDocument();
 
 EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value), 
     {
@@ -474,6 +483,13 @@ void MainLoop(void* arg)
         for (auto& f : files)
             IncludeDocument(f.first.c_str(), f.first.size(), f.second);
     }
+
+    if (create_document)
+    {
+        CreateDocument();
+        create_document = false;
+        load_json = "";
+    }
 }
 
 struct EventArgs
@@ -482,6 +498,8 @@ struct EventArgs
     yutovo::Document* document;
     yutovo_web::WebWindow* window;
 };
+
+EventArgs args;
 
 int CharsNumber(const char *str)
 {
@@ -719,8 +737,11 @@ EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_d
 {
     EventArgs* args = (EventArgs*)user_data;
 
-    int width = 0, height = 0, f = 0;
-    emscripten_get_canvas_size(&width, &height, &f);
+    double css_w = 0, css_h = 0;
+    emscripten_get_element_css_size("#canvas", &css_w, &css_h);
+    int width = (int)css_w;
+    int height = (int)css_h;
+    emscripten_set_canvas_element_size("#canvas", width, height);
 
     if (surface)
         SDL_FreeSurface(surface);
@@ -732,6 +753,7 @@ EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_d
     }
 
     args->document->Resize(width, height);
+    args->document->Redraw();
     return true;
 }
 
@@ -762,11 +784,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnNew()
 {
     if (document)
     {
-        document->RemoveSolver(1);
-        document->New();
-        document->WaitTask(document->InsertCode(false, false));
-        EditorState s{CaretState{ElementId{0, 0, 0, 0, 0, 0, 0, 0}}, SelectionState{}};
-        document->SetEditorState(s);
+        load_document_id = 0;
+        create_document = true;
     }
 }
 
@@ -774,8 +793,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document
 {
     if (document)
     {
-        document->RemoveSolver(1);
-        document->LoadJson(std::string(json), document_id);
+        load_json = json;
+        load_document_id = document_id;
+        create_document = true;
     }
 }
 
@@ -1434,9 +1454,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLibraryFilePart(const char* part_file, co
     file += part_file;
     if (finish)
     {
-        auto _s = std::string(file);
+        load_json = std::string(file);
         file = "";
-        document->LoadJson(_s, document_id);
+        load_document_id = document_id;
+        create_document = true;
     }
 }
 
@@ -1679,6 +1700,38 @@ ElementId GetRealResultId()
     return id;
 }
 
+void CreateDocument()
+{
+    document.reset(new yutovo::Document(&window, config));
+
+    shortcuts_map.Init(document);
+
+    args = EventArgs{&shortcuts_map, document.get(), &window};
+    emscripten_set_keydown_callback("#canvas", nullptr, true, nullptr);
+    emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
+    emscripten_set_mousemove_callback("#scroll-container", nullptr, true, nullptr);
+    emscripten_set_mousemove_callback("#scroll-container", &args, true, OnMouseMove);
+    emscripten_set_mousedown_callback("#scroll-container", nullptr, true, nullptr);
+    emscripten_set_mousedown_callback("#scroll-container", &args, true, OnMouseDown);
+    emscripten_set_mouseup_callback("#scroll-container", &args, true, OnMouseUp);
+    emscripten_set_dblclick_callback("#scroll-container", nullptr, true, nullptr);
+    emscripten_set_dblclick_callback("#scroll-container", &args, true, OnMouseDoubleClick);
+    emscripten_set_wheel_callback("#scroll-container", nullptr, true, nullptr);
+    emscripten_set_wheel_callback("#scroll-container", &args, true, OnMouseWheel);
+    emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, nullptr);
+    emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
+
+    document->Start();
+    document->SetDefaultPageFormat(2, 2, 22, 22, 10);
+    double w = 0, h = 0;
+    emscripten_get_element_css_size("#canvas", &w, &h);
+    document->Resize((int)w, (int)h);
+    if (!load_json.empty())
+        document->LoadJson(load_json, load_document_id);
+    else
+        document->InsertCode(false, false);
+}
+
 int main(int argc, char* argv[])
 {
     printf("Start\n");
@@ -1715,36 +1768,20 @@ int main(int argc, char* argv[])
 
     canvas.call<void>("focus");
 
-    yutovo_web::WebWindow window;
-    yutovo::Config config;
     config.service_ip = "yutovo.ru";
     config.service_port = 9002;
-    document.reset(new yutovo::Document(&window, config));
-    document->Start();
-    document->InsertCode(false, false);
 
-    document->SetDefaultPageFormat(2, 2, 22, 22, 10);
-
-    cast_units_document.reset(new Document(&cast_units_window, config));
-    cast_units_document->GetConfig(config);
-    config.with_border = false;
-    config.caret_visible = false;
-    config.formula_border = false;
-    config.solve_delay = 0;
+    yutovo::Config cast_config;
+    cast_units_document.reset(new Document(&cast_units_window, cast_config));
+    cast_units_document->GetConfig(cast_config);
+    cast_config.with_border = false;
+    cast_config.caret_visible = false;
+    cast_config.formula_border = false;
+    cast_config.solve_delay = 0;
     cast_units_document->Start();
-    cast_units_document->WaitTask(cast_units_document->SetConfig(config, false));
+    cast_units_document->WaitTask(cast_units_document->SetConfig(cast_config, false));
 
-    yutovo_web::ShortcutsMap shortcuts_map;
-    shortcuts_map.Init(document);
-
-    EventArgs args{&shortcuts_map, document.get(), &window};
-    emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
-    emscripten_set_mousemove_callback("#scroll-container", &args, true, OnMouseMove);
-    emscripten_set_mousedown_callback("#scroll-container", &args, true, OnMouseDown);
-    emscripten_set_mouseup_callback("#scroll-container", &args, true, OnMouseUp);
-    emscripten_set_dblclick_callback("#scroll-container", &args, true, OnMouseDoubleClick);
-    emscripten_set_wheel_callback("#scroll-container", &args, true, OnMouseWheel);
-    emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
+    create_document = true; //create the first document after the main loop starts
 
     emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);
 

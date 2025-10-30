@@ -6,8 +6,8 @@
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ $t('Graph format') }}</div>
-                        <q-input ref="widthRef" square v-model="width" :rules="[this.intRequired]" v-bind:label="$t('Width')" />
-                        <q-input ref="heightRef" square v-model="height" :rules="[this.intRequired]" v-bind:label="$t('Height')"/>
+                        <q-input ref="widthRef" square v-model="width" :rules="[this.intMoreZeroRequired]" v-bind:label="$t('Width')" />
+                        <q-input ref="heightRef" square v-model="height" :rules="[this.intMoreZeroRequired]" v-bind:label="$t('Height')"/>
                         <div>{{ $t('Color') }}
                             <q-btn :style="{ 'background-color': color }" @click='onColor();'></q-btn>
                         </div>
@@ -111,9 +111,14 @@ export default {
         const heightRef = ref(null);
         const gridWidthRef = ref(null);
 
-        const intRequired = (val) =>
+        const intMoreZeroRequired = (val) =>
         {
             return  (val && val > 0 || tr.t('The field must be filled'));
+        };
+
+        const intRequired = (val) =>
+        {
+            return  (val && val >= 0 || tr.t('The field must be filled'));
         };
 
         const onReset = () =>
@@ -124,6 +129,7 @@ export default {
         return {
             store,
             graphFormatDialog,
+            intMoreZeroRequired,
             intRequired,
             onReset,
             tr,

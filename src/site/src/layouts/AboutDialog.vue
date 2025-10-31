@@ -48,7 +48,7 @@ export default {
     data()
     {
         const { t } = useI18n();
-        const versionNumber = '1.3.1.';
+        const versionNumber = '1.3.2';
         return {
             about_yutovo: t('about_yutovo'),
             support: t('support'),

@@ -259,7 +259,7 @@
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
         <div id="scroll-container">
-            <q-menu ref="contextMenu" touch-position square context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
+            <q-menu ref="contextMenu" touch-position square fit context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
                 <q-list dense style="min-width: 100px">
                     <q-item id="copy-menu" clickable @click='onCopy();'>
                         <q-item-section>{{ $t('Copy') }}</q-item-section>
@@ -2188,6 +2188,8 @@ export default
             m = document.getElementById('graph-format');
             if (window.Module.cwrap('IsGraph', 'int', [])())
                 m.style.display = '';
+            
+            this.$refs.contextMenu.updatePosition();
         },
 
         async getClipboardPermission()

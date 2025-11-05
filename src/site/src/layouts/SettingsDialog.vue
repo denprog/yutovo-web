@@ -94,7 +94,7 @@ export default
         const store = useStore();
         const codeBlockColor = ref(typeof store.state.editor.settings.code_block_border_color === 'undefined' ? '#0000ff' : 
             colorToHex(store.state.editor.settings.code_block_border_color));
-        const numbersColor = ref(typeof store.state.editor.settings.code_block_border_color === 'undefined' ? '#0000ff' : 
+        const numbersColor = ref(typeof store.state.editor.settings.numbers_color === 'undefined' ? '#0000ff' : 
             colorToHex(store.state.editor.settings.numbers_color));
         const variablesColor = ref(typeof store.state.editor.settings.variables_color === 'undefined' ? '#00193e' : 
             colorToHex(store.state.editor.settings.variables_color));

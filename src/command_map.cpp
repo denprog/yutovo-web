@@ -77,12 +77,12 @@ void ShortcutsMap::Init(DocumentPtr _document)
     Add(KeySequence(), '-', "\\minus", std::function<void ()>(std::bind(&Document::InsertMinus, document.get(), true)), CommandContext::Formula);
     Add(KeySequence(), '*', "\\times", std::function<void ()>(std::bind(&Document::InsertMultiply, document.get(), true)), CommandContext::Formula);
     Add(KeySequence(), '/', "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document.get(), true)), CommandContext::Formula);
-    Add(KeySequence(DOM_VK_6, true, true, false), "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document.get(), true)), 
+    Add(KeySequence(DOM_VK_P, true, true, false), "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document.get(), true)), 
         CommandContext::Formula);
-    Add(KeySequence(DOM_VK_3, true, true, false), "\\sub", std::function<void ()>(std::bind(&Document::InsertSubscript, document.get(), true)), 
+    Add(KeySequence(DOM_VK_S, true, true, false), "\\sub", std::function<void ()>(std::bind(&Document::InsertSubscript, document.get(), true)), 
         CommandContext::Formula);
     Add(KeySequence(DOM_VK_N, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document.get(), true)));
-    Add(KeySequence(DOM_VK_S, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document.get(), true)));
+    Add(KeySequence(DOM_VK_Q, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document.get(), true)));
     Add(KeySequence(), '=', "\\equal", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::AUTO, true)), 
         CommandContext::Formula);
     Add(KeySequence(), "\\eq_real", std::function<void ()>(std::bind(&Document::InsertEquation, document.get(), ResultType::REAL, true)), 

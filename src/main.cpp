@@ -612,7 +612,7 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     {
         if (args->document->IsString(id))
         {
-            if (args->document->GetElementType(id) == ElementType::LINK && mouse_event->ctrlKey)
+            if (args->document->GetElementType(id) == ElementType::LINK && !mouse_event->ctrlKey)
                 SetCursor(2);
             else
                 SetCursor(1);
@@ -691,7 +691,7 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
     EditorState s = args->document->GetEditorState();
     if (mouse_event->button == 0 || (mouse_event->button == 2 && s.selection_state.IsEmpty()))
     {
-        args->document->MoveCaret(x, y, mouse_event->ctrlKey);
+        args->document->MoveCaret(x, y, !mouse_event->ctrlKey);
     }
     if (mouse_event->button == 0)
     {

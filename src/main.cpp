@@ -18,7 +18,7 @@
 using emscripten::val;
 using namespace yutovo;
 
-typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
+typedef std::unique_ptr<yutovo_web::WebWindow> WebWindowPtr;
 
 std::unique_ptr<yutovo::Document> document;
 WebWindowPtr window;
@@ -804,9 +804,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpenInclude(const char* json, const int d
 {
     if (document)
     {
-        WebWindowPtr w(new yutovo_web::WebWindow());
-        include_windows.push_back(w);
-        document->LoadJsonInclude(std::string(json), document_id, w);
+        include_windows.emplace_back(new yutovo_web::WebWindow());
+        document->LoadJsonInclude(std::string(json), document_id, include_windows[include_windows.size() - 1].get());
     }
 }
 
@@ -1703,8 +1702,8 @@ ElementId GetRealResultId()
 
 void CreateDocument()
 {
+    document.reset(new yutovo::Document(window.get(), config));
     include_windows.clear();
-    document.reset(new yutovo::Document(window, config));
     window->Init(document.get());
 
     shortcuts_map.Init(document.get());
@@ -1775,11 +1774,11 @@ int main(int argc, char* argv[])
     config.service_port = 9002;
 
     window.reset(new yutovo_web::WebWindow());
-    
+
     cast_units_window.reset(new yutovo_web::WebWindow());
     
     yutovo::Config cast_config;
-    cast_units_document.reset(new Document(cast_units_window, cast_config));
+    cast_units_document.reset(new Document(cast_units_window.get(), cast_config));
     cast_units_document->GetConfig(cast_config);
     cast_config.with_border = false;
     cast_config.caret_visible = false;

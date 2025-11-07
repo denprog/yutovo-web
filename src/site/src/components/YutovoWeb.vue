@@ -692,9 +692,6 @@ export default
 
         var Module =
             {
-                preRun: [],
-                postRun: [],
-                
                 canvas: (
                     function()
                     {

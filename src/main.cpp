@@ -18,8 +18,10 @@
 using emscripten::val;
 using namespace yutovo;
 
-yutovo::DocumentPtr document;
-yutovo_web::WebWindow window;
+typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
+
+std::unique_ptr<yutovo::Document> document;
+WebWindowPtr window;
 yutovo::Config config;
 yutovo_web::ShortcutsMap shortcuts_map;
 
@@ -40,11 +42,11 @@ ElementId cast_unit_id;
 std::atomic_bool cast_units_ready{false};
 std::thread cast_units_thread;
 std::atomic_bool stop_cast_units_thread{false};
-std::mutex cast_units_mutex;
+std::recursive_mutex cast_units_mutex;
 std::vector<Unit> cast_units;
 std::vector<std::string> cast_units_images;
 const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-yutovo_web::WebWindow cast_units_window;
+WebWindowPtr cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
 std::string res_json;
@@ -54,7 +56,6 @@ std::atomic_bool create_document{false};
 std::string load_json;
 int load_document_id = 0;
 
-typedef std::shared_ptr<yutovo_web::WebWindow> WebWindowPtr;
 std::vector<WebWindowPtr> include_windows;
 
 SDL_Renderer* renderer = nullptr;
@@ -452,7 +453,7 @@ void MainLoop(void* arg)
 
     if (cast_units_ready)
     {
-        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        std::lock_guard<std::recursive_mutex> lock(cast_units_mutex);
         for (auto& u : cast_units_images)
             AddCastUnit(u.c_str(), u.size());
         cast_units_images.clear();
@@ -805,7 +806,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpenInclude(const char* json, const int d
     {
         WebWindowPtr w(new yutovo_web::WebWindow());
         include_windows.push_back(w);
-        document->LoadJsonInclude(std::string(json), document_id, w.get());
+        document->LoadJsonInclude(std::string(json), document_id, w);
     }
 }
 
@@ -1177,7 +1178,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnits(const char* system)
     stop_cast_units_thread = false;
 
     {
-        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        std::lock_guard<std::recursive_mutex> lock(cast_units_mutex);
         cast_units_images.clear();
     }
 
@@ -1454,7 +1455,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLibraryFilePart(const char* part_file, co
     file += part_file;
     if (finish)
     {
-        load_json = std::string(file);
+        load_json = file;
         file = "";
         load_document_id = document_id;
         create_document = true;
@@ -1652,7 +1653,7 @@ void FillUnits(const std::string system)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         d->WaitTask(d->Redraw(ElementId{0}, false));
 
-        while (!cast_units_window.needs_render)
+        while (!cast_units_window->needs_render)
         {
             if (stop_cast_units_thread)
             {
@@ -1663,7 +1664,7 @@ void FillUnits(const std::string system)
         }
 
         std::vector<unsigned char> picture;
-        cast_units_window.Render(picture); //get unit's picture
+        cast_units_window->Render(picture); //get unit's picture
 
         //convert the picture to base64 and send it to JS
         std::string image_base64;
@@ -1684,7 +1685,7 @@ void FillUnits(const std::string system)
         while (image_base64.size() % 4)
             image_base64.push_back('=');
 
-        std::lock_guard<std::mutex> lock(cast_units_mutex);
+        std::lock_guard<std::recursive_mutex> lock(cast_units_mutex);
         cast_units_images.push_back(image_base64);
         cast_units_ready = true;
     }
@@ -1702,11 +1703,13 @@ ElementId GetRealResultId()
 
 void CreateDocument()
 {
-    document.reset(new yutovo::Document(&window, config));
+    include_windows.clear();
+    document.reset(new yutovo::Document(window, config));
+    window->Init(document.get());
 
-    shortcuts_map.Init(document);
+    shortcuts_map.Init(document.get());
 
-    args = EventArgs{&shortcuts_map, document.get(), &window};
+    args = EventArgs{&shortcuts_map, document.get(), window.get()};
     emscripten_set_keydown_callback("#canvas", nullptr, true, nullptr);
     emscripten_set_keydown_callback("#canvas", &args, true, OnKeyDown);
     emscripten_set_mousemove_callback("#scroll-container", nullptr, true, nullptr);
@@ -1771,8 +1774,12 @@ int main(int argc, char* argv[])
     config.service_ip = "yutovo.ru";
     config.service_port = 9002;
 
+    window.reset(new yutovo_web::WebWindow());
+    
+    cast_units_window.reset(new yutovo_web::WebWindow());
+    
     yutovo::Config cast_config;
-    cast_units_document.reset(new Document(&cast_units_window, cast_config));
+    cast_units_document.reset(new Document(cast_units_window, cast_config));
     cast_units_document->GetConfig(cast_config);
     cast_config.with_border = false;
     cast_config.caret_visible = false;
@@ -1783,7 +1790,7 @@ int main(int argc, char* argv[])
 
     create_document = true; //create the first document after the main loop starts
 
-    emscripten_set_main_loop_arg(&MainLoop, &window, 0, true);
+    emscripten_set_main_loop_arg(&MainLoop, window.get(), 0, true);
 
     printf("Finish\n");
     return 0;

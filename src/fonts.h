@@ -22,7 +22,7 @@ public:
     Fonts() = default;
     ~Fonts();
     
-    TTF_Font* Get(const yutovo::StringFormatPtr format);
+    TTF_Font* Get(const yutovo::StringFormat& format);
 
 private:
     const std::string base_dir = "./fonts/";

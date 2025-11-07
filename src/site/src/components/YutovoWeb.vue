@@ -252,6 +252,33 @@
             <q-btn size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
             </q-btn>
+            <q-separator vertical/>
+            <q-btn-group id="algebra-toolbar" flat square unelevated stretch>
+                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('R$');">
+                    R$
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Brazilian real') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('¥');">
+                    ¥
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Chinese yuan') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('€');">
+                    €
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Euro') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('₹');">
+                    ₹
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indian rupee') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('₽');">
+                    ₽
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Russian ruble') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('$');">
+                    $
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('US dollar') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
         </q-btn-group>
     </div>
 
@@ -2554,6 +2581,12 @@ export default
         onGraphLine()
         {
             Module.cwrap('OnGraphLine', 'void', [])();
+            canvas.focus();
+        },
+
+        onCurrency(currency)
+        {
+            Module.cwrap('InsertString', 'void', ['string'])(currency);
             canvas.focus();
         },
 

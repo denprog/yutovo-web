@@ -132,6 +132,13 @@ export default {
     'grad': 'grad',
     'Greek letters': 'Letras griegas',
 
+    'Brazilian real': 'Real brasileño',
+    'Chinese yuan': 'Yuan chino',
+    'Euro': 'Euro',
+    'Indian rupee': 'Rupia india',
+    'Russian ruble': 'Rublo ruso',
+    'US dollar': 'Dólar estadounidense',
+
     'Filter': 'Filtro',
 
     'Documents': 'Documentos',

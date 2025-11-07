@@ -95,6 +95,8 @@ public:
     virtual bool IsOpen(const int socket_id);
     virtual bool Close(const int socket_id);
 
+    void Reset();
+
     void Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface);
     void Render(std::vector<unsigned char>& picture);
 
@@ -109,7 +111,7 @@ public:
     void GetSolverActions(std::vector<std::string>& _solver_actions);
 
 public:
-    std::mutex draw_mutex;
+    std::recursive_mutex draw_mutex;
 
     EditorState current_editor_state;
 
@@ -130,7 +132,7 @@ public:
 
     SDL_Rect view_port{0, 0, 0, 0};
 
-    std::mutex results_mutex;
+    std::recursive_mutex results_mutex;
     std::queue<std::pair<IOResult, int>> load_results;
     std::vector<std::pair<std::string, int>> include_documents;
 
@@ -138,7 +140,7 @@ public:
 
     std::string link_clicked;
 
-    std::mutex solver_actions_mutex;
+    std::recursive_mutex solver_actions_mutex;
     std::vector<std::string> solver_actions;
 
 private:
@@ -162,12 +164,12 @@ private:
 
     std::vector<TaskPtr> tasks; //draw tasks to be executed on Update
 
-    std::mutex socket_mutex;
+    std::recursive_mutex socket_mutex;
     std::vector<TaskPtr> socket_tasks;
 
     std::vector<TaskPtr> cache_tasks;
 
-    std::mutex translate_mutex;
+    std::recursive_mutex translate_mutex;
     std::vector<std::pair<yutovo::ElementId, std::string>> translate_tasks;
 
     struct SymbolSize
@@ -178,7 +180,7 @@ private:
         int baseline = 0;
     };
 
-    std::mutex sizes_cache_mutex;
+    std::recursive_mutex sizes_cache_mutex;
     std::vector<std::tuple<char32_t, std::string, int>> symbols_sizes;
     typedef std::map<std::string, std::vector<SymbolSize>> FontSymbolSizes;
     std::map<char32_t, FontSymbolSizes> sizes_cache;

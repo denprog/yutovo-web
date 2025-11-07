@@ -88,7 +88,7 @@ class ShortcutsMap
 public:
     ShortcutsMap() = default;
 
-    void Init(DocumentPtr _document);
+    void Init(Document* _document);
 
     bool Call(const KeySequence& shortcut, char32_t symbol, const EditorState& editor_state);
 
@@ -102,7 +102,7 @@ public:
         CommandContext context = CommandContext::Everywhere);
 
 private:
-    DocumentPtr document;
+    Document* document = nullptr;
     std::vector<CommandMapVariant> command_maps;
 };
 

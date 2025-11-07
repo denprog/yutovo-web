@@ -76,7 +76,7 @@ struct DrawTextTask : Task
     virtual void Execute();
 
     std::string text;
-    StringFormatPtr format;
+    StringFormat format;
     Rect rect;
     Color color;
     Color bg_color;

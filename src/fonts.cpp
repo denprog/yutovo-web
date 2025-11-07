@@ -25,32 +25,30 @@ std::map<std::string, std::string> Fonts::font_files =
 Fonts::~Fonts()
 {
     for (auto& f : fonts)
-    {
         TTF_CloseFont(f.ttf_font);
-    }
 }
 
-TTF_Font* Fonts::Get(const yutovo::StringFormatPtr format)
+TTF_Font* Fonts::Get(const yutovo::StringFormat& format)
 {
-    auto font_file = font_files.find(format->family);
+    auto font_file = font_files.find(format.family);
     if (font_file == font_files.end())
         return nullptr;
 
-    uint size = format->size;
-    if ((format->subscript || format->superscript) && size > 2)
+    uint size = format.size;
+    if ((format.subscript || format.superscript) && size > 2)
         size /= 2;
         
     auto it = std::find_if(fonts.begin(), fonts.end(), 
         [format, size](Font& font)
         {
             int style = TTF_GetFontStyle(font.ttf_font);
-            return format->family == font.family && size == font.size && format->bold == bool(style & TTF_STYLE_BOLD) && 
-                format->italic == bool(style & TTF_STYLE_ITALIC) && format->underline == bool(style & TTF_STYLE_UNDERLINE) &&
-                format->strikethrough == bool(style & TTF_STYLE_STRIKETHROUGH);
+            return format.family == font.family && size == font.size && format.bold == bool(style & TTF_STYLE_BOLD) && 
+                format.italic == bool(style & TTF_STYLE_ITALIC) && format.underline == bool(style & TTF_STYLE_UNDERLINE) &&
+                format.strikethrough == bool(style & TTF_STYLE_STRIKETHROUGH);
         });
     if (it == fonts.end())
     {
-        //printf("Opening font: %s, size: %d\n", file_name.c_str(), format->size);
+        //printf("Opening font: %s, size: %d\n", file_name.c_str(), format.size);
         auto file_name = base_dir + font_file->second;
         TTF_Font* font = TTF_OpenFont(file_name.c_str(), size);
         if (!font)
@@ -60,17 +58,17 @@ TTF_Font* Fonts::Get(const yutovo::StringFormatPtr format)
         }
 
         int style = 0;
-        if (format->bold)
+        if (format.bold)
             style |= TTF_STYLE_BOLD;
-        if (format->italic)
+        if (format.italic)
             style |= TTF_STYLE_ITALIC;
-        if (format->underline)
+        if (format.underline)
             style |= TTF_STYLE_UNDERLINE;
-        if (format->strikethrough)
+        if (format.strikethrough)
             style |= TTF_STYLE_STRIKETHROUGH;
         if (style > 0)
             TTF_SetFontStyle(font, style);
-        fonts.emplace_back(Font{format->family, size, font});
+        fonts.emplace_back(Font{format.family, size, font});
         return font;
     }
 

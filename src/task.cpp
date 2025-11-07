@@ -353,7 +353,7 @@ DrawTextTask::DrawTextTask(const std::string& _text, const StringFormatPtr _form
     Fonts& _fonts, WebWindow* _web_window, bool _draw_doc) :
     Task(_web_window, _draw_doc),
     text(_text),
-    format(_format),
+    format(*_format),
     rect(_rect),
     color(_color),
     bg_color(_bg_color),

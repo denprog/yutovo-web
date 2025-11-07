@@ -43,6 +43,7 @@ WebWindow::~WebWindow()
 
 void WebWindow::Init(Document* _document)
 {
+    Reset();
     SDL_Init(SDL_INIT_EVERYTHING);
     int r = TTF_Init();
     if (r < 0)
@@ -120,7 +121,7 @@ int WebWindow::GetSymbolSize(const char32_t symbol, const int height, const std:
 
 void WebWindow::PrepareSymbolsSizes(const std::vector<std::tuple<char32_t, std::string, int>>& _symbols_sizes)
 {
-    std::lock_guard<std::mutex> lock(sizes_cache_mutex);
+    std::lock_guard<std::recursive_mutex> lock(sizes_cache_mutex);
     symbols_sizes = _symbols_sizes;
     fill_cache = true;
 }
@@ -151,8 +152,8 @@ void WebWindow::RestoreRect()
 Size WebWindow::GetTextSize(const std::u32string& text, const StringFormatPtr format)
 {
     //printf("WebWindow::GetTextSize\n");
-    std::lock_guard<std::mutex> lock(draw_mutex);
-    TTF_Font* font = fonts.Get(format);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
+    TTF_Font* font = fonts.Get(*format);
     if (!font)
         return Size{0, 0};
 
@@ -180,7 +181,7 @@ int WebWindow::GetCharPos(const std::u32string& text, const StringFormatPtr form
 int WebWindow::GetFontAscent(const StringFormatPtr format)
 {
     ////printf("WebWindow::GetFontAscent\n");
-    TTF_Font* font = fonts.Get(format);
+    TTF_Font* font = fonts.Get(*format);
     if (!font)
         return 0;
     int r = TTF_FontAscent(font);
@@ -235,7 +236,7 @@ Rect WebWindow::GetViewPort(const int pos)
 void WebWindow::Update(const Rect& rect)
 {
     //printf("Update %d, %d, %d, %d\n", rect.left, rect.top, rect.width, rect.height);
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     for (auto& t : tasks) //execute all tasks before Draw
         t->Execute();
     tasks.clear();
@@ -256,20 +257,20 @@ Rect WebWindow::GetRect()
 
 void WebWindow::OnFormatChanged(const EditorState editor_state)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     current_editor_state = editor_state;
     update_toolbar = true;
 }
 
 void WebWindow::OnIdentifierChanged(const ElementId id)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     update_identifiers = true;
 }
 
 std::string WebWindow::Translate(ElementId id, const std::string& str)
 {
-    std::lock_guard<std::mutex> lock(translate_mutex);
+    std::lock_guard<std::recursive_mutex> lock(translate_mutex);
     translate_tasks.push_back(std::make_pair(id, str));
     needs_translate = true;
     return "";
@@ -277,7 +278,7 @@ std::string WebWindow::Translate(ElementId id, const std::string& str)
 
 std::u32string WebWindow::Translate(ElementId id, const std::u32string& str)
 {
-    std::lock_guard<std::mutex> lock(translate_mutex);
+    std::lock_guard<std::recursive_mutex> lock(translate_mutex);
     translate_tasks.push_back(std::make_pair(id, ToBasicString(str)));
     needs_translate = true;
     return U"";
@@ -285,7 +286,7 @@ std::u32string WebWindow::Translate(ElementId id, const std::u32string& str)
 
 void WebWindow::OnCaretMoved(const EditorState editor_state)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     current_editor_state = editor_state;
     update_toolbar = true;
 }
@@ -305,7 +306,7 @@ void WebWindow::OnSaveResult(const uint task_id, IOResult result, const int docu
 void WebWindow::OnLoadResult(const uint task_id, IOResult result, const int document_id)
 {
     printf("OnLoadResult: %d\n", (int)result);
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     load_results.emplace(result, document_id);
     load_ready = true;
 }
@@ -313,28 +314,28 @@ void WebWindow::OnLoadResult(const uint task_id, IOResult result, const int docu
 void WebWindow::OnLoadInclude(const std::string& file_name, const int document_id)
 {
     printf("OnLoadInclude: %s\n", file_name.c_str());
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     include_documents.emplace_back(file_name, document_id);
     include_documents_ready = true;
 }
 
 void WebWindow::OnIdentifiersReceived(std::string json)
 {
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     identifers_json = json;
     identifiers_ready = true;
 }
 
 void WebWindow::OnLinkClicked(const ElementId& id, const std::u32string& url)
 {
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     link_clicked = ToBasicString(url);
     link_ready = true;
 }
 
 void WebWindow::OnSolverAction(const std::string& json)
 {
-    std::lock_guard<std::mutex> lock(solver_actions_mutex);
+    std::lock_guard<std::recursive_mutex> lock(solver_actions_mutex);
     solver_actions.push_back(json);
     solver_action_ready = true;
 }
@@ -343,7 +344,7 @@ int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;
     {
-        std::lock_guard<std::mutex> lock(socket_mutex);
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
         socket_tasks.emplace_back(new ConnectTask("wss://" + addr, socket_id));
     }
     while (socket_id == -1)
@@ -355,7 +356,7 @@ bool WebWindow::Send(const int socket_id, const std::string& message)
 {
     std::atomic_int8_t res{-1};
     {
-        std::lock_guard<std::mutex> lock(socket_mutex);
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
         socket_tasks.emplace_back(new SendTask(socket_id, message, res));
     }
     while (res == -1)
@@ -367,7 +368,7 @@ bool WebWindow::Receive(const int socket_id, std::string& message)
 {
     std::atomic_int8_t res{-1};
     {
-        std::lock_guard<std::mutex> lock(socket_mutex);
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
         socket_tasks.emplace_back(new ReceiveTask(socket_id, message, res));
     }
     while (res == -1)
@@ -379,7 +380,7 @@ bool WebWindow::Reset(const int socket_id)
 {
     std::atomic_int8_t res{-1};
     {
-        std::lock_guard<std::mutex> lock(socket_mutex);
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
         socket_tasks.emplace_back(new ResetTask(socket_id, res));
     }
     while (res == -1)
@@ -391,7 +392,7 @@ bool WebWindow::IsOpen(const int socket_id)
 {
     std::atomic_int8_t is_open{-1};
     {
-        std::lock_guard<std::mutex> lock(socket_mutex);
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
         socket_tasks.emplace_back(new IsOpenTask(socket_id, is_open));
     }
     while (is_open == -1)
@@ -403,7 +404,7 @@ bool WebWindow::Close(const int socket_id)
 {
     std::atomic_int8_t res{-1};
     {
-        std::lock_guard<std::mutex> lock(socket_mutex);
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
         socket_tasks.emplace_back(new CloseTask(socket_id, res));
     }
     while (res == -1)
@@ -411,9 +412,30 @@ bool WebWindow::Close(const int socket_id)
     return res > 0;
 }
 
+void WebWindow::Reset()
+{
+    printf("WebWindow::Reset\n");
+    {
+        std::lock_guard<std::recursive_mutex> lock(results_mutex);
+        include_documents.clear();
+    }
+    {
+        std::lock_guard<std::recursive_mutex> lock(draw_mutex);
+        tasks.clear();
+    }
+    {
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+        socket_tasks.clear();
+    }
+    {
+        std::lock_guard<std::recursive_mutex> lock(translate_mutex);
+        translate_tasks.clear();
+    }
+}
+
 void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     needs_render = false;
 
     if (SDL_MUSTLOCK(surface))
@@ -444,7 +466,7 @@ void WebWindow::Render(SDL_Renderer* dest_renderer, SDL_Surface* dest_surface)
 
 void WebWindow::Render(std::vector<unsigned char>& picture)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     needs_render = false;
 
     if (SDL_MUSTLOCK(surface))
@@ -472,7 +494,7 @@ void WebWindow::Render(std::vector<unsigned char>& picture)
 
 void WebWindow::SocketTasks()
 {
-    std::lock_guard<std::mutex> lock(socket_mutex);
+    std::lock_guard<std::recursive_mutex> lock(socket_mutex);
     for (auto& t : socket_tasks)
         t->Execute();
     socket_tasks.clear();
@@ -480,14 +502,14 @@ void WebWindow::SocketTasks()
 
 void WebWindow::GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::string>>& _translate_tasks)
 {
-    std::lock_guard<std::mutex> lock(translate_mutex);
+    std::lock_guard<std::recursive_mutex> lock(translate_mutex);
     _translate_tasks = translate_tasks;
     translate_tasks.clear();
 }
 
 int WebWindow::GetCachedSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline)
 {
-    std::lock_guard<std::mutex> lock(draw_mutex);
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
     //firstly search in the cache
     FontSymbolSizes::iterator s_it;
     auto it = sizes_cache.find(symbol);
@@ -528,7 +550,7 @@ int WebWindow::GetCachedSize(const char32_t symbol, const int height, const std:
     std::string str = boost::locale::conv::utf_to_utf<char>(std::u32string(1, symbol));
     baseline = 0;
     std::vector<SymbolSize>& v = s_it->second;
-    StringFormatPtr format(new StringFormat(family_name, font_size, false, false, false, false, false, false, Color::Black(), Color::White(), Color::Blue()));
+    StringFormat format(family_name, font_size, false, false, false, false, false, false, Color::Black(), Color::White(), Color::Blue());
     while (s.height < height)
     {
         auto v_it = std::find_if(v.begin(), v.end(), 
@@ -545,7 +567,7 @@ int WebWindow::GetCachedSize(const char32_t symbol, const int height, const std:
         }
 
         int w, h;
-        format->size = font_size;
+        format.size = font_size;
         TTF_Font* font = fonts.Get(format);
         if (!font)
             break;
@@ -569,7 +591,7 @@ void WebWindow::CacheTasks()
     if (!fill_cache)
         return;
 
-    std::lock_guard<std::mutex> lock(sizes_cache_mutex);
+    std::lock_guard<std::recursive_mutex> lock(sizes_cache_mutex);
     if (symbols_sizes.empty())
     {
         fill_cache = false;
@@ -597,7 +619,7 @@ void WebWindow::CacheTasks()
 
 bool WebWindow::GetLoadResult(IOResult& result, int& document_id)
 {
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     if (load_results.empty())
     {
         load_ready = false;
@@ -612,20 +634,20 @@ bool WebWindow::GetLoadResult(IOResult& result, int& document_id)
 
 void WebWindow::GetClickedLink(std::string& url)
 {
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     url = link_clicked;
 }
 
 void WebWindow::GetIncludeDocuments(std::vector<std::pair<std::string, int>>& documents)
 {
-    std::lock_guard<std::mutex> lock(results_mutex);
+    std::lock_guard<std::recursive_mutex> lock(results_mutex);
     documents = include_documents;
     include_documents.clear();
 }
 
 void WebWindow::GetSolverActions(std::vector<std::string>& _solver_actions)
 {
-    std::lock_guard<std::mutex> lock(solver_actions_mutex);
+    std::lock_guard<std::recursive_mutex> lock(solver_actions_mutex);
     _solver_actions = solver_actions;
     solver_actions.clear();
 }

@@ -206,7 +206,10 @@ export default
         })
 
         const documentName = computed({
-            get: () => (store.state.editor.document_name)
+            get: () => {
+                const { document_name, document_changed } = store.state.editor;
+                return document_changed ? `${document_name} *` : document_name;
+            }
         })
 
         const logout = () =>

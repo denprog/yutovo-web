@@ -262,6 +262,11 @@ void WebWindow::OnFormatChanged(const EditorState editor_state)
     update_toolbar = true;
 }
 
+void WebWindow::OnDocumentChanged(const bool changed)
+{
+    document_changed = true;
+}
+
 void WebWindow::OnIdentifierChanged(const ElementId id)
 {
     std::lock_guard<std::recursive_mutex> lock(draw_mutex);

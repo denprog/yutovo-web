@@ -259,6 +259,17 @@ EM_JS(void, IncludeDocument, (const char* filename, size_t filename_size, const 
             }));
     });
 
+EM_JS(void, DocumentChanged, (const int changed),
+    {
+        window.dispatchEvent(new CustomEvent('documentChanged', 
+            {
+                'detail': 
+                {
+                    'changed': changed
+                }
+            }));
+    });
+
 EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width),
     {
         window.dispatchEvent(new CustomEvent('plotFormatDialog', 
@@ -483,6 +494,12 @@ void MainLoop(void* arg)
         window->GetIncludeDocuments(files);
         for (auto& f : files)
             IncludeDocument(f.first.c_str(), f.first.size(), f.second);
+    }
+
+    if (window->document_changed)
+    {
+        window->document_changed = false;
+        DocumentChanged(document->IsChanged());
     }
 
     if (create_document)

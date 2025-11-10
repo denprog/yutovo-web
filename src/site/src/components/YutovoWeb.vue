@@ -550,6 +550,7 @@ export default
             window.addEventListener('translateString', this.translateString, false);
             window.addEventListener('solverAction', this.solverAction, false);
             window.addEventListener('plotFormatDialog', this.plotFormatDialog, false);
+            window.addEventListener('documentChanged', this.documentChanged, false);
         }
         else
         {
@@ -570,6 +571,7 @@ export default
             window.attachEvent('translateString', this.translateString);
             window.attachEvent('solverAction', this.solverAction);
             window.attachEvent('plotFormatDialog', this.plotFormatDialog);
+            window.attachEvent('documentChanged', this.documentChanged);
         }
     },
 
@@ -1603,6 +1605,7 @@ export default
                                     check_changed: false
                                 }
                             }));
+                        s.commit('editor/setDocumentChanged', false);
                     }
                 ).catch(
                     function(response)
@@ -1653,6 +1656,7 @@ export default
             var json = JSON.parse(new TextDecoder().decode(arr));
             var r = this.router;
             var t = this.$t;
+            var s = this.store;
             if (r.currentRoute.value.path.substring(0, 8) == '/library') //save the current library document as a new user document
             {
                 var route = r.currentRoute.value;
@@ -1692,6 +1696,7 @@ export default
                                 }));
                             canvas.focus();
                             window.dispatchEvent(new CustomEvent('listDocuments', {}));
+                            s.commit('editor/setDocumentChanged', false);
                         }
                     ).catch(
                         function(response)
@@ -1726,6 +1731,7 @@ export default
                                     }
                                 }));
                             canvas.focus();
+                            s.commit('editor/setDocumentChanged', false);
                         }
                     ).catch(
                         function(response)
@@ -1960,6 +1966,12 @@ export default
                         alert('Error loading the include document');
                     }
                 );
+        },
+
+        async documentChanged(event)
+        {
+            var s = this.store;
+            s.commit('editor/setDocumentChanged', event.detail.changed);
         },
 
         async loadResult(event)

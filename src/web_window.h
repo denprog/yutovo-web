@@ -68,6 +68,8 @@ public:
 
     virtual void OnFormatChanged(const EditorState editor_state);
 
+    virtual void OnDocumentChanged(const bool changed);
+
     virtual void OnIdentifierChanged(const ElementId id);
 
     virtual std::string Translate(ElementId id, const std::string& str);
@@ -127,6 +129,7 @@ public:
     std::atomic_bool link_ready{false};
     std::atomic_bool solver_action_ready{false};
     std::atomic_bool include_documents_ready{false};
+    std::atomic_bool document_changed{false};
 
     SDL_Renderer* renderer = nullptr;
 

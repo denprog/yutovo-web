@@ -5,6 +5,7 @@ export interface EditorInterface
     config: string;
     settings: string;
     document_name: string;
+    document_changed: boolean;
     last_error: string;
     loading: boolean;
     resizing: boolean;
@@ -18,6 +19,7 @@ function state(): EditorInterface
         config: '',
         settings: '',
         document_name: '',
+        document_changed: false,
         last_error: '',
         loading: true,
         resizing: false

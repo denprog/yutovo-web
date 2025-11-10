@@ -414,7 +414,6 @@ bool WebWindow::Close(const int socket_id)
 
 void WebWindow::Reset()
 {
-    printf("WebWindow::Reset\n");
     {
         std::lock_guard<std::recursive_mutex> lock(results_mutex);
         include_documents.clear();

@@ -65,6 +65,8 @@ void ShortcutsMap::Init(Document* _document)
 
     Add(KeySequence(DOM_VK_TAB), "", std::function<void ()>(std::bind(static_cast<uint(Document::*)(const std::u32string&, bool)>(&Document::InsertString), 
         document, U"	", true)));
+    
+    Add(KeySequence(DOM_VK_INSERT), "", std::function<void ()>(std::bind(&Document::SwitchInsertMode, document)));
 
     Add(KeySequence(DOM_VK_Z, true, false, false), "", std::function<void ()>(std::bind(&Document::Undo, document)));
     Add(KeySequence(DOM_VK_Y, true, false, false), "", std::function<void ()>(std::bind(&Document::Redo, document)));

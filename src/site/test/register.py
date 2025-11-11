@@ -27,9 +27,12 @@ class TestRegister(unittest.TestCase):
         self.conn.close()
 
     def test_register1(self):
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(2)
+        utils.setLanguage(self.driver, 'English')
         time.sleep(2)
         utils.registerUser(self.driver, 'test1', '11', 'test1@mail.ru')
-        time.sleep(4)
+        time.sleep(2)
         self.assertTrue(utils.loginCaption(self.driver) == 'test1')
 
 if __name__ == '__main__':

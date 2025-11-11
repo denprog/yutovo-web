@@ -247,6 +247,7 @@ export default {
     'Login or password are incorrect': 'Логин или пароль неправильны',
     'Login or email are incorrect': 'Логин или почта неправильны',
     'Error getting settings': 'Ошибка получения настроек',
+    'Error sending e-mail': 'Ошибка отправки письма',
 
     'name': 'имя',
 

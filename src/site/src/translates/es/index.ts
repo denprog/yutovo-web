@@ -239,6 +239,7 @@ export default {
     'Login or password are incorrect': 'Nombre de usuario o contraseña incorrectos',
     'Login or email are incorrect': 'Nombre de usuario o correo incorrectos',
     'Error getting settings': 'Error al obtener la configuración',
+    'Error sending e-mail': 'Error al enviar el correo electrónico',
 
     'name': 'nombre',
 

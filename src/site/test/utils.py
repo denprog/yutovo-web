@@ -1,3 +1,4 @@
+import os
 import psycopg2
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -8,9 +9,9 @@ import time
 def registerUser(driver, username, password, email):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'register')))
     b.click()
-    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'username\']')))
+    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label=\'login\']')))
     e.send_keys(username)
-    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'email\']')))
+    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label=\'email\']')))
     e.send_keys(email)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label=\'password\']')))
     e.send_keys(password)
@@ -102,7 +103,7 @@ def clickDocument(driver, text):
     b.click()
 
 def loginCaption(driver):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'login_caption')))
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'login')))
     return b.text
 
 def writeText(driver, text):
@@ -155,7 +156,10 @@ def saveDialogClick(driver, button):
     b.click()
 
 def getDbConnection():
-    return psycopg2.connect(dbname = "yutovo", host = "127.0.0.1", user = "yutovo", password = "", port = 5432)
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    db_name = os.getenv("DB_NAME", "yutovo")
+    return psycopg2.connect(dbname = db_name, host = "127.0.0.1", user = db_user, password = db_password, port = 5432)
 
 def deleteTestUser(conn):
     cursor = conn.cursor()

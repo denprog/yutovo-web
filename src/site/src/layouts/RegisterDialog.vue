@@ -15,27 +15,35 @@
                             v-bind:label="$t('password')" />
                         <q-input class="q-pb-lg" ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
                             id="repassword" type="password" v-bind:label="$t('repeate password')" />
-                        <q-img class="q-pa-none" :src="captchaImageRef" />
-                        <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
                         <template v-if="isProduction">
+                            <q-img class="q-pa-none" :src="captchaImageRef" />
+                            <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
                             <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
                                 <template v-slot:append>
                                     <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
                                 </template>
                             </q-input>
                         </template>
-                        <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
-                        <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" 
-                                :disabled="login == '' || name == '' || email == '' || password == '' || repassword == '' || captcha == ''" 
-                                v-bind:label="$t('Send code')" />
-                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
-                        </div>
-                        <q-input ref="emailCodeRef" v-model="emailCode" square v-if="emailCodeSent == true" v-bind:label="$t('Enter code from the e-mail')" />
-                        <div class="q-pa-md q-gutter-sm" v-if="emailCodeSent == true">
-                            <q-btn ref="register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
-                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
-                        </div>
+                        <template v-if="isProduction">
+                            <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
+                            <div class="q-pa-md q-gutter-sm">
+                                <q-btn unelevated class="bg-primary text-white" @click="onSendCode" 
+                                    :disabled="login == '' || name == '' || email == '' || password == '' || repassword == '' || captcha == ''" 
+                                    v-bind:label="$t('Send code')" />
+                                <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
+                            </div>
+                            <q-input ref="emailCodeRef" v-model="emailCode" square v-if="emailCodeSent == true" v-bind:label="$t('Enter code from the e-mail')" />
+                            <div class="q-pa-md q-gutter-sm" v-if="emailCodeSent == true">
+                                <q-btn ref="register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
+                                <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
+                            </div>
+                        </template>
+                        <template v-if="!isProduction">
+                            <div class="q-pa-md q-gutter-sm">
+                                <q-btn ref="register" unelevated class="bg-primary text-white" type="submit" id="submit" v-bind:label="$t('Register')" />
+                                <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
+                            </div>
+                        </template>
                     </q-form>
                 </q-card-section>
             </q-card>

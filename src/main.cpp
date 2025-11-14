@@ -54,9 +54,8 @@ ElementId mouse_capture_id;
 
 std::atomic_bool create_document{false};
 std::string load_json;
+IOResult load_result = IOResult::None;
 int load_document_id = 0;
-
-std::vector<WebWindowPtr> include_windows;
 
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
@@ -424,17 +423,8 @@ void MainLoop(void* arg)
 
     if (window->load_ready)
     {
-        IOResult result;
-        int document_id = 0;
-        if (window->GetLoadResult(result, document_id))
-        {
-            document->WaitTask(document->SetConfig(user_settings, false));
-            Config config;
-            document->GetConfig(config);
-            std::string s;
-            config.ToJson(s);
-            LoadResult((int)result, document_id, s.c_str(), s.size());
-        }
+        if (window->GetLoadResult(load_result, load_document_id))
+            document->SetConfig(user_settings, false);
     }
 
     if (window->needs_translate)
@@ -487,6 +477,14 @@ void MainLoop(void* arg)
             SolverAction(s.c_str(), s.size());
     }
 
+    if (create_document)
+    {
+        CreateDocument();
+        create_document = false;
+        load_json = "";
+        return;
+    }
+
     if (window->include_documents_ready)
     {
         window->include_documents_ready = false;
@@ -494,6 +492,7 @@ void MainLoop(void* arg)
         window->GetIncludeDocuments(files);
         for (auto& f : files)
             IncludeDocument(f.first.c_str(), f.first.size(), f.second);
+        return;
     }
 
     if (window->document_changed)
@@ -502,11 +501,19 @@ void MainLoop(void* arg)
         DocumentChanged(document->IsChanged());
     }
 
-    if (create_document)
+    if (window->set_config)
     {
-        CreateDocument();
-        create_document = false;
-        load_json = "";
+        window->set_config = false;
+
+        if (load_result != IOResult::None)
+        {
+            Config config;
+            document->GetConfig(config);
+            std::string s;
+            config.ToJson(s);
+            LoadResult((int)load_result, load_document_id, s.c_str(), s.size());
+        }
+        load_result = IOResult::None;
     }
 }
 
@@ -820,10 +827,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnOpen(const char* json, const int document
 extern "C" EMSCRIPTEN_KEEPALIVE void OnOpenInclude(const char* json, const int document_id)
 {
     if (document)
-    {
-        include_windows.emplace_back(new yutovo_web::WebWindow());
-        document->LoadJsonInclude(std::string(json), document_id, include_windows[include_windows.size() - 1].get());
-    }
+        document->LoadJsonInclude(std::string(json), document_id);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSave(const int document_id)
@@ -1719,9 +1723,9 @@ ElementId GetRealResultId()
 
 void CreateDocument()
 {
-    document.reset(new yutovo::Document(window.get(), config));
-    include_windows.clear();
+    document.reset();
     window->Init(document.get());
+    document.reset(new yutovo::Document(window.get(), config));
 
     shortcuts_map.Init(document.get());
 

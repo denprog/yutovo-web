@@ -345,6 +345,11 @@ void WebWindow::OnSolverAction(const std::string& json)
     solver_action_ready = true;
 }
 
+void WebWindow::OnSetConfig()
+{
+    set_config = true;
+}
+
 int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;
@@ -421,6 +426,8 @@ void WebWindow::Reset()
 {
     {
         std::lock_guard<std::recursive_mutex> lock(results_mutex);
+        std::queue<std::pair<IOResult, int>> empty;
+        std::swap(load_results, empty);
         include_documents.clear();
     }
     {

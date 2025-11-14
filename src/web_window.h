@@ -90,6 +90,8 @@ public:
 
     virtual void OnSolverAction(const std::string& json);
 
+    virtual void OnSetConfig();
+
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
@@ -130,6 +132,7 @@ public:
     std::atomic_bool solver_action_ready{false};
     std::atomic_bool include_documents_ready{false};
     std::atomic_bool document_changed{false};
+    std::atomic_bool set_config{false};
 
     SDL_Renderer* renderer = nullptr;
 

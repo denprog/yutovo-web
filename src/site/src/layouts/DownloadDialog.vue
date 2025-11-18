@@ -30,7 +30,7 @@
                                     <td>Windows 10</td>
                                     <td class="q-pl-md">
                                         <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.1.2-1_win10_amd64.exe');">{{ $t('Download') }}</q-btn>
+                                            @click="onDownload('yutovo-desktop_1.3.3-1_win10_amd64.exe');">{{ $t('Download') }}</q-btn>
                                     </td>
                                 </tr>
                             </table>

@@ -61,6 +61,7 @@ export default {
     'Save document': 'Сохранить документ',
     'Save document as': 'Сохранить документ как',
     'Download document': 'Скачать документ',
+    'Export to HTML' : 'Экспортировать в HTML',
     'Rename document': 'Переименовать документ',
     'Delete document': 'Удалить документ',
     'Undo': 'Отменить',
@@ -263,6 +264,8 @@ export default {
     'Error marks': 'Отметки ошибок',
     'Formula background': 'Фон формул',
     'Background selection': 'Фон выделения',
+
+    'This document was created with ': 'Этот документ был создан с помощью ',
 
     email_email_message: 'Запрос смены почты с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
 

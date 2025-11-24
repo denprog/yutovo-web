@@ -281,6 +281,17 @@ EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int w
             }));
     });
 
+EM_JS(void, ExportHtml, (const char* html, size_t html_size),
+    {
+        window.dispatchEvent(new CustomEvent('exportHtml', 
+            {
+                'detail': 
+                {
+                    'html': UTF8ToString(html, html_size)
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
@@ -845,6 +856,31 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDownload(const int document_id)
     {
         save_json = "";
         document->SaveJson(save_json, document_id, true);
+    }
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnExportHtml(const int document_id)
+{
+    if (document)
+    {
+        val tr_func = val::global("translateString");
+        val s = tr_func(std::string("This document was created with "));
+        std::string html = "<!DOCTYPE html>\n";
+        html += "<meta charset=\"UTF-8\">\n";
+        html += document->ToHtml() + "\n";
+        size_t p = html.find("</body>");
+        if (p != std::string::npos)
+        {
+            std::string footer = 
+                "<p>\n"\
+                    "<hr>"\
+                    "<span style=\"font-family:'Arial';font-size:12px;\">" + s.as<std::string>() + "</span>\n"\
+                    "<a href=\"https://yutovo.com?ref=html_export\" style=\"font-family:'Arial';font-size:12px;\">Yutovo</a>\n"\
+                    "<span style=\"font-family:'Arial';font-size:12px;\">.</span>\n"\
+                "</p>";
+            html.insert(p, footer);
+        }
+        ExportHtml(html.c_str(), html.length());
     }
 }
 

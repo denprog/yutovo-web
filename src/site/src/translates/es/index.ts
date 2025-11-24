@@ -61,6 +61,7 @@ export default {
     'Save document': 'Guardar documento',
     'Save document as': 'Guardar documento como',
     'Download document': 'Descargar documento',
+    'Export to HTML' : 'Exportar a HTML',
     'Rename document': 'Renombrar documento',
     'Delete document': 'Eliminar documento',
     'Undo': 'Deshacer',
@@ -262,6 +263,8 @@ export default {
     'Grid thickness': 'Grosor de cuadrícula',
     'Thickness': 'Grosor',
     'Color': 'Color',
+
+    'This document was created with ': 'Este documento fue creado con ',
 
     email_email_message: 'Solicitud de cambio de correo desde el sitio yutovo.ru. Ingrese este código: EMAIL_CODE en el diálogo.',
 

@@ -21,6 +21,10 @@
                 icon="img:/images/standard/download.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Download document') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" id="export-html-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onExportHtml();" 
+                icon="img:/images/standard/export_html.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Export to HTML') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" id="rename-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onRename();" 
                 icon="img:/images/standard/rename.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Rename document') }}</q-tooltip>
@@ -551,6 +555,7 @@ export default
             window.addEventListener('solverAction', this.solverAction, false);
             window.addEventListener('plotFormatDialog', this.plotFormatDialog, false);
             window.addEventListener('documentChanged', this.documentChanged, false);
+            window.addEventListener('exportHtml', this.exportHtml, false);
         }
         else
         {
@@ -572,6 +577,7 @@ export default
             window.attachEvent('solverAction', this.solverAction);
             window.attachEvent('plotFormatDialog', this.plotFormatDialog);
             window.attachEvent('documentChanged', this.documentChanged);
+            window.attachEvent('exportHtml', this.exportHtml);
         }
     },
 
@@ -1280,6 +1286,13 @@ export default
             canvas.focus();
         },
 
+        onExportHtml()
+        {
+            console.log('onExportHtml');
+            Module.cwrap('OnExportHtml', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
+            canvas.focus();
+        },
+
         onRename()
         {
             this.$q.dialog({component: RenameDialog, parent: this, apiResponse: this.resp});
@@ -1972,6 +1985,35 @@ export default
         {
             var s = this.store;
             s.commit('editor/setDocumentChanged', event.detail.changed);
+        },
+
+        async exportHtml(event)
+        {
+            var html = event.detail.html;
+            var s = this.store;
+            var filename = s.state.editor.document_name;
+            if (filename == '' || typeof filename == 'undefined')
+                return;
+
+            if (filename.slice(-4) != '.yut')
+                filename += '.html';
+            else
+                filename = filename.slice(0, -4) + '.html';
+            let arr = new TextEncoder().encode(html);
+            const blob = new Blob([arr], {type: 'text/html;charset=utf-8'});
+            if (window.navigator.msSaveOrOpenBlob)
+            {
+                window.navigator.msSaveBlob(blob, filename);
+            }
+            else
+            {
+                const elem = window.document.createElement('a');
+                elem.href = window.URL.createObjectURL(blob);
+                elem.download = filename;
+                document.body.appendChild(elem);
+                elem.click();        
+                document.body.removeChild(elem);
+            }
         },
 
         async loadResult(event)

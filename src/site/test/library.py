@@ -83,5 +83,17 @@ class TestLibrary(unittest.TestCase):
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'Data'))
 
+    #Open a library document by url at start
+    def test_library4(self):
+        opts = ChromeOptions()
+        opts.add_argument("--ignore-certificate-errors")
+        opts.add_argument("--disable-web-security")
+        service = Service(executable_path='/opt/selenium/chromedriver')
+        self.driver = webdriver.Chrome(service = service, options = opts)
+        self.driver.get(address + '/library/en/Physics/Dynamics/Moment%20of%20force.yut')
+        time.sleep(4)
+        self.assertTrue(self.driver.current_url == address + '/library/en/Physics/Dynamics/Moment%20of%20force.yut')
+        self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force.yut')
+
 if __name__ == '__main__':
     unittest.main()

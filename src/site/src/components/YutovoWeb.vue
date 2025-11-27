@@ -792,7 +792,7 @@ export default
                                     }
                                 }));
                         }
-                        else
+                        else if (route.path.substring(0, 9) != '/document')
                         {
                             if (q.config.production && !Cookies.has('app_initialized'))
                             {
@@ -824,8 +824,10 @@ export default
                                     }));
                             }
                             else
-                                window.dispatchEvent(new CustomEvent('openDocument', {})); //open the last document
+                                window.dispatchEvent(new CustomEvent('openDocument', {})); //open document by cookie
                         }
+                        else
+                            window.dispatchEvent(new CustomEvent('openDocument', {})); //open document by cookie
 
                         canvas.focus();
 

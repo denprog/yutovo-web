@@ -156,10 +156,12 @@ def saveDialogClick(driver, button):
     b.click()
 
 def getDbConnection():
+    db_host = os.getenv("DB_HOST")
+    db_port = os.getenv("DB_PORT")
+    db_name = os.getenv("DB_NAME", "yutovo")
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
-    db_name = os.getenv("DB_NAME", "yutovo")
-    return psycopg2.connect(dbname = db_name, host = "127.0.0.1", user = db_user, password = db_password, port = 5432)
+    return psycopg2.connect(dbname = db_name, host = db_host, user = db_user, password = db_password, port = db_port)
 
 def deleteTestUser(conn):
     cursor = conn.cursor()

@@ -380,7 +380,7 @@ void DrawTextTask::Execute()
     SDL_Texture* texture = SDL_CreateTextureFromSurface(web_window->renderer, text_surface);
     if (!texture)
     {
-        printf("SDL_CreateTextureFromSurface error: %s\n", TTF_GetError());
+        printf("SDL_CreateTextureFromSurface error: %s\n", SDL_GetError());
         return;
     }
 

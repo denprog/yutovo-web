@@ -127,7 +127,7 @@ export default {
     'Sum': 'Suma',
     'Product': 'Producto',
     'Assignment': 'Asignación',
-    'Unit': 'Dimensión',
+    'Unit': 'Unidad',
     'Equation': 'Igualdad',
     'rad': 'rad',
     'grad': 'grad',

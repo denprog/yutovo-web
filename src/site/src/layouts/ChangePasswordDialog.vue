@@ -76,7 +76,10 @@ export default
         const tr = useI18n();
         const store = useStore();
 
-        api.post('/auth/get-captcha', {})
+        api.post('/auth/get-captcha', 
+            {
+                action: 'change_password'
+            })
             .then(
                 function(response)
                 {
@@ -111,7 +114,10 @@ export default
         const onRefreshCaptcha = () =>
         {
             store.commit('login/setLastError', '');
-            api.post('/auth/get-captcha', {})
+            api.post('/auth/get-captcha', 
+                {
+                    action: 'change_password'
+                })
                 .then(
                     function(response)
                     {
@@ -137,7 +143,8 @@ export default
                     subject: tr.t('Password change code'),
                     message: tr.t('password_email_message'),
                     captcha: captcha.value,
-                    recover: true
+                    recover: true,
+                    action: 'change_password'
                 }
                 ).then(
                     function()

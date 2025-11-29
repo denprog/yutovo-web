@@ -89,7 +89,10 @@ export default
 
         const onRefreshCaptcha = () =>
         {
-            api.post('/auth/get-captcha', {})
+            api.post('/auth/get-captcha', 
+                {
+                    action: 'login'
+                })
                 .then(
                     function(response)
                     {
@@ -116,7 +119,10 @@ export default
 
         const router = useRouter();
 
-        api.post('/auth/get-captcha', {})
+        api.post('/auth/get-captcha', 
+            {
+                action: 'login'
+            })
             .then(
                 function(response)
                 {

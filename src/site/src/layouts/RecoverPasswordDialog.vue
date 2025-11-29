@@ -73,7 +73,10 @@ export default
         const tr = useI18n();
         const store = useStore();
 
-        api.post('/auth/get-captcha', {})
+        api.post('/auth/get-captcha', 
+            {
+                action: 'recover_password'
+            })
             .then(
                 function(response)
                 {
@@ -108,7 +111,10 @@ export default
         const onRefreshCaptcha = () =>
         {
             store.commit('login/setLastError', '');
-            api.post('/auth/get-captcha', {})
+            api.post('/auth/get-captcha', 
+                {
+                    action: 'recover_password'
+                })
                 .then(
                     function(response)
                     {
@@ -135,7 +141,8 @@ export default
                     subject: tr.t('Password recovery code'),
                     message: tr.t('recover_password_email_message'),
                     captcha: captcha.value,
-                    recover: true
+                    recover: true,
+                    action: 'recover_password'
                 }
                 ).then(
                     function()

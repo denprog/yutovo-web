@@ -93,7 +93,10 @@ export default {
 
         store.commit('login/setLastError', '');
 
-        api.post('/auth/get-captcha', {})
+        api.post('/auth/get-captcha', 
+            {
+                action: 'register'
+            })
             .then(
                 function(response)
                 {
@@ -133,7 +136,10 @@ export default {
         const onRefreshCaptcha = () =>
         {
             store.commit('login/setLastError', '');
-            api.post('/auth/get-captcha', {})
+            api.post('/auth/get-captcha', 
+                {
+                    action: 'register'
+                })
                 .then(
                     function(response)
                     {
@@ -161,7 +167,8 @@ export default {
                     email: email.value,
                     subject: tr.t('Register code'),
                     message: tr.t('register_email_message'),
-                    captcha: captcha.value
+                    captcha: captcha.value,
+                    action: 'register'
                 }
                 ).then(
                     function()

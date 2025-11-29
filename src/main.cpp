@@ -51,6 +51,7 @@ DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
 std::string res_json;
 ElementId mouse_capture_id;
+std::atomic_bool resize{false};
 
 std::atomic_bool create_document{false};
 std::string load_json;
@@ -294,7 +295,6 @@ EM_JS(void, ExportHtml, (const char* html, size_t html_size),
 
 void MainLoop(void* arg)
 {
-    yutovo_web::WebWindow* window = (yutovo_web::WebWindow*)arg;
     if (set_document_point)
     {
         window->document_point = document_point;
@@ -525,6 +525,14 @@ void MainLoop(void* arg)
             LoadResult((int)load_result, load_document_id, s.c_str(), s.size());
         }
         load_result = IOResult::None;
+    }
+
+    if (resize)
+    {
+        double w = 0, h = 0;
+        emscripten_get_element_css_size("#canvas", &w, &h);
+        document->Resize((int)w, (int)h);
+        resize = false;
     }
 }
 
@@ -1760,7 +1768,7 @@ ElementId GetRealResultId()
 void CreateDocument()
 {
     document.reset();
-    window->Init(document.get());
+    window->Reset();
     document.reset(new yutovo::Document(window.get(), config));
 
     shortcuts_map.Init(document.get());
@@ -1780,15 +1788,12 @@ void CreateDocument()
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, nullptr);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
-    document->Start();
-    document->SetDefaultPageFormat(2, 2, 22, 22, 10);
-    double w = 0, h = 0;
-    emscripten_get_element_css_size("#canvas", &w, &h);
-    document->Resize((int)w, (int)h);
+    document->Start(TextFormat{TextFormat::Paging::WEB_VIEW, 2, 2, 22, 22, 10, {0, 0}});
     if (!load_json.empty())
         document->LoadJson(load_json, load_document_id);
     else
         document->InsertCode(false, false);
+    resize = true;
 }
 
 int main(int argc, char* argv[])
@@ -1846,7 +1851,7 @@ int main(int argc, char* argv[])
 
     create_document = true; //create the first document after the main loop starts
 
-    emscripten_set_main_loop_arg(&MainLoop, window.get(), 0, true);
+    emscripten_set_main_loop_arg(&MainLoop, nullptr, 0, true);
 
     printf("Finish\n");
     return 0;

@@ -1848,6 +1848,7 @@ int main(int argc, char* argv[])
     cast_config.solve_delay = 0;
     cast_units_document->Start();
     cast_units_document->WaitTask(cast_units_document->SetConfig(cast_config, false));
+    cast_units_document->SetTextFormat({TextFormat::Paging::WEB_VIEW, 0, 0, 0, 0, 0, Size{0, 0}}, false);
 
     create_document = true; //create the first document after the main loop starts
 

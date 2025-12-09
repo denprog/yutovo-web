@@ -31,6 +31,7 @@ set(CMAKE_EXECUTABLE_SUFFIX ".js")
 add_executable(${PROJECT_NAME}
     main.cpp
     web_window.cpp
+    web_pdf_window.cpp
     web_utils.cpp
     command_map.cpp
     fonts.cpp
@@ -55,7 +56,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_LIBPNG=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s SDL2_IMAGE_FORMATS=\"[png]\"")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s SAFE_HEAP")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ASSERTIONS=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=8")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=10")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --preload-file ./fonts")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexperimental-library")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
@@ -109,6 +110,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     yutovo-logger
     pthread
     ${INSTALL_PATH}/wasm/libmgl.a
+    ${INSTALL_PATH}/wasm/libhpdf.a
 )
 
 install(

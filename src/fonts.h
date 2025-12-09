@@ -23,6 +23,7 @@ public:
     ~Fonts();
     
     TTF_Font* Get(const yutovo::StringFormat& format);
+    bool GetFontPath(const yutovo::StringFormat& format, std::string& path) const;
 
 private:
     const std::string base_dir = "./fonts/";

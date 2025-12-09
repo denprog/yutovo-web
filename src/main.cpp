@@ -12,6 +12,7 @@
 #include <emscripten/key_codes.h>
 #include <yutovo-editor/document.h>
 #include "web_window.h"
+#include "web_pdf_window.h"
 #include "command_map.h"
 #include "web_utils.h"
 
@@ -19,6 +20,7 @@ using emscripten::val;
 using namespace yutovo;
 
 typedef std::unique_ptr<yutovo_web::WebWindow> WebWindowPtr;
+typedef std::unique_ptr<yutovo_web::WebPdfWindow> WebPdfWindowPtr;
 
 std::unique_ptr<yutovo::Document> document;
 WebWindowPtr window;
@@ -49,6 +51,9 @@ const std::string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 WebWindowPtr cast_units_window;
 DocumentPtr cast_units_document;
 std::u32string cast_unit_system;
+
+WebPdfWindowPtr web_pdf_window;
+
 std::string res_json;
 ElementId mouse_capture_id;
 std::atomic_bool resize{false};
@@ -293,6 +298,20 @@ EM_JS(void, ExportHtml, (const char* html, size_t html_size),
             }));
     });
 
+EM_JS(void, ExportPdf, (const uint8_t* pdf, size_t pdf_size),
+    {
+        const bytes = new Uint8Array(pdf_size);
+        bytes.set(HEAPU8.subarray(pdf, pdf + pdf_size));
+        const blob = new Blob([bytes], { type: 'application/pdf' });        
+        window.dispatchEvent(new CustomEvent('exportPdf', 
+            {
+                'detail': 
+                {
+                    'pdf': blob
+                }
+            }));
+    });
+
 void MainLoop(void* arg)
 {
     if (set_document_point)
@@ -533,6 +552,16 @@ void MainLoop(void* arg)
         emscripten_get_element_css_size("#canvas", &w, &h);
         document->Resize((int)w, (int)h);
         resize = false;
+    }
+
+    if (web_pdf_window && web_pdf_window->pdf_result_ready)
+    {
+        std::vector<uint8_t> pdf;
+        PdfResult result;
+        web_pdf_window->GetPdfResult(pdf, result);
+        if (result == PdfResult::Success)
+            ExportPdf(&pdf[0], pdf.size());
+        web_pdf_window->pdf_result_ready = false;
     }
 }
 
@@ -869,27 +898,51 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDownload(const int document_id)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnExportHtml(const int document_id)
 {
-    if (document)
+    if (!document)
+        return;
+    val tr_func = val::global("translateString");
+    val s = tr_func(std::string("This document was created with "));
+    std::string html = "<!DOCTYPE html>\n";
+    html += "<meta charset=\"UTF-8\">\n";
+    html += document->ToHtml() + "\n";
+    size_t p = html.find("</body>");
+    if (p != std::string::npos)
     {
-        val tr_func = val::global("translateString");
-        val s = tr_func(std::string("This document was created with "));
-        std::string html = "<!DOCTYPE html>\n";
-        html += "<meta charset=\"UTF-8\">\n";
-        html += document->ToHtml() + "\n";
-        size_t p = html.find("</body>");
-        if (p != std::string::npos)
-        {
-            std::string footer = 
-                "<p>\n"\
-                    "<hr>"\
-                    "<span style=\"font-family:'Arial';font-size:12px;\">" + s.as<std::string>() + "</span>\n"\
-                    "<a href=\"https://yutovo.com?ref=html_export\" style=\"font-family:'Arial';font-size:12px;\">Yutovo</a>\n"\
-                    "<span style=\"font-family:'Arial';font-size:12px;\">.</span>\n"\
-                "</p>";
-            html.insert(p, footer);
-        }
-        ExportHtml(html.c_str(), html.length());
+        std::string footer = 
+            "<p>\n"\
+                "<hr>"\
+                "<span style=\"font-family:'Arial';font-size:12px;\">" + s.as<std::string>() + "</span>\n"\
+                "<a href=\"https://yutovo.com?ref=html_export\" style=\"font-family:'Arial';font-size:12px;\">Yutovo</a>\n"\
+                "<span style=\"font-family:'Arial';font-size:12px;\">.</span>\n"\
+            "</p>";
+        html.insert(p, footer);
     }
+    ExportHtml(html.c_str(), html.length());
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnExportPdf(const int width, const int height, const int margin_left, const int margin_top, 
+    const int margin_right, const int margin_bottom)
+{
+    if (!document)
+        return;
+    Config config;
+    document->GetConfig(config);
+    config.with_border = false;
+    config.code_block_border = true;
+    config.caret_visible = false;
+    config.hilight_caret_element = false;
+    config.draw_whole = true;
+
+    TextFormat f;
+    document->GetTextFormat(f);
+    f.left_indent = margin_left;
+    f.top_indent = margin_top;
+    f.right_indent = margin_right;
+    f.bottom_indent = margin_bottom;
+
+    web_pdf_window.reset(new yutovo_web::WebPdfWindow({(int)(width * 72 / 25.4), (int)(height * 72 / 25.4)}));
+    Document pdf_document(web_pdf_window.get(), config, *document.get());
+    pdf_document.Start(f);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnUndo()
@@ -1844,7 +1897,7 @@ int main(int argc, char* argv[])
     cast_units_document->GetConfig(cast_config);
     cast_config.with_border = false;
     cast_config.caret_visible = false;
-    cast_config.formula_border = false;
+    cast_config.code_block_border = false;
     cast_config.solve_delay = 0;
     cast_units_document->Start();
     cast_units_document->WaitTask(cast_units_document->SetConfig(cast_config, false));

@@ -75,4 +75,13 @@ TTF_Font* Fonts::Get(const yutovo::StringFormat& format)
     return it->ttf_font;
 }
 
+bool Fonts::GetFontPath(const yutovo::StringFormat& format, std::string& path) const
+{
+    auto font_file = font_files.find(format.family);
+    if (font_file == font_files.end())
+        return false;
+    path = base_dir + font_file->second;
+    return true;
+}
+
 }

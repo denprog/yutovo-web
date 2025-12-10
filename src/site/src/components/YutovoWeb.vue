@@ -1304,11 +1304,25 @@ export default
         onExportPdf()
         {
             console.log('onExportPdf');
-            this.$q.dialog({component: ExportPdfDialog})
-                .onOk((data) => {
-                    Module.cwrap('OnExportPdf', 'void', ['int', 'int', 'int', 'int', 'int', 'int'])(data.pageWidth, data.pageHeight, 
-                        data.margins.left, data.margins.top, data.margins.right, data.margins.bottom);
-                });
+            var link_json = UTF8ToString(Module.cwrap('GetMargins')());
+            var json = JSON.parse(link_json);
+            const margins = ref({
+                left: json.left,
+                top: json.top,
+                right: json.right,
+                bottom: json.bottom
+            });
+            this.$q.dialog({
+                component: ExportPdfDialog, 
+                parent: this, 
+                componentProps: {
+                    initMargins: margins.value
+                }
+            })
+            .onOk((data) => {
+                Module.cwrap('OnExportPdf', 'void', ['int', 'int', 'int', 'int', 'int', 'int'])(data.pageWidth, data.pageHeight, 
+                    data.margins.left, data.margins.top, data.margins.right, data.margins.bottom);
+            });
             canvas.focus();
         },
 

@@ -1255,6 +1255,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
     return (char*)res_json.c_str();
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetMargins()
+{
+    TextFormat f;
+    document->GetTextFormat(f);
+    res_json = "{\"left\":\"" + std::to_string(f.left_indent) + "\",\"top\":\"" + std::to_string(f.top_indent) + 
+        "\",\"right\":\"" + std::to_string(f.right_indent) + "\",\"bottom\":\"" + std::to_string(f.bottom_indent) + "\"}";
+    return (char*)res_json.c_str();
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
 {
     cast_unit_id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);

@@ -62,6 +62,7 @@ export default {
     'Save document as': 'Guardar documento como',
     'Download document': 'Descargar documento',
     'Export to HTML' : 'Exportar a HTML',
+    'Export to PDF' : 'Exportar a PDF',
     'Rename document': 'Renombrar documento',
     'Delete document': 'Eliminar documento',
     'Undo': 'Deshacer',
@@ -211,6 +212,18 @@ export default {
     'Russian': 'Rusa',
     'English': 'Inglesa',
     'Others': 'Otras',
+
+    'Page settings': 'Configuración de página',
+    'Format': 'Formato',
+    'Orientation': 'Orientación',
+    'Margins (mm)': 'Márgenes (mm)',
+    'Width (mm)': 'Ancho (mm)',
+    'Height (mm)': 'Altura (mm)',
+    'Letter': 'Letter',
+    'Legal': 'Legal',
+    'Custom': 'Personalizado',
+    'Portrait': 'Vertical',
+    'Landscape': 'Horizontal',
 
     'First page': 'Primera página',
 

@@ -61,7 +61,8 @@ export default {
     'Save document': 'Сохранить документ',
     'Save document as': 'Сохранить документ как',
     'Download document': 'Скачать документ',
-    'Export to HTML' : 'Экспортировать в HTML',
+    'Export to HTML' : 'Экспорт в HTML',
+    'Export to PDF' : 'Экспорт в PDF',
     'Rename document': 'Переименовать документ',
     'Delete document': 'Удалить документ',
     'Undo': 'Отменить',
@@ -219,6 +220,18 @@ export default {
     'Plot width': 'Толщина графика',
     'Grid thickness': 'Толщина сетки',
     'Color': 'Цвет',
+
+    'Page settings': 'Настройки страницы',
+    'Format': 'Формат',
+    'Orientation': 'Ориентация',
+    'Margins (mm)': 'Поля (мм)',
+    'Width (mm)': 'Ширина (мм)',
+    'Height (mm)': 'Высота (мм)',
+    'Letter': 'Letter',
+    'Legal': 'Legal',
+    'Custom': 'Пользовательский',
+    'Portrait': 'Книжная',
+    'Landscape': 'Альбомная',
 
     'First page': 'Первая страница',
 

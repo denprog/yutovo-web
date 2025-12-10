@@ -23,7 +23,8 @@
                         <span class="col-auto text-subtitle">{{ $t('Margins (mm)') }}:</span>
                         <div v-for="side in marginSides" :key="side.key" class="col">
                             <q-input :model-value="margins[side.key]" @update:model-value="val => updateMargin(side.key, val)" type="text" 
-                                inputmode="numeric" pattern="[0-9]*" filled dense class="spin-input" :rules="[val => /^\d+$/.test(val) && +val >= 0 && +val <= 100 || '0–100']">
+                                inputmode="numeric" pattern="[0-9]*" filled dense class="spin-input" :rules="[val => /^\d+$/.test(val) && 
+                                +val >= 0 && +val <= 100 || '0–100']">
                                 <template v-slot:append>
                                     <div class="spin-buttons column">
                                         <q-btn dense flat round size="xs" icon="arrow_drop_up" @mousedown.prevent="startSpin(side.key, 1)" 
@@ -85,6 +86,7 @@
 <script lang="ts">
 import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
 export default
 {
@@ -92,19 +94,25 @@ export default
 
     emits: ['format-changed', 'orientation-changed', 'ok', 'cancel'],
 
+    props:
+    [
+        'initMargins'
+    ],
+
     setup(props, { emit })
     {
-        const $q = useQuasar();
+        const tr = useI18n();
+
         const exportPdfDialog = ref(null);
 
         const format = ref('A4');
-        const formatOptions = ['A4', 'A3', 'Letter', 'Legal', 'Custom'];
-        const orientation = ref('Portrait');
-        const orientationOptions = ['Portrait', 'Landscape'];
+        const formatOptions = ['A4', 'A3', tr.t('Letter'), tr.t('Legal'), tr.t('Custom')];
+        const orientation = ref(tr.t('Portrait'));
+        const orientationOptions = [tr.t('Portrait'), tr.t('Landscape')];
         const pageWidth = ref(210);
         const pageHeight = ref(297);
 
-        const margins = ref({ left: 10, top: 10, right: 10, bottom: 10 });
+        const margins = ref({ ...props.initMargins });
         const marginSides = [
             { key: 'left' },
             { key: 'top' },

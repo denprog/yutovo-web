@@ -6,7 +6,7 @@ namespace yutovo_web
 //WebPdfWindow
 
 WebPdfWindow::WebPdfWindow(const Size& _page_size) : 
-    PdfWindow(_page_size)
+    PdfWindow(_page_size, true)
 {
 }
 

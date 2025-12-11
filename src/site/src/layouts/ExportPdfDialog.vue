@@ -73,9 +73,9 @@
 
         <q-separator />
 
-        <q-form @submit="onSubmit" @reset="onReset">
+        <q-form @submit.prevent="onOKClick" @reset="onReset">
             <div class="q-pa-md q-gutter-sm">
-                <q-btn unelevated class="bg-primary text-white" type="submit" :label="$t('OK')" @click="onOKClick" />
+                <q-btn unelevated class="bg-primary text-white" type="submit" :label="$t('OK')" />
                 <q-btn unelevated class="text-blue" type="reset" :label="$t('Cancel')" />
             </div>
         </q-form>

@@ -455,6 +455,13 @@ void MainLoop(void* arg)
     {
         if (window->GetLoadResult(load_result, load_document_id))
             document->SetConfig(user_settings, false);
+        if (resize)
+        {
+            double w = 0, h = 0;
+            emscripten_get_element_css_size("#canvas", &w, &h);
+            document->Resize((int)w, (int)h);
+            resize = false;
+        }
     }
 
     if (window->needs_translate)
@@ -544,14 +551,6 @@ void MainLoop(void* arg)
             LoadResult((int)load_result, load_document_id, s.c_str(), s.size());
         }
         load_result = IOResult::None;
-    }
-
-    if (resize)
-    {
-        double w = 0, h = 0;
-        emscripten_get_element_css_size("#canvas", &w, &h);
-        document->Resize((int)w, (int)h);
-        resize = false;
     }
 
     if (web_pdf_window && web_pdf_window->pdf_result_ready)

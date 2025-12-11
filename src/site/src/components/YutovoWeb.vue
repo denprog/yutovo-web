@@ -1304,13 +1304,12 @@ export default
         onExportPdf()
         {
             console.log('onExportPdf');
-            var link_json = UTF8ToString(Module.cwrap('GetMargins')());
-            var json = JSON.parse(link_json);
+            var t = this.$t;
             const margins = ref({
-                left: json.left,
-                top: json.top,
-                right: json.right,
-                bottom: json.bottom
+                left: 20,
+                top: 20,
+                right: 20,
+                bottom: 20
             });
             this.$q.dialog({
                 component: ExportPdfDialog, 
@@ -1320,8 +1319,8 @@ export default
                 }
             })
             .onOk((data) => {
-                Module.cwrap('OnExportPdf', 'void', ['int', 'int', 'int', 'int', 'int', 'int'])(data.pageWidth, data.pageHeight, 
-                    data.margins.left, data.margins.top, data.margins.right, data.margins.bottom);
+                Module.cwrap('OnExportPdf', 'void', ['int', 'int', 'int', 'int', 'int', 'int', 'string'])(data.pageWidth, data.pageHeight, 
+                    data.margins.left, data.margins.top, data.margins.right, data.margins.bottom, t('This document was created with '));
             });
             canvas.focus();
         },
@@ -2051,7 +2050,6 @@ export default
 
         async exportPdf(event)
         {
-            console.log('exportPdf', event);
             var blob = event.detail.pdf;
             var s = this.store;
             var filename = s.state.editor.document_name;

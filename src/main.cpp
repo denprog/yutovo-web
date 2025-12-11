@@ -921,7 +921,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnExportHtml(const int document_id)
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnExportPdf(const int width, const int height, const int margin_left, const int margin_top, 
-    const int margin_right, const int margin_bottom)
+    const int margin_right, const int margin_bottom, const char* footer)
 {
     if (!document)
         return;
@@ -940,7 +940,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnExportPdf(const int width, const int heig
     f.right_indent = margin_right;
     f.bottom_indent = margin_bottom;
 
-    web_pdf_window.reset(new yutovo_web::WebPdfWindow({(int)(width * 72 / 25.4), (int)(height * 72 / 25.4)}));
+    web_pdf_window.reset(new yutovo_web::WebPdfWindow({(int)(width * 72 / 25.4), (int)(height * 72 / 25.4)}, ToUtfString(footer)));
     Document pdf_document(web_pdf_window.get(), config, *document.get());
     pdf_document.Start(f);
 }
@@ -1850,7 +1850,9 @@ void CreateDocument()
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, true, nullptr);
     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, &args, true, OnResize);
 
-    document->Start(TextFormat{TextFormat::Paging::WEB_VIEW, 2, 2, 22, 22, 10, {0, 0}});
+    int w, h, f;
+    emscripten_get_canvas_size(&w, &h, &f);
+    document->Start(TextFormat{TextFormat::Paging::WEB_VIEW, 2, 2, 22, 22, 10, {w, h}});
     if (!load_json.empty())
         document->LoadJson(load_json, load_document_id);
     else

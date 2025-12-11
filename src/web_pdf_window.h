@@ -12,7 +12,9 @@ using namespace yutovo;
 class WebPdfWindow : public PdfWindow
 {
 public:
-    WebPdfWindow(const Size& _page_size);
+    WebPdfWindow(const Size& _page_size, std::u32string&& _footer);
+
+    virtual std::u32string Translate(ElementId id, const std::u32string& str);
 
     virtual bool GetFontPath(const StringFormatPtr format, std::string& path);
 
@@ -28,6 +30,7 @@ private:
     std::recursive_mutex results_mutex;
     std::vector<uint8_t> pdf;
     PdfResult result;
+    std::u32string footer;
 };
 
 }

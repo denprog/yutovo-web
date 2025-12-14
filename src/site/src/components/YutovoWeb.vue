@@ -594,6 +594,7 @@ export default
 
         let s_js = document.createElement('script');
         s_js.setAttribute('type', 'text/javascript');
+        s_js.setAttribute('src', 'coi-serviceworker.js');
         document.body.appendChild(s_js);
 
         let yutovo_web_js = document.createElement('script');

@@ -578,7 +578,7 @@ int CharsNumber(const char *str)
     if (!str)
         return 0;
     int num_chars = 0;
-    while(*str)
+    while (*str)
     {
         if ((*str++ & 0xC0) != 0x80)
             ++num_chars; // Skip all continuation bytes
@@ -595,7 +595,7 @@ EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void
         ch = key_event->key[0];
     if (args->shortcuts_map->Call(s, ch, args->window->current_editor_state))
         return true;
-    if (ch != 0)
+    if (!key_event->ctrlKey && !key_event->altKey && ch != 0)
     {
         args->document->InsertString(key_event->key, true);
         return true;

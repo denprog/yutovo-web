@@ -126,12 +126,12 @@ void WebWindow::PrepareSymbolsSizes(const std::vector<std::tuple<char32_t, std::
     fill_cache = true;
 }
 
-void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height)
+void WebWindow::ClearRect(const int x1, const int y1, const int _width, const int _height, const Color color)
 {
     if (x1 == 0 && y1 == 0 && _width == width && _height == height)
         ClearSurface(); //more efficient
     else
-        DrawFillRect(x1, y1, _width, _height, Color::White());
+        DrawFillRect(x1, y1, _width, _height, color);
 }
 
 void WebWindow::ClearSurface()

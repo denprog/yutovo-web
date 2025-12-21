@@ -1599,7 +1599,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSettings(const char* settings)
 {
     user_settings = settings;
-    document->SetConfig(user_settings, true);
+    document->SetConfig(user_settings, false);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config, bool with_undo)

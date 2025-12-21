@@ -44,7 +44,7 @@ public:
     virtual int GetSymbolSize(const char32_t symbol, const int height, const std::string& family_name, Size& size, int& baseline);
     virtual void PrepareSymbolsSizes(const std::vector<std::tuple<char32_t, std::string, int>>& _symbols_sizes);
 
-    virtual void ClearRect(const int x1, const int y1, const int _width, const int _height);
+    virtual void ClearRect(const int x1, const int y1, const int _width, const int _height, const Color color);
 
     virtual void ClearSurface();
 

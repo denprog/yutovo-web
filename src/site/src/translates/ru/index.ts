@@ -164,7 +164,7 @@ export default {
     'Close': 'Закрыть',
     'Error downloading file': 'Ошибка загрузки файла',
 
-    'Login': 'Логин',
+    'Login': 'Войти',
     'Logout': 'Выход',
     'user name': 'имя пользователя',
     'password': 'пароль',

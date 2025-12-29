@@ -1628,6 +1628,7 @@ export default
             window.newDocument = false;
 
             var s = this.store;
+            var t = this.$t;
             api.post('/service/new-document', event.detail == null ? {} : 
                 {
                     json: event.detail.json,

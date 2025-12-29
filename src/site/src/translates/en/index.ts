@@ -14,13 +14,42 @@ export default {
 
     cookies_use: 'This website uses cookies for normal functioning.',
 
-    register_email_message: 'Request of user registration from yutovo.com. Enter this code: EMAIL_CODE in the dialog of registration.',
+    register_verification_email: {
+        subject: 'Register code',
+        greeting: 'Confirm your registration',
+        body1: 'You have started the registration process on <a href="https://yutovo.com">yutovo.com</a>.',
+        body2: 'To complete your registration, enter the following code in the verification field:',
+        ignore: 'If you did not request this registration, please ignore this email.',
+        sign: 'Best regards,<br>The yutovo.com team'
+    },
 
-    password_email_message: 'Request of password changing from yutovo.com. Enter this code: EMAIL_CODE in the dialog.',
+    welcome_email: {
+        subject: 'Registration on Yutovo',
+        greeting: 'Welcome, {name}!',
+        congrats: 'You have successfully registered on <a href="https://yutovo.com">yutovo.com</a>.',
+        login_info: 'Your login: {login}.',
+        full_access: 'You now have full access to all features of the service.',
+        support: 'If you have any questions, feel free to contact support at {email}.',
+        sign: 'Best regards,<br>The yutovo.com team.'
+    },
 
-    email_email_message: 'Request of e-mail changing from yutovo.com. Enter this code: EMAIL_CODE in the dialog.',
+    email_verification_email: {
+        subject: 'Changing e-mail',
+        greeting: 'Confirm your e-mail',
+        body1: 'You requested a change of email on <a href="https://yutovo.com">yutovo.com</a>.',
+        body2: 'To complete this process, enter the following code in the verification field:',
+        ignore: 'If you did not request this action, please ignore this email.',
+        sign: 'Best regards,<br>The yutovo.com team'
+    },
 
-    recover_password_email_message: 'Request of recovering password from yutovo.com. Enter this code: EMAIL_CODE in the dialog.',
+    password_verification_email: {
+        subject: 'Changing password',
+        greeting: 'Confirm your password',
+        body1: 'You requested a change of password on <a href="https://yutovo.com">yutovo.com</a>.',
+        body2: 'To complete this process, enter the following code in the verification field:',
+        ignore: 'If you did not request this action, please ignore this email.',
+        sign: 'Best regards,<br>The yutovo.com team'
+    },
 
     terms_of_use: 'yutovo.ru, yutovo.com service (hereinafter referred to as yutovo) and desktop application come with no warranty, \
         explicit or implied, of any purpose whatsoever.<br/>\

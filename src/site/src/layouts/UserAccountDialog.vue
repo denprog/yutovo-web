@@ -43,6 +43,15 @@
                                     <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" @click="onChangePassword();">{{ $t('Change password') }}</q-btn>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>{{ $t('Registration') }}</td>
+                                <td class="q-pl-md">
+                                    <div class="q-pa-sm">{{ loginStr }}</div>
+                                </td>
+                                <td class="q-pl-md">
+                                    <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" @click="onUnregister();">{{ $t('Remove') }}</q-btn>
+                                </td>
+                            </tr>
                         </table>
                         <div class="q-pa-md q-gutter-sm" style="text-align: center">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('Close')" />
@@ -136,6 +145,10 @@ export default
                         console.log(response);
                         store.dispatch('login/updateAccessToken', '');
                         Cookies.remove('document_id');
+                        if (typeof response.response.data.error !== 'undefined')
+                            alert(t('Logout error: ') + t(response.response.data.error));
+                        else
+                            alert(t('Logout error: ') + t(response.response.data));
                     }
                 );
         };
@@ -170,6 +183,55 @@ export default
             userAccountDialog.value.hide();
         };
 
+        const onUnregister = () =>
+        {
+            $q.dialog({
+                title: 'Remove account',
+                message: 'Are you sure you want to delete your account and all associated documents?',
+                cancel: {
+                    label: 'No',
+                    color: 'primary',
+                    flat: true
+                },
+                ok: {
+                    label: 'Yes',
+                    color: 'negative',
+                    flat: true
+                },
+                persistent: true
+            }).onOk(() => {
+                api.post('/auth/unregister', 
+                    {
+                        login: store.state.login.login
+                    },
+                    {
+                        headers:
+                        {
+                            access_token: store.state.login.access_token
+                        }
+                    }
+                    ).then(
+                        function()
+                        {
+                            store.dispatch('login/updateAccessToken', '');
+                            Cookies.remove('document_id');
+                        }
+                    ).catch(
+                        function(response)
+                        {
+                            console.log(response);
+                            store.dispatch('login/updateAccessToken', '');
+                            Cookies.remove('document_id');
+                            if (typeof response.response.data.error !== 'undefined')
+                                alert(t('Account deletion error: ') + t(response.response.data.error));
+                            else
+                                alert(t('Account deletion error: ') + t(response.response.data));
+                        }
+                    );
+            });
+            userAccountDialog.value.hide();
+        };
+
         return {
             userAccountDialog,
             onClose,
@@ -177,6 +239,7 @@ export default
             onChangeName,
             onChangeEmail,
             onChangePassword,
+            onUnregister,
             loginStr,
             nameStr,
             emailStr

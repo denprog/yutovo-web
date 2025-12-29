@@ -48,6 +48,7 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import verificationTemplate from '../templates/VerificationEmail.html?raw'
 
 export default
 {
@@ -138,10 +139,22 @@ export default
         const onSendCode = () =>
         {
             store.commit('login/setLastError', '');
+
+            const t = tr.t;
+            const htmlMessage = verificationTemplate
+                .replace(/{{subject}}/g, t('password_verification_email.subject'))
+                .replace(/{{greeting}}/g, t('password_verification_email.greeting'))
+                .replace(/{{body1}}/g, t('password_verification_email.body1'))
+                .replace(/{{body2}}/g, t('password_verification_email.body2'))
+                .replace(/{{code}}/g, 'EMAIL_CODE')
+                .replace(/{{code_valid}}/g, t('password_verification_email.code_valid'))
+                .replace(/{{ignore}}/g, t('password_verification_email.ignore'))
+                .replace(/{{sign}}/g, t('password_verification_email.sign'));
+
             api.post('/auth/send-email-code', 
                 {
-                    subject: tr.t('Password change code'),
-                    message: tr.t('password_email_message'),
+                    subject: t('password_verification_email.subject'),
+                    message: htmlMessage,
                     captcha: captcha.value,
                     recover: true,
                     action: 'change_password'
@@ -158,7 +171,7 @@ export default
                         if (typeof response.response.data.error !== 'undefined')
                             store.commit('login/setLastError', tr.t(response.response.data.error));
                         else
-                            store.commit('login/setLastError', tr.t('Sending registration code failed'));
+                            store.commit('login/setLastError', tr.t('Sending e-mail code failed'));
                     }
                 );
         };

@@ -176,6 +176,7 @@ export default {
     'email': 'почта',
     'repeate password': 'повторите пароль',
     'Register': 'Регистрация',
+    'Remove': 'Удалить',
 
     'Settings': 'Настройки',
 
@@ -237,11 +238,45 @@ export default {
 
     'Register code': 'Код регистрации',
     'Send code' : 'Выслать код',
-    register_email_message: 'Запрос регистрации пользователя с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге регистрации.',
 
-    'Password change code': 'Код смены пароля',
+    register_verification_email: {
+        subject: 'Регистрация на Ютово',
+        greeting: 'Подтвердите свою регистрацию',
+        body1: 'Вы начали регистрацию на сайте <a href="https://yutovo.com">yutovo.com</a>.',
+        body2: 'Для завершения регистрации введите этот код в поле проверки:',
+        ignore: 'Если вы не начинали регистрацию, проигнорируйте это письмо.',
+        sign: 'С уважением,<br>Команда yutovo.com'
+    },
+
+    welcome_email: {
+        subject: 'Регистрация на Ютово',
+        greeting: 'Добро пожаловать, {name}!',
+        congrats: 'Вы успешно зарегистрировались <a href="https://yutovo.com">yutovo.com</a>.',
+        login_info: 'Ваш логин: {login}.',
+        full_access: 'Сейчас у вас есть полный доступ ко всем функциям сервиса.',
+        support: 'Если у Вас есть вопросы, обращайтесь на {email}.',
+        sign: 'С уважением,<br>Команда yutovo.com.'
+    },
+
+    email_verification_email: {
+        subject: 'Смена почты',
+        greeting: 'Подтвердите вашу почту',
+        body1: 'Вы запросили смену почты на <a href="https://yutovo.com">yutovo.com</a>.',
+        body2: 'Для завершения введите этот код в поле проверки:',
+        ignore: 'Если вы не запрашивали этого, проигнорируйте это письмо.',
+        sign: 'С уважением,<br>Команда yutovo.com'
+    },
+
+    password_verification_email: {
+        subject: 'Смена пароля',
+        greeting: 'Подтвердите ваш пароль',
+        body1: 'Вы запросили смену пароля на <a href="https://yutovo.com">yutovo.com</a>.',
+        body2: 'Чтобы завершить этот процесс, введите следующий код в поле проверки:',
+        ignore: 'Если вы не запрашивали это действие, просто проигнорируйте это письмо.',
+        sign: 'С уважением,<br>Команда yutovo.com'
+    },
+
     'Enter code from the e-mail': 'Введите код из письма',
-    password_email_message: 'Запрос смены пароля с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
 
     'Login failed': 'Ошибка входа',
     'Sending registration code failed': 'Отправка регистрационного кода не удалась',
@@ -262,6 +297,8 @@ export default {
     'Login or email are incorrect': 'Логин или почта неправильны',
     'Error getting settings': 'Ошибка получения настроек',
     'Error sending e-mail': 'Ошибка отправки письма',
+    'Logout error': 'Ошибка выхода',
+    'Account deletion error': 'Ошибка удаления аккаунта',
 
     'name': 'имя',
 
@@ -280,12 +317,9 @@ export default {
 
     'This document was created with ': 'Этот документ был создан с помощью ',
 
-    email_email_message: 'Запрос смены почты с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
-
     'Password recovery code': 'Код восстановления пароля',
     'Recover password': 'Восстановление пароля',
     'login or e-mail': 'логин или почта',
-    recover_password_email_message: 'Запрос восстановления пароля с сайта yutovo.ru. Введите этот код: EMAIL_CODE в диалоге.',
 
     'About': 'О проекте',
     about_yutovo: 'Ютово - это мощный калькулятор для решения различных математических, физических и повседневных задач.\

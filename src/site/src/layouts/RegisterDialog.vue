@@ -60,6 +60,8 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Cookies } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import verificationTemplate from '../templates/VerificationEmail.html?raw'
+import welcomeTemplate from '../templates/WelcomeEmail.html?raw'
 
 export default {
     name: 'RegisterDialog',
@@ -160,13 +162,25 @@ export default {
         const onSendCode = () =>
         {
             store.commit('login/setLastError', '');
+
+            const t = tr.t;
+            const htmlMessage = verificationTemplate
+                .replace(/{{subject}}/g, t('register_verification_email.subject'))
+                .replace(/{{greeting}}/g, t('register_verification_email.greeting'))
+                .replace(/{{body1}}/g, t('register_verification_email.body1'))
+                .replace(/{{body2}}/g, t('register_verification_email.body2'))
+                .replace(/{{code}}/g, 'EMAIL_CODE')
+                .replace(/{{code_valid}}/g, t('register_verification_email.code_valid'))
+                .replace(/{{ignore}}/g, t('register_verification_email.ignore'))
+                .replace(/{{sign}}/g, t('register_verification_email.sign'));
+
             api.post('/auth/send-email-code', 
                 {
                     login: login.value,
                     name: name.value,
                     email: email.value,
-                    subject: tr.t('Register code'),
-                    message: tr.t('register_email_message'),
+                    subject: t('register_verification_email.subject'),
+                    message: htmlMessage,
                     captcha: captcha.value,
                     action: 'register'
                 }
@@ -220,10 +234,40 @@ export default {
 
                                     router.push({ path: '/document/' + response.data.document_id });
                                     Cookies.set('document_id', response.data.document_id, {path: '/'});
+
+                                    const t = tr.t;
+                                    const htmlMessage = welcomeTemplate
+                                        .replace(/{{subject}}/g, t('welcome_email.subject'))
+                                        .replace(/{{greeting}}/g, t('welcome_email.greeting', { name: name.value }))
+                                        .replace(/{{congrats}}/g, t('welcome_email.congrats'))
+                                        .replace(/{{login_info}}/g, t('welcome_email.login_info', { login: login.value }))
+                                        .replace(/{{full_access}}/g, t('welcome_email.full_access'))
+                                        .replace(/{{support}}/g, t('welcome_email.support', { email: '<a href="mailto:support@yutovo.ru">support@yutovo.ru</a>'}))
+                                        .replace(/{{sign}}/g, t('welcome_email.sign'));
+
+                                    api.post('/auth/send-email', 
+                                        {
+                                            subject: t('welcome_email.subject'),
+                                            message: htmlMessage
+                                        },
+                                        {
+                                            headers:
+                                            {
+                                                access_token: store.state.login.access_token
+                                            }
+                                        })
+                                        .catch(
+                                            function(response)
+                                            {
+                                                console.log(response);
+                                                store.commit('login/setLastError', tr.t('Sending e-mail failed'));
+                                            }
+                                        );
                                 }
                             ).catch(
                                 function(response)
                                 {
+                                    console.log(response);
                                     store.dispatch('login/updateAccessToken', '');
                                     if (response.response.data.error != '')
                                         store.commit('login/setLastError', tr.t(response.response.data.error));

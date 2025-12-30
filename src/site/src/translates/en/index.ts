@@ -14,6 +14,10 @@ export default {
 
     cookies_use: 'This website uses cookies for normal functioning.',
 
+    'Russian_male': 'Russian',
+    'English_male': 'Inglish',
+    'Spanish_male': 'Spanish',
+
     register_verification_email: {
         subject: 'Register code',
         greeting: 'Confirm your registration',

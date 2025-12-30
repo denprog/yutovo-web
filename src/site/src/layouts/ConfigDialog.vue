@@ -303,11 +303,23 @@ export default
         const complexShowAngleMeasure = ref(typeof store.state.editor.config.complex_result === 'undefined' ? true : 
             store.state.editor.config.complex_result.show_angle_measure);
 
-        const languages = [
-            'English',
-            'Русский'
-        ];
-        const language = ref(typeof store.state.editor.config.language === 'undefined' ? 'English' : languages[store.state.editor.config.language - 1]);
+        const languages = ref([
+            { value: 'English', label: tr.t('English_male') },
+            { value: 'Russian',  label: tr.t('Russian_male') },
+            { value: 'Spanish',  label: tr.t('Spanish_male') }
+        ]);
+
+        const languageToInt = language =>
+            language === 'en' ? 1 :
+            language === 'ru' ? 2 :
+            language === 'es' ? 3 : 0;
+
+        const language = ref(
+            typeof store.state.editor.config.language === 'undefined' ? 
+                (typeof store.state.editor.language === 'undefined' ? 'English' : 
+                languages.value[languageToInt(store.state.editor.language) - 1]?.value ?? 'English') : 
+                (languages.value[store.state.editor.config.language - 1]?.value ?? 'English')
+        );
 
         const intRequired = (val) =>
         {
@@ -331,6 +343,7 @@ export default
                 if (i < includesRef.value.length - 1)
                     inc += ',';
             }
+            const languageNumber = languages.value.findIndex(l => l.value === language.value) + 1 || 1;
             var json = 
                 '{' + 
                     '"real_result":{"precision":' + realPrecision.value + ',"exp":' + realExp.value + 
@@ -344,7 +357,7 @@ export default
                         ',"default_angle_measure":' + angleMeasures.indexOf(complexDefaultAngleMeasure.value) + 
                         ',"result_angle_measure":' + angleMeasures.indexOf(complexResultAngleMeasure.value) + 
                         ',"form":' + complexForms.indexOf(complexForm.value) + ',"show_angle_measure":' + complexShowAngleMeasure.value + '},' + 
-                    '"language":' + (languages.indexOf(language.value) + 1) + ',' +
+                    '"language":' + languageNumber + ',' +
                     '"include_documents":[' + 
                         inc +
                         ']' +

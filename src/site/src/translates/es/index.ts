@@ -207,6 +207,9 @@ export default {
     'Maximum count of results': 'Cantidad máxima de resultados',
     'File name': 'Nombre del archivo',
     'Add...': 'Agregar...',
+    'Russian_male': 'Ruso',
+    'English_male': 'Inglés',
+    'Spanish_male': 'Español',
 
     'Units': 'Unidades',
     'SI': 'SI',

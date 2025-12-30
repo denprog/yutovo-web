@@ -525,8 +525,8 @@ import { computed } from 'vue'
 import ColorPickerDialog from 'layouts/ColorPickerDialog.vue'
 import SaveAsDialog from 'layouts/SaveAsDialog.vue';
 import RenameDialog from 'layouts/RenameDialog.vue';
-import ConfigDialog from  'layouts/ConfigDialog.vue';
-import SetUnitDialog from  'layouts/SetUnitDialog.vue';
+import ConfigDialog from 'layouts/ConfigDialog.vue';
+import SetUnitDialog from 'layouts/SetUnitDialog.vue';
 import LinkDialog from 'layouts/LinkDialog.vue';
 import ConfirmDialog from 'layouts/ConfirmDialog.vue';
 import GraphFormatDialog from 'layouts/GraphFormatDialog.vue';
@@ -1627,9 +1627,19 @@ export default
                 return;
             window.newDocument = false;
 
+            const languageToInt = (language) =>
+                language === 'en' ? 1 :
+                language === 'ru' ? 2 :
+                language === 'es' ? 3 : 0;
+
             var s = this.store;
             var t = this.$t;
-            api.post('/service/new-document', event.detail == null ? {} : 
+            api.post('/service/new-document', 
+                event.detail == null ? 
+                {
+                    language: languageToInt(s.state.editor.language)
+                }
+                : 
                 {
                     json: event.detail.json,
                     name: event.detail.name

@@ -1587,15 +1587,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnLibraryFilePart(const char* part_file, co
     }
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnLanguage(const char* language)
-{
-    auto s = yutovo::ToUtfString(language);
-    if (s == U"\"en\"")
-        document->SetLocale(yutovo_calculator::Language::English, true);
-    else if (s == U"\"ru\"")
-        document->SetLocale(yutovo_calculator::Language::Russian, true);
-}
-
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSettings(const char* settings)
 {
     user_settings = settings;
@@ -1826,10 +1817,45 @@ ElementId GetRealResultId()
     return id;
 }
 
+EM_JS(int, GetLanguage, (),
+{
+    try
+    {
+        let cookies = document.cookie;
+        if (!cookies)
+            return 0;
+
+        let name = "language=";
+        let decodedCookie = decodeURIComponent(cookies);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++)
+        {
+            let c = ca[i].trim();
+            if (c.indexOf(name) === 0)
+            {
+                let lang = c.substring(name.length, c.length);
+                if (lang.startsWith("en"))
+                    return 1;
+                if (lang.startsWith("ru"))
+                    return 2;
+                if (lang.startsWith("es"))
+                    return 3;
+                return 0;
+            }
+        }
+        return 0;
+    }
+    catch (e)
+    {
+        return 0;
+    }
+});
+
 void CreateDocument()
 {
     document.reset();
     window->Reset();
+    config.language = (yutovo_calculator::Language)GetLanguage();
     document.reset(new yutovo::Document(window.get(), config));
 
     shortcuts_map.Init(document.get());

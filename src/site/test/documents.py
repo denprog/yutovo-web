@@ -277,7 +277,7 @@ class TestDocuments(unittest.TestCase):
         utils.clickIdentifier(self.driver, 'Functions')
         time.sleep(1)
 
-        utils.setSettingsLanguage(self.driver, 'Русский')
+        utils.setSettingsLanguage(self.driver, 'Russian')
         time.sleep(1)
         utils.setLanguage(self.driver, 'Русский')
         time.sleep(1)

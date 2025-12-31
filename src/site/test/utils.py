@@ -22,7 +22,7 @@ def registerUser(driver, username, password, email):
 
 def login(driver, username, password):
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Login\')] | //*[contains(text(), \'Логин\')] | '
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Login\')] | //*[contains(text(), \'Войти\')] | '
         '//*[contains(text(), \'Acceder\')]')))
     b.click()
     time.sleep(1)
@@ -69,8 +69,7 @@ def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'delete-button')))
     b.click()
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
-    b.click()
+    clickOk(driver, 'q-dialog-plugin')
 
 def copy(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'copy-button')))
@@ -136,6 +135,30 @@ def getLanguage(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language')))
     return b.text
 
+def clickOk(driver, id):
+    wait = WebDriverWait(driver, 2)
+    try:
+        ok_xpath = (
+            "//div[@id='" + id + "']"
+            "//button"
+            "[contains(., 'OK') or contains(., 'Применить') or contains(., 'Aceptar') or @aria-label='OK']"
+        )    
+        ok_button = wait.until(EC.element_to_be_clickable((By.XPATH, ok_xpath)))
+        ok_button.click()
+    except:
+        ok_xpath = (
+            "//div[contains(@class, '" + id + "')]"
+            "//button"
+            "["
+            "  contains(., 'OK') or "
+            "  contains(., 'Aceptar') or "
+            "  .//span[contains(., 'OK') or contains(., 'Aceptar')] "
+            "]"
+            "[not(@disabled)]"
+        )        
+        ok_button = wait.until(EC.element_to_be_clickable((By.XPATH, ok_xpath)))
+        ok_button.click()
+
 def setSettingsLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'settings-button')))
     b.click()
@@ -143,13 +166,21 @@ def setSettingsLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Locale\')]')))
     b.click()
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[@id=\'config-dialog\']//*[contains(text(), \'English\')]')))
-    b.click()
+
+    wait = WebDriverWait(driver, 2)
+    language_select = wait.until(EC.element_to_be_clickable((By.ID, "config-language")))
+    language_select.click()
+    time.sleep(2)
+
+    menu_option_xpath = (
+        "//div[contains(@class, 'q-menu')]//div[contains(@class, 'q-item')]"
+        f"[contains(normalize-space(.), '{language}')]"
+    )
+
+    option = wait.until(EC.element_to_be_clickable((By.XPATH, menu_option_xpath)))
+    option.click()
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
-    b.click()
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'OK\')]')))
-    b.click()
+    clickOk(driver, 'config-dialog')
 
 def saveDialogClick(driver, button):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + button + '\')]')))

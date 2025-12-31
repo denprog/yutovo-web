@@ -15,7 +15,7 @@ export default {
     cookies_use: 'This website uses cookies for normal functioning.',
 
     'Russian_male': 'Russian',
-    'English_male': 'Inglish',
+    'English_male': 'English',
     'Spanish_male': 'Spanish',
 
     register_verification_email: {

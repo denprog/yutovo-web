@@ -9,6 +9,7 @@
                         <div class="text-h10">
                             <span v-html=about_yutovo></span><br/><br/>
                             <span v-html=support></span><br/><br/>
+                            <span v-html=bugtracker></span><br/><br/>
                             <span v-html=version></span><br/><br/>
                             <span v-html=license></span>
                         </div>
@@ -52,6 +53,7 @@ export default {
         return {
             about_yutovo: t('about_yutovo'),
             support: t('support'),
+            bugtracker: t('bugtracker'),
             version: t('version') + versionNumber,
             license: t('license'),
         }

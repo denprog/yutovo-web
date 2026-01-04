@@ -331,6 +331,8 @@ export default {
         Tecnologías y bibliotecas utilizadas: C++, WebAssembly, Emscripten, boost, MPFR, GMP, Drogon, JavaScript, Vue, Quasar, jwt-cpp, spdlog, rapidjson, MathGL.',
     support: 'Soporte: correo electrónico: <a href="mailto:support{\'@\'}yutovo.ru">support{\'@\'}yutovo.ru</a>, \
         Telegram: <a class="q-pa-none" target="_blank" rel="noopener noreferrer" href="https://t.me/yutovo  ">{\'@\'}yutovo</a>.',
+    bugtracker: 'Por favor, informe de los problemas y errores encontrados en el <a href="https://github.com/denprog/yutovo-web/issues" target="_blank">\
+        sistema de seguimiento de errores</a>.',
     version: 'Versión: ',
     license: 'El contenido de este sitio está bajo una <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="license noopener">\
         Licencia Creative Commons Atribución 4.0 Internacional (CC BY 4.0)</a>.',

@@ -16,7 +16,7 @@
                                     <td>Ubuntu 24</td>
                                     <td class="q-pl-md">
                                         <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.4.1-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
+                                            @click="onDownload('yutovo-desktop_1.4.2-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
                                     </td>
                                 </tr>
                                 <tr>
@@ -24,6 +24,13 @@
                                     <td class="q-pl-md">
                                         <a class="q-pa-none" target="_blank" rel="noopener noreferrer" 
                                             href="https://flathub.org/apps/com.yutovo.yutovo">{{ $t('Link') }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Arch</td>
+                                    <td class="q-pl-md">
+                                        <a class="q-pa-none" target="_blank" rel="noopener noreferrer" 
+                                            href="https://aur.archlinux.org/packages/yutovo">{{ $t('Link') }}</a>
                                     </td>
                                 </tr>
                                 <tr>

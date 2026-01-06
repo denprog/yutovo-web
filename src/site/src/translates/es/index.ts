@@ -194,6 +194,7 @@ export default {
 
     'Document settings': 'Configuración del documento',
     'Result': 'Resultado',
+    'Document': 'Documento',
     'Locale': 'Idioma',
     'Language': 'Idioma',
     'Include documents' : 'Documentos incluidos',
@@ -210,6 +211,11 @@ export default {
     'Russian_male': 'Ruso',
     'English_male': 'Inglés',
     'Spanish_male': 'Español',
+    'Indentation': 'Indentación',
+    'Tabs': 'Tabulaciones',
+    'Spaces': 'Espacios',
+    'Spaces count': 'Recuento de espacios',
+    'The field must be inside 0 and 16': 'El campo debe estar dentro de 0 y 16',
 
     'Units': 'Unidades',
     'SI': 'SI',

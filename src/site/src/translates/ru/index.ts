@@ -194,6 +194,7 @@ export default {
 
     'Document settings': 'Настройки документа',
     'Result': 'Результат',
+    'Document': 'Документ',
     'Locale': 'Язык',
     'Language': 'Язык',
     'Include documents' : 'Подключенные документы',
@@ -210,6 +211,11 @@ export default {
     'Russian_male': 'Русский',
     'English_male': 'Английский',
     'Spanish_male': 'Испанский',
+    'Indentation': 'Табуляция',
+    'Tabs': 'Табуляция',
+    'Spaces': 'Пробелы',
+    'Spaces count': 'Количество пробелов',
+    'The field must be inside 0 and 16': 'Поле должно быть в пределах от 0 до 16',
 
     'Units': 'Размерности',
     'SI': 'СИ',

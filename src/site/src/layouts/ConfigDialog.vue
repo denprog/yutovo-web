@@ -8,7 +8,7 @@
 
                     <q-tabs v-model="configTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
                         <q-tab name="result" v-bind:label="$t('Result')" />
-                        <q-tab name="locale" v-bind:label="$t('Locale')" />
+                        <q-tab name="document" v-bind:label="$t('Document')" />
                         <q-tab name="include_documents" v-bind:label="$t('Include documents')" />
                     </q-tabs>
 
@@ -69,9 +69,28 @@
                             </q-card>
                         </q-tab-panel>
 
-                        <q-tab-panel name="locale">
+                        <q-tab-panel name="document">
                             <q-select v-model="language" id="config-language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense 
                                 v-bind:label="$t('Language')" />
+                            <q-separator class="q-my-md" />
+
+                            <div class="text-body q-mb-sm">
+                                {{ $t('Indentation') }}
+                            </div>
+
+                            <q-option-group v-model="useTabs" :options="[
+                                { label: $t('Tabs'), value: true },
+                                { label: $t('Spaces'), value: false }
+                                ]"
+                                type="radio">
+                                <template v-slot:label="opt">
+                                    <span class="text-body">{{ opt.label }}</span>
+                                </template>
+                            </q-option-group>
+
+                            <q-input v-if="!useTabs" v-model.number="tabSpaces" type="tel" dense min="1" inputmode="numeric"
+                                :rules='[val => (val > 0 && val <= 16) || $t("The field must be inside 0 and 16")]' 
+                                v-bind:label="$t('Spaces count')" class="text-body"/>
                         </q-tab-panel>
 
                         <q-tab-panel name="include_documents">
@@ -321,6 +340,9 @@ export default
                 (languages.value[store.state.editor.config.language - 1]?.value ?? 'English')
         );
 
+        const useTabs = ref(typeof store.state.editor.config.use_tabs === 'undefined' ? true : store.state.editor.config.use_tabs);
+        const tabSpaces = ref(typeof store.state.editor.config.tab_spaces === 'undefined' ? 4 : store.state.editor.config.tab_spaces);
+
         const intRequired = (val) =>
         {
             return  (val && val > 0 || tr.t('The field must be filled'));
@@ -333,7 +355,8 @@ export default
 
         const onSubmit = () =>
         {
-            if (realPrecision.value <= 0 || realExp.value <= 0 || complexPrecision.value <= 0 || complexExp.value <= 0 || complexCount.value <= 0)
+            if (realPrecision.value <= 0 || realExp.value <= 0 || complexPrecision.value <= 0 || complexExp.value <= 0 || complexCount.value <= 0 || 
+                tabSpaces.value <= 0 || tabSpaces.value > 16)
                 return;
 
             var inc = '';
@@ -358,6 +381,8 @@ export default
                         ',"result_angle_measure":' + angleMeasures.indexOf(complexResultAngleMeasure.value) + 
                         ',"form":' + complexForms.indexOf(complexForm.value) + ',"show_angle_measure":' + complexShowAngleMeasure.value + '},' + 
                     '"language":' + languageNumber + ',' +
+                    '"use_tabs":' + useTabs.value + ',' +
+                    '"tab_spaces":' + tabSpaces.value + ',' +
                     '"include_documents":[' + 
                         inc +
                         ']' +
@@ -410,6 +435,9 @@ export default
 
             language,
             languages,
+
+            useTabs,
+            tabSpaces,
 
             includesRef,
             editIndex,

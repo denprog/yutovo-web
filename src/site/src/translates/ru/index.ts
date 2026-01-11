@@ -169,7 +169,11 @@ export default {
     'user name': 'имя пользователя',
     'password': 'пароль',
     'Type the symbols above:': 'Введите символы сверху',
+    'OK': 'Принять',
     'Cancel': 'Отмена',
+
+    'Yes': 'Да',
+    'No': 'Нет',
 
     'Registration': 'Регистрация',
     'login': 'логин',

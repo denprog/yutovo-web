@@ -132,7 +132,7 @@ export default
                     timeout: 0,
                     actions: [
                         {
-                            label: 'OK', color: 'white', handler: () => { /* ... */ }
+                            label: this.$t('OK'), color: 'white', handler: () => { /* ... */ }
                         }
                     ]
                 });

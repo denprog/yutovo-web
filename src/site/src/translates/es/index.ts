@@ -169,7 +169,11 @@ export default {
     'user name': 'nombre de usuario',
     'password': 'contraseña',
     'Type the symbols above:': 'Escriba los símbolos de arriba:',
+    'OK': 'Aceptar',
     'Cancel': 'Cancelar',
+
+    'Yes': 'Sí',
+    'No': 'No',
 
     'Registration': 'Registro',
     'login': 'nombre de usuario',

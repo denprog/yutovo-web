@@ -104,7 +104,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     stdc++
     ${INSTALL_PATH}/wasm/libmpfr.a
     ${INSTALL_PATH}/wasm/libgmp.a
-    ${INSTALL_PATH}/wasm/libboost_iostreams.a
     yutovo-editor
     yutovo-solver
     yutovo-logger

@@ -340,20 +340,8 @@ export default
             this.registerDialog = this.$q
                 .dialog({
                     component: RegisterDialog,
-
-                    // optional if you want to have access to
-                    // Router, Vuex store, and so on, in your
-                    // custom component:
-                    parent: this, // becomes child of this Vue node
-                    // ("this" points to your Vue component)
-                    // (prop was called "root" in < 1.1.0 and
-                    // still works, but recommending to switch
-                    // to the more appropriate "parent" name)
-
-                    // props forwarded to component
-                    // (everything except "component" and "parent" props above):
+                    parent: this,
                     apiResponse: this.resp
-                    // ...more.props...
                 })
                 .onOk(() => {
                     console.log('OK')
@@ -388,20 +376,8 @@ export default
             this.loginDialog = this.$q.dialog(
                 {
                     component: LoginDialog,
-
-                    // optional if you want to have access to
-                    // Router, Vuex store, and so on, in your
-                    // custom component:
-                    parent: this, // becomes child of this Vue node
-                    // ("this" points to your Vue component)
-                    // (prop was called "root" in < 1.1.0 and
-                    // still works, but recommending to switch
-                    // to the more appropriate "parent" name)
-
-                    // props forwarded to component
-                    // (everything except "component" and "parent" props above):
+                    parent: this,
                     apiResponse: this.resp
-                    // ...more.props...
                 })
         },
 

@@ -880,6 +880,7 @@ export default
                                 {
                                     console.log(response);
                                     s.dispatch('login/updateAccessToken', '');
+                                    Cookies.remove('document_id');
                                 }
                             );
                         }
@@ -2028,7 +2029,8 @@ export default
         async documentChanged(event)
         {
             var s = this.store;
-            s.commit('editor/setDocumentChanged', event.detail.changed);
+            if (event.detail.changed) //reseting the flag after saving is after the save request is succesful
+                s.commit('editor/setDocumentChanged', true);
         },
 
         async exportHtml(event)

@@ -1572,6 +1572,7 @@ export default
         async checkDocumentChanged()
         {
             var t = this.$t;
+            var s = this.store;
             if (window.Module.cwrap('IsChanged', 'bool', [])())
             {
                 try
@@ -1600,6 +1601,7 @@ export default
                             window.Module.cwrap('OnSave', 'void', ['int'])(Cookies.has('document_id') ? Cookies.get('document_id') : 0);
                             break;
                         case 'no':
+                            s.commit('editor/setDocumentChanged', false);
                             return true;
                         case 'cancel':
                             return false;

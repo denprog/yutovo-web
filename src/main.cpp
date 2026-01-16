@@ -1093,6 +1093,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
     return !s.selection_state.IsEmpty();
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void SetChanged(bool changed)
+{
+    document->SetChanged(changed);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE bool IsChanged()
 {
     return document->IsChanged();

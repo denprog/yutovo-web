@@ -1792,6 +1792,7 @@ export default
                                 }));
                             canvas.focus();
                             s.commit('editor/setDocumentChanged', false);
+                            window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
                         }
                     ).catch(
                         function(response)
@@ -2030,9 +2031,7 @@ export default
 
         async documentChanged(event)
         {
-            var s = this.store;
-            if (event.detail.changed) //reseting the flag after saving is after the save request is succesful
-                s.commit('editor/setDocumentChanged', true);
+            this.store.commit('editor/setDocumentChanged', event.detail.changed);
         },
 
         async exportHtml(event)

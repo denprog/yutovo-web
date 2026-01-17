@@ -8,7 +8,7 @@
 
                     <q-tabs v-model="configTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
                         <q-tab name="result" v-bind:label="$t('Result')" />
-                        <q-tab name="document" v-bind:label="$t('Document')" />
+                        <q-tab name="document" v-bind:label="$t('Document')" data-testid="tab-document" />
                         <q-tab name="include_documents" v-bind:label="$t('Include documents')" />
                     </q-tabs>
 

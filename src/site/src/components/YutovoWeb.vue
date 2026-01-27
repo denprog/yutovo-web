@@ -293,6 +293,13 @@
     <div class="editor-container" id="editor" tabindex=0>
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1 />
         
+        <prompt-dialog
+            v-model="promptVisible"
+            :prompt-items="promptItems"
+            :prompt-pos="promptPos"
+            @select="onPromptSelect"
+        />
+
         <div id="scroll-container">
             <q-menu ref="contextMenu" touch-position square fit context-menu @hide='onCloseContextMenu();' @show='onShowContextMenu();'>
                 <q-list dense style="min-width: 100px">
@@ -532,11 +539,14 @@ import ConfirmDialog from 'layouts/ConfirmDialog.vue';
 import GraphFormatDialog from 'layouts/GraphFormatDialog.vue';
 import PlotFormatDialog from 'layouts/PlotFormatDialog.vue';
 import ExportPdfDialog from 'layouts/ExportPdfDialog.vue';
+import PromptDialog from 'layouts/PromptDialog.vue';
 import pako from 'pako';
 
 export default
 {
     name: 'YutovoWeb',
+
+    components: { PromptDialog },
 
     created()
     {
@@ -562,6 +572,7 @@ export default
             window.addEventListener('documentChanged', this.documentChanged, false);
             window.addEventListener('exportHtml', this.exportHtml, false);
             window.addEventListener('exportPdf', this.exportPdf, false);
+            window.addEventListener('showPrompt', this.showPrompt, false);
         }
         else
         {
@@ -585,6 +596,7 @@ export default
             window.attachEvent('documentChanged', this.documentChanged);
             window.attachEvent('exportHtml', this.exportHtml);
             window.attachEvent('exportPdf', this.exportPdf, false);
+            window.attachEvent('showPrompt', this.showPrompt);
         }
     },
 
@@ -609,6 +621,12 @@ export default
         const yutovo_file = ref(null);
 
         const contextMenu = ref(null);
+
+        const promptForm = ref(null);
+        const promptVisible = ref(false);
+        const promptItems = ref([]);
+        const selectedIndex = 0;
+        const promptPos = ref([0, 0]);
 
         var downloading = false;
 
@@ -709,6 +727,12 @@ export default
             yutovo_file,
 
             contextMenu,
+
+            promptForm,
+            promptVisible,
+            promptItems,
+            selectedIndex,
+            promptPos,
 
             downloading,
 
@@ -2088,6 +2112,28 @@ export default
                 elem.click();        
                 document.body.removeChild(elem);
             }
+        },
+
+        async showPrompt(event)
+        {
+            this.promptVisible = false;
+            const data = JSON.parse(event.detail);
+            const rect = canvas.getBoundingClientRect();
+            this.selectedIndex = 0;
+            this.promptItems = data.items;
+            this.promptPos = {x: data.x, y: data.y};
+            this.promptVisible = true;
+            canvas.focus();
+        },
+
+        async onClosePrompt()
+        {
+            canvas.focus();
+        },
+
+        onPromptSelect(value)
+        {
+            Module.cwrap('OnPromptSelected', 'void', ['string'])(value);
         },
 
         async loadResult(event)

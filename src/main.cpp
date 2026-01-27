@@ -63,6 +63,9 @@ std::string load_json;
 IOResult load_result = IOResult::None;
 int load_document_id = 0;
 
+bool show_prompt = false;
+bool prompt_visible = false;
+
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
 
@@ -75,6 +78,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
 void FillUnits(const std::string system);
 ElementId GetRealResultId();
 void CreateDocument();
+void ShowPrompt();
 
 EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value), 
     {
@@ -402,6 +406,12 @@ void MainLoop(void* arg)
             UpdateIdentifiersTree(code_id, guid.c_str(), guid.size());
         }
         last_code_id = code_id;
+
+        if (show_prompt)
+        {
+            ShowPrompt();
+            show_prompt = false;
+        }
     }
 
     if (window->update_identifiers)
@@ -594,10 +604,16 @@ EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void
     if (CharsNumber(key_event->key) == 1)
         ch = key_event->key[0];
     if (args->shortcuts_map->Call(s, ch, args->window->current_editor_state))
+    {
+        if (prompt_visible)
+            show_prompt = true;
         return true;
+    }
     if (!key_event->ctrlKey && !key_event->altKey && ch != 0)
     {
         args->document->InsertString(key_event->key, true);
+        if (args->document->config.auto_prompt)
+            show_prompt = true;
         return true;
     }
     return false;
@@ -989,6 +1005,43 @@ void Cut()
         CutJs();
 }
 
+void ShowPrompt()
+{
+    if (!document)
+        return;
+    std::vector<std::pair<IdentifierType, std::string>> prompt;
+    document->GetPrompt(prompt);
+    if (prompt.empty())
+        return;
+    Rect r;
+    if (!document->GetCaretRect(r))
+        return;
+
+    std::ostringstream s;
+    s << "{";
+    s << "\"x\":" << r.GetRight() << ",";
+    s << "\"y\":" << r.GetBottom() << ",";
+    s << "\"items\":[";
+    for (size_t i = 0; i < prompt.size(); ++i)
+    {
+        s << "\"" << prompt[i].second << "\"";
+        if (i + 1 < prompt.size())
+            s << ",";
+    }
+    s << "]}";
+
+    EM_ASM(
+        {
+            window.dispatchEvent(
+                new CustomEvent('showPrompt', {
+                    detail: UTF8ToString($0)
+                })
+            );
+        },
+        s.str().c_str()
+    );
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCut()
 {
     if (!document)
@@ -1096,6 +1149,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut()
 extern "C" EMSCRIPTEN_KEEPALIVE void SetChanged(bool changed)
 {
     document->SetChanged(changed);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void SetPromptVisible(bool visible)
+{
+    prompt_visible = visible;
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE bool IsChanged()
@@ -1732,6 +1790,37 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int w
         return;
     yutovo::PlotFormat f{Color::FromHex(color), (uint)width};
     document->SetPlotFormat(yutovo::GetParent(s.caret_state.id), f, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
+{
+    EditorState s = document->GetEditorState();
+    if (s.caret_state.IsEmpty())
+        return;
+
+    using InsertFunc = uint (Document::*)(bool, bool);
+    static const std::map<std::string, InsertFunc> insert_map = 
+    {
+        {"plus", &Document::InsertPlus},
+        {"minus", &Document::InsertMinus},
+        {"mul", &Document::InsertMultiply},
+        {"div", &Document::InsertDivision},
+        {"power", &Document::InsertPower},
+        {"root", &Document::InsertNthRoot},
+        {"sqrt", &Document::InsertSquareRoot},
+        {"sub", &Document::InsertSubscript},
+        {"sum", &Document::InsertSum},
+        {"prod", &Document::InsertProduct}
+    };
+
+    auto it = insert_map.find(prompt);
+    if (it == insert_map.end())
+        document->ReplaceString(ToUtfString(prompt), true);
+    else
+    {
+        InsertFunc func = it->second;
+        ((document.get())->*func)(true, true);
+    }
 }
 
 std::u32string document_text;

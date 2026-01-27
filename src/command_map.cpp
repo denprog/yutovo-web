@@ -11,6 +11,7 @@
 extern void Copy();
 extern void Paste();
 extern void Cut();
+extern void ShowPrompt();
 
 namespace yutovo_web
 {
@@ -75,19 +76,21 @@ void ShortcutsMap::Init(Document* _document)
     Add(KeySequence(DOM_VK_INSERT, false, true, false), "", std::function<void ()>(std::bind(&Paste)));
     Add(KeySequence(DOM_VK_DELETE, false, true, false), "", std::function<void ()>(std::bind(&Cut)));
 
+    Add(KeySequence(DOM_VK_P, true, false, false), "", std::function<void ()>(std::bind(&ShowPrompt)));
+
     //edit code
     Add(KeySequence(DOM_VK_C, true, true, false), "\\code", std::function<void ()>(std::bind(&Document::InsertCode, document, false, true)));
-    Add(KeySequence(DOM_VK_D, true, true, false), "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document, true)));
-    Add(KeySequence(), '+', "\\plus", std::function<void ()>(std::bind(&Document::InsertPlus, document, true)), CommandContext::Formula);
-    Add(KeySequence(), '-', "\\minus", std::function<void ()>(std::bind(&Document::InsertMinus, document, true)), CommandContext::Formula);
-    Add(KeySequence(), '*', "\\times", std::function<void ()>(std::bind(&Document::InsertMultiply, document, true)), CommandContext::Formula);
-    Add(KeySequence(), '/', "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document, true)), CommandContext::Formula);
-    Add(KeySequence(DOM_VK_P, true, true, false), "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document, true)), 
+    Add(KeySequence(DOM_VK_D, true, true, false), "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document, true, false)));
+    Add(KeySequence(), '+', "\\plus", std::function<void ()>(std::bind(&Document::InsertPlus, document, true, false)), CommandContext::Formula);
+    Add(KeySequence(), '-', "\\minus", std::function<void ()>(std::bind(&Document::InsertMinus, document, true, false)), CommandContext::Formula);
+    Add(KeySequence(), '*', "\\times", std::function<void ()>(std::bind(&Document::InsertMultiply, document, true, false)), CommandContext::Formula);
+    Add(KeySequence(), '/', "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document, true, false)), CommandContext::Formula);
+    Add(KeySequence(DOM_VK_P, true, true, false), "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document, true, false)), 
         CommandContext::Formula);
-    Add(KeySequence(DOM_VK_S, true, true, false), "\\sub", std::function<void ()>(std::bind(&Document::InsertSubscript, document, true)), 
+    Add(KeySequence(DOM_VK_S, true, true, false), "\\sub", std::function<void ()>(std::bind(&Document::InsertSubscript, document, true, false)), 
         CommandContext::Formula);
-    Add(KeySequence(DOM_VK_N, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document, true)));
-    Add(KeySequence(DOM_VK_Q, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document, true)));
+    Add(KeySequence(DOM_VK_N, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document, true, false)));
+    Add(KeySequence(DOM_VK_Q, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document, true, false)));
     Add(KeySequence(), '=', "\\equal", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::AUTO, true)), 
         CommandContext::Formula);
     Add(KeySequence(), "\\eq_real", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::REAL, true)), 

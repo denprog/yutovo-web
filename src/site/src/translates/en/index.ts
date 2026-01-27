@@ -19,6 +19,8 @@ export default {
     'English_male': 'English',
     'Spanish_male': 'Spanish',
 
+    "NoMatchingNodes": "No matches found",
+
     register_verification_email: {
         subject: 'Register code',
         greeting: 'Confirm your registration',

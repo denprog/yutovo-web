@@ -9,7 +9,7 @@
                         <q-input ref="textRef" square v-model="text" lazy-rules :rules="[this.required]" id="text" v-bind:label="$t('Text')" />
                         <q-input ref="urlRef" square v-model="url" lazy-rules :rules="[this.required]" id="url" v-bind:label="$t('Url')" />
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
+                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('OK')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>

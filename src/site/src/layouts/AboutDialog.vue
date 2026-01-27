@@ -14,7 +14,7 @@
                             <span v-html=license></span>
                         </div>
                         <div class="q-pt-md q-gutter-sm" style="text-align: center">
-                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
+                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('OK')" />
                         </div>
                     </q-form>
                 </q-card-section>

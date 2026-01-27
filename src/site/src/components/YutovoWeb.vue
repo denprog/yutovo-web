@@ -1366,7 +1366,13 @@ export default
             this.$q.dialog({
                 title: t('Confirm'),
                 message: t('Delete the document?'),
-                cancel: true
+                ok: {
+                    label: t('OK')
+                },
+                cancel: {
+                    label: t('Cancel'),
+                    flat: true
+                }
             }).onOk(() => {
                 api.post('/service/delete-document', {}, 
                     {

@@ -9,8 +9,8 @@
                         <q-input ref="nameRef" square v-model="name" lazy-rules :rules="[this.required]" v-bind:label="$t('Name')" />
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" label="OK" />
-                            <q-btn unelevated class="text-blue" type="reset" label="Cancel" />
+                            <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('OK')" />
+                            <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" />
                         </div>
                     </q-form>
                 </q-card-section>

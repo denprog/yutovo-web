@@ -5,7 +5,7 @@
         </div>
         <div class="row" style="height:90%;">
             <div style="overflow-y:hidden;">
-                <q-input class="q-pa-none" dense ref="identifiersFilterRef" v-model="identifiersFilter" v-bind:label="$t('Filter')">
+                <q-input class="q-pa-none" dense ref="identifiersFilterRef" v-model="identifiersFilter" v-bind:label="$t('Search')">
                     <template v-slot:append>
                         <q-icon v-if="identifiersFilter !== ''" name="clear" class="cursor-pointer" @click="resetIdentifiersFilter" />
                     </template>
@@ -13,7 +13,8 @@
             </div>
             <div style="height:100%;width:100%;overflow:auto;">
                 <q-tree :nodes="identifiers" dense v-model:selected="selectedIdentifier" ref="identifiersRef" node-key="id" label-key="label" 
-                    :filter="identifiersFilter" @update:selected="onIdentifierSelected" no-selection-unset/>
+                    :filter="identifiersFilter" @update:selected="onIdentifierSelected" no-selection-unset
+                    :no-results-label="$t('NoMatchingNodes')"/>
             </div>
         </div>
     </div>

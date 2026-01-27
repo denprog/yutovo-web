@@ -141,7 +141,8 @@ export default {
     'Russian ruble': 'Российский рубль',
     'US dollar': 'Доллар США',
 
-    'Filter': 'Фильтр',
+    'Search': 'Поиск',
+    "NoMatchingNodes": "Совпадений не найдено",
 
     'Documents': 'Документы',
     'Library': 'Библиотека',

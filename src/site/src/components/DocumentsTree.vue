@@ -5,7 +5,7 @@
         </div>
         <div class="row" style="height:100%;">
             <div style="overflow-y:hidden;">
-                <q-input class="q-pa-none" dense ref="documentsFilterRef" v-model="documentsFilter" v-bind:label="$t('Filter')">
+                <q-input class="q-pa-none" dense ref="documentsFilterRef" v-model="documentsFilter" v-bind:label="$t('Search')">
                     <template v-slot:append>
                         <q-icon v-if="documentsFilter !== ''" name="clear" class="cursor-pointer" @click="resetDocumentsFilter" />
                     </template>
@@ -13,7 +13,8 @@
             </div>
             <div style="height:85%;width:100%;overflow:auto;">
                 <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
-                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset>
+                    :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset
+                    :no-results-label="$t('NoMatchingNodes')">
                 </q-tree>
             </div>
         </div>

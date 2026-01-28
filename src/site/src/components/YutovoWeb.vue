@@ -800,7 +800,11 @@ export default
                             });
                         
                         var route = r.currentRoute.value;
-                        if (route.path.substring(0, 8) == '/library')
+                        if (Cookies.get('reset_document') === '1')
+                        {
+                            window.dispatchEvent(new CustomEvent('openDocument', {})); //for unregistered user open new document
+                        }
+                        else if (route.path.substring(0, 8) == '/library')
                         {
                             var doc = route.params.language + '/';
                             if (typeof route.params.dir1 !== 'undefined')

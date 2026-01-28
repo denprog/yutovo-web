@@ -1,7 +1,7 @@
 <template>
     <div class="q-pa-md" style="height:100%;">
         <div class="row">
-            <div class="text-blue no-margin no-padding text-h6">{{ $t('Documents') }}</div>
+            <div class="text-blue no-margin no-padding documents-title">{{ $t('Documents') }}</div>
         </div>
         <div class="row" style="height:100%;">
             <div style="overflow-y:hidden;">
@@ -15,6 +15,11 @@
                 <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
                     :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset
                     :no-results-label="$t('NoMatchingNodes')">
+                    <template v-slot:default-header="props">
+                        <span class="documents-item">
+                            {{ props.node.label }}
+                        </span>
+                    </template>
                 </q-tree>
             </div>
         </div>
@@ -107,7 +112,7 @@ export default
 
         const clearDocumentSelection = () =>
         {
-            selectedDocument.value = ref(null);
+            selectedDocument.value = null;
         };
 
         const onDocumentSelected = (target) =>
@@ -153,3 +158,14 @@ export default
     }
 }
 </script>
+
+<style>
+.documents-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.documents-item {
+    font-size: 1.1rem;
+}
+</style>

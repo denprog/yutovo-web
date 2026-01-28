@@ -1,7 +1,7 @@
 <template>
     <div class="q-pa-md" style="height:100%;">
         <div class="row">
-            <div class="text-blue no-margin no-padding text-h6">{{ $t('Library') }}</div>
+            <div class="text-blue no-margin no-padding library-title">{{ $t('Library') }}</div>
         </div>
         <div class="row" style="height:100%;">
             <div style="overflow-y:hidden;">
@@ -16,7 +16,8 @@
                     :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset 
                     :no-results-label="$t('NoMatchingNodes')">
                     <template v-slot:default-header="props">
-                        <a :href="props.node.link" class="text-body text-decoration-none">
+                        <a :href="props.node.link" class="text-body text-decoration-none"
+                            :class="props.node.selectable === false ? 'library-section' : 'library-item'">
                             {{ props.node.label }}
                         </a>
                     </template>
@@ -138,7 +139,7 @@ export default
 
         const clearLibraryDocumentSelection = () =>
         {
-            selectedDocument.value = ref(null);
+            selectedDocument.value = null;
         };
 
         const libraryDocumentOpen = (event) =>
@@ -194,3 +195,19 @@ export default
     }
 }
 </script>
+
+<style>
+.library-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.library-section {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+.library-item {
+    font-size: 1.1rem;
+}
+</style>

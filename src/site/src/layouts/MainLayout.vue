@@ -7,12 +7,12 @@
 
                     <div>
                         <q-toolbar-title>
-                            <q-btn no-caps dense flat @click="$router.push({path: '/'}); $router.go();">
+                            <q-btn no-caps dense flat @click="clickCaption();">
                                 <q-avatar>
                                     <img src="yutovo.png">
                                 </q-avatar>
                             </q-btn>
-                            <q-btn no-caps dense flat size="15pt" @click="$router.push({path: '/'}); $router.go();">
+                            <q-btn no-caps dense flat size="15pt" @click="clickCaption();">
                                 {{ $t('yutovo_caption') }}
                             </q-btn>
                         </q-toolbar-title>
@@ -99,6 +99,7 @@ import { useStore } from 'vuex'
 import { api } from 'boot/boot'
 import { useI18n } from 'vue-i18n'
 import { useMeta } from 'quasar'
+import { useRouter } from 'vue-router'
 
 export default
 {
@@ -163,6 +164,7 @@ export default
         const rightDrawerWidth = ref(200);
 
         const store = useStore();
+        const router = useRouter();
 
         if (Cookies.has('language'))
         {
@@ -245,10 +247,17 @@ export default
         return {
             drawer: ref(false),
 
+            clickCaption()
+            {
+                Cookies.remove('document_id', { path: '/' });
+                Cookies.set('reset_document', '1', { path: '/' });
+                router.go();
+            },
+
             leftDrawerWidth,
             rightDrawerWidth,
 
-            resizeLeftDrawer (ev)
+            resizeLeftDrawer(ev)
             {
                 if (ev.isFirst === true)
                     initialLeftDrawerWidth = leftDrawerWidth.value;
@@ -257,7 +266,7 @@ export default
                     leftDrawerWidth.value = w;
             },
 
-            resizeRightDrawer (ev)
+            resizeRightDrawer(ev)
             {
                 if (ev.isFirst === true)
                     initialRightDrawerWidth = rightDrawerWidth.value;
@@ -282,7 +291,8 @@ export default
 
             store,
 
-            onResize() {
+            onResize()
+            {
                 store.commit('editor/setResizing', true);
             },
 

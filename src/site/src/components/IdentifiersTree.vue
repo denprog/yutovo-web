@@ -14,7 +14,13 @@
             <div style="height:100%;width:100%;overflow:auto;">
                 <q-tree :nodes="identifiers" dense v-model:selected="selectedIdentifier" ref="identifiersRef" node-key="id" label-key="label" 
                     :filter="identifiersFilter" @update:selected="onIdentifierSelected" no-selection-unset
-                    :no-results-label="$t('NoMatchingNodes')"/>
+                    :no-results-label="$t('NoMatchingNodes')">
+                    <template v-slot:default-header="props">
+                        <span class="identifers-item">
+                            {{ props.node.label }}
+                        </span>
+                    </template>
+                </q-tree>
             </div>
         </div>
     </div>
@@ -199,3 +205,15 @@ export default {
     }
 }
 </script>
+
+
+<style>
+.identifiers-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.identifiers-item {
+    font-size: 1.1rem;
+}
+</style>

@@ -6,8 +6,8 @@
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ $t('Rename document') }}</div>
-                        <q-input ref="filenameRef" square v-model="filename" lazy-rules :rules="[this.required]" id="filename" type="filename" 
-                            v-bind:label="$t('File name')" />
+                        <q-input ref="filenameRef" square v-model="filename" id="filename" spellcheck="false" type="text" 
+                            v-bind:label="$t('File name')" hide-bottom-space no-error-icon />
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" id="submit" type="submit" v-bind:label="$t('OK')" />
@@ -25,17 +25,23 @@
 import { ref } from 'vue'
 import { api } from 'boot/boot'
 import { useStore } from 'vuex'
-import { computed } from 'vue'
+import { computed, nextTick, onMounted } from 'vue'
 import { Cookies } from 'quasar'
 import { useI18n } from 'vue-i18n'
 
-export default {
+export default
+{
     name: 'RenameDialog',
 
-    setup()
+    props:
+    [
+        'oldName'
+    ],
+
+    setup(props)
     {
         const renameDialog = ref(null);
-        const filename = ref('');
+        const filename = ref(props.oldName);
         const filenameRef = ref(null);
         const store = useStore();
         const tr = useI18n();
@@ -46,6 +52,22 @@ export default {
         {
             return (val && val.length > 0 || tr.t('The field must be filled'));
         };
+
+        onMounted(async () =>
+        {
+            await nextTick();
+
+            filenameRef.value?.resetValidation();
+
+            setTimeout(() =>
+            {
+                const input =
+                    filenameRef.value?.$refs?.input ||
+                    filenameRef.value?.$el.querySelector('input');
+
+                input?.focus();
+            }, 0);
+        });
 
         const onSubmit = () =>
         {

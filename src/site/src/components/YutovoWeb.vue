@@ -1357,7 +1357,14 @@ export default
 
         onRename()
         {
-            this.$q.dialog({component: RenameDialog, parent: this, apiResponse: this.resp});
+            this.$q.dialog({
+                component: RenameDialog, 
+                parent: this, 
+                apiResponse: this.resp,
+                componentProps: {
+                    oldName: this.store.state.editor.document_name
+                }
+            });
             canvas.focus();
         },
 

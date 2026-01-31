@@ -59,6 +59,14 @@
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paste') }} (Shift+Ins)</q-tooltip>
             </q-btn>
             <q-separator vertical/>
+            <div class="scale-control row items-center no-wrap">
+                <q-btn dense flat round icon="img:/images/format/dec_scale.png" size="sm" @click="onScaleDec" :disable="scale <= 50"/>
+                <div class="scale-value" @click="onResetScale">
+                    {{ scale }}%
+                </div>
+                <q-btn dense flat round icon="img:/images/format/inc_scale.png" size="sm" @click="onScaleInc" :disable="scale >= 500"/>
+            </div>
+            <q-separator vertical/>
             <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert calculator') }} (Ctrl+Shift+C)</q-tooltip>
             </q-btn>
@@ -573,6 +581,7 @@ export default
             window.addEventListener('exportHtml', this.exportHtml, false);
             window.addEventListener('exportPdf', this.exportPdf, false);
             window.addEventListener('showPrompt', this.showPrompt, false);
+            window.addEventListener('setScale', this.setScale, false);
         }
         else
         {
@@ -597,6 +606,7 @@ export default
             window.attachEvent('exportHtml', this.exportHtml);
             window.attachEvent('exportPdf', this.exportPdf, false);
             window.attachEvent('showPrompt', this.showPrompt);
+            window.attachEvent('setScale', this.setScale);
         }
     },
 
@@ -638,6 +648,11 @@ export default
 
         return {
             style,
+
+            scale_model: ref('100%'),
+            scales: [
+                '50%', '80%', '90%', '100%', '110%', '120%', '150%'
+            ],
 
             paragraph_format_model: ref('Text body'),
             paragraph_format: [
@@ -942,6 +957,7 @@ export default
             center_align_button_color: 'white',
             right_align_button_color: 'white',
             justify_align_button_color: 'white',
+            scale: 100
         }
     },
 
@@ -1088,6 +1104,24 @@ export default
             button.disabled = event.detail.code_block;
 
             document.title = this.$t('Yutovo - visual online calculator');
+        },
+
+        onScaleDec()
+        {
+            Module.cwrap('OnScaleInc', 'void', ['int'])(-10);
+            canvas.focus();
+        },
+
+        onScaleInc()
+        {
+            Module.cwrap('OnScaleInc', 'void', ['int'])(10);
+            canvas.focus();
+        },
+
+        onResetScale()
+        {
+            Module.cwrap('OnScaleSet', 'void', ['int'])(100);
+            canvas.focus();
         },
 
         onInsertCalculator()
@@ -2143,8 +2177,9 @@ export default
             canvas.focus();
         },
 
-        async onClosePrompt()
+        async setScale(event)
         {
+            this.scale = event.detail;
             canvas.focus();
         },
 
@@ -2841,5 +2876,9 @@ canvas.emscripten {
 
 .toolbar-select {
     padding: 0em 0 0 0.5em;
+}
+
+.scale-value {
+    cursor: default;
 }
 </style>

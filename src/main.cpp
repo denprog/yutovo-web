@@ -472,6 +472,15 @@ void MainLoop(void* arg)
             document->Resize((int)w, (int)h);
             resize = false;
         }
+
+        Config config;
+        document->GetConfig(config);
+        EM_ASM(
+            {
+                window.dispatchEvent(new CustomEvent('setScale', {detail: $0}));
+            },
+            std::round(config.scale * 100)
+        );
     }
 
     if (window->needs_translate)
@@ -552,10 +561,17 @@ void MainLoop(void* arg)
     {
         window->set_config = false;
 
+        Config config;
+        document->GetConfig(config);
+        EM_ASM(
+            {
+                window.dispatchEvent(new CustomEvent('setScale', {detail: $0}));
+            },
+            std::round(config.scale * 100)
+        );
+
         if (load_result != IOResult::None)
         {
-            Config config;
-            document->GetConfig(config);
             std::string s;
             config.ToJson(s);
             LoadResult((int)load_result, load_document_id, s.c_str(), s.size());
@@ -810,6 +826,19 @@ EM_BOOL OnMouseDoubleClick(int event_type, const EmscriptenMouseEvent* mouse_eve
 
 EM_BOOL OnMouseWheel(int event_type, const EmscriptenWheelEvent* wheel_event, void* user_data)
 {
+    if (wheel_event->mouse.ctrlKey)
+    {
+        Config config;
+        document->GetConfig(config);
+        if (wheel_event->deltaY > 0)
+            config.scale *= 0.9;
+        else
+            config.scale /= 0.9;
+        if (config.scale >= 0.5 && config.scale <= 5)
+            document->SetConfig(config, false);
+        return true;
+    }
+
     EventArgs* args = (EventArgs*)user_data;
     auto p = args->window->GetDocumentPoint();
     if (document->MouseWheel(wheel_event->mouse.targetX + p.x, wheel_event->mouse.targetY + p.y, 
@@ -1395,6 +1424,28 @@ extern "C" EMSCRIPTEN_KEEPALIVE void ChooseCastUnit(int pos)
 extern "C" EMSCRIPTEN_KEEPALIVE void StopCastUnits()
 {
     stop_cast_units_thread = true;
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnScaleInc(int inc)
+{
+    if (!document)
+        return;
+    Config c;
+    document->GetConfig(c);
+    c.scale += inc / 100.0;
+    if (c.scale >= 0.5 && c.scale <= 5)
+        document->SetConfig(c, false);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnScaleSet(int inc)
+{
+    if (!document)
+        return;
+    Config c;
+    document->GetConfig(c);
+    if (c.scale >= 0.5 && c.scale <= 5)
+        c.scale = inc / 100.0;
+    document->SetConfig(c, false);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnInsertCalculator()

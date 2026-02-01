@@ -581,6 +581,7 @@ export default
             window.addEventListener('exportHtml', this.exportHtml, false);
             window.addEventListener('exportPdf', this.exportPdf, false);
             window.addEventListener('showPrompt', this.showPrompt, false);
+            window.addEventListener('hidePrompt', this.hidePrompt, false);
             window.addEventListener('setScale', this.setScale, false);
         }
         else
@@ -606,6 +607,7 @@ export default
             window.attachEvent('exportHtml', this.exportHtml);
             window.attachEvent('exportPdf', this.exportPdf, false);
             window.attachEvent('showPrompt', this.showPrompt);
+            window.attachEvent('hidePrompt', this.hidePrompt);
             window.attachEvent('setScale', this.setScale);
         }
     },
@@ -635,7 +637,6 @@ export default
         const promptForm = ref(null);
         const promptVisible = ref(false);
         const promptItems = ref([]);
-        const selectedIndex = 0;
         const promptPos = ref([0, 0]);
 
         var downloading = false;
@@ -746,7 +747,6 @@ export default
             promptForm,
             promptVisible,
             promptItems,
-            selectedIndex,
             promptPos,
 
             downloading,
@@ -2170,22 +2170,27 @@ export default
             this.promptVisible = false;
             const data = JSON.parse(event.detail);
             const rect = canvas.getBoundingClientRect();
-            this.selectedIndex = 0;
             this.promptItems = data.items;
             this.promptPos = {x: data.x, y: data.y};
             this.promptVisible = true;
             canvas.focus();
         },
 
-        async setScale(event)
+        async hidePrompt(event)
         {
-            this.scale = event.detail;
+            this.promptVisible = false;
             canvas.focus();
         },
 
         onPromptSelect(value)
         {
             Module.cwrap('OnPromptSelected', 'void', ['string'])(value);
+        },
+
+        async setScale(event)
+        {
+            this.scale = event.detail;
+            canvas.focus();
         },
 
         async loadResult(event)

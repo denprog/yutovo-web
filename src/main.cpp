@@ -79,6 +79,7 @@ void FillUnits(const std::string system);
 ElementId GetRealResultId();
 void CreateDocument();
 void ShowPrompt();
+void HidePrompt();
 
 EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value), 
     {
@@ -412,6 +413,10 @@ void MainLoop(void* arg)
             ShowPrompt();
             show_prompt = false;
         }
+        else
+        {
+            HidePrompt();
+        }
     }
 
     if (window->update_identifiers)
@@ -632,6 +637,7 @@ EM_BOOL OnKeyDown(int event_type, const EmscriptenKeyboardEvent* key_event, void
             show_prompt = true;
         return true;
     }
+    show_prompt = false;
     return false;
 }
 
@@ -1037,14 +1043,23 @@ void Cut()
 void ShowPrompt()
 {
     if (!document)
+    {
+        HidePrompt();
         return;
+    }
     std::vector<std::pair<IdentifierType, std::string>> prompt;
     document->GetPrompt(prompt);
     if (prompt.empty())
+    {
+        HidePrompt();
         return;
+    }
     Rect r;
     if (!document->GetCaretRect(r))
+    {
+        HidePrompt();
         return;
+    }
 
     std::ostringstream s;
     s << "{";
@@ -1068,6 +1083,15 @@ void ShowPrompt()
             );
         },
         s.str().c_str()
+    );
+}
+
+void HidePrompt()
+{
+    EM_ASM(
+        {
+            window.dispatchEvent(new CustomEvent('hidePrompt', {}));
+        }
     );
 }
 

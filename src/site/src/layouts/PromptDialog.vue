@@ -70,6 +70,8 @@ export default
         watch(modelProp, val =>
         {
             visible.value = val;
+            if (!val)
+                selectedIndex.value = 0;
         });
 
         watch(visible, val => 

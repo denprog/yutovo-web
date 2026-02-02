@@ -2363,18 +2363,19 @@ export default
             else
                 cut_menu.classList.add('disabled');
 
-            var r = window.Module.cwrap('GetPresentAsMenu', 'int', [])();
-            if (r != 0)
+            var p = window.Module.cwrap('GetPresentAsMenu', 'int', [])();
+            if (p != 0)
             {
+                console.log('GetPresentAsMenu: ', p);
                 var m = document.getElementById('present-as-menu');
                 m.style.display = '';
-                this.autoMenuChecked = r == 1;
-                this.realMenuChecked = r == 2;
-                this.integerMenuChecked = r == 3;
-                this.rationalMenuChecked = r == 4;
-                this.complexMenuChecked = r == 5;
+                this.autoMenuChecked = p == 1;
+                this.realMenuChecked = p == 2;
+                this.integerMenuChecked = p == 3;
+                this.rationalMenuChecked = p == 4;
+                this.complexMenuChecked = p == 5;
 
-                if (r == 1 || r == 2 || r == 5)
+                if (p == 1 || p == 2 || p == 5)
                 {
                     m = document.getElementById('set-precision-menu');
                     m.style.display = '';
@@ -2383,7 +2384,7 @@ export default
 
                     m = document.getElementById('set-default-angle-measure-menu');
                     m.style.display = '';
-                    r = window.Module.cwrap('GetDefaultAngleMeasure', 'int', [])();
+                    var r = window.Module.cwrap('GetDefaultAngleMeasure', 'int', [])();
                     this.defaultRadianMenuChecked = r == 0;
                     this.defaultDegreeMenuChecked = r == 1;
                     this.defaultGradMenuChecked = r == 2;
@@ -2394,13 +2395,24 @@ export default
                     this.resultRadianMenuChecked = r == 0;
                     this.resultDegreeMenuChecked = r == 1;
                     this.resultGradMenuChecked = r == 2;
+
+                    r = window.Module.cwrap('GetResultType', 'int', [])();
+                    if (r == 4) //ResultType::COMPLEX
+                    {
+                        m = document.getElementById('set-complex-form-menu');
+                        m.style.display = '';
+                        var r = window.Module.cwrap('GetComplexForm', 'int', [])();
+                        this.arithmeticMenuChecked = r == 0;
+                        this.trigonometricMenuChecked = r == 1;
+                        this.exponentialMenuChecked = r == 2;
+                    }
                 }
 
-                if (r == 3)
+                if (p == 3)
                 {
                     m = document.getElementById('set-default-notation-menu');
                     m.style.display = '';
-                    r = window.Module.cwrap('GetDefaultNotation', 'int', [])();
+                    var r = window.Module.cwrap('GetDefaultNotation', 'int', [])();
                     this.defaultBinaryMenuChecked = r == 0;
                     this.defaultOctalMenuChecked = r == 1;
                     this.defaultDecimalMenuChecked = r == 2;
@@ -2415,20 +2427,20 @@ export default
                     this.resultHexadecimalMenuChecked = r == 3;
                 }
 
-                if (r == 4)
+                if (p == 4)
                 {
                     m = document.getElementById('set-fraction-form-menu');
                     m.style.display = '';
-                    r = window.Module.cwrap('GetFractionForm', 'int', [])();
+                    var r = window.Module.cwrap('GetFractionForm', 'int', [])();
                     this.properMenuChecked = r == 0;
                     this.improperMenuChecked = r == 1;
                 }
 
-                if (r == 5)
+                if (p == 5)
                 {
                     m = document.getElementById('set-complex-form-menu');
                     m.style.display = '';
-                    r = window.Module.cwrap('GetComplexForm', 'int', [])();
+                    var r = window.Module.cwrap('GetComplexForm', 'int', [])();
                     this.arithmeticMenuChecked = r == 0;
                     this.trigonometricMenuChecked = r == 1;
                     this.exponentialMenuChecked = r == 2;

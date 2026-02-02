@@ -154,10 +154,12 @@ export default
                 break;
             case 'PageDown':
                 selectedIndex.value = Math.min(selectedIndex.value + 5, items.value.length - 1);
+                scrollToSelected();
                 preventDefault(e);
                 break;
             case 'PageUp':
                 selectedIndex.value = Math.max(selectedIndex.value - 5, 0);
+                scrollToSelected();
                 preventDefault(e);
                 break;
             case 'Enter':

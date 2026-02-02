@@ -1311,6 +1311,24 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
     return (int)document->GetComplexForm(id);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE int GetResultType()
+{
+    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        return -1;
+    return (int)document->GetResultType(id);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 {
     ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);

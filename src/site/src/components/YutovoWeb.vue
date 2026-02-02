@@ -2169,14 +2169,13 @@ export default
         {
             this.promptVisible = false;
             const data = JSON.parse(event.detail);
-            const rect = canvas.getBoundingClientRect();
             this.promptItems = data.items;
             this.promptPos = {x: data.x, y: data.y};
             this.promptVisible = true;
             canvas.focus();
         },
 
-        async hidePrompt(event)
+        async hidePrompt()
         {
             this.promptVisible = false;
             canvas.focus();

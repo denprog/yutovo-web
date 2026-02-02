@@ -142,7 +142,7 @@ export default {
     'US dollar': 'Dólar estadounidense',
 
     'Search': 'Buscar',
-    "NoMatchingNodes": "No se encontraron coincidencias",
+    'NoMatchingNodes': 'No se encontraron coincidencias',
 
     'Documents': 'Documentos',
     'Library': 'Biblioteca',

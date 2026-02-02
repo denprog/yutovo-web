@@ -142,7 +142,7 @@ export default {
     'US dollar': 'Доллар США',
 
     'Search': 'Поиск',
-    "NoMatchingNodes": "Совпадений не найдено",
+    'NoMatchingNodes': 'Совпадений не найдено',
 
     'Documents': 'Документы',
     'Library': 'Библиотека',

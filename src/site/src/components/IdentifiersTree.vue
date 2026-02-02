@@ -167,8 +167,14 @@ export default {
 
         const listIdentifiers = (json, t) =>
         {
+            const allowed = new Set(['Variables', 'Functions', 'Units']);
             identifiers.value = [];
             var c = JSON.parse(json);
+            Object.keys(c).forEach(key =>
+            {
+                if (!allowed.has(key))
+                    delete c[key];
+            });
             addIdentifiers(c, identifiers.value, '/', t, false);
         };
 

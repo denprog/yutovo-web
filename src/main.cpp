@@ -1063,8 +1063,8 @@ void ShowPrompt()
 
     std::ostringstream s;
     s << "{";
-    s << "\"x\":" << r.GetRight() << ",";
-    s << "\"y\":" << r.GetBottom() << ",";
+    s << "\"x\":" << r.GetRight() - window->document_point.x << ",";
+    s << "\"y\":" << r.GetBottom() - window->document_point.y << ",";
     s << "\"items\":[";
     for (size_t i = 0; i < prompt.size(); ++i)
     {

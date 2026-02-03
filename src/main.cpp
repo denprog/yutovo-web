@@ -2043,6 +2043,7 @@ void CreateDocument()
     document.reset();
     window->Reset();
     config.language = (yutovo_calculator::Language)GetLanguage();
+    config.scale = 1.2;
     document.reset(new yutovo::Document(window.get(), config));
 
     shortcuts_map.Init(document.get());
@@ -2107,9 +2108,6 @@ int main(int argc, char* argv[])
     }
 
     canvas.call<void>("focus");
-
-    config.service_ip = "yutovo.ru";
-    config.service_port = 9002;
 
     window.reset(new yutovo_web::WebWindow());
 

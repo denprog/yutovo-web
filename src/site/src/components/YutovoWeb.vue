@@ -164,8 +164,11 @@
             <q-btn size="14px" square dense @click="onSubscript();" icon="img:/images/algebra/subscript.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Subscript') }} (Ctrl+Shift+S)</q-tooltip>
             </q-btn>
-            <q-btn size="14px" square dense @click="onFences();" icon="img:/images/algebra/fences.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Fences') }}</q-tooltip>
+            <q-btn size="14px" square dense @click="onRoundBrackets();" icon="img:/images/algebra/round_brackets.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Round brackets') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onSquareBrackets();" icon="img:/images/algebra/square_brackets.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Square brackets') }}</q-tooltip>
             </q-btn>
             <q-btn size="14px" square dense @click="onRadian();" icon="img:/images/algebra/radian.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Radian') }}</q-tooltip>
@@ -2743,9 +2746,15 @@ export default
             canvas.focus();
         },
 
-        onFences()
+        onRoundBrackets()
         {
-            Module.cwrap('OnFences', 'void', [])();
+            Module.cwrap('OnRoundBrackets', 'void', [])();
+            canvas.focus();
+        },
+
+        onSquareBrackets()
+        {
+            Module.cwrap('OnSquareBrackets', 'void', [])();
             canvas.focus();
         },
 

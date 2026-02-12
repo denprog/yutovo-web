@@ -1560,11 +1560,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSubscript()
     document->InsertSubscript(true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnFences()
+extern "C" EMSCRIPTEN_KEEPALIVE void OnRoundBrackets()
 {
     if (!document)
         return;
     document->InsertRoundBrackets(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSquareBrackets()
+{
+    if (!document)
+        return;
+    document->InsertSquareBrackets(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSum()

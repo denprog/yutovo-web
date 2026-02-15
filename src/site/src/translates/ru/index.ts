@@ -94,7 +94,6 @@ export default {
 
     'Precision': 'Точность',
     'Exponent order': 'Порядок экспоненты',
-    'Notation': 'Система счисления',
 
     'Binary': 'Двоичная',
     'Octal': 'Восьмеричная',
@@ -147,7 +146,7 @@ export default {
 
     'Documents': 'Документы',
     'Library': 'Библиотека',
-    'Identifiers': 'Идентификаторы',
+    'Notation': 'Обозначения',
 
     'Confirm': 'Подтвержедение',
     'Error saving the document: ': 'Ошибка сохранения документа: ',
@@ -226,6 +225,7 @@ export default {
     'Units': 'Размерности',
     'SI': 'СИ',
     'Russian': 'Русская',
+    'American': 'Американская',
     'English': 'Английская',
     'Others': 'Другие',
 

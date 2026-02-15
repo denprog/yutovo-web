@@ -1,7 +1,7 @@
 <template>
     <div id="identifiers-tree" class="q-pa-md" style="height:100%;">
         <div class="row">
-            <div class="text-blue no-margin no-padding text-h6">{{ $t('Identifiers') }}</div>
+            <div class="text-blue no-margin no-padding text-h6">{{ $t('Notation') }}</div>
         </div>
         <div class="row" style="height:90%;">
             <div style="overflow-y:hidden;">

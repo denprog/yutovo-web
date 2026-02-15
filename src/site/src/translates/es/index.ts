@@ -94,7 +94,6 @@ export default {
 
     'Precision': 'Precisión',
     'Exponent order': 'Orden del exponente',
-    'Notation': 'Sistema numérico',
 
     'Binary': 'Binario',
     'Octal': 'Octal',
@@ -147,7 +146,7 @@ export default {
 
     'Documents': 'Documentos',
     'Library': 'Biblioteca',
-    'Identifiers': 'Identificadores',
+    'Notation': 'Notación',
 
     'Confirm': 'Confirmación',
     'Error saving the document: ': 'Error al guardar el documento: ',
@@ -226,6 +225,7 @@ export default {
     'Units': 'Unidades',
     'SI': 'SI',
     'Russian': 'Rusa',
+    'American': 'Aamericano',
     'English': 'Inglesa',
     'Others': 'Otras',
 

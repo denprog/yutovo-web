@@ -36,15 +36,9 @@
 
             <div style="height:100%;">
                 <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
-                    <div style="height:calc(82vh);">
-                        <div style="height:50%;margin-bottom:30px;" v-if="loginStr != ''">
-                            <documents-tree v-if="loginStr != ''">
-                            </documents-tree>
-                        </div>
-                        <div v-bind:style="loginStr != '' ? 'height:50%;' : ''">
-                            <library-tree>
-                            </library-tree>
-                        </div>
+                    <div style="height:calc(85vh);">
+                        <documents-tree v-if="loginStr != ''">
+                        </documents-tree>
                     </div>
                     <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>
                 </q-drawer>
@@ -61,7 +55,8 @@
             </div>
 
             <q-page-container>
-                <router-view />
+                <library-menu/>
+                <router-view/>
             </q-page-container>
 
             <q-footer id="footer" class="bg-blue-9 q-pa-none text-white">
@@ -84,9 +79,9 @@
 import { ref } from 'vue'
 import LoginDialog from 'layouts/LoginDialog.vue';
 import RegisterDialog from 'layouts/RegisterDialog.vue';
-import LibraryTree from 'components/LibraryTree.vue';
 import DocumentsTree from 'components/DocumentsTree.vue';
 import IdentifiersTree from 'components/IdentifiersTree.vue';
+import LibraryMenu from 'components/LibraryMenu.vue';
 import AboutDialog from 'layouts/AboutDialog.vue';
 import LicenseDialog from 'layouts/LicenseDialog.vue';
 import PrivacyDialog from 'layouts/PrivacyDialog.vue';
@@ -103,7 +98,7 @@ import { useRouter } from 'vue-router'
 
 export default
 {
-    components: { IdentifiersTree, LibraryTree, DocumentsTree },
+    components: { IdentifiersTree, LibraryMenu, DocumentsTree },
 
     mounted()
     {

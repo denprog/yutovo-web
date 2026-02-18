@@ -143,6 +143,7 @@ export default {
 
     'Search': 'Buscar',
     'NoMatchingNodes': 'No se encontraron coincidencias',
+    'Log in to access your documents': 'Inicie sesión para acceder a sus documentos',
 
     'Documents': 'Documentos',
     'Library': 'Biblioteca',

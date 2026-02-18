@@ -143,6 +143,7 @@ export default {
 
     'Search': 'Поиск',
     'NoMatchingNodes': 'Совпадений не найдено',
+    'Log in to access your documents': 'Войдите, чтобы получить доступ к своим документам',
 
     'Documents': 'Документы',
     'Library': 'Библиотека',

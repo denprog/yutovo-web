@@ -37,7 +37,7 @@
             <div style="height:100%;">
                 <q-drawer show-if-above :width="leftDrawerWidth" v-model="leftDrawerOpen" side="left" bordered>
                     <div style="height:calc(85vh);">
-                        <documents-tree v-if="loginStr != ''">
+                        <documents-tree>
                         </documents-tree>
                     </div>
                     <div v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeLeftDrawer" class="q-left_drawer__resizer"></div>

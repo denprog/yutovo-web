@@ -11,7 +11,7 @@
                     </template>
                 </q-input>
             </div>
-            <div style="height:100%;width:100%;overflow:auto;">
+            <div v-if="loginStr" style="height:100%;width:100%;overflow:auto;">
                 <q-tree :nodes="documents" dense v-model:selected="selectedDocument" ref="documentsRef" node-key="id" label-key="label" 
                     :filter="documentsFilter" @update:selected="onDocumentSelected" default-expand-all no-selection-unset
                     :no-results-label="$t('NoMatchingNodes')">
@@ -22,12 +22,15 @@
                     </template>
                 </q-tree>
             </div>
+            <div v-else class="q-pa-md text-grey-7">
+                {{ $t('Log in to access your documents') }}
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
 import { Cookies } from 'quasar'
@@ -129,6 +132,10 @@ export default
             canvas.focus();
         };
 
+        const loginStr = computed({
+            get: () => (store.state.login.login)
+        })
+
         return {
             store,
             documentsFilter,
@@ -140,7 +147,8 @@ export default
             selectedDocument,
             onDocumentSelected,
             clearDocumentSelection,
-            listDocuments
+            listDocuments,
+            loginStr
         }
     },
 

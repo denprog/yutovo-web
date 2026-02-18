@@ -89,7 +89,7 @@ void ShortcutsMap::Init(Document* _document)
         CommandContext::Formula);
     Add(KeySequence(DOM_VK_S, true, true, false), "\\sub", std::function<void ()>(std::bind(&Document::InsertSubscript, document, true, false)), 
         CommandContext::Formula);
-    Add(KeySequence(DOM_VK_N, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document, true, false)));
+    Add(KeySequence(DOM_VK_R, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document, true, false)));
     Add(KeySequence(DOM_VK_Q, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document, true, false)));
     Add(KeySequence(), '=', "\\equal", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::AUTO, true)), 
         CommandContext::Formula);

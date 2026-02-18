@@ -60,7 +60,7 @@ export default
                 label: 'Documents'
             }
         ];
-        const documents = ref(documentsNodes);
+        const documents = ref([]);
         const documentsRef = ref(null);
         const selectedDocument = ref(null);
 
@@ -92,6 +92,7 @@ export default
 
         const listDocuments = () =>
         {
+            selectedDocument.value = null;
             api.post('/service/list-documents', {}, 
                 {
                     headers:
@@ -152,9 +153,19 @@ export default
         }
     },
 
-    mounted()
+    watch:
     {
-        this.listDocuments();
+        'store.state.login.access_token':
+        {
+            handler(token)
+            {
+                if (token)
+                    this.listDocuments();
+                else
+                    this.documents = [];
+            },
+            immediate: true
+        }
     },
 
     methods:

@@ -70,9 +70,10 @@ void WebWindow::Init(Document* _document)
     SDL_RenderClear(renderer);
 }
 
-void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color, const Color bg_color)
+void WebWindow::DrawText(const std::string& text, const StringFormatPtr format, const Rect& rect, const Color color, const Color bg_color, 
+    const bool transparent)
 {
-    tasks.emplace_back(new DrawTextTask(text, format, rect, color, bg_color, fonts, this, draw_doc));
+    tasks.emplace_back(new DrawTextTask(text, format, rect, color, bg_color, transparent, fonts, this, draw_doc));
 }
 
 void WebWindow::DrawLine(const int x1, const int y1, const int x2, const int y2, const Color color)

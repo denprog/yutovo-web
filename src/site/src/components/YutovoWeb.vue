@@ -39,7 +39,7 @@
             </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" id="settings-button" square dense no-caps @click="onConfig();" icon="img:/images/standard/settings.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Settings') }}</q-tooltip>
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Document properties') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png">

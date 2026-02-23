@@ -4,7 +4,7 @@
         <div class="row">
             <q-card square bordered class="q-sm">
                 <q-card-section>
-                    <div class="text-blue text-h5">{{ $t('Document settings') }}</div>
+                    <div class="text-blue text-h5">{{ $t('Document properties') }}</div>
 
                     <q-tabs v-model="configTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
                         <q-tab name="result" v-bind:label="$t('Result')" />

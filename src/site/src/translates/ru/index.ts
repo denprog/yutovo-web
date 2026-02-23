@@ -198,7 +198,7 @@ export default {
 
     'Page not found': 'Страница не найдена',
 
-    'Document settings': 'Настройки документа',
+    'Document properties': 'Настройки документа',
     'Result': 'Результат',
     'Document': 'Документ',
     'Locale': 'Язык',

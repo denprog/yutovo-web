@@ -16,9 +16,7 @@
                     :filter="identifiersFilter" @update:selected="onIdentifierSelected" no-selection-unset
                     :no-results-label="$t('NoMatchingNodes')">
                     <template v-slot:default-header="props">
-                        <span class="identifers-item">
-                            {{ props.node.label }}
-                        </span>
+                        <span class="identifers-item" v-html="formatIdentifierHtml(props.node.label)" />
                     </template>
                 </q-tree>
             </div>
@@ -159,7 +157,7 @@ export default {
             if (s[1] == 'Functions')
                 window.Module.cwrap('InsertFunction', 'void', ['string'])(s[2]);
             else
-                window.Module.cwrap('InsertString', 'void', ['string'])(s[s.length - 1]);
+                window.Module.cwrap('InsertParseString', 'void', ['string'])(s[s.length - 1]);
             selectedIdentifier.value = '';
             var canvas = document.getElementById('canvas');
             canvas.focus();
@@ -178,6 +176,13 @@ export default {
             addIdentifiers(c, identifiers.value, '/', t, false);
         };
 
+        const formatIdentifierHtml = (text) =>
+        {
+            if (!text)
+                return text;
+            return text.replace(/\{([^}]+)\}/g, '<sub>$1</sub>'); //str{sub} -> str<sub>sub</sub>
+        };
+
         return {
             identifiersFilter,
             identifiersFilterRef,
@@ -188,7 +193,8 @@ export default {
             selectedIdentifier,
             onIdentifierSelected,
             loadIdentifiers,
-            listIdentifiers
+            listIdentifiers,
+            formatIdentifierHtml
         }
     },
 
@@ -221,5 +227,10 @@ export default {
 
 .identifiers-item {
     font-size: 1.1rem;
+}
+
+.identifers-item sub {
+    font-size: 0.75em;
+    vertical-align: sub;
 }
 </style>

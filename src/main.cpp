@@ -1169,6 +1169,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE void InsertString(const char* str)
     document->InsertString(str, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertParseString(const char* str)
+{
+    document->InsertString(str, true, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanUndo()
 {
     return document->CanUndo();

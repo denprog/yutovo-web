@@ -9,9 +9,7 @@
             @mousedown.prevent="selectItem(item)">
             
             <img v-if="getIcon(item)" :src="`${getIcon(item)}`" width='20' height='20'/>
-            <span v-else>
-                {{ item }}
-            </span>
+            <span v-else v-html="formatItemHtml(item)" />
         </div>
     </div>
 </template>
@@ -111,6 +109,13 @@ export default
                 c.scrollTop = elBottom - c.clientHeight;
         };
 
+        const formatItemHtml = (str: string) =>
+        {
+            if (!str)
+                return str;
+            return str.replace(/\{([^}]+)\}/g, '<sub>$1</sub>');
+        };
+
         const container = ref<HTMLElement | null>(null);
 
         const preventDefault = (e: KeyboardEvent) =>
@@ -191,7 +196,8 @@ export default
             close,
             selectItem,
             container,
-            getIcon
+            getIcon,
+            formatItemHtml
         };
     }
 }

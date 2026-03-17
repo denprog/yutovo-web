@@ -200,6 +200,20 @@
             <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }} (=)</q-tooltip>
             </q-btn>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onAnd();" icon="img:/images/logical/and.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical AND') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onOr();" icon="img:/images/logical/or.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical OR') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onXor();" icon="img:/images/logical/xor.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical XOR') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onNot();" icon="img:/images/logical/not.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical NOT') }}</q-tooltip>
+            </q-btn>
+            <q-separator vertical/>
             <div class="greek-letter-block">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Greek letters') }}</q-tooltip>
                 <q-btn-dropdown class="greek-letter-block" square dense no-caps label="α" @hide='onLettersHide()'>
@@ -2815,6 +2829,30 @@ export default
         onEquation()
         {
             Module.cwrap('OnEquation', 'void', [])();
+            canvas.focus();
+        },
+
+        onAnd()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('&');
+            canvas.focus();
+        },
+
+        onOr()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('|');
+            canvas.focus();
+        },
+
+        onXor()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('^');
+            canvas.focus();
+        },
+
+        onNot()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('!');
             canvas.focus();
         },
 

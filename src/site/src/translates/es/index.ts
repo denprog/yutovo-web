@@ -132,6 +132,10 @@ export default {
     'Equation': 'Igualdad',
     'rad': 'rad',
     'grad': 'grad',
+    'Logical AND': 'Y lógico',
+    'Logical OR': 'O lógico',
+    'Logical XOR': 'XOR lógico',
+    'Logical NOT': 'Lógico NO',
     'Greek letters': 'Letras griegas',
 
     'Brazilian real': 'Real brasileño',

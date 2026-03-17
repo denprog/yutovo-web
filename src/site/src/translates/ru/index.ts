@@ -132,6 +132,10 @@ export default {
     'Equation': 'Равенство',
     'rad': 'рад',
     'grad': 'град',
+    'Logical AND': 'Логическое И',
+    'Logical OR': 'Логическое ИЛИ',
+    'Logical XOR': 'Логическое исключающее ИЛИ',
+    'Logical NOT': 'Логическое НЕ',
     'Greek letters': 'Греческие буквы',
 
     'Brazilian real': 'Бразильский реал',

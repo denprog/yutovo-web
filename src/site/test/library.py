@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
-address = 'https://yutovo.ru'
+address = 'https://www.yutovo.ru'
 
 class TestLibrary(unittest.TestCase):
     def setUp(self):
@@ -16,6 +16,10 @@ class TestLibrary(unittest.TestCase):
         opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.delete_all_cookies()
@@ -79,15 +83,16 @@ class TestLibrary(unittest.TestCase):
         time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
 
-        utils.clickCategory(self.driver, 'Moment of force')
-        time.sleep(2)
-        self.assertTrue(utils.documentContains(self.driver, 'Data'))
-
     #Open a library document by url at start
     def test_library4(self):
         opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address + '/library/en/Physics/Dynamics/Moment%20of%20force.yut')

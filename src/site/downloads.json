@@ -1,0 +1,22 @@
+[
+    {
+        "system": "Ubuntu 24",
+        "link": "/downloads/yutovo-desktop_1.5.2-1_ubuntu24_amd64.deb"
+    },
+    {
+        "system": "Flatpak",
+        "link": "https://flathub.org/apps/com.yutovo.yutovo"
+    },
+    {
+        "system": "Arch",
+        "link": "https://aur.archlinux.org/packages/yutovo"
+    },
+    {
+        "system": "Snap",
+        "link": "https://snapcraft.io/yutovo"
+    },
+    {
+        "system": "Windows",
+        "link": "/downloads/yutovo-desktop_1.5.2-1_win10_amd64.exe"
+    }
+]

@@ -12,35 +12,20 @@
                                     <th>{{ $t('Target OS') }}</th>
                                     <th></th>
                                 </tr>
-                                <tr>
-                                    <td>Ubuntu 24</td>
+
+                                <tr v-for="item in downloads" :key="item.system">
+                                    <td>{{ item.system }}</td>
                                     <td class="q-pl-md">
-                                        <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.5.2-1_ubuntu24_amd64.deb');">{{ $t('Download') }}</q-btn>
+                                        <q-btn v-if="isLocalDownload(item.link)" no-caps square dense color="blue" class="q-pl-md q-pr-md"
+                                            @click="onDownloadFromLink(item.link)">
+                                            {{ $t('Download') }}
+                                        </q-btn>
+                                        <a v-else class="q-pa-none" target="_blank" rel="noopener noreferrer" :href="item.link">
+                                            {{ $t('Link') }}
+                                        </a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Flatpak</td>
-                                    <td class="q-pl-md">
-                                        <a class="q-pa-none" target="_blank" rel="noopener noreferrer" 
-                                            href="https://flathub.org/apps/com.yutovo.yutovo">{{ $t('Link') }}</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Arch</td>
-                                    <td class="q-pl-md">
-                                        <a class="q-pa-none" target="_blank" rel="noopener noreferrer" 
-                                            href="https://aur.archlinux.org/packages/yutovo">{{ $t('Link') }}</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Windows 10</td>
-                                    <td class="q-pl-md">
-                                        <q-btn no-caps square dense color='blue' class="q-pl-md q-pr-md" 
-                                            @click="onDownload('yutovo-desktop_1.5.2-1_win10_amd64.exe');">{{ $t('Download') }}</q-btn>
-                                    </td>
-                                </tr>
-                            </table>
+                            </table>                        
                         </div>
                     </q-card-section>
                     <div class="q-pa-md q-gutter-sm" style="text-align: center">
@@ -54,8 +39,14 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+interface DownloadItem
+{
+    system: string
+    link: string
+}
 
 export default
 {
@@ -65,40 +56,64 @@ export default
     {
         const downloadDialog = ref(null);
         const { t } = useI18n();
+        const downloads = ref<DownloadItem[]>([]);
 
         const onSubmit = () =>
         {
             downloadDialog.value.hide();
         };
 
-        const onDownload = async (filename) =>
+        const loadDownloads = async () =>
         {
-            const url = `/downloads/${encodeURIComponent(filename)}`;
             try
             {
-                const resp = await fetch(url, { method: 'HEAD' });
+                const resp = await fetch('/downloads/downloads.json');
+                downloads.value = await resp.json();
+            }
+            catch (err)
+            {
+                console.error('Error loading downloads:', err);
+            }
+        }
+
+        const isLocalDownload = (link: string) =>
+        {
+            return /\.(deb|exe|AppImage|rpm)$/i.test(link);
+        }
+
+        const onDownloadFromLink = async (link: string) =>
+        {
+            try
+            {
+                const resp = await fetch(link, { method: 'HEAD' });
                 if (!resp.ok)
                     throw new Error(`${resp.status} ${resp.statusText}`);
 
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                const filename = link.split('/').pop() || 'download';
+                const a = document.createElement('a');
+                a.href = link;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             }
             catch (err)
             {
                 console.error('Error downloading file:', err);
                 alert(t('Error downloading file'));
             }
+
             downloadDialog.value.hide();
-        };
+        }
+
+        onMounted(loadDownloads);
 
         return {
             downloadDialog,
             onSubmit,
-            onDownload
+            downloads,
+            onDownloadFromLink,
+            isLocalDownload            
         }
     }
 }

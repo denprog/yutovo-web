@@ -1886,6 +1886,25 @@ export default
                             canvas.focus();
                             s.commit('editor/setDocumentChanged', false);
                             window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
+
+                            //continue broken operation
+                            if (typeof window.newDocument !== 'undefined' && window.newDocument == true)
+                            {
+                                window.dispatchEvent(new CustomEvent('newDocument'));
+                                window.newDocument = false;
+                            }
+                            else if (typeof window.load_document_id !== 'undefined' && window.load_document_id != 0)
+                            {
+                                window.dispatchEvent(new CustomEvent('loadDocument', 
+                                    {
+                                        detail: 
+                                        {
+                                            document_id: window.load_document_id,
+                                            last_document: Cookies.get('document_id')
+                                        }
+                                    }));
+                                window.load_document_id = 0;
+                            }
                         }
                     ).catch(
                         function(response)
@@ -1905,25 +1924,6 @@ export default
                             }
                         }
                     );
-            }
-
-            //continue broken operation
-            if (typeof window.newDocument !== 'undefined' && window.newDocument == true)
-            {
-                window.dispatchEvent(new CustomEvent('newDocument'));
-                window.newDocument = false;
-            }
-            else if (typeof window.load_document_id !== 'undefined' && window.load_document_id != 0)
-            {
-                window.dispatchEvent(new CustomEvent('loadDocument', 
-                    {
-                        detail: 
-                        {
-                            document_id: window.load_document_id,
-                            last_document: Cookies.get('document_id')
-                        }
-                    }));
-                window.load_document_id = 0;
             }
         },
 
@@ -1999,7 +1999,6 @@ export default
 
         async loadDocument(event)
         {
-            console.log('loadDocument');
             var check_changed = true;
             if (typeof event.detail.check_changed !== 'undefined')
                 check_changed = event.detail.check_changed;

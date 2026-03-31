@@ -519,5 +519,25 @@ class TestDocuments(unittest.TestCase):
         time.sleep(2)
         self.assertTrue(utils.fileNotContains(self.conn, c2['value'], "document_test_2"))
 
+    #Change document after changing its content
+    def test_documents24(self):
+        utils.login(self.driver, 'test1', '11')
+
+        utils.setLanguage(self.driver, 'English')
+        c = WebDriverWait(self.driver, 2).until(EC.presence_of_element_located((By.ID, 'canvas')))
+        time.sleep(1)
+        c.send_keys('document_test_1')
+        utils.save(self.driver)
+
+        utils.new(self.driver)
+        time.sleep(1)
+        c.send_keys('document_test_2')
+        c1 = self.driver.get_cookie('document_id')
+        utils.clickDocument(self.driver, 'document_1')
+        utils.saveDialogClick(self.driver, 'Yes')
+        time.sleep(1)
+        self.assertTrue(utils.fileContains(self.conn, c1['value'], "document_test_2"))
+        self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
+
 if __name__ == '__main__':
     unittest.main()

@@ -8,15 +8,20 @@ from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
-address = 'https://yutovo.ru'
+address = 'https://www.yutovo.ru'
 
 class TestRegister(unittest.TestCase):
     def setUp(self):
         self.conn = utils.getDbConnection()
         utils.deleteTestUser(self.conn)
         opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://www.yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)
@@ -31,9 +36,9 @@ class TestRegister(unittest.TestCase):
         time.sleep(2)
         utils.setLanguage(self.driver, 'English')
         time.sleep(2)
-        utils.registerUser(self.driver, 'test1', '11', 'test1@mail.ru')
+        utils.registerUser(self.driver, 'test2', '11', 'test2@mail.ru')
         time.sleep(2)
-        self.assertTrue(utils.loginCaption(self.driver) == 'test1')
+        self.assertTrue(utils.loginCaption(self.driver) == 'test2')
 
 if __name__ == '__main__':
     unittest.main()

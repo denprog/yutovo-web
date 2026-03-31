@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.service import Service
 import time
 import utils
 
-address = 'https://yutovo.ru'
+address = 'https://www.yutovo.ru'
 
 class TestDocuments(unittest.TestCase):
     def setUp(self):
@@ -23,6 +23,10 @@ class TestDocuments(unittest.TestCase):
         opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://www.yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         prefs = {
             'profile.content_settings.exceptions.clipboard': {'*': {'setting': 1}}
         }
@@ -194,8 +198,13 @@ class TestDocuments(unittest.TestCase):
         time.sleep(1)
 
         opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://www.yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)
@@ -216,8 +225,13 @@ class TestDocuments(unittest.TestCase):
         self.driver.quit()
 
         opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://www.yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)
@@ -417,8 +431,13 @@ class TestDocuments(unittest.TestCase):
         self.driver.quit()
 
         opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://www.yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         time.sleep(1)
@@ -435,8 +454,13 @@ class TestDocuments(unittest.TestCase):
         c = self.driver.get_cookie('document_id')
         self.driver.quit()
         opts = ChromeOptions()
+        opts.add_argument("--window-size=1100,900")
         opts.add_argument("--ignore-certificate-errors")
         opts.add_argument("--disable-web-security")
+        opts.add_argument("--unsafely-treat-insecure-origin-as-secure=https://www.yutovo.ru")
+        opts.add_argument("--allow-insecure-localhost")
+        opts.add_argument("--enable-features=SharedArrayBuffer")
+        opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
         self.driver.get(address)

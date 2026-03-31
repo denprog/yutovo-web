@@ -4,6 +4,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from psycopg2.extensions import AsIs
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 import time
 
 def registerUser(driver, username, password, email):
@@ -34,7 +37,8 @@ def login(driver, username, password):
     b.click()
 
 def logout(driver):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'logout')))
+    b = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.ID, "logout")))
+    driver.execute_script("arguments[0].scrollIntoView(true);", b)
     b.click()
 
 def new(driver):
@@ -56,15 +60,13 @@ def saveAs(driver, filename):
     b.click()
 
 def rename(driver, filename):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'rename-button')))
-    b.click()
-    time.sleep(1)
-    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'filename\']')))
+    WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.ID, "rename-button"))).click()
+    dialog = WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".q-dialog")))
+    e = WebDriverWait(dialog, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='text']")))
+    e.clear()
     e.send_keys(filename)
-    time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
-    b.click()
-
+    WebDriverWait(dialog, 2).until(EC.element_to_be_clickable((By.ID, "submit"))).click()
+    
 def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'delete-button')))
     b.click()
@@ -183,7 +185,8 @@ def setSettingsLanguage(driver, language):
     clickOk(driver, 'config-dialog')
 
 def saveDialogClick(driver, button):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + button + '\')]')))
+    xpath = f"//div[@role='dialog']//button[.//span[normalize-space()='{button}']]"
+    b = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath)))
     b.click()
 
 def getDbConnection():

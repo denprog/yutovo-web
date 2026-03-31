@@ -100,5 +100,32 @@ class TestLibrary(unittest.TestCase):
         self.assertTrue(self.driver.current_url == address + '/library/en/Physics/Dynamics/Moment%20of%20force.yut')
         self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force.yut')
 
+    #Load a library document, change it and save as a user document
+    def test_library5(self):
+        utils.login(self.driver, 'test1', '11')
+        time.sleep(2)
+        utils.setLanguage(self.driver, 'English')
+
+        utils.writeText(self.driver, 'document')
+        utils.save(self.driver)
+
+        time.sleep(1)
+        utils.clickLibrary(self.driver, 'Physics', 'Dynamics', 'Moment of force')
+        time.sleep(2)
+        self.assertTrue(utils.documentContains(self.driver, 'Data'))
+        self.assertTrue(self.driver.current_url == address + '/library/en/Physics/Dynamics/Moment%20of%20force.yut')
+        self.assertTrue(utils.getDocumentName(self.driver) == '/Physics/Dynamics/Moment of force.yut')
+        utils.writeText(self.driver, '12345')
+        utils.save(self.driver)
+
+        utils.clickDocument(self.driver, 'document_1')
+
+        time.sleep(2)
+        utils.clickDocument(self.driver, 'Moment of force')
+        time.sleep(2)
+        c1 = self.driver.get_cookie('document_id')
+        self.assertTrue(self.driver.current_url == address + '/document/' + c1['value'])
+        self.assertTrue(utils.documentContains(self.driver, 'Data'))
+
 if __name__ == '__main__':
     unittest.main()

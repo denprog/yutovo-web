@@ -1849,6 +1849,7 @@ export default
                             canvas.focus();
                             window.dispatchEvent(new CustomEvent('listDocuments', {}));
                             s.commit('editor/setDocumentChanged', false);
+                            window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
                         }
                     ).catch(
                         function(response)

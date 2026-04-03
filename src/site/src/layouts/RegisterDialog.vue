@@ -6,19 +6,19 @@
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ $t('Registration') }}</div>
-                        <q-input class="q-pa-none" square v-model="login" lazy-rules :rules="[this.required]" type="username" 
+                        <q-input square v-model="login" lazy-rules :rules="[required]" type="username" 
                             v-bind:label="$t('login')" />
-                        <q-input class="q-pa-none" square v-model="name" type="username" v-bind:label="$t('user name')" />
-                        <q-input class="q-pa-none" square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" 
+                        <q-input square v-model="name" type="username" v-bind:label="$t('user name')" />
+                        <q-input square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" 
                             v-bind:label="$t('email')" />
-                        <q-input class="q-pa-none" square v-model="password" lazy-rules :rules="[this.required]" id="password" type="password" 
+                        <q-input square v-model="password" lazy-rules :rules="[required]" id="password" type="password" 
                             v-bind:label="$t('password')" />
-                        <q-input class="q-pb-lg" ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[this.required, this.diffPassword]" 
+                        <q-input class="q-pb-lg" ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[required, diffPassword]" 
                             id="repassword" type="password" v-bind:label="$t('repeate password')" />
                         <template v-if="isProduction">
-                            <q-img class="q-pa-none" :src="captchaImageRef" />
+                            <q-img :src="captchaImageRef" />
                             <div class="text-grey-6">{{ $t('Type the symbols above:') }}</div>
-                            <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[this.required]">
+                            <q-input class="q-pb-md" ref="captchaRef" square v-model="captcha" lazy-rules :rules="[required]">
                                 <template v-slot:append>
                                     <q-icon name="refresh" class="cursor-pointer" @click="onRefreshCaptcha" />
                                 </template>
@@ -63,7 +63,8 @@ import { useI18n } from 'vue-i18n'
 import verificationTemplate from '../templates/VerificationEmail.html?raw'
 import welcomeTemplate from '../templates/WelcomeEmail.html?raw'
 
-export default {
+export default
+{
     name: 'RegisterDialog',
 
     data()

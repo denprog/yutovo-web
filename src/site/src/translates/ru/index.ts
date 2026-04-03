@@ -271,7 +271,7 @@ export default {
     welcome_email: {
         subject: 'Регистрация на Ютово',
         greeting: 'Добро пожаловать, {name}!',
-        congrats: 'Вы успешно зарегистрировались <a href="https://yutovo.com">yutovo.com</a>.',
+        congrats: 'Вы успешно зарегистрировались на сайте <a href="https://yutovo.com">yutovo.com</a>.',
         login_info: 'Ваш логин: {login}.',
         full_access: 'Сейчас у вас есть полный доступ ко всем функциям сервиса.',
         support: 'Если у Вас есть вопросы, обращайтесь на {email}.',

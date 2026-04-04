@@ -10,11 +10,7 @@
             {{ menu.label }}
 
             <div v-if="activeMenu === menu.name" class="dropdown">
-                <LibraryMenuItem
-                    v-for="item in menu.children"
-                    :key="item.id || item.label"
-                    :item="item"
-                    @select="onSelect"/>
+                <LibraryMenuItem v-for="item in menu.children" :key="item.id || item.label" :item="item" @select="onSelect"/>
             </div>
         </div>
     </div>
@@ -81,7 +77,8 @@ function loadLibrary()
         {
             language: store.state.editor.language === '' ? 'en' : store.state.editor.language
         }
-    ).then(response =>
+    ).
+    then(response =>
     {
         const result = [];
         const data = response.data;

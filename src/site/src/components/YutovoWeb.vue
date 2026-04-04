@@ -872,13 +872,13 @@ export default
                                 switch (lang)
                                 {
                                 case 'ru':
-                                    first_page = '/Другое/Первая страница';
+                                    first_page = '/Другое/Первая страница.yut';
                                     break;
                                 case 'es':
-                                    first_page = '/Otros/Primera página';
+                                    first_page = '/Otros/Primera página.yut';
                                     break;
                                 default:
-                                    first_page = '/Others/First page';
+                                    first_page = '/Others/First page.yut';
                                     break;
                                 }
                                 window.dispatchEvent(new CustomEvent('loadLibraryDocument', 

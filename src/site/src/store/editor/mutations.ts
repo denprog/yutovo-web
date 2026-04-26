@@ -20,6 +20,8 @@ const mutation: MutationTree<EditorInterface> =
             state.language = 'ru';
         else if (language.startsWith('es'))
             state.language = 'es';
+        else if (language.startsWith('pt_BR'))
+            state.language = 'pt_BR';
         else
             state.language = 'en';
     },

@@ -325,13 +325,15 @@ export default
         const languages = ref([
             { value: 'English', label: tr.t('English_male') },
             { value: 'Russian',  label: tr.t('Russian_male') },
-            { value: 'Spanish',  label: tr.t('Spanish_male') }
+            { value: 'Spanish',  label: tr.t('Spanish_male') },
+            { value: 'Portuguese',  label: tr.t('Portuguese_male') }
         ]);
 
         const languageToInt = language =>
             language === 'en' ? 1 :
             language === 'ru' ? 2 :
-            language === 'es' ? 3 : 0;
+            language === 'es' ? 3 :
+            language === 'pt_BR' ? 4 : 0;
 
         const language = ref(
             typeof store.state.editor.config.language === 'undefined' ? 

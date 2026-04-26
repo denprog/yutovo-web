@@ -18,6 +18,7 @@ export default {
     'Russian_male': 'Russian',
     'English_male': 'English',
     'Spanish_male': 'Spanish',
+    'Portuguese_male': 'Brazilian Portuguese',
 
     'NoMatchingNodes': 'No matches found',
 

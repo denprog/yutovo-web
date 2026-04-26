@@ -221,6 +221,7 @@ export default {
     'Russian_male': 'Ruso',
     'English_male': 'Inglés',
     'Spanish_male': 'Español',
+    'Portuguese_male': 'Portugués brasileño',
     'Indentation': 'Indentación',
     'Tabs': 'Tabulaciones',
     'Spaces': 'Espacios',

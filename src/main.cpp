@@ -2039,6 +2039,8 @@ EM_JS(int, GetLanguage, (),
                     return 2;
                 if (lang.startsWith("es"))
                     return 3;
+                if (lang.startsWith("pt_BR"))
+                    return 4;
                 return 0;
             }
         }

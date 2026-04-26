@@ -221,6 +221,7 @@ export default {
     'Russian_male': 'Русский',
     'English_male': 'Английский',
     'Spanish_male': 'Испанский',
+    'Portuguese_male': 'Бразильский португальский',
     'Indentation': 'Табуляция',
     'Tabs': 'Табуляция',
     'Spaces': 'Пробелы',

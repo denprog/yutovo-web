@@ -1144,6 +1144,7 @@ async function loadDocument(event: any)
         window.load_document_id = 0;
     }
     current_document.value = '';
+    window.library_document = '';
     if (event.detail.name)
     {
         api.post('/service/get-document-id', 
@@ -1303,7 +1304,7 @@ function updateDocumentName(event: any)
 {
     const s = store;
     const r = router;
-    if (event.detail.name != undefined)
+    if (event.detail.name != undefined && event.detail.name !== '')
     {
         api.post('/service/get-document-name',
             {
@@ -1320,7 +1321,8 @@ function updateDocumentName(event: any)
             function(resp: any)
             {
                 const n = resp.data.name;
-                r.push({ path: '/library/' + s.state.editor.language + n.replaceAll(/\\/g, '/') });
+                if (n !== event.detail.name)
+                    r.push({ path: '/library/' + s.state.editor.language + n.replaceAll(/\\/g, '/') });
                 s.commit('editor/setDocumentName', n);
             })
         return;
@@ -1576,7 +1578,6 @@ function initModule()
                     });
             }
             s.commit('editor/setLoading', false);
-            current_document.value = '';
         }
     };
 

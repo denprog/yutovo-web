@@ -1493,7 +1493,7 @@ function initModule()
             }
             else if (route.path.substring(0, 8) == '/library')
             {
-                let doc = route.params.language + '/';
+                let doc = '/';
                 if (route.params.dir1)
                     doc += route.params.dir1 + '/';
                 if (route.params.dir2)
@@ -1502,7 +1502,6 @@ function initModule()
                     doc += route.params.dir3 + '/';
                 doc += route.params.filename;
                 doc = doc.replaceAll(/\\/g, '/');
-                doc = doc.substring(2);
                 if (['en', 'ru', 'es', 'pt_BR'].includes(route.params.language))
                     s.commit('editor/setLanguage', route.params.language);
                 window.dispatchEvent(new CustomEvent('loadLibraryDocument',

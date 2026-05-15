@@ -110,6 +110,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     pthread
     ${INSTALL_PATH}/wasm/libmgl.a
     ${INSTALL_PATH}/wasm/libhpdf.a
+    ${INSTALL_PATH}/wasm/libsymengine.a
+    ${INSTALL_PATH}/wasm/libteuchos.a
+    ${INSTALL_PATH}/wasm/libmpc.a
 )
 
 install(

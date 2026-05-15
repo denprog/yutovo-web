@@ -24,7 +24,7 @@
 
                     <q-separator />
 
-                    <q-item auto-close id="present-as-menu" clickable style="display:none;">
+                     <q-item auto-close id="present-as-menu" clickable style="display:none;">
                         <q-item-section square>{{ $t('Present as') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
@@ -51,6 +51,32 @@
                                 <q-item id="present-as-complex-menu" dense clickable @click="onPresentAsComplex()">
                                     <div v-if="complexMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Complex') }}</q-item-section>
+                                </q-item>
+
+                                <q-item id="symbolic-as-menu" clickable>
+                                    <q-item-section @click.stop="symbolicMenuOpen = !symbolicMenuOpen">
+                                        {{ $t('Symbolic') }}
+                                    </q-item-section>
+                                    <q-item-section side @click.stop="symbolicMenuOpen = !symbolicMenuOpen">
+                                        <q-icon name="keyboard_arrow_right" />
+                                    </q-item-section>
+
+                                    <q-menu v-model="symbolicMenuOpen" anchor="top end" self="top start">
+                                        <q-list>
+                                            <q-item id="symbolic-as-real-menu" dense clickable @click.stop="onPresentAsSymbolicReal()">
+                                                <div v-if="symbolicRealMenuChecked">&check;</div>
+                                                <q-item-section>{{ $t('Real') }}</q-item-section>
+                                            </q-item>
+                                            <q-item id="symbolic-as-rational-menu" dense clickable @click.stop="onPresentAsSymbolicRational()">
+                                                <div v-if="symbolicRationalMenuChecked">&check;</div>
+                                                <q-item-section>{{ $t('Rational') }}</q-item-section>
+                                            </q-item>
+                                            <q-item id="symbolic-as-complex-menu" dense clickable @click.stop="onPresentAsSymbolicComplex()">
+                                                <div v-if="symbolicComplexMenuChecked">&check;</div>
+                                                <q-item-section>{{ $t('Complex') }}</q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </q-menu>
                                 </q-item>
                             </q-list>
                         </q-menu>
@@ -234,6 +260,7 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unused-vars */
 import { ref, computed, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { api } from 'boot/boot'
@@ -258,10 +285,12 @@ const $q = useQuasar();
 const store = useStore();
 const router = useRouter();
 const instance = getCurrentInstance();
-const { t } = instance!.proxy!;
+const { t } = useI18n();
 
 //refs
 const contextMenuRef = ref<QMenu | null>(null);
+const symbolicMenuOpen = ref(false);
+
 const promptVisible = ref(false);
 const promptItems = ref<string[]>([]);
 const promptPos = ref<PromptPos>({ x: 0, y: 0 });
@@ -295,6 +324,9 @@ const improperMenuChecked = ref(false);
 const arithmeticMenuChecked = ref(false);
 const trigonometricMenuChecked = ref(false);
 const exponentialMenuChecked = ref(false);
+const symbolicRealMenuChecked = ref(false);
+const symbolicRationalMenuChecked = ref(false);
+const symbolicComplexMenuChecked = ref(false);
 
 const loading = computed(() => store.state.editor.loading);
 
@@ -542,7 +574,10 @@ function onShowContextMenu()
         integerMenuChecked.value = p == 3;
         rationalMenuChecked.value = p == 4;
         complexMenuChecked.value = p == 5;
-        if (p == 1 || p == 2 || p == 5)
+        symbolicRealMenuChecked.value = p == 6;
+        symbolicRationalMenuChecked.value = p == 7;
+        symbolicComplexMenuChecked.value = p == 8;
+        if (p == 1 || p == 2 || p == 5 || p == 6 || p == 8)
         {
             m = document.getElementById('set-precision-menu');
             m!.style.display = '';
@@ -561,7 +596,7 @@ function onShowContextMenu()
             resultDegreeMenuChecked.value = r2 == 1;
             resultGradMenuChecked.value = r2 == 2;
             const r3 = Module.cwrap('GetResultType', 'int', [])();
-            if (r3 == 4)
+            if (r3 == 4 || r3 == 9)
             {
                 m = document.getElementById('set-complex-form-menu');
                 m!.style.display = '';
@@ -588,7 +623,7 @@ function onShowContextMenu()
             resultDecimalMenuChecked.value = r2 == 2;
             resultHexadecimalMenuChecked.value = r2 == 3;
         }
-        if (p == 4)
+        if (p == 4 || p == 7)
         {
             const m = document.getElementById('set-fraction-form-menu');
             m!.style.display = '';
@@ -596,7 +631,7 @@ function onShowContextMenu()
             properMenuChecked.value = r == 0;
             improperMenuChecked.value = r == 1;
         }
-        if (p == 5)
+        if (p == 5 || p == 8)
         {
             const m = document.getElementById('set-complex-form-menu');
             m!.style.display = '';
@@ -644,6 +679,27 @@ function onPresentAsRational()
 function onPresentAsComplex()
 {
     Module.cwrap('OnPresentAsComplex', 'void', [])();
+}
+
+function onPresentAsSymbolicReal()
+{
+    Module.cwrap('OnPresentAsSymbolicReal', 'void', [])();
+    symbolicMenuOpen.value = false;
+    contextMenuRef.value?.hide();
+}
+
+function onPresentAsSymbolicRational()
+{
+    Module.cwrap('OnPresentAsSymbolicRational', 'void', [])();
+    symbolicMenuOpen.value = false;
+    contextMenuRef.value?.hide();
+}
+
+function onPresentAsSymbolicComplex()
+{
+    Module.cwrap('OnPresentAsSymbolicComplex', 'void', [])();
+    symbolicMenuOpen.value = false;
+    contextMenuRef.value?.hide();
 }
 
 function onProperFractionForm()
@@ -1451,12 +1507,12 @@ function initModule()
         {
             const canvas = document.getElementById('canvas');
             canvas.addEventListener('webglcontextlost', 
-            function(e: any)
-            {
-                alert('WebGL context lost. You will need to reload the page.');
-                e.preventDefault();
-            }, 
-            false);
+                function(e: any)
+                {
+                    alert('WebGL context lost. You will need to reload the page.');
+                    e.preventDefault();
+                }, 
+                false);
             return canvas;
         })(),
 
@@ -1465,26 +1521,29 @@ function initModule()
             const on_scroll = Module.cwrap('OnScroll', 'number', ['number', 'number']);
             const scroll = document.getElementById('scroll-container');
             scroll.addEventListener('scroll', 
-            function()
-            {
-                on_scroll(scroll.scrollLeft, scroll.scrollTop);
-            });
-            scroll.onclick = function()
-            {
-                const c = getCanvas();
-                if (c)
-                    c.focus();
-            };
+                function()
+                {
+                    on_scroll(scroll.scrollLeft, scroll.scrollTop);
+                });
+            scroll.onclick = 
+                function()
+                {
+                    const c = getCanvas();
+                    if (c)
+                        c.focus();
+                };
 
             const canvas = getCanvas();
-            canvas.addEventListener('focusin', function()
-            {
-                Module.cwrap('OnFocusIn', 'void', [])();
-            });
-            canvas.addEventListener('focusout', function()
-            {
-                Module.cwrap('OnFocusOut', 'void', [])();
-            });
+            canvas.addEventListener('focusin', 
+                function()
+                {
+                    Module.cwrap('OnFocusIn', 'void', [])();
+                });
+            canvas.addEventListener('focusout', 
+                function()
+                {
+                    Module.cwrap('OnFocusOut', 'void', [])();
+                });
 
             const route = r.currentRoute.value;
             if (Cookies.get('reset_document') === '1')
@@ -1581,18 +1640,20 @@ function initModule()
     };
 
     window.Module = Module;
-    window.getText = function()
-    {
-        return UTF32ToString(Module.cwrap('GetText', 'number', [])());
-    };
+    window.getText = 
+        function()
+        {
+            return UTF32ToString(Module.cwrap('GetText', 'number', [])());
+        };
 }
 
 function addListeners()
 {
-    const h = function(ev: string, fn: any)
-    {
-        window.addEventListener(ev, fn, false);
-    };
+    const h = 
+        function(ev: string, fn: any)
+        {
+            window.addEventListener(ev, fn, false);
+        };
     h('newDocument', newDocument);
     h('saveDocument', saveDocument);
     h('openDocument', openDocument);
@@ -1615,10 +1676,11 @@ function addListeners()
 
 function removeListeners()
 {
-    const r = function(ev: string, fn: any)
-    {
-        window.removeEventListener(ev, fn);
-    };
+    const r = 
+        function(ev: string, fn: any)
+        {
+            window.removeEventListener(ev, fn);
+        };
     r('newDocument', newDocument);
     r('saveDocument', saveDocument);
     r('openDocument', openDocument);

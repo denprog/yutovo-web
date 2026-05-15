@@ -1241,6 +1241,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetPresentAsMenu()
     id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
     if (!id.empty())
         return 5;
+    id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
+    if (!id.empty())
+        return 6;
+    id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
+    if (!id.empty())
+        return 7;
+    id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
+    if (!id.empty())
+        return 8;
     return 0;
 }
 
@@ -1251,6 +1260,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetPrecision()
         id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
     if (id.empty())
         return -1;
     return document->GetPrecision(id);
@@ -1263,6 +1276,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetExp()
         id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
     if (id.empty())
         return -1;
     return document->GetExp(id);
@@ -1304,6 +1321,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
 {
     ElementId id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
     if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
+    if (id.empty())
         return -1;
     return (int)document->GetFractionForm(id);
 }
@@ -1311,6 +1330,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
 extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
 {
     ElementId id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
     if (id.empty())
         return -1;
     return (int)document->GetComplexForm(id);
@@ -1329,6 +1350,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetResultType()
         id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
     if (id.empty())
         return -1;
     return (int)document->GetResultType(id);
@@ -1808,6 +1835,27 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsComplex()
         document->SetResultType(s.caret_state.id, ResultType::COMPLEX, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsSymbolicReal()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResultType(s.caret_state.id, ResultType::SYMBOLIC_REAL, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsSymbolicRational()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResultType(s.caret_state.id, ResultType::SYMBOLIC_RATIONAL, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsSymbolicComplex()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResultType(s.caret_state.id, ResultType::SYMBOLIC_COMPLEX, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSetPrecision(int precision)
 {
     EditorState s = document->GetEditorState();
@@ -2013,6 +2061,10 @@ ElementId GetRealResultId()
         id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
     return id;
 }
 

@@ -91,6 +91,7 @@ export default {
     'Integer': 'Inteiros',
     'Rational': 'Racionais',
     'Complex': 'Complexos',
+    'Symbolic': 'Simbólicos',
 
     'Precision': 'Precisão',
     'Exponent order': 'Ordem do expoente',

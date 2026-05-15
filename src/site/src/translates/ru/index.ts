@@ -91,6 +91,7 @@ export default {
     'Integer': 'Целые',
     'Rational': 'Дробные',
     'Complex': 'Комплексные',
+    'Symbolic': 'Символьные',
 
     'Precision': 'Точность',
     'Exponent order': 'Порядок экспоненты',

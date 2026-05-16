@@ -1545,97 +1545,111 @@ function initModule()
                     Module.cwrap('OnFocusOut', 'void', [])();
                 });
 
-            const route = r.currentRoute.value;
-            if (Cookies.get('reset_document') === '1')
+            const doDocumentLoad = () =>
             {
-                window.dispatchEvent(new CustomEvent('openDocument', {}));
-            }
-            else if (route.path.substring(0, 8) == '/library')
-            {
-                let doc = '/';
-                if (route.params.dir1)
-                    doc += route.params.dir1 + '/';
-                if (route.params.dir2)
-                    doc += route.params.dir2 + '/';
-                if (route.params.dir3)
-                    doc += route.params.dir3 + '/';
-                doc += route.params.filename;
-                doc = doc.replaceAll(/\\/g, '/');
-                if (['en', 'ru', 'es', 'pt_BR'].includes(route.params.language))
-                    s.commit('editor/setLanguage', route.params.language);
-                window.dispatchEvent(new CustomEvent('loadLibraryDocument',
-                    {
-                        detail:
-                        {
-                            document: doc,
-                            language: route.params.language
-                        }
-                    }));
-            }
-            else if (route.path.substring(0, 9) != '/document')
-            {
-                if (q.config.production && !Cookies.has('app_initialized'))
+                const route = r.currentRoute.value;
+                if (Cookies.get('reset_document') === '1')
                 {
-                    let lang = 'en';
-                    if (navigator.language.startsWith('ru'))
-                        lang = 'ru';
-                    else if (navigator.language.startsWith('es'))
-                        lang = 'es';
-                    else if (navigator.language.startsWith('pt'))
-                        lang = 'pt_BR';
-                    let fp = '/Others/First page.yut';
-                    if (lang == 'ru')
-                        fp = '/Другое/Первая страница.yut';
-                    else if (lang == 'es')
-                        fp = '/Otros/Primera página.yut';
-                    else if (lang == 'pt_BR')
-                        fp = '/Outros/Primeira página.yut';
+                    window.dispatchEvent(new CustomEvent('openDocument', {}));
+                }
+                else if (route.path.substring(0, 8) == '/library')
+                {
+                    let doc = '/';
+                    if (route.params.dir1)
+                        doc += route.params.dir1 + '/';
+                    if (route.params.dir2)
+                        doc += route.params.dir2 + '/';
+                    if (route.params.dir3)
+                        doc += route.params.dir3 + '/';
+                    doc += route.params.filename;
+                    doc = doc.replaceAll(/\\/g, '/');
+                    if (['en', 'ru', 'es', 'pt_BR'].includes(route.params.language))
+                        s.commit('editor/setLanguage', route.params.language);
                     window.dispatchEvent(new CustomEvent('loadLibraryDocument',
                         {
                             detail:
                             {
-                                document: fp,
-                                language: lang
+                                document: doc,
+                                language: route.params.language
                             }
                         }));
+                }
+                else if (route.path.substring(0, 9) != '/document')
+                {
+                    if (q.config.production && !Cookies.has('app_initialized'))
+                    {
+                        let lang = 'en';
+                        if (navigator.language.startsWith('ru'))
+                            lang = 'ru';
+                        else if (navigator.language.startsWith('es'))
+                            lang = 'es';
+                        else if (navigator.language.startsWith('pt'))
+                            lang = 'pt_BR';
+                        let fp = '/Others/First page.yut';
+                        if (lang == 'ru')
+                            fp = '/Другое/Первая страница.yut';
+                        else if (lang == 'es')
+                            fp = '/Otros/Primera página.yut';
+                        else if (lang == 'pt_BR')
+                            fp = '/Outros/Primeira página.yut';
+                        window.dispatchEvent(new CustomEvent('loadLibraryDocument',
+                            {
+                                detail:
+                                {
+                                    document: fp,
+                                    language: lang
+                                }
+                            }));
+                    }
+                    else
+                    {
+                        window.dispatchEvent(new CustomEvent('openDocument', {}));
+                    }
                 }
                 else
                 {
                     window.dispatchEvent(new CustomEvent('openDocument', {}));
                 }
-            }
-            else
-            {
-                window.dispatchEvent(new CustomEvent('openDocument', {}));
-            }
+            };
 
-            canvas.focus();
-            Cookies.set('app_initialized', true, { path: '/', expires: '30d' });
-            if (Cookies.has('language'))
-                Cookies.set('language', Cookies.get('language'), { path: '/', expires: '30d' });
-            if (Cookies.has('refresh_token'))
+            (function doAuthThenDocumentLoad()
             {
-                api.post('/auth/refresh-token', {})
-                    .then(
-                    function(resp: any)
-                    {
-                        s.dispatch('login/updateAccessToken', resp.headers['access_token']);
-                        s.commit('login/setLastError', '');
-                        api.post('/service/get-user-settings', {}, { headers: { access_token: s.state.login.access_token } })
-                            .then(
-                            function(r2: any)
-                            {
+                if (Cookies.has('refresh_token'))
+                {
+                    return api.post('/auth/refresh-token', {})
+                        .then(
+                        function(resp: any)
+                        {
+                            s.dispatch('login/updateAccessToken', resp.headers['access_token']);
+                            s.commit('login/setLastError', '');
+                            if (s.state.login.access_token)
+                                return api.post('/service/get-user-settings', {}, { headers: { access_token: s.state.login.access_token } });
+                        })
+                        .then(
+                        function(r2: any)
+                        {
+                            if (r2)
                                 s.commit('editor/setSettings', r2.data.settings);
-                            })
-                    })
-                    .catch(
-                    function()
-                    {
-                        s.dispatch('login/updateAccessToken', '');
-                        Cookies.remove('document_id');
-                    });
-            }
-            s.commit('editor/setLoading', false);
+                        })
+                        .catch(
+                        function(error: any)
+                        {
+                            console.error('Auto-login failed:', error);
+                            s.dispatch('login/updateAccessToken', '');
+                            Cookies.remove('document_id');
+                        });
+                }
+                return Promise.resolve();
+            })().finally(
+                function()
+                {
+                    doDocumentLoad();
+                    canvas.focus();
+                    Cookies.set('app_initialized', true, { path: '/', expires: '30d' });
+                    if (Cookies.has('language'))
+                        Cookies.set('language', Cookies.get('language'), { path: '/', expires: '30d' });
+                    s.commit('editor/setLoading', false);
+                });
         }
     };
 

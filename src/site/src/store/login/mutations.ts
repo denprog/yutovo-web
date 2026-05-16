@@ -19,8 +19,17 @@ const mutation: MutationTree<LoginStateInterface> =
             return;
         }
 
-        const decoded = jwt_decode<Payload>(access_token);
-        state.login = decoded.login;
+        try
+        {
+            const decoded = jwt_decode<Payload>(access_token);
+            state.login = decoded.login;
+        }
+        catch (e)
+        {
+            console.error('Failed to decode access token:', e);
+            state.access_token = '';
+            state.login = '';
+        }
     },
 
     setLastError(state, last_error)

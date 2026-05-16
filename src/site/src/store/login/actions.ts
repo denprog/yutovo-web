@@ -17,7 +17,19 @@ const actions: ActionTree<LoginStateInterface, StateInterface> =
         if (access_token == '')
             return;
 
-        const decoded = jwt_decode<Payload>(access_token);
+        let exp: number;
+        let decoded : any;
+        try
+        {
+            decoded = jwt_decode<Payload>(access_token);
+        }
+        catch (e)
+        {
+            console.error('Failed to decode access token in action:', e);
+            commit('setAccessToken', '');
+            return;
+        }
+
         //update the access token before it expires
         const now = Math.floor(Date.now() / 1000);
         if (decoded.exp > now + 1)

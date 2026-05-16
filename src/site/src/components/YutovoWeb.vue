@@ -60,11 +60,11 @@
             </q-btn>
             <q-separator vertical/>
             <div class="scale-control row items-center no-wrap">
-                <q-btn dense flat round icon="img:/images/format/dec_scale.png" size="sm" @click="onScaleDec" :disable="scale <= 50"/>
+                <q-btn dense flat square icon="img:/images/format/dec_scale.png" size="14px" @click="onScaleDec" :disable="scale <= 50"/>
                 <div class="scale-value" @click="onResetScale">
                     {{ scale }}%
                 </div>
-                <q-btn dense flat round icon="img:/images/format/inc_scale.png" size="sm" @click="onScaleInc" :disable="scale >= 500"/>
+                <q-btn dense flat square icon="img:/images/format/inc_scale.png" size="14px" @click="onScaleInc" :disable="scale >= 500"/>
             </div>
             <q-separator vertical/>
             <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
@@ -287,27 +287,27 @@
             </q-btn>
             <q-separator vertical/>
             <q-btn-group flat square unelevated stretch>
-                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('R$');">
+                <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
                     R$
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Brazilian real') }}</q-tooltip>
                 </q-btn>
-                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('¥');">
+                <q-btn size="14px" class="currency-button" square dense @click="onCurrency('¥');">
                     ¥
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Chinese yuan') }}</q-tooltip>
                 </q-btn>
-                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('€');">
+                <q-btn size="14px" class="currency-button" square dense @click="onCurrency('€');">
                     €
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Euro') }}</q-tooltip>
                 </q-btn>
-                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('₹');">
+                <q-btn size="14px" class="currency-button" square dense @click="onCurrency('₹');">
                     ₹
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indian rupee') }}</q-tooltip>
                 </q-btn>
-                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('₽');">
+                <q-btn size="14px" class="currency-button" square dense @click="onCurrency('₽');">
                     ₽
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Russian ruble') }}</q-tooltip>
                 </q-btn>
-                <q-btn size="14px" style="min-width: 20px;" square dense @click="onCurrency('$');">
+                <q-btn size="14px" class="currency-button" square dense @click="onCurrency('$');">
                     $
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('US dollar') }}</q-tooltip>
                 </q-btn>
@@ -1084,5 +1084,10 @@ export default defineComponent(
     width: 20px;
     border: 0px none;
     overflow: hidden;
+}
+
+.currency-button
+{
+    min-width: 40px;
 }
 </style>

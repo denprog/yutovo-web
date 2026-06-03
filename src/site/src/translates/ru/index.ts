@@ -17,6 +17,7 @@ export default {
     'Wrong arguments count': 'Неправильное количество аргументов',
     'Unknown identifier': 'Неизвестный идентификатор',
     'Expression expected': 'Ожидается выражение',
+    'Incorrect identifier': 'Некорректный идентификатор',
     'Division by zero': 'Деление на ноль',
     'Overflow': 'Переполнение',
     'Argument is over': 'Переполнение аргумента',

@@ -17,6 +17,7 @@ export default {
     'Wrong arguments count': 'Quantidade incorreta de argumentos',
     'Unknown identifier': 'Identificador desconhecido',
     'Expression expected': 'Expressão esperada',
+    'Incorrect identifier': 'Identificador incorreto',
     'Division by zero': 'Divisão por zero',
     'Overflow': 'Estouro',
     'Argument is over': 'Estouro do argumento',

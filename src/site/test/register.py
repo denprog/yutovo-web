@@ -24,7 +24,9 @@ class TestRegister(unittest.TestCase):
         opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
+        self.driver.delete_all_cookies()
         self.driver.get(address)
+        self.driver.add_cookie({'name' : 'app_initialized', 'value' : 'true', 'path' : '/'})
         self.conn = utils.getDbConnection()
 
     def tearDown(self):

@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 import time
 import utils
 
@@ -22,7 +24,9 @@ class TestLogin(unittest.TestCase):
         opts.add_argument("--host-resolver-rules=\"MAP yutovo.ru 127.0.0.1, MAP www.yutovo.ru 127.0.0.1\" https://www.yutovo.ru")
         service = Service(executable_path='/opt/selenium/chromedriver')
         self.driver = webdriver.Chrome(service = service, options = opts)
+        self.driver.delete_all_cookies()
         self.driver.get(address)
+        self.driver.add_cookie({'name' : 'app_initialized', 'value' : 'true', 'path' : '/'})
         self.conn = utils.getDbConnection()
         utils.clearTestUser(self.conn)
         time.sleep(6)
@@ -47,7 +51,6 @@ class TestLogin(unittest.TestCase):
     #login and logout two users
     def test_login2(self):
         time.sleep(1)
-
         utils.login(self.driver, 'test1', '11')
         time.sleep(1)
         c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
@@ -55,32 +58,36 @@ class TestLogin(unittest.TestCase):
         c.send_keys('document_test_1')
         time.sleep(1)
         utils.save(self.driver)
+        time.sleep(3)
         utils.logout(self.driver)
         WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.ID, "logout")))        
         time.sleep(1)
 
-        utils.login(self.driver, 'test2', '22')
+        utils.login(self.driver, 'test2', '11')
         c = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, 'canvas')))
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "editor-toolbar")))
         time.sleep(1)
         c.send_keys('document_test_2')
         time.sleep(2)
         utils.setLanguage(self.driver, 'English')
         time.sleep(2)
+        ActionChains(self.driver).send_keys(Keys.ESCAPE).perform()
+        time.sleep(1)
         utils.save(self.driver)
         time.sleep(2)
         utils.logout(self.driver)
         time.sleep(1)
 
         utils.login(self.driver, 'test1', '11')
+        time.sleep(3)
         utils.clickDocument(self.driver, 'document_1')
-        time.sleep(1)
+        time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_1'))
         utils.logout(self.driver)
 
-        utils.login(self.driver, 'test2', '22')
+        utils.login(self.driver, 'test2', '11')
+        time.sleep(3)
         utils.clickDocument(self.driver, 'document_1')
-        time.sleep(1)
+        time.sleep(2)
         self.assertTrue(utils.documentContains(self.driver, 'document_test_2'))
         utils.logout(self.driver)
 

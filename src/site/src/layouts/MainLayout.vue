@@ -233,6 +233,9 @@ export default
                     {
                         store.dispatch('login/updateAccessToken', '');
                         Cookies.remove('document_id');
+                        store.commit('editor/setDocumentChanged', false);
+                        window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
+                        window.dispatchEvent(new CustomEvent('newDocument'));
                     }
                 ).catch(
                     function(response)
@@ -240,6 +243,9 @@ export default
                         console.log(response);
                         store.dispatch('login/updateAccessToken', '');
                         Cookies.remove('document_id');
+                        store.commit('editor/setDocumentChanged', false);
+                        window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
+                        window.dispatchEvent(new CustomEvent('newDocument'));
                     }
                 );
         };

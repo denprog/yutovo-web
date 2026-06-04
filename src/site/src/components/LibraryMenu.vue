@@ -19,12 +19,14 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import LibraryMenuItem from './LibraryMenuItem.vue'
 import api from 'axios'
 
 const menuBar = ref(null);
 const activeMenu = ref(null);
 const store = useStore();
+const router = useRouter();
 
 const menuItems = ref([
     {
@@ -142,16 +144,18 @@ function onRootHover(name)
 
 function onSelect(id)
 {
+    const language = store.state.editor.language === '' ? 'en' : store.state.editor.language;
     window.dispatchEvent(new CustomEvent('clearDocumentSelection', {}));
     window.dispatchEvent(new CustomEvent('loadLibraryDocument',
     {
         detail:
         {
             document: id,
-            language: store.state.editor.language === '' ? 'en' : store.state.editor.language
+            language: language
         }
     }));
-
+    const docPath = id.startsWith('/') ? id.substring(1) : id;
+    router.push({ path: '/library/' + language + '/' + docPath });
     activeMenu.value = null;
 }
 

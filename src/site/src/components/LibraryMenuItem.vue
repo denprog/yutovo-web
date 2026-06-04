@@ -31,7 +31,9 @@ const open = ref(false)
 
 function onClick()
 {
-    if (!props.item.children && props.item.id)
+    if (props.item.children)
+        open.value = !open.value;
+    else if (props.item.id)
         emit('select', props.item.id);
 }
 </script>

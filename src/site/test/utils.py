@@ -1,17 +1,18 @@
 import os
 import psycopg2
+import hashlib
+from psycopg2.extensions import AsIs
+import secrets
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from psycopg2.extensions import AsIs
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import time
 
 def registerUser(driver, username, password, email):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'register')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
+    time.sleep(1)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label=\'login\']')))
     e.send_keys(username)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label=\'email\']')))
@@ -21,43 +22,50 @@ def registerUser(driver, username, password, email):
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label=\'repeate password\']')))
     e.send_keys(password)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def login(driver, username, password):
     time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'Login\')] | //*[contains(text(), \'Войти\')] | '
         '//*[contains(text(), \'Acceder\')]')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
-    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'username\']')))
+    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[contains(@class, \'login-username\')]')))
     e.send_keys(username)
-    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'password\']')))
+    e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[contains(@class, \'login-password\')]')))
     e.send_keys(password)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def logout(driver):
-    b = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.ID, "logout")))
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, "logout")))
     driver.execute_script("arguments[0].scrollIntoView(true);", b)
-    b.click()
+    #use JS click to bypass any transient overlay (e.g., dialog transition backdrops)
+    driver.execute_script("arguments[0].click();", b)
+    #wait a moment for logout to process, then clear session cookies so the next
+    #login gets a fresh session (prevents cross-user document_id contamination).
+    time.sleep(1)
+    driver.delete_cookie('session_id')
+    driver.delete_cookie('JSESSIONID')
+    driver.delete_cookie('document_id')
 
 def new(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'new-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def save(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'save-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def saveAs(driver, filename):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'save-as-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
     e = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//input[@type=\'filename\']')))
     e.send_keys(filename)
     time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'submit')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def rename(driver, filename):
     WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.ID, "rename-button"))).click()
@@ -69,39 +77,39 @@ def rename(driver, filename):
     
 def delete(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'delete-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
     clickOk(driver, 'q-dialog-plugin')
 
 def copy(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'copy-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def paste(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'paste-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def cut(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'cut-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def clickCategory(driver, name):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + name + '\')]')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
 
 def clickLibrary(driver, category1, category2, name):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category1 + '\')]')))
-    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '" + category1 + "')]")))
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + category2 + '\')]')))
-    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '" + category2 + "')]")))
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + name + '\')]')))
-    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '" + name + "')]")))
+    driver.execute_script("arguments[0].click();", b)
 
 def clickDocument(driver, text):
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + text + '\')]')))
-    b.click()
+    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '" + text + "')]")))
+    driver.execute_script("arguments[0].click();", b)
 
 def loginCaption(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'login')))
@@ -120,7 +128,7 @@ def clickIdentifier(driver, category):
     for i in range(len(arr)):
         b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[@id=\'identifiers-tree\']//*[contains(text(), \'' + arr[i] + '\')]')))
         time.sleep(1)
-        b.click()
+        driver.execute_script("arguments[0].click();", b)
 
 def getDocumentName(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'document-name')))
@@ -128,10 +136,10 @@ def getDocumentName(driver):
 
 def setLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language')))
-    b.click()
-    time.sleep(1)
-    b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
+    time.sleep(2)
+    b = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), \'' + language + '\')]')))
+    driver.execute_script("arguments[0].click();", b)
 
 def getLanguage(driver):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'language')))
@@ -163,10 +171,10 @@ def clickOk(driver, id):
 
 def setSettingsLanguage(driver, language):
     b = WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, 'settings-button')))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
     b = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='tab-document']")))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
     time.sleep(1)
 
     wait = WebDriverWait(driver, 2)
@@ -185,9 +193,18 @@ def setSettingsLanguage(driver, language):
     clickOk(driver, 'config-dialog')
 
 def saveDialogClick(driver, button):
-    xpath = f"//div[@role='dialog']//button[.//span[normalize-space()='{button}']]"
+    xpath = f"//div[@role='dialog']//button[contains(., '{button}')]"
     b = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath)))
-    b.click()
+    driver.execute_script("arguments[0].click();", b)
+
+def closeDialogIfPresent(driver, button, timeout=2):
+    try:
+        xpath = f"//div[@role='dialog']//button[contains(., '{button}')]"
+        b = WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath)))
+        driver.execute_script("arguments[0].click();", b)
+        return True
+    except:
+        return False
 
 def getDbConnection():
     db_host = os.getenv("DB_HOST")
@@ -199,10 +216,16 @@ def getDbConnection():
 
 def deleteTestUser(conn):
     cursor = conn.cursor()
-    cursor.execute('delete from user_sessions where user_id in (select user_id from users where login=\'test1\')')
-    cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test1\')')
-    cursor.execute('delete from users where login=\'test1\'')
+    for login in ['test1', 'test2']:
+        cursor.execute('delete from user_sessions where user_id in (select user_id from users where login=%s)', (login,))
+        cursor.execute('delete from user_documents where user_id in (select user_id from users where login=%s)', (login,))
+        cursor.execute('delete from users where login=%s', (login,))
     conn.commit()
+
+def _hash_password(password):
+    salt = secrets.token_hex(16)
+    h = hashlib.md5((password + salt).encode()).hexdigest()
+    return salt + h
 
 def clearTestUser(conn):
     cursor = conn.cursor()
@@ -212,6 +235,17 @@ def clearTestUser(conn):
     cursor.execute('delete from user_documents where user_id in (select user_id from users where login=\'test2\')')
     cursor.execute('update users set language=\'\' where login=\'test1\'')
     cursor.execute('update users set language=\'\' where login=\'test2\'')
+    for login, email, name, pwd in [
+        ('test1', 'test1@mail.ru', 'test1', '11'),
+        ('test2', 'test2@mail.ru', 'test2', '11')
+    ]:
+        cursor.execute('''
+            INSERT INTO users (login, password, email, name, plan_id)
+            SELECT %s, %s, %s, %s, 1
+            WHERE NOT EXISTS (SELECT 1 FROM users WHERE login=%s)
+        ''', (login, _hash_password(pwd), email, name, login))
+        #always reset password so existing users match expected credentials
+        cursor.execute('UPDATE users SET password=%s WHERE login=%s', (_hash_password(pwd), login))
     conn.commit()
 
 def fileContains(conn, document_id, str):

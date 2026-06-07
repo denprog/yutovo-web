@@ -295,6 +295,8 @@ const promptVisible = ref(false);
 const promptItems = ref<string[]>([]);
 const promptPos = ref<PromptPos>({ x: 0, y: 0 });
 const jsonClipboard = ref('');
+let handlePaste: ((e: ClipboardEvent) => void) | null = null;
+let handleKeydown: ((e: KeyboardEvent) => void) | null = null;
 const current_document = ref('');
 const last_documents = ref<string[]>([]);
 const downloading = ref(false);
@@ -466,6 +468,7 @@ async function onPaste()
         contextMenuRef.value.hide();
     Module.cwrap('SetClipboardText', 'void', ['string'])('');
     Module.cwrap('SetClipboardJson', 'void', ['string'])('');
+    let imagePasted = false;
     try
     {
         if (navigator.userAgent.toLowerCase().includes('firefox') && jsonClipboard.value != '')
@@ -486,14 +489,46 @@ async function onPaste()
                 else if (data[i].types.includes('image/png'))
                 {
                     const blob = await data[i].getType('image/png');
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = function()
-                    {
-                        Module.cwrap('SetClipboardImage', 'void', ['string'])(reader.result);
-                        Module.cwrap('OnPaste', 'void', [])();
-                        canvasFocus();
-                    };
+                    const arrayBuffer = await blob.arrayBuffer();
+                    const snapshot = new Blob([arrayBuffer], { type: 'image/png' });
+                    const dataUrl = await new Promise((resolve, reject) =>
+                        {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(snapshot);
+                        });
+                    Module.cwrap('SetClipboardImage', 'void', ['string'])(dataUrl);
+                    imagePasted = true;
+                }
+                else if (data[i].types.includes('image/jpeg') || data[i].types.includes('image/bmp'))
+                {
+                    const imageType = data[i].types.includes('image/jpeg') ? 'image/jpeg' : 'image/bmp';
+                    const blob = await data[i].getType(imageType);
+                    const arrayBuffer = await blob.arrayBuffer();
+                    const pngBlob = await new Promise((resolve, reject) =>
+                        {
+                            const img = new Image();
+                            img.onload = () =>
+                            {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.naturalWidth;
+                                canvas.height = img.naturalHeight;
+                                canvas.getContext('2d').drawImage(img, 0, 0);
+                                canvas.toBlob(resolve, 'image/png');
+                            };
+                            img.onerror = reject;
+                            img.src = URL.createObjectURL(new Blob([arrayBuffer], { type: imageType }));
+                        });
+                    const dataUrl = await new Promise((resolve, reject) =>
+                        {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(pngBlob);
+                        });
+                    Module.cwrap('SetClipboardImage', 'void', ['string'])(dataUrl);
+                    imagePasted = true;
                 }
                 else if (data[i].types.includes('text/plain'))
                 {
@@ -1545,6 +1580,91 @@ function initModule()
                     Module.cwrap('OnFocusOut', 'void', [])();
                 });
 
+            handlePaste = function(e: ClipboardEvent)
+                {
+                    const activeEl = document.activeElement;
+                    if (activeEl && activeEl.tagName === 'INPUT' || activeEl && activeEl.tagName === 'TEXTAREA')
+                        return;
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const clipboardData = e.clipboardData;
+                    if (!clipboardData)
+                        return;
+
+                    Module.cwrap('SetClipboardText', 'void', ['string'])('');
+                    Module.cwrap('SetClipboardJson', 'void', ['string'])('');
+
+                    let hasData = false;
+                    let imageFound = false;
+                    for (let i = 0; i < clipboardData.items.length; i++)
+                    {
+                        const item = clipboardData.items[i];
+                        if (item.type === 'web yutovo/elements')
+                        {
+                            const text = clipboardData.getData('web yutovo/elements');
+                            if (text)
+                            {
+                                Module.cwrap('SetClipboardJson', 'void', ['string'])(text);
+                                hasData = true;
+                                break;
+                            }
+                        }
+                        else if (!imageFound && item.kind === 'file' && item.type.startsWith('image/'))
+                        {
+                            const file = item.getAsFile();
+                            if (file)
+                            {
+                                const reader = new FileReader();
+                                reader.onload = 
+                                    function()
+                                    {
+                                        Module.cwrap('SetClipboardImage', 'void', ['string'])(reader.result as string);
+                                        Module.cwrap('OnPaste', 'void', [])();
+                                        canvasFocus();
+                                    };
+                                reader.readAsDataURL(file);
+                                imageFound = true;
+                                hasData = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!hasData)
+                    {
+                        const text = clipboardData.getData('text/plain');
+                        if (text)
+                        {
+                            Module.cwrap('SetClipboardText', 'void', ['string'])(text);
+                            hasData = true;
+                        }
+                    }
+
+                    if (hasData && !imageFound)
+                    {
+                        Module.cwrap('OnPaste', 'void', [])();
+                        canvasFocus();
+                    }
+                };
+            document.addEventListener('paste', handlePaste, false);
+
+            const pasteTarget = document.createElement('div');
+            pasteTarget.contentEditable = 'true';
+            pasteTarget.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;';
+            pasteTarget.id = 'paste-target';
+            document.body.appendChild(pasteTarget);
+
+            handleKeydown = 
+                function(e: KeyboardEvent)
+                {
+                    if (e.shiftKey && e.key === 'Insert')
+                    {
+                        e.stopPropagation();
+                        pasteTarget.focus();
+                    }
+                };
+            document.addEventListener('keydown', handleKeydown, true);
+
             const doDocumentLoad = () =>
             {
                 const route = r.currentRoute.value;
@@ -1735,6 +1855,10 @@ onMounted(function()
 onBeforeUnmount(function()
 {
     removeListeners();
+    if (handlePaste)
+        document.removeEventListener('paste', handlePaste);
+    if (handleKeydown)
+        document.removeEventListener('keydown', handleKeydown, true);
 });
 
 defineExpose({

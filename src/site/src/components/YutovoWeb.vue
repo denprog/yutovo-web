@@ -442,12 +442,18 @@ export default defineComponent(
     {
         window.addEventListener('setStandardToolbar', this.setStandardToolbar, false)
         window.addEventListener('setScale', this.onSetScale, false)
+        window.addEventListener('onCopy', this.onCopy, false)
+        window.addEventListener('onCut', this.onCut, false)
+        window.addEventListener('onPaste', this.onPaste, false)
     },
 
     unmounted()
     {
         window.removeEventListener('setStandardToolbar', this.setStandardToolbar)
         window.removeEventListener('setScale', this.onSetScale)
+        window.removeEventListener('onCopy', this.onCopy)
+        window.removeEventListener('onCut', this.onCut)
+        window.removeEventListener('onPaste', this.onPaste)
     },
 
     methods:

@@ -129,6 +129,7 @@ export default {
     'Grad': 'Grado centesimal',
     'Sum': 'Suma',
     'Product': 'Producto',
+    'Infinity': 'Infinito',
     'Assignment': 'Asignación',
     'Unit': 'Unidad',
     'Equation': 'Igualdad',

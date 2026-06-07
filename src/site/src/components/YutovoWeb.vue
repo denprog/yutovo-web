@@ -191,6 +191,10 @@
             <q-btn size="14px" square dense @click="onProduct();" icon="img:/images/algebra/product.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Product') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onInfinity();">
+                ∞
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Infinity') }}</q-tooltip>
+            </q-btn>
             <q-btn size="14px" square dense @click="onAssignment();" icon="img:/images/algebra/assignment.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Assignment') }} (:)</q-tooltip>
             </q-btn>
@@ -1002,6 +1006,11 @@ export default defineComponent(
         onProduct()
         {
             Module.cwrap('OnProduct', 'void', [])()
+        },
+
+        onInfinity()
+        {
+            Module.cwrap('InsertString', 'void', ['string'])('∞')
         },
 
         onAssignment()

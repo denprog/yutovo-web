@@ -129,6 +129,7 @@ export default {
     'Grad': 'Град',
     'Sum': 'Сумма',
     'Product': 'Произведение',
+    'Infinity': 'Бесконечность',
     'Assignment': 'Присваивание',
     'Unit': 'Размерность',
     'Equation': 'Равенство',

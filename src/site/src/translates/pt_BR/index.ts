@@ -129,6 +129,7 @@ export default {
     'Grad': 'Grado',
     'Sum': 'Soma',
     'Product': 'Produto',
+    'Infinity': 'Infinito',
     'Assignment': 'Atribuição',
     'Unit': 'Unidade',
     'Equation': 'Equação',

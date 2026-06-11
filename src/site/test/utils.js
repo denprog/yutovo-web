@@ -106,7 +106,7 @@ async function clickLibrary(page, category1, category2, name)
 
 async function clickDocument(page, text)
 {
-    await page.locator(`xpath=//*[contains(text(), '${text}')]`).first().evaluate((el) => el.click());
+    await page.locator(`xpath=//span[contains(@class, 'documents-item') and contains(., '${text}')]`).first().click();
 }
 
 async function loginCaption(page)

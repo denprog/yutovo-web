@@ -101,4 +101,25 @@ test.describe('Login', () =>
         await page.waitForTimeout(4000);
         expect(await utils.getLanguage(page)).toBe('Русский');
     });
+
+    test('paste into password field goes to password field', async ({ page, context }) =>
+    {
+        await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+        await page.waitForTimeout(1000);
+        await page.locator("xpath=//*[contains(text(), 'Login')] | //*[contains(text(), 'Войти')] | //*[contains(text(), 'Acceder')]").first().evaluate((el) => el.click());
+        await page.waitForTimeout(1000);
+
+        await page.locator("xpath=//input[contains(@class, 'login-username')]").fill('testuser');
+        await page.evaluate(() => navigator.clipboard.writeText('testpassword'));
+        await page.locator("xpath=//input[contains(@class, 'login-password')]").click();
+        await page.waitForTimeout(500);
+        await page.keyboard.press('Shift+Insert');
+        await page.waitForTimeout(500);
+
+        const passwordValue = await page.locator("xpath=//input[contains(@class, 'login-password')]").inputValue();
+        const usernameValue = await page.locator("xpath=//input[contains(@class, 'login-username')]").inputValue();
+        expect(passwordValue).toBe('testpassword');
+        expect(usernameValue).toBe('testuser');
+    });
 });

@@ -1657,6 +1657,10 @@ function initModule()
             handleKeydown = 
                 function(e: KeyboardEvent)
                 {
+                    const activeEl = document.activeElement;
+                    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'))
+                        return;
+
                     if (e.shiftKey && e.key === 'Insert')
                     {
                         e.stopPropagation();

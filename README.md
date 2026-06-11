@@ -87,7 +87,7 @@ Then run tests from the `src/site` directory:
 
 ```bash
 cd src/site
-npm run test:e2e
+npx playwright test
 ```
 
 or for a specific test file:

@@ -10,10 +10,10 @@
                             </div>
 
                             <q-input ref="loginRef" square class="q-pa-none" v-model="login" lazy-rules :rules="[required]" id="username" type="text"
-                                :label="tr.t('user name')" input-class="login-username"/>
+                                :label="tr.t('user name')" input-class="login-username" autocomplete="username"/>
 
                             <q-input ref="passwordRef" square class="q-pa-none" v-model="password" lazy-rules :rules="[required]" id="password"
-                                type="password" :label="tr.t('password')" input-class="login-password"/>
+                                type="password" :label="tr.t('password')" input-class="login-password" autocomplete="current-password"/>
 
                             <br />
 

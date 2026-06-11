@@ -83,13 +83,14 @@ production: false
 ```
 to remove capcha. The server must be built with "-DCMAKE_BUILD_TYPE=Debug" option for the same reason.
 
-Then run tests:
+Then run tests from the `src/site` directory:
 
-```
-python -m unittest *
+```bash
+cd src/site
+npm run test:e2e
 ```
 
-or for a group of tests:
-```
-python -m unittest login.*
+or for a specific test file:
+```bash
+npx playwright test login
 ```

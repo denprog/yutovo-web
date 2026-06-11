@@ -11,3 +11,4 @@ src/site/test/__pycache__
 src/site/downloads
 yutovo-server.env
 .qwen
+test-results

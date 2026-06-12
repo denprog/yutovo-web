@@ -452,6 +452,44 @@ test.describe('Documents', () =>
         expect(await utils.documentContains(page, 'test_1document_')).toBe(true);
     });
 
+    test('context menu copy and paste items', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+        await page.waitForSelector('#canvas', { timeout: 10000 });
+        await page.waitForTimeout(2000);
+        await utils.writeText(page, 'context_menu_test');
+        await page.waitForTimeout(1000);
+
+        for (let i = 0; i < 17; i++)
+            await page.keyboard.press('Shift+ArrowLeft');
+        await page.waitForTimeout(500);
+
+        const openContextMenu = async () =>
+        {
+            const box = await page.locator('#canvas').boundingBox();
+            await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: 'right' });
+        };
+
+        await openContextMenu();
+        await page.locator('#copy-menu').waitFor({ state: 'visible', timeout: 2000 });
+        await expect(page.locator('#copy-menu')).not.toHaveClass(/disabled/);
+        await expect(page.locator('#cut-menu')).not.toHaveClass(/disabled/);
+
+        await page.locator('#copy-menu').click();
+        await page.waitForTimeout(1000);
+
+        await page.keyboard.press('End');
+        await page.waitForTimeout(500);
+        await openContextMenu();
+        await page.locator('#paste-menu').waitFor({ state: 'visible', timeout: 2000 });
+        await expect(page.locator('#paste-menu')).not.toHaveClass(/disabled/);
+
+        await page.locator('#paste-menu').click();
+        await page.waitForTimeout(1000);
+        expect(await utils.documentContains(page, 'context_menu_testcontext_menu_test')).toBe(true);
+    });
+
     test('open a document by url at start, save it and check it', async ({ page, context, browser }) =>
     {
         await utils.login(page, 'test1', '11');

@@ -547,7 +547,7 @@ async function onPaste()
     canvasFocus();
 }
 
-function onShowContextMenu()
+async function onShowContextMenu()
 {
     const copy_menu = document.getElementById('copy-menu');
     const can_copy = Module.cwrap('CanCopy', 'bool', [])();
@@ -557,36 +557,33 @@ function onShowContextMenu()
         copy_menu!.classList.add('disabled');
 
     const paste_menu = document.getElementById('paste-menu');
-    let can_paste = false;
-    try
+    let can_paste = Module.cwrap('CanPaste', 'bool', [])();
+    if (can_paste)
     {
-        if (navigator.userAgent.toLowerCase().includes('chrome') ||
-            navigator.userAgent.toLowerCase().includes('firefox'))
+        try
         {
-            navigator.clipboard.read().then(
-                function(data)
+            if (navigator.userAgent.toLowerCase().includes('chrome') ||
+                navigator.userAgent.toLowerCase().includes('firefox'))
+            {
+                let has_clipboard_data = false;
+                const data = await navigator.clipboard.read();
+                for (let i = 0; i < data.length; i++)
                 {
-                    for (let i = 0; i < data.length; i++)
+                    if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain') ||
+                        data[i].types.includes('image/png') || data[i].types.includes('image/jpeg') || data[i].types.includes('image/bmp'))
                     {
-                        if (data[i].types.includes('web yutovo/elements') || data[i].types.includes('text/plain') ||
-                            data[i].types.includes('image/png') || data[i].types.includes('image/jpeg') || data[i].types.includes('image/bmp'))
-                        {
-                            can_paste = true;
-                            break;
-                        }
+                        has_clipboard_data = true;
+                        break;
                     }
-                }).catch(
-                function()
-                {
-                    can_paste = (jsonClipboard.value != '');
-                });
+                }
+                can_paste = has_clipboard_data;
+            }
+        }
+        catch (err)
+        {
+            can_paste = (jsonClipboard.value != '');
         }
     }
-    catch (err)
-    {
-        can_paste = (jsonClipboard.value != '');
-    }
-    can_paste = Module.cwrap('CanPaste', 'bool', [])() && can_paste;
     if (can_paste)
         paste_menu!.classList.remove('disabled');
     else

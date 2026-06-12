@@ -75,6 +75,7 @@ export default {
                                 }
                             }));
                         saveAsDialog.value.hide();
+                        window.dispatchEvent(new CustomEvent('listDocuments', {}));
                     }
                 ).catch(
                     function(response)

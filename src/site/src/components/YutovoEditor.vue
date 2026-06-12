@@ -1149,15 +1149,16 @@ function saveDocument(event: any)
                 else if (window.load_document_id)
                 {
                     window.dispatchEvent(new CustomEvent('loadDocument',
-                    {
-                        detail:
                         {
-                            document_id: window.load_document_id,
-                            last_document: Cookies.get('document_id')
-                        }
-                    }));
+                            detail:
+                            {
+                                document_id: window.load_document_id,
+                                last_document: Cookies.get('document_id')
+                            }
+                        }));
                     window.load_document_id = 0;
                 }
+                window.dispatchEvent(new CustomEvent('listDocuments', {}));
             })
             .catch(
             function(resp: any)
@@ -1177,6 +1178,7 @@ function saveDocument(event: any)
                 {
                     alert(t2('Error saving the document'));
                 }
+                window.dispatchEvent(new CustomEvent('listDocuments', {}));
             });
     }
 }

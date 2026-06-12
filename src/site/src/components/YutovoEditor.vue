@@ -1070,6 +1070,85 @@ function saveDocument(event: any)
     const s = store;
     const r = router;
     const t2 = t;
+    if ((window as any).saveAsName)
+    {
+        const saveAsName = (window as any).saveAsName;
+        (window as any).saveAsName = '';
+        const oldDocumentId = Cookies.has('document_id') ? Cookies.get('document_id') : 0;
+        const editorHasText = (window as any).getText && (window as any).getText().length > 0;
+        let newDocumentId: any = 0;
+        api.post('/service/save-as-document',
+            {
+                document_id: oldDocumentId,
+                name: saveAsName
+            },
+            {
+                headers:
+                {
+                    'Content-Type': 'application/json',
+                    access_token: s.state.login.access_token
+                }
+            })
+            .then(
+            function(resp: any)
+            {
+                newDocumentId = resp.data.document_id;
+                //make the new document the current one in the session
+                return api.post('/service/load-document',
+                    {
+                        document_id: newDocumentId
+                    },
+                    {
+                        headers:
+                        {
+                            access_token: s.state.login.access_token
+                        }
+                    });
+            })
+            .then(
+            function(_resp: any)
+            {
+                //if the editor already had content when Save As was initiated, overwrite the copy with that content; otherwise keep the copied document content
+                if (!editorHasText)
+                    return { data: { document_id: newDocumentId } };
+                return api.post('/service/save-document', json,
+                    {
+                        headers:
+                        {
+                            access_token: s.state.login.access_token
+                        }
+                    });
+            })
+            .then(
+            function(saveResp: any)
+            {
+                const id = saveResp.data.document_id;
+                r.push({ path: '/document/' + id });
+                Cookies.set('document_id', id, { path: '/', expires: '1d' });
+                window.dispatchEvent(new CustomEvent('updateDocumentName',
+                    {
+                        detail:
+                        {
+                            document_id: id
+                        }
+                    }));
+                canvasFocus();
+                s.commit('editor/setDocumentChanged', false);
+                window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
+                window.dispatchEvent(new CustomEvent('listDocuments', {}));
+            })
+            .catch(
+            function(resp: any)
+            {
+                console.log(resp);
+                if (resp.response && resp.response.data)
+                    s.commit('editor/setLastError', resp.response.data.error);
+                alert(t2('Error saving the document'));
+                window.dispatchEvent(new CustomEvent('listDocuments', {}));
+            });
+        return;
+    }
+    
     if (r.currentRoute.value.path.substring(0, 8) == '/library')
     {
         const route = r.currentRoute.value;

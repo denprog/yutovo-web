@@ -249,6 +249,29 @@ test.describe('Documents', () =>
         expect(await utils.documentContains(page, '12345')).toBe(true);
     });
 
+    test('save a changed document with another name', async ({ page, context }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(2000);
+        await utils.writeText(page, '12345');
+        await utils.save(page);
+        await page.waitForTimeout(1000);
+        const c1 = await utils.getCookie(context, 'document_id');
+        await utils.writeText(page, '777');
+        await page.waitForTimeout(1000);
+        await utils.saveAs(page, 'new_name');
+        await page.waitForTimeout(1000);
+        const c2 = await utils.getCookie(context, 'document_id');
+        expect(c1.value).not.toBe(c2.value);
+        await utils.clickDocument(page, 'new_name');
+        await page.waitForTimeout(100);
+        expect(page.url()).toBe(address + '/document/' + c2.value)
+        expect(await utils.documentContains(page, '12345777')).toBe(true); //new document
+        await utils.clickDocument(page, 'document_1');
+        await page.waitForTimeout(100);
+        expect(await utils.documentContains(page, '12345')).toBe(true); //old document
+    });
+
     test('rename a document', async ({ page, context }) =>
     {
         await utils.login(page, 'test1', '11');

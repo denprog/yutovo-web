@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { Cookies } from 'quasar'
@@ -50,40 +49,13 @@ export default {
         const onSubmit = () =>
         {
             filenameRef.value.validate();
+            if (!filename.value || filename.value.length === 0)
+                return;
 
-            api.post('/service/save-as-document', 
-                {
-                    document_id: Cookies.get('document_id'),
-                    name: filename.value
-                },
-                {
-                    headers:
-                    {
-                        access_token: store.state.login.access_token
-                    }
-                }
-                ).then(
-                    function(response)
-                    {
-                        //load the new document
-                        window.dispatchEvent(new CustomEvent('loadDocument', 
-                            {
-                                detail:
-                                {
-                                    document_id: response.data.document_id,
-                                    last_document: Cookies.get('document_id')
-                                }
-                            }));
-                        saveAsDialog.value.hide();
-                        window.dispatchEvent(new CustomEvent('listDocuments', {}));
-                    }
-                ).catch(
-                    function(response)
-                    {
-                        console.log(response);
-                        store.commit('editor/setLastError', response.response.data.error);
-                    }
-                );
+            window.saveAsName = filename.value;
+            const documentId = Cookies.has('document_id') ? Cookies.get('document_id') : 0;
+            window.Module.cwrap('OnSave', 'void', ['int'])(documentId);
+            saveAsDialog.value.hide();
         };
 
         const onReset = () =>

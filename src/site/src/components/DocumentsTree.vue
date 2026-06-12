@@ -121,6 +121,8 @@ export default
 
         const onDocumentSelected = (target) =>
         {
+            if (target == Cookies.get('document_id') && window.Module && !window.Module.cwrap('IsEmpty', 'bool', [])())
+                return;
             window.dispatchEvent(new CustomEvent('clearLibraryDocumentSelection', {}));
             window.dispatchEvent(new CustomEvent('loadDocument', 
                 {

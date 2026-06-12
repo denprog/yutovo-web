@@ -1026,6 +1026,7 @@ function newDocument(event: any)
                             }
                         }));
                     store.commit('editor/setDocumentChanged', false);
+                    window.dispatchEvent(new CustomEvent('listDocuments', {}))
                 })
                 .catch(
                 function(resp: any)

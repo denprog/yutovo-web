@@ -17,7 +17,6 @@ const actions: ActionTree<LoginStateInterface, StateInterface> =
         if (access_token == '')
             return;
 
-        let exp: number;
         let decoded : any;
         try
         {

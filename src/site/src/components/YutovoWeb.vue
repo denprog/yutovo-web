@@ -449,6 +449,7 @@ export default defineComponent(
         window.addEventListener('onCopy', this.onCopy, false)
         window.addEventListener('onCut', this.onCut, false)
         window.addEventListener('onPaste', this.onPaste, false)
+        window.addEventListener('resize', this.onWindowResize)
     },
 
     unmounted()
@@ -458,12 +459,14 @@ export default defineComponent(
         window.removeEventListener('onCopy', this.onCopy)
         window.removeEventListener('onCut', this.onCut)
         window.removeEventListener('onPaste', this.onPaste)
+        window.removeEventListener('resize', this.onWindowResize)
     },
 
     methods:
     {
         onEditorResize()
         {
+            const MIN_EDITOR_HEIGHT = 200
             const scroll = document.getElementById('scroll-container')
             if (scroll)
             {
@@ -474,16 +477,22 @@ export default defineComponent(
             const editor = document.getElementById('editor')
             if (editor)
             {
-                const standard_toolbar = document.getElementById('standard-toolbar')
-                const algebra_toolbar = document.getElementById('algebra-toolbar')
-                const header = document.getElementById('header')
                 const footer = document.getElementById('footer')
-                editor.style.height = 'calc(' + window.innerHeight + 'px - ' +
-                    standard_toolbar.clientHeight.toString() + 'px - ' +
-                    algebra_toolbar.clientHeight.toString() + 'px - ' +
-                    header.clientHeight.toString() + 'px - ' +
-                    footer.clientHeight.toString() + 'px)'
+                const editorRect = editor.getBoundingClientRect()
+                let availableHeight = window.innerHeight - editorRect.top
+                if (footer)
+                {
+                    const footerRect = footer.getBoundingClientRect()
+                    availableHeight = footerRect.top - editorRect.top
+                }
+                editor.style.height = Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT) + 'px'
             }
+        },
+
+        onWindowResize(event)
+        {
+            if (event.isTrusted)
+                this.onEditorResize()
         },
 
         onFileSelected()

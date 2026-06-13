@@ -341,7 +341,15 @@ function canvasFocus()
 {
     const c = getCanvas();
     if (c)
-        c.focus();
+        c.focus({ preventScroll: true });
+}
+
+const MIN_EDITOR_HEIGHT = 200;
+
+function onWindowResize(event: Event)
+{
+    if (event.isTrusted)
+        onResize();
 }
 
 function onResize()
@@ -357,18 +365,15 @@ function onResize()
     const editor = document.getElementById('editor');
     if (editor)
     {
-        const standard_toolbar = document.getElementById('standard-toolbar');
-        const algebra_toolbar = document.getElementById('algebra-toolbar');
-        const header = document.getElementById('header');
         const footer = document.getElementById('footer');
-        if (standard_toolbar && algebra_toolbar && header && footer)
+        const editorRect = editor.getBoundingClientRect();
+        let availableHeight = window.innerHeight - editorRect.top;
+        if (footer)
         {
-            editor.style.height = 'calc(' + window.innerHeight + 'px - ' +
-                standard_toolbar.clientHeight.toString() + 'px - ' +
-                algebra_toolbar.clientHeight.toString() + 'px - ' +
-                header.clientHeight.toString() + 'px - ' +
-                footer.clientHeight.toString() + 'px)';
+            const footerRect = footer.getBoundingClientRect();
+            availableHeight = footerRect.top - editorRect.top;
         }
+        editor.style.height = Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT) + 'px';
     }
 }
 
@@ -1961,11 +1966,13 @@ onMounted(function()
     s2.type = 'text/javascript';
     document.body.appendChild(s2);
     addListeners();
+    window.addEventListener('resize', onWindowResize);
     setTimeout(onResize, 100);
 });
 
 onBeforeUnmount(function()
 {
+    window.removeEventListener('resize', onWindowResize);
     removeListeners();
     if (handlePaste)
         document.removeEventListener('paste', handlePaste);

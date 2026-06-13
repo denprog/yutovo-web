@@ -21,6 +21,12 @@
       await conn.end();
   ```
 
+## Branch Rules
+
+- Do not switch git branches yourself.
+- Leave uncommitted changes in the current branch; the user will handle commits and branch switching.
+- If a commit is required, ask the user which branch to use.
+
 ## Test Environment
 
 - The frontend must be built with `production: false` in `src/site/quasar.config.js` so that captcha fields are hidden and login/register flows work without manual captcha input.

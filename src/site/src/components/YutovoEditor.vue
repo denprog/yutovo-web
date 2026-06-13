@@ -977,10 +977,11 @@ function newDocument(event: any)
 {
     console.log('newDocument');
     window.newDocument = true;
-    checkDocumentChanged().then(function(ok)
+
+    const checkChanged = !event.detail || event.detail.check_changed !== false;
+
+    const proceed = function()
     {
-        if (!ok)
-            return;
         window.newDocument = false;
         const langToInt = function(l: string)
         {
@@ -995,11 +996,11 @@ function newDocument(event: any)
             return 0;
         };
         api.post('/service/new-document',
-            event.detail == null ? 
+            event.detail == null ?
                 {
                     language: langToInt(store.state.editor.language)
                 }
-                : 
+                :
                 {
                     json: event.detail.json,
                     name: event.detail.name
@@ -1023,14 +1024,40 @@ function newDocument(event: any)
                             }
                         }));
                     store.commit('editor/setDocumentChanged', false);
-                    window.dispatchEvent(new CustomEvent('listDocuments', {}))
+                    window.Module.cwrap('SetChanged', 'void', ['bool'])(false);
+                    window.dispatchEvent(new CustomEvent('listDocuments', {}));
+
+                    if (event.detail && event.detail.load_document_id)
+                    {
+                        window.dispatchEvent(new CustomEvent('loadDocument',
+                            {
+                                detail:
+                                {
+                                    document_id: event.detail.load_document_id
+                                }
+                            }));
+                    }
                 })
-                .catch(
+            .catch(
                 function(resp: any)
                 {
                     console.log(resp);
                 });
-    });
+    };
+
+    if (checkChanged)
+    {
+        checkDocumentChanged().then(function(ok)
+        {
+            if (!ok)
+                return;
+            proceed();
+        });
+    }
+    else
+    {
+        proceed();
+    }
 }
 
 function saveDocument(event: any)
@@ -1247,7 +1274,9 @@ function saveDocument(event: any)
                         {
                             detail:
                             {
-                                json: json
+                                json: json,
+                                check_changed: false,
+                                load_document_id: window.load_document_id
                             }
                         }));
                 }

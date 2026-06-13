@@ -29,10 +29,22 @@ async function login(page, username, password)
 
 async function logout(page)
 {
-    await page.locator('#logout').scrollIntoViewIfNeeded();
-    await jsClick(page, '#logout');
-    await page.waitForTimeout(1000);
-    await deleteCookies(page.context(), ['session_id', 'JSESSIONID']);
+    try
+    {
+        await page.locator('#logout').scrollIntoViewIfNeeded({ timeout: 3000 });
+        await jsClick(page, '#logout');
+        await page.waitForTimeout(1000);
+    }
+    catch
+    {
+        // already logged out or button not available
+    }
+    await page.evaluate(() =>
+    {
+        localStorage.clear();
+        sessionStorage.clear();
+    });
+    await page.context().clearCookies();
 }
 
 async function newDoc(page)
@@ -97,16 +109,21 @@ async function clickCategory(page, name)
 
 async function clickLibrary(page, category1, category2, name)
 {
-    await page.locator(`xpath=//*[contains(text(), '${category1}')]`).first().evaluate((el) => el.click());
+    await page.locator('.menu-bar .menu-root', { hasText: category1 }).first().evaluate((el) => el.click());
     await page.waitForTimeout(1000);
-    await page.locator(`xpath=//*[contains(text(), '${category2}')]`).first().evaluate((el) => el.click());
+    await page.locator('.dropdown .dropdown-item', { hasText: category2 }).first().evaluate((el) => el.click());
     await page.waitForTimeout(1000);
-    await page.locator(`xpath=//*[contains(text(), '${name}')]`).first().evaluate((el) => el.click());
+    await page.locator('.submenu .dropdown-item', { hasText: name }).first().evaluate((el) => el.click());
 }
 
 async function clickDocument(page, text)
 {
     await page.locator(`xpath=//span[contains(@class, 'documents-item') and contains(., '${text}')]`).first().click();
+}
+
+async function documentExists(page, text)
+{
+    return await page.locator(`xpath=//span[contains(@class, 'documents-item') and contains(., '${text}')]`).count() > 0;
 }
 
 async function loginCaption(page)
@@ -161,6 +178,18 @@ async function setLanguage(page, language)
 async function getLanguage(page)
 {
     return await page.locator('#language').textContent({ timeout: 2000 });
+}
+
+async function clickConfirmYes(page)
+{
+    const xpath = "//div[contains(@class, 'q-dialog-plugin')]//button[contains(., 'Yes')]";
+    await page.locator(`xpath=${xpath}`).first().click({ timeout: 5000 });
+}
+
+async function clickConfirmNo(page)
+{
+    const xpath = "//div[contains(@class, 'q-dialog-plugin')]//button[contains(., 'No')]";
+    await page.locator(`xpath=${xpath}`).first().click({ timeout: 5000 });
 }
 
 async function clickOk(page, id)
@@ -327,6 +356,12 @@ async function documentContains(page, str)
     return String(t).includes(str);
 }
 
+async function documentNotEmpty(page)
+{
+    const t = await page.evaluate(() => window.getText());
+    return String(t).length > 0;
+}
+
 async function getCookie(context, name)
 {
     const cookies = await context.cookies();
@@ -360,6 +395,7 @@ module.exports =
     clickCategory,
     clickLibrary,
     clickDocument,
+    documentExists,
     loginCaption,
     writeText,
     insertCode,
@@ -368,6 +404,8 @@ module.exports =
     setLanguage,
     getLanguage,
     clickOk,
+    clickConfirmYes,
+    clickConfirmNo,
     setSettingsLanguage,
     saveDialogClick,
     closeDialogIfPresent,
@@ -377,6 +415,7 @@ module.exports =
     fileContains,
     fileNotContains,
     documentContains,
+    documentNotEmpty,
     getCookie,
     deleteCookies,
 };

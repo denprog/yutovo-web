@@ -860,7 +860,8 @@ export default defineComponent(
                                         {
                                             detail:
                                             {
-                                                document_id: response.data[0].id
+                                                document_id: response.data[0].id,
+                                                check_changed: false
                                             }
                                         }))
                                     window.dispatchEvent(new CustomEvent('listDocuments', {}))
@@ -876,7 +877,8 @@ export default defineComponent(
                             {
                                 detail:
                                 {
-                                    document_id: _last_document_id
+                                    document_id: _last_document_id,
+                                    check_changed: false
                                 }
                             }))
                         }

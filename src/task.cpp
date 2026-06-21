@@ -1075,6 +1075,7 @@ void ReceiveTask::Execute()
         return;
     }
     message = std::string(str);
+    free(str);
     res = 1;
 }
 

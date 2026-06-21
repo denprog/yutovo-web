@@ -135,6 +135,9 @@ const onSubmit = () =>
     if (captchaRef.value)
         captchaRef.value.validate();
 
+    if (loginRef.value.hasError || passwordRef.value.hasError || (captchaRef.value && captchaRef.value.hasError))
+        return;
+
     const empty = window.Module.cwrap('IsEmpty', 'bool', [])();
 
     api.post('/auth/login',

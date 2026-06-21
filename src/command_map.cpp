@@ -85,6 +85,7 @@ void ShortcutsMap::Init(Document* _document)
     Add(KeySequence(), '-', "\\minus", std::function<void ()>(std::bind(&Document::InsertMinus, document, true, false)), CommandContext::Formula);
     Add(KeySequence(), '*', "\\times", std::function<void ()>(std::bind(&Document::InsertMultiply, document, true, false)), CommandContext::Formula);
     Add(KeySequence(), '/', "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document, true, false)), CommandContext::Formula);
+    Add(KeySequence(), '^', "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document, true, false)), CommandContext::Formula);
     Add(KeySequence(DOM_VK_P, true, true, false), "\\pow", std::function<void ()>(std::bind(&Document::InsertPower, document, true, false)), 
         CommandContext::Formula);
     Add(KeySequence(DOM_VK_S, true, true, false), "\\sub", std::function<void ()>(std::bind(&Document::InsertSubscript, document, true, false)), 

@@ -1174,6 +1174,26 @@ extern "C" EMSCRIPTEN_KEEPALIVE void InsertParseString(const char* str)
     document->InsertString(str, true, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertAnd()
+{
+    document->InsertAnd(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertOr()
+{
+    document->InsertOr(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertXor()
+{
+    document->InsertXor(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertNot()
+{
+    document->InsertNot(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanUndo()
 {
     return document->CanUndo();

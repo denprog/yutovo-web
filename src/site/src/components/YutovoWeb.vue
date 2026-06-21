@@ -1041,22 +1041,22 @@ export default defineComponent(
 
         onAnd()
         {
-            Module.cwrap('InsertString', 'void', ['string'])('&')
+            Module.cwrap('InsertAnd', 'void', [])()
         },
 
         onOr()
         {
-            Module.cwrap('InsertString', 'void', ['string'])('|')
+            Module.cwrap('InsertOr', 'void', [])()
         },
 
         onXor()
         {
-            Module.cwrap('InsertString', 'void', ['string'])('^')
+            Module.cwrap('InsertXor', 'void', [])()
         },
 
         onNot()
         {
-            Module.cwrap('InsertString', 'void', ['string'])('!')
+            Module.cwrap('InsertNot', 'void', [])()
         },
 
         onLettersHide()

@@ -1081,7 +1081,7 @@ void ReceiveTask::Execute()
 
 //ResetTask
 
-EM_JS(char*, ResetJs, (const int socket_id),
+EM_JS(void, ResetJs, (const int socket_id),
     {
         let socket = window.sockets.get(socket_id);
         if (typeof socket === "undefined" || socket.readyState !== socket.OPEN)

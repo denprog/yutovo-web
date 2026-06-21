@@ -21,6 +21,7 @@ struct Task
 {
     Task() = default;
     Task(WebWindow* _web_window, bool _draw_doc);
+    virtual ~Task() = default;
 
     virtual void Execute() = 0;
 

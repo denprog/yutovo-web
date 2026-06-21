@@ -865,10 +865,12 @@ void StoreRectTask::Execute()
         web_window->stored_texture = nullptr;
     }
 
-    if (store_rect.w <= 0 || store_rect.h <= 0)
+    if (store_rect.w <= 0 || store_rect.h <= 0 || !web_window->surface)
         return;
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(web_window->renderer, web_window->surface);
+    if (!texture)
+        return;
     Uint32 format;
     int access;
     int w, h;

@@ -6,12 +6,12 @@
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ $t('Registration') }}</div>
-                        <q-input square v-model="login" lazy-rules :rules="[required]" type="username" 
+                        <q-input ref="loginRef" square v-model="login" lazy-rules :rules="[required]" type="username" 
                             v-bind:label="$t('login')" />
                         <q-input square v-model="name" type="username" v-bind:label="$t('user name')" />
-                        <q-input square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" 
+                        <q-input ref="emailRef" square v-model="email" lazy-rules :rules="[required, isEmail]" type="email" 
                             v-bind:label="$t('email')" />
-                        <q-input square v-model="password" lazy-rules :rules="[required]" id="password" type="password" 
+                        <q-input ref="passwordRef" square v-model="password" lazy-rules :rules="[required]" id="password" type="password" 
                             v-bind:label="$t('password')" />
                         <q-input class="q-pb-lg" ref="repasswordRef" square v-model="repassword" lazy-rules :rules="[required, diffPassword]" 
                             id="repassword" type="password" v-bind:label="$t('repeate password')" />
@@ -82,6 +82,9 @@ export default
         const password = ref('');
         const repassword = ref(null);
         const repasswordRef = ref(null);
+        const loginRef = ref(null);
+        const emailRef = ref(null);
+        const passwordRef = ref(null);
         const registerDialog = ref(null);
         const captchaImageRef = ref(null);
         const captcha = ref('');
@@ -136,6 +139,22 @@ export default
             return (val === password.value || tr.t('Passwords are not identical'));
         };
 
+        const validateAllFields = () =>
+        {
+            const fieldRefs = [loginRef, emailRef, passwordRef, repasswordRef, captchaRef];
+            let valid = true;
+            for (const fieldRef of fieldRefs)
+            {
+                if (fieldRef.value)
+                {
+                    fieldRef.value.validate();
+                    if (fieldRef.value.hasError)
+                        valid = false;
+                }
+            }
+            return valid;
+        };
+
         const onRefreshCaptcha = () =>
         {
             store.commit('login/setLastError', '');
@@ -163,6 +182,8 @@ export default
         const onSendCode = () =>
         {
             store.commit('login/setLastError', '');
+            if (!validateAllFields())
+                return;
 
             const t = tr.t;
             const htmlMessage = verificationTemplate
@@ -205,7 +226,8 @@ export default
         const onSubmit = () =>
         {
             store.commit('login/setLastError', '');
-            repasswordRef.value.validate();
+            if (!validateAllFields())
+                return;
 
             api.post('/auth/register', 
                 {
@@ -305,6 +327,9 @@ export default
             password,
             repassword,
             repasswordRef,
+            loginRef,
+            emailRef,
+            passwordRef,
             captchaImageRef,
             captcha,
             captchaRef,

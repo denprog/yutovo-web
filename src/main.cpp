@@ -1815,7 +1815,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnConfig(const char* config, bool with_undo
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
 {
-    assert(translate_tasks.size() > 0);
+    if (translate_tasks.size() > 0)
+        return;
     document->InsertString(str, translate_tasks.front(), false);
     translate_tasks.pop();
 }

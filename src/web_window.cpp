@@ -195,6 +195,8 @@ int WebWindow::GetFontAscent(const StringFormatPtr format)
 
 Size WebWindow::GetImageSize(const std::vector<unsigned char>& picture)
 {
+    if (picture.empty())
+        return Size{};
     SDL_RWops* p = SDL_RWFromConstMem(&picture[0], picture.size());
     if (!p)
     {

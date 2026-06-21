@@ -783,6 +783,8 @@ DrawImageTask::DrawImageTask(const Rect& _rect, std::vector<unsigned char> _pict
 
 void DrawImageTask::Execute()
 {
+    if (picture.empty())
+        return;
     SDL_RWops* p = SDL_RWFromConstMem(&picture[0], picture.size());
     if (!p)
     {

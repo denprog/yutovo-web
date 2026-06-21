@@ -1369,8 +1369,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetResultType()
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
     if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (id.empty())
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);

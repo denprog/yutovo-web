@@ -1651,6 +1651,11 @@ function initModule()
     const q = $q;
 
     const Module = {
+        locateFile: function(path: string)
+        {
+            return '/' + path;
+        },
+
         canvas: (function()
         {
             const canvas = document.getElementById('canvas');
@@ -1958,11 +1963,11 @@ onMounted(function()
     window.socket_id = 1;
     initModule();
     const s1 = document.createElement('script');
-    s1.src = 'coi-serviceworker.js';
+    s1.src = '/coi-serviceworker.js';
     s1.type = 'text/javascript';
     document.body.appendChild(s1);
     const s2 = document.createElement('script');
-    s2.src = 'yutovo_web.js';
+    s2.src = '/yutovo_web.js';
     s2.type = 'text/javascript';
     document.body.appendChild(s2);
     addListeners();

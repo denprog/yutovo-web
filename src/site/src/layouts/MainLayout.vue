@@ -9,7 +9,7 @@
                         <q-toolbar-title>
                             <q-btn no-caps dense flat @click="clickCaption();">
                                 <q-avatar>
-                                    <img src="yutovo.png">
+                                    <img src="/yutovo.png">
                                 </q-avatar>
                             </q-btn>
                             <q-btn no-caps dense flat size="15pt" @click="clickCaption();">

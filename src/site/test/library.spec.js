@@ -249,6 +249,21 @@ test.describe('Library', () =>
         expect(await utils.documentNotEmpty(page)).toBe(true);
     });
 
+    test('open a Spanish library document by url and check content', async ({ page }) =>
+    {
+        const failed404 = [];
+        page.on('response', resp =>
+        {
+            if (resp.status() === 404)
+                failed404.push(resp.url());
+        });
+        await page.goto(address + '/library/es/Ayuda/Yutovo.yut');
+        await page.waitForTimeout(8000);
+        expect(page.url()).toBe(address + '/library/es/Ayuda/Yutovo.yut');
+        expect(await utils.documentContains(page, 'Yutovo es un sitio web y una aplicación')).toBe(true);
+        expect(failed404).toEqual([]);
+    });
+
     test('load a Russian library document by url after setting language', async ({ page }) =>
     {
         await utils.login(page, 'test1', '11');

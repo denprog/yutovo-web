@@ -378,6 +378,42 @@ test.describe('Documents', () =>
         expect(await utils.documentContains(page, '4.73')).toBe(true);
     });
 
+    test('syntax error for 234 & 456= in English', async ({ page }) =>
+    {
+        await utils.setLanguage(page, 'English');
+        await utils.insertCode(page);
+        await utils.writeText(page, '234 & 456=');
+        await page.waitForTimeout(3000);
+        expect(await utils.documentContains(page, 'Syntax error')).toBe(true);
+    });
+
+    test('syntax error for 234 & 456= in Russian', async ({ page }) =>
+    {
+        await utils.setLanguage(page, 'Русский');
+        await utils.insertCode(page);
+        await utils.writeText(page, '234 & 456=');
+        await page.waitForTimeout(3000);
+        expect(await utils.documentContains(page, 'Синтаксическая ошибка')).toBe(true);
+    });
+
+    test('syntax error for 234 & 456= in Spanish', async ({ page }) =>
+    {
+        await utils.setLanguage(page, 'Español');
+        await utils.insertCode(page);
+        await utils.writeText(page, '234 & 456=');
+        await page.waitForTimeout(3000);
+        expect(await utils.documentContains(page, 'Error de sintaxis')).toBe(true);
+    });
+
+    test('syntax error for 234 & 456= in Portuguese', async ({ page }) =>
+    {
+        await utils.setLanguage(page, 'Português brasileiro');
+        await utils.insertCode(page);
+        await utils.writeText(page, '234 & 456=');
+        await page.waitForTimeout(3000);
+        expect(await utils.documentContains(page, 'Erro de sintaxe')).toBe(true);
+    });
+
     test('add documents and remove them one by one', async ({ page, context }) =>
     {
         await utils.login(page, 'test1', '11');

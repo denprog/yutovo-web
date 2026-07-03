@@ -20,6 +20,26 @@ export default {
     'Spanish_male': 'Spanish',
     'Portuguese_male': 'Brazilian Portuguese',
 
+    'Send Feedback': 'Send Feedback',
+    'Your name': 'Your name',
+    'Email *': 'Email *',
+    'Topic *': 'Topic *',
+    'Message *': 'Message *',
+    'Bug report': 'Bug report',
+    'Feature request': 'Feature request',
+    'General feedback': 'General feedback',
+    'Other': 'Other',
+    'Attach file...': 'Attach file...',
+    'Attach current document': 'Attach current document',
+    'Characters: {current} / {max}': 'Characters: {current} / {max}',
+    'Send': 'Send',
+    'Cancel': 'Cancel',
+    'The field must be filled': 'The field must be filled',
+    'Please enter a valid email address': 'Please enter a valid email address',
+    'Message is too long': 'Message is too long',
+    'Failed to attach current document': 'Failed to attach current document',
+    'Failed to send feedback': 'Failed to send feedback',
+
     'NoMatchingNodes': 'No matches found',
 
     register_verification_email: {

@@ -1438,6 +1438,19 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
     return (char*)res_json.c_str();
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphImage()
+{
+    res_json = "";
+    EditorState s = document->GetEditorState();
+    ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
+    if (id.empty())
+        id = yutovo::GetParent(s.caret_state.id);
+    std::vector<unsigned char> png;
+    if (document->GetGraphImage(id, png))
+        res_json = "data:image/png;base64," + Base64Encode(png);
+    return (char*)res_json.c_str();
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetMargins()
 {
     TextFormat f;
@@ -1996,11 +2009,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
 }
 
 std::u32string document_text;
+std::string document_html;
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
 {
     document_text = document->ToText();
     return (char*)document_text.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetHtml()
+{
+    document_html = document->ToHtml();
+    return (char*)document_html.c_str();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void ListIdentifiers(int code_id)

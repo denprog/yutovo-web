@@ -104,6 +104,7 @@ export default {
     'Text background color': 'Color de fondo del texto',
     'Link': 'Enlace',
     'Graph format': 'Formato de gráfico',
+    'Copy image': 'Copiar imagen',
     'Plot format': 'Formato de gráfico',
 
     'Present as': 'Presentar como',

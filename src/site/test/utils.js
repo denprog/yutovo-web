@@ -142,6 +142,16 @@ async function insertCode(page)
     await page.locator('#insert-calculator-button').click({ timeout: 2000, force: true });
 }
 
+async function insertGraphLine(page)
+{
+    await page.locator('#graph-line-button').first().evaluate((el) => el.click());
+}
+
+async function copyGraphImage(page)
+{
+    await jsClick(page, '#copy-graph-image');
+}
+
 async function clickIdentifier(page, category)
 {
     const arr = category.split('/');
@@ -399,6 +409,8 @@ module.exports =
     loginCaption,
     writeText,
     insertCode,
+    insertGraphLine,
+    copyGraphImage,
     clickIdentifier,
     getDocumentName,
     setLanguage,

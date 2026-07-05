@@ -286,7 +286,7 @@
                 </q-btn-dropdown>
             </div>
             <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
+            <q-btn id="graph-line-button" size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
             </q-btn>
             <q-separator vertical/>

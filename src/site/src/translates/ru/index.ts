@@ -104,6 +104,7 @@ export default {
     'Text background color': 'Цвет фона текста',
     'Link': 'Ссылка',
     'Graph format': 'Формат графика',
+    'Copy image': 'Копировать изображение',
     'Plot format': 'Формат графика',
 
     'Present as': 'Представить как',

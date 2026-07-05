@@ -245,6 +245,10 @@
                     <q-item id="graph-format" clickable style="display:none;" @click="onGraphFormat()">
                         <q-item-section>{{ $t('Graph format') }}</q-item-section>
                     </q-item>
+
+                    <q-item id="copy-graph-image" clickable style="display:none;" @click="onCopyGraphImage()">
+                        <q-item-section>{{ $t('Copy image') }}</q-item-section>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -681,9 +685,13 @@ async function onShowContextMenu()
     const m_unit = document.getElementById('set-unit-menu');
     if (Module.cwrap('HasUnit', 'int', [])())
         m_unit!.style.display = '';
-    const m_graph = document.getElementById('graph-format');
+    const graph = document.getElementById('graph-format');
+    const copy_graph = document.getElementById('copy-graph-image');
     if (Module.cwrap('IsGraph', 'int', [])())
-        m_graph!.style.display = '';
+    {
+        graph!.style.display = '';
+        copy_graph!.style.display = '';
+    }
     if (contextMenuRef.value)
         contextMenuRef.value.updatePosition();
 }
@@ -905,6 +913,65 @@ function onGraphFormat()
             grid_width_prop: json.grid_width
         }
     });
+    canvasFocus();
+}
+
+async function onCopyGraphImage()
+{
+    if (contextMenuRef.value)
+        contextMenuRef.value.hide();
+
+    const dataUrl = UTF8ToString(Module.cwrap('GetGraphImage', 'number', [])());
+    if (!dataUrl)
+    {
+        canvasFocus();
+        return;
+    }
+
+    const image = new Image();
+    image.src = dataUrl;
+    await new Promise<void>((resolve) => { image.onload = () => resolve(); });
+
+    const canvas = getCanvas();
+    //convert backing-store pixels to CSS pixels so the copied image matches what the user sees on screen
+    const s_x = canvas ? canvas.clientWidth / canvas.width : 1.0;
+    const s_y = canvas ? canvas.clientHeight / canvas.height : 1.0;
+    const w = Math.max(1, Math.round(image.width * s_x));
+    const h = Math.max(1, Math.round(image.height * s_y));
+
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const context = c.getContext('2d');
+    if (!context)
+    {
+        canvasFocus();
+        return;
+    }
+    context.drawImage(image, 0, 0, w, h);
+
+    const blob: Blob = await new Promise(
+        (resolve, reject) =>
+        {
+            c.toBlob(
+                (b) =>
+                {
+                    if (b)
+                        resolve(b);
+                    else
+                        reject(new Error('Failed to create blob'));
+                }, 
+                'image/png');
+        });
+
+    try
+    {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    }
+    catch (err)
+    {
+        console.error('Failed to copy graph image', err);
+    }
     canvasFocus();
 }
 
@@ -1900,6 +1967,12 @@ function initModule()
         function()
         {
             return UTF32ToString(Module.cwrap('GetText', 'number', [])());
+        };
+
+    window.getHtml = 
+        function()
+        {
+            return UTF8ToString(Module.cwrap('GetHtml', 'number', [])());
         };
 }
 

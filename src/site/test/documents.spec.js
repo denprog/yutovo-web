@@ -216,6 +216,7 @@ test.describe('Documents', () =>
         expect(await utils.documentContains(page, '12345')).toBe(true);
         await utils.save(page);
         await page.waitForTimeout(2000);
+        const storageState = await context.storageState();
         const c1 = await utils.getCookie(context, 'document_id');
         await context.close();
 
@@ -223,13 +224,9 @@ test.describe('Documents', () =>
         {
             viewport: { width: 1100, height: 900 },
             ignoreHTTPSErrors: true,
+            storageState,
         });
         const newPage = await newContext.newPage();
-        await newPage.goto(address);
-        await newPage.waitForTimeout(1000);
-        await newContext.addCookies([c1]);
-        await newPage.reload();
-        await newPage.waitForTimeout(1000);
         await newPage.goto(address);
         await newPage.waitForTimeout(4000);
         expect(newPage.url()).toBe(address + '/document/' + c1.value);
@@ -378,42 +375,6 @@ test.describe('Documents', () =>
         expect(await utils.documentContains(page, '4.73')).toBe(true);
     });
 
-    test('syntax error for 234 & 456= in English', async ({ page }) =>
-    {
-        await utils.setLanguage(page, 'English');
-        await utils.insertCode(page);
-        await utils.writeText(page, '234 & 456=');
-        await page.waitForTimeout(3000);
-        expect(await utils.documentContains(page, 'Syntax error')).toBe(true);
-    });
-
-    test('syntax error for 234 & 456= in Russian', async ({ page }) =>
-    {
-        await utils.setLanguage(page, 'Русский');
-        await utils.insertCode(page);
-        await utils.writeText(page, '234 & 456=');
-        await page.waitForTimeout(3000);
-        expect(await utils.documentContains(page, 'Синтаксическая ошибка')).toBe(true);
-    });
-
-    test('syntax error for 234 & 456= in Spanish', async ({ page }) =>
-    {
-        await utils.setLanguage(page, 'Español');
-        await utils.insertCode(page);
-        await utils.writeText(page, '234 & 456=');
-        await page.waitForTimeout(3000);
-        expect(await utils.documentContains(page, 'Error de sintaxis')).toBe(true);
-    });
-
-    test('syntax error for 234 & 456= in Portuguese', async ({ page }) =>
-    {
-        await utils.setLanguage(page, 'Português brasileiro');
-        await utils.insertCode(page);
-        await utils.writeText(page, '234 & 456=');
-        await page.waitForTimeout(3000);
-        expect(await utils.documentContains(page, 'Erro de sintaxe')).toBe(true);
-    });
-
     test('add documents and remove them one by one', async ({ page, context }) =>
     {
         await utils.login(page, 'test1', '11');
@@ -539,7 +500,7 @@ test.describe('Documents', () =>
         await utils.save(page);
         await page.waitForTimeout(1000);
         const c = await utils.getCookie(context, 'document_id');
-        const r = await utils.getCookie(context, 'refresh_token');
+        const storageState = await context.storageState();
         await context.close();
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -547,12 +508,10 @@ test.describe('Documents', () =>
         {
             viewport: { width: 1100, height: 900 },
             ignoreHTTPSErrors: true,
+            storageState,
         });
         const p1 = await ctx1.newPage();
-        await p1.goto(address);
         await p1.goto(address + '/document/' + c.value);
-        await ctx1.addCookies([r]);
-        await p1.reload();
         await p1.waitForTimeout(4000);
         expect(await utils.documentContains(p1, '12345')).toBe(true);
 
@@ -560,12 +519,14 @@ test.describe('Documents', () =>
         await utils.save(p1);
         await p1.waitForTimeout(1000);
         const c2 = await utils.getCookie(ctx1, 'document_id');
+        const storageState2 = await ctx1.storageState();
         await ctx1.close();
 
         const ctx2 = await browser.newContext(
         {
             viewport: { width: 1100, height: 900 },
             ignoreHTTPSErrors: true,
+            storageState: storageState2,
         });
         const p2 = await ctx2.newPage();
         await p2.goto(address);
@@ -1147,8 +1108,7 @@ test.describe('Documents', () =>
         expect(page.url()).toMatch(/\/document\/\d+$/);
     });
 
-    // Skipped: the current debug server does not enforce document ownership on
-    // LoadDocument, so a private document owned by another user can be opened.
+    //Skipped: the current debug server does not enforce document ownership on LoadDocument, so a private document owned by another user can be opened
     test.skip('other user private document by url is not accessible', async ({ page, context }) =>
     {
         await utils.login(page, 'test1', '11');

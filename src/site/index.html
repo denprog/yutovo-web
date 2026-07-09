@@ -12,6 +12,25 @@
         <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
         <link rel="icon" type="image/ico" href="favicon.ico">
+        <script>
+            window.Module = window.Module || {};
+            window.Module.onAbort = function(what) {
+                console.error('WASM ABORT:', what);
+                if (typeof Error !== 'undefined') {
+                    console.error(new Error().stack);
+                }
+            };
+            window.Module.onRuntimeInitialized = function() {
+                console.log('WASM RUNTIME INITIALIZED');
+            };
+            window.onerror = function(msg, url, line, col, err) {
+                console.error('WINDOW ERROR:', msg, url, line, col, err && err.stack);
+                return false;
+            };
+            window.onunhandledrejection = function(e) {
+                console.error('UNHANDLED REJECTION:', e.reason, e.reason && e.reason.stack);
+            };
+        </script>
     </head>
     <body>
         <!-- quasar:entry-point -->

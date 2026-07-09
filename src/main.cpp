@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <thread>
 #include <emscripten.h>
 #include <emscripten/val.h>
 #include <emscripten/html5.h>
@@ -15,6 +16,7 @@
 #include "web_pdf_window.h"
 #include "command_map.h"
 #include "web_utils.h"
+#include "giac_warmup.h"
 
 using emscripten::val;
 using namespace yutovo;
@@ -68,6 +70,8 @@ bool prompt_visible = false;
 
 SDL_Renderer* renderer = nullptr;
 SDL_Surface* surface = nullptr;
+SDL_Surface* render_surface = nullptr;
+SDL_Window* sdl_window = nullptr;
 
 std::queue<yutovo::ElementId> translate_tasks;
 
@@ -446,6 +450,15 @@ void MainLoop(void* arg)
     {
         //document was updated
         window->Render(renderer, surface);
+        if (sdl_window && render_surface)
+        {
+            SDL_Surface* window_surface = SDL_GetWindowSurface(sdl_window);
+            if (window_surface)
+            {
+                SDL_BlitSurface(render_surface, nullptr, window_surface, nullptr);
+                SDL_UpdateWindowSurface(sdl_window);
+            }
+        }
 
         //update scrollbars
         yutovo::Rect r = window->GetViewPort(0);
@@ -2174,7 +2187,9 @@ void CreateDocument()
     if (!load_json.empty())
         document->LoadJson(load_json, load_document_id);
     else
+    {
         document->InsertCode(false, false);
+    }
     resize = true;
 }
 
@@ -2182,7 +2197,9 @@ int main(int argc, char* argv[])
 {
     printf("Start\n");
 
-    SDL_Init(SDL_INIT_EVERYTHING);
+    yutovo_web::WarmupGiac();
+
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
 
     val doc = val::global("document");
     val canvas = doc.call<val>("getElementById", std::string("canvas"));
@@ -2198,12 +2215,6 @@ int main(int argc, char* argv[])
         printf("SDL_CreateWindow error: %s\n", TTF_GetError());
         return 0;
     }
-    renderer = SDL_CreateRenderer(w, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer)
-    {
-        printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
-        return 0;
-    }
     emscripten_get_canvas_size(&width, &height, &f);
     surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
     if (!surface)
@@ -2211,6 +2222,19 @@ int main(int argc, char* argv[])
         printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
         return 0;
     }
+    render_surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    if (!render_surface)
+    {
+        printf("SDL_CreateRGBSurface error (render): %s\n", TTF_GetError());
+        return 0;
+    }
+    renderer = SDL_CreateSoftwareRenderer(render_surface);
+    if (!renderer)
+    {
+        printf("SDL_CreateSoftwareRenderer error: %s\n", SDL_GetError());
+        return 0;
+    }
+    sdl_window = w;
 
     canvas.call<void>("focus");
 

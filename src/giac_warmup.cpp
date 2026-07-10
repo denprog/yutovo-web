@@ -1,4 +1,19 @@
 #include <giac.h>
+#include <signal.h>
+
+// Giac calls gettext for error messages; provide a no-op stub since we don't
+// link libintl in the wasm build.
+const char * gettext(const char * s)
+{
+    return s;
+}
+
+// Emscripten's libc does not provide sigsuspend, which giac uses for its
+// signal-based child-process synchronization in global.cc.
+extern "C" int sigsuspend(const sigset_t *mask)
+{
+    return 0;
+}
 
 namespace yutovo_web {
 

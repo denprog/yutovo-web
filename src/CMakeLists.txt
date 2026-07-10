@@ -89,12 +89,10 @@ target_link_options(${PROJECT_NAME} PUBLIC "-fexceptions -sTEXTDECODER=0")
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     ${INSTALL_PATH}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../third-party/giac-master/src/giac/headers
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${INSTALL_PATH}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../third-party/giac-master/src/giac/headers
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

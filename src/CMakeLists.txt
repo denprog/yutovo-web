@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
     fonts.cpp
     task.cpp
     giac_warmup.cpp
+    gettext_stub.cpp
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -85,6 +86,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sASSERTIONS=2")
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind")
 
 target_link_options(${PROJECT_NAME} PUBLIC "-fexceptions -sTEXTDECODER=0")
+target_link_options(${PROJECT_NAME} PUBLIC "-Wno-pthreads-mem-growth")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

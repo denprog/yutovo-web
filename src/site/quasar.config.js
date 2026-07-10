@@ -59,6 +59,10 @@ module.exports = configure(function (/* ctx */) {
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
+
+      extendViteConf(viteConf) {
+        viteConf.build.chunkSizeWarningLimit = 1000;
+      },
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,

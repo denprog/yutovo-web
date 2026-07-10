@@ -128,7 +128,7 @@ export default
 
         const isCustom = computed(() => format.value === 'Custom');
 
-        let spinTimer: any = null;
+        let spinTimer: ReturnType<typeof setTimeout> | null = null;
         let spinField: string | null = null;
         let spinDelta = 0;
 

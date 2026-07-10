@@ -4,11 +4,11 @@ import { LoginStateInterface, Payload } from './state';
 import jwt_decode from 'jwt-decode';
 import { api } from 'boot/boot'
 
-let timer: any;
+let timer: ReturnType<typeof setTimeout> | undefined;
 
 const actions: ActionTree<LoginStateInterface, StateInterface> =
 {
-    updateAccessToken({commit, dispatch}, access_token)
+    updateAccessToken({commit, dispatch}, access_token: string)
     {
         if (typeof timer !== 'undefined')
             clearTimeout(timer);
@@ -17,7 +17,7 @@ const actions: ActionTree<LoginStateInterface, StateInterface> =
         if (access_token == '')
             return;
 
-        let decoded : any;
+        let decoded: Payload;
         try
         {
             decoded = jwt_decode<Payload>(access_token);

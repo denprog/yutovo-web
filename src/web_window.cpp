@@ -44,7 +44,7 @@ WebWindow::~WebWindow()
 void WebWindow::Init(Document* _document)
 {
     Reset();
-    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
     int r = TTF_Init();
     if (r < 0)
     {

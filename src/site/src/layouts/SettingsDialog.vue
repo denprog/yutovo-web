@@ -290,7 +290,8 @@ export default
     display: grid;
     grid-template-columns: auto auto;
 }
+
 .grid-item {
-    height: //Whatever you want them to be
+    height: auto;
 }
 </style>

@@ -36,6 +36,8 @@ add_executable(${PROJECT_NAME}
     command_map.cpp
     fonts.cpp
     task.cpp
+    giac_warmup.cpp
+    gettext_stub.cpp
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -56,29 +58,35 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_LIBPNG=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s SDL2_IMAGE_FORMATS=\"[png]\"")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s SAFE_HEAP")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ASSERTIONS=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=10")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=16 -sPTHREAD_POOL_SIZE_STRICT=0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --preload-file ./fonts")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexperimental-library")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_TABLE_GROWTH=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s TEXTDECODER=1")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=null -fsanitize=undefined")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s STACK_SIZE=10MB")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s INITIAL_MEMORY=2048MB")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s TOTAL_MEMORY=4096MB")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s STACK_SIZE=16MB")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s DEFAULT_PTHREAD_STACK_SIZE=16MB")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s INITIAL_MEMORY=1024MB")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s MAXIMUM_MEMORY=2048MB")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s MODULARIZE=1")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s EXPORT_NAME='yutovo_web'")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s NO_DISABLE_EXCEPTION_CATCHING")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s DISABLE_EXCEPTION_CATCHING=0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s EXPORTED_RUNTIME_METHODS=\"['cwrap','ccall','HEAPU8']\"")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sASSERTIONS")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s DISABLE_EXCEPTION_CATCHING=0")
+# Debug/diagnostic flags (enable while diagnosing runtime issues)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sASSERTIONS=2")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sSTACK_OVERFLOW_CHECK=2")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sSAFE_HEAP=1")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s LLD_REPORT_UNDEFINED")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s MALLOC=emmalloc")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind")
 
 target_link_options(${PROJECT_NAME} PUBLIC "-fexceptions -sTEXTDECODER=0")
+target_link_options(${PROJECT_NAME} PUBLIC "-Wno-pthreads-mem-growth")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -100,19 +108,24 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	POSITION_INDEPENDENT_CODE ON
 )
 
+add_library(giac_imported STATIC IMPORTED)
+set_target_properties(giac_imported PROPERTIES
+    IMPORTED_LOCATION ${INSTALL_PATH}/wasm/libgiac.a
+    INTERFACE_INCLUDE_DIRECTORIES ${INSTALL_PATH}/include
+)
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
     stdc++
     ${INSTALL_PATH}/wasm/libmpfr.a
     ${INSTALL_PATH}/wasm/libgmp.a
     yutovo-editor
     yutovo-solver
+    yutovo-calculator
     yutovo-logger
     pthread
     ${INSTALL_PATH}/wasm/libmgl.a
     ${INSTALL_PATH}/wasm/libhpdf.a
-    ${INSTALL_PATH}/wasm/libsymengine.a
-    ${INSTALL_PATH}/wasm/libteuchos.a
-    ${INSTALL_PATH}/wasm/libmpc.a
+    ${INSTALL_PATH}/wasm/libgiac.a
 )
 
 install(

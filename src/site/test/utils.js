@@ -389,6 +389,17 @@ async function deleteCookies(context, names)
     }
 }
 
+async function cloneBrowserContext(browser, context, options = {})
+{
+    const storageState = await context.storageState();
+    return await browser.newContext({
+        viewport: { width: 1100, height: 900 },
+        ignoreHTTPSErrors: true,
+        storageState,
+        ...options,
+    });
+}
+
 module.exports =
 {
     registerUser,
@@ -430,4 +441,5 @@ module.exports =
     documentNotEmpty,
     getCookie,
     deleteCookies,
+    cloneBrowserContext,
 };

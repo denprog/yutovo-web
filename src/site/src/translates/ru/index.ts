@@ -39,7 +39,6 @@ export default {
     'Characters: {current} / {max}': 'Символов: {current} / {max}',
     'Send': 'Отправить',
     'Cancel': 'Отмена',
-    'The field must be filled': 'Поле должно быть заполнено',
     'Please enter a valid email address': 'Пожалуйста, введите корректный адрес электронной почты',
     'Message is too long': 'Сообщение слишком длинное',
     'Failed to attach current document': 'Не удалось прикрепить текущий документ',
@@ -200,7 +199,6 @@ export default {
     'password': 'пароль',
     'Type the symbols above:': 'Введите символы сверху',
     'OK': 'Принять',
-    'Cancel': 'Отмена',
 
     'Yes': 'Да',
     'No': 'Нет',

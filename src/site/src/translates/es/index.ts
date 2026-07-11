@@ -39,7 +39,6 @@ export default {
     'Characters: {current} / {max}': 'Caracteres: {current} / {max}',
     'Send': 'Enviar',
     'Cancel': 'Cancelar',
-    'The field must be filled': 'El campo debe estar completo',
     'Please enter a valid email address': 'Por favor, introduzca una dirección de correo electrónico válida',
     'Message is too long': 'El mensaje es demasiado largo',
     'Failed to attach current document': 'No se pudo adjuntar el documento actual',
@@ -200,7 +199,6 @@ export default {
     'password': 'contraseña',
     'Type the symbols above:': 'Escriba los símbolos de arriba:',
     'OK': 'Aceptar',
-    'Cancel': 'Cancelar',
 
     'Yes': 'Sí',
     'No': 'No',

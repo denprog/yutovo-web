@@ -52,6 +52,29 @@ import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+interface Attachment
+{
+    filename: string;
+    content_type: string;
+    data: string;
+}
+
+interface FeedbackPayload
+{
+    name: string;
+    email: string;
+    topic: string;
+    message: string;
+    version: string;
+    platform: string;
+    attachments?: Attachment[];
+}
+
+interface EditorModule
+{
+    cwrap: (name: string, returnType: string, argTypes: string[]) => (...args: number[]) => void;
+}
+
 export default
 {
     name: 'FeedbackDialog',
@@ -134,14 +157,14 @@ export default
         {
             return new Promise((resolve, reject) =>
             {
-                const module = (window as any).Module;
+                const module = (window as unknown as { Module?: EditorModule }).Module;
                 if (!module || !module.cwrap)
                 {
                     reject(new Error('Editor not available'));
                     return;
                 }
 
-                const onSave = (event: any) =>
+                const onSave = (event: CustomEvent) =>
                 {
                     window.removeEventListener('saveDocument', onSave);
                     const json = event.detail.json;
@@ -174,9 +197,9 @@ export default
             });
         };
 
-        const buildPayload = (documentAttachment: any) =>
+        const buildPayload = (documentAttachment: Attachment | undefined) =>
         {
-            const payload: any =
+            const payload: FeedbackPayload =
             {
                 name: name.value,
                 email: email.value,
@@ -195,7 +218,7 @@ export default
             return payload;
         };
 
-        const sendFeedback = (documentAttachment: any) =>
+        const sendFeedback = (documentAttachment: Attachment | undefined) =>
         {
             api.post('/service/send-feedback', buildPayload(documentAttachment))
                 .then(
@@ -229,7 +252,7 @@ export default
             if (attachCurrentDocument.value)
             {
                 getCurrentDocument()
-                    .then((documentAttachment: any) =>
+                    .then((documentAttachment: Attachment) =>
                     {
                         sendFeedback(documentAttachment);
                     })

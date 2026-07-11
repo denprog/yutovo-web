@@ -526,12 +526,9 @@ export default
     cursor: ew-resize;
 }
 
-.language-select
+.language-select .q-field__native
 {
-    .q-field__native
-    {
-        color: white;
-    }
+    color: white;
 }
 
 .q-btn

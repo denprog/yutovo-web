@@ -467,12 +467,6 @@ export default defineComponent(
         onEditorResize()
         {
             const MIN_EDITOR_HEIGHT = 200
-            const scroll = document.getElementById('scroll-container')
-            if (scroll)
-            {
-                window.dispatchEvent(new Event('resize'))
-                ;canvas.focus()
-            }
 
             const editor = document.getElementById('editor')
             if (editor)
@@ -486,6 +480,13 @@ export default defineComponent(
                     availableHeight = footerRect.top - editorRect.top
                 }
                 editor.style.height = Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT) + 'px'
+            }
+
+            const scroll = document.getElementById('scroll-container')
+            if (scroll)
+            {
+                window.dispatchEvent(new Event('resize'))
+                ;canvas.focus()
             }
         },
 

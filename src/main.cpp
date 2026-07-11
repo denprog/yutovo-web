@@ -78,6 +78,7 @@ std::queue<yutovo::ElementId> translate_tasks;
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCopy();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanPaste();
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanCut();
+extern "C" EMSCRIPTEN_KEEPALIVE void OnCanvasResize();
 
 void FillUnits(const std::string system);
 ElementId GetRealResultId();
@@ -485,9 +486,7 @@ void MainLoop(void* arg)
             document->SetConfig(user_settings, false);
         if (resize)
         {
-            double w = 0, h = 0;
-            emscripten_get_element_css_size("#canvas", &w, &h);
-            document->Resize((int)w, (int)h);
+            OnCanvasResize();
             resize = false;
         }
 
@@ -869,15 +868,28 @@ EM_BOOL OnMouseWheel(int event_type, const EmscriptenWheelEvent* wheel_event, vo
     return false;
 }
 
-EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_data)
+EM_JS(void, ScheduleCanvasResize, (),
 {
-    EventArgs* args = (EventArgs*)user_data;
+    if (window.__yutovo_resize_pending)
+        return;
+    window.__yutovo_resize_pending = true;
+    requestAnimationFrame(
+        function()
+        {
+            window.__yutovo_resize_pending = false;
+            Module.ccall('OnCanvasResize', null, [], []);
+        });
+});
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnCanvasResize()
+{
     double css_w = 0, css_h = 0;
     emscripten_get_element_css_size("#canvas", &css_w, &css_h);
     int width = (int)css_w;
     int height = (int)css_h;
     emscripten_set_canvas_element_size("#canvas", width, height);
+    if (sdl_window)
+        SDL_SetWindowSize(sdl_window, width, height);
 
     if (surface)
         SDL_FreeSurface(surface);
@@ -885,11 +897,37 @@ EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_d
     if (!surface)
     {
         printf("SDL_CreateRGBSurface error: %s\n", TTF_GetError());
-        return 0;
+        return;
     }
 
-    args->document->Resize(width, height);
-    args->document->Redraw();
+    if (render_surface)
+        SDL_FreeSurface(render_surface);
+    render_surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    if (!render_surface)
+    {
+        printf("SDL_CreateRGBSurface error (render): %s\n", TTF_GetError());
+        return;
+    }
+
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
+    renderer = SDL_CreateSoftwareRenderer(render_surface);
+    if (!renderer)
+    {
+        printf("SDL_CreateSoftwareRenderer error: %s\n", SDL_GetError());
+        return;
+    }
+
+    if (document)
+    {
+        document->Resize(width, height);
+        document->Redraw();
+    }
+}
+
+EM_BOOL OnResize(int event_type, const EmscriptenUiEvent* ui_event, void* user_data)
+{
+    ScheduleCanvasResize();
     return true;
 }
 

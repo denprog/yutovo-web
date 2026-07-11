@@ -944,6 +944,7 @@ void ResizeTask::Execute()
     }
     web_window->width = width;
     web_window->height = height;
+    web_window->view_port = SDL_Rect{0, 0, (int)width, (int)height};
 }
 
 //ConnectTask

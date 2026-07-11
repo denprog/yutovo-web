@@ -358,14 +358,6 @@ function onWindowResize(event: Event)
 
 function onResize()
 {
-    const scroll = document.getElementById('scroll-container');
-    if (scroll)
-    {
-        window.dispatchEvent(new Event('resize'));
-        const canvas = getCanvas();
-        if (canvas)
-            canvas.focus();
-    }
     const editor = document.getElementById('editor');
     if (editor)
     {
@@ -378,6 +370,15 @@ function onResize()
             availableHeight = footerRect.top - editorRect.top;
         }
         editor.style.height = Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT) + 'px';
+    }
+
+    const scroll = document.getElementById('scroll-container');
+    if (scroll)
+    {
+        window.dispatchEvent(new Event('resize'));
+        const canvas = getCanvas();
+        if (canvas)
+            canvas.focus();
     }
 }
 

@@ -70,6 +70,41 @@ test.describe('Editor resize', () =>
         expect(small.scrollHeight).toBeGreaterThan(small.viewportHeight);
     });
 
+    test('canvas drawing buffer matches display size after resize', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+
+        const getCanvasSizes = () => page.evaluate(() =>
+        {
+            const canvas = document.getElementById('canvas');
+            return {
+                cssWidth: canvas ? canvas.clientWidth : 0,
+                cssHeight: canvas ? canvas.clientHeight : 0,
+                bufferWidth: canvas ? canvas.width : 0,
+                bufferHeight: canvas ? canvas.height : 0
+            };
+        });
+
+        await page.setViewportSize({ width: 1280, height: 900 });
+        await page.waitForTimeout(1000);
+        const large = await getCanvasSizes();
+        expect(large.bufferWidth).toBe(large.cssWidth);
+        expect(large.bufferHeight).toBe(large.cssHeight);
+
+        await page.setViewportSize({ width: 1280, height: 600 });
+        await page.waitForTimeout(1000);
+        const medium = await getCanvasSizes();
+        expect(medium.bufferWidth).toBe(medium.cssWidth);
+        expect(medium.bufferHeight).toBe(medium.cssHeight);
+
+        await page.setViewportSize({ width: 1280, height: 300 });
+        await page.waitForTimeout(1000);
+        const small = await getCanvasSizes();
+        expect(small.bufferWidth).toBe(small.cssWidth);
+        expect(small.bufferHeight).toBe(small.cssHeight);
+    });
+
     test('paste keeps scroll position when page is scrolled', async ({ page }) =>
     {
         await utils.login(page, 'test1', '11');

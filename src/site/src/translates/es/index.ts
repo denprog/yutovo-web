@@ -149,6 +149,7 @@ export default {
     'Grad': 'Grado centesimal',
     'Sum': 'Suma',
     'Product': 'Producto',
+    'Definite integral': 'Integral definida',
     'Infinity': 'Infinito',
     'Assignment': 'Asignación',
     'Unit': 'Unidad',

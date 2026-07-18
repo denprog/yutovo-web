@@ -149,6 +149,7 @@ export default {
     'Grad': 'Град',
     'Sum': 'Сумма',
     'Product': 'Произведение',
+    'Definite integral': 'Определенный интеграл',
     'Infinity': 'Бесконечность',
     'Assignment': 'Присваивание',
     'Unit': 'Размерность',

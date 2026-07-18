@@ -149,6 +149,7 @@ export default {
     'Grad': 'Grado',
     'Sum': 'Soma',
     'Product': 'Produto',
+    'Definite integral': 'Integral definida',
     'Infinity': 'Infinito',
     'Assignment': 'Atribuição',
     'Unit': 'Unidade',

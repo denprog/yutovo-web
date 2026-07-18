@@ -1702,6 +1702,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnProduct()
     document->InsertProduct(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDefiniteIntegral()
+{
+    if (!document)
+        return;
+    document->InsertDefiniteIntegral(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
 {
     if (!document)
@@ -2046,7 +2053,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
         {"sqrt", &Document::InsertSquareRoot},
         {"sub", &Document::InsertSubscript},
         {"sum", &Document::InsertSum},
-        {"prod", &Document::InsertProduct}
+        {"prod", &Document::InsertProduct},
+        {"definite_integral", &Document::InsertDefiniteIntegral}
     };
 
     auto it = insert_map.find(prompt);

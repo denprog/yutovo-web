@@ -191,6 +191,11 @@
             <q-btn size="14px" square dense @click="onProduct();" icon="img:/images/algebra/product.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Product') }}</q-tooltip>
             </q-btn>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onDefiniteIntegral();" icon="img:/images/calculus/definite_integral.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Definite integral') }}</q-tooltip>
+            </q-btn>
+            <q-separator vertical/>
             <q-btn size="14px" square dense @click="onInfinity();">
                 ∞
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Infinity') }}</q-tooltip>
@@ -1018,6 +1023,11 @@ export default defineComponent(
         onProduct()
         {
             Module.cwrap('OnProduct', 'void', [])()
+        },
+
+        onDefiniteIntegral()
+        {
+            Module.cwrap('OnDefiniteIntegral', 'void', [])()
         },
 
         onInfinity()

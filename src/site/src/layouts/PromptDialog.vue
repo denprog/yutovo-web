@@ -50,7 +50,8 @@ export default
             sqrt: '/images/algebra/sqrt.png',
             sub: '/images/algebra/subscript.png',
             sum: '/images/algebra/sum.png',
-            prod: '/images/algebra/product.png'
+            prod: '/images/algebra/product.png',
+            definite_integral: '/images/calculus/definite_integral.png'
         };
 
         const getIcon = (item: string) => iconMap[item] ?? '';

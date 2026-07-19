@@ -1709,6 +1709,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDefiniteIntegral()
     document->InsertDefiniteIntegral(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnIndefiniteIntegral()
+{
+    if (!document)
+        return;
+    document->InsertIndefiniteIntegral(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
 {
     if (!document)
@@ -2054,7 +2061,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
         {"sub", &Document::InsertSubscript},
         {"sum", &Document::InsertSum},
         {"prod", &Document::InsertProduct},
-        {"definite_integral", &Document::InsertDefiniteIntegral}
+        {"definite_integral", &Document::InsertDefiniteIntegral},
+        {"indefinite_integral", &Document::InsertIndefiniteIntegral}
     };
 
     auto it = insert_map.find(prompt);

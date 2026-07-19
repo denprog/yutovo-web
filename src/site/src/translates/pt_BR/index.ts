@@ -150,6 +150,7 @@ export default {
     'Sum': 'Soma',
     'Product': 'Produto',
     'Definite integral': 'Integral definida',
+    'Indefinite integral': 'Integral indefinida',
     'Infinity': 'Infinito',
     'Assignment': 'Atribuição',
     'Unit': 'Unidade',

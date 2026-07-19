@@ -195,6 +195,9 @@
             <q-btn size="14px" square dense @click="onDefiniteIntegral();" icon="img:/images/calculus/definite_integral.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Definite integral') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" square dense @click="onInfinity();">
                 ∞
@@ -1028,6 +1031,11 @@ export default defineComponent(
         onDefiniteIntegral()
         {
             Module.cwrap('OnDefiniteIntegral', 'void', [])()
+        },
+
+        onIndefiniteIntegral()
+        {
+            Module.cwrap('OnIndefiniteIntegral', 'void', [])()
         },
 
         onInfinity()

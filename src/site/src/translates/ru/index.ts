@@ -150,6 +150,7 @@ export default {
     'Sum': 'Сумма',
     'Product': 'Произведение',
     'Definite integral': 'Определенный интеграл',
+    'Indefinite integral': 'Неопределённый интеграл',
     'Infinity': 'Бесконечность',
     'Assignment': 'Присваивание',
     'Unit': 'Размерность',

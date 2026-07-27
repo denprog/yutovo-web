@@ -225,6 +225,90 @@ test.describe('Library', () =>
         expect(await utils.documentNotEmpty(page)).toBe(true);
     });
 
+    test('open Russian first page by url with clean cookies', async ({ browser }) =>
+    {
+        const context = await browser.newContext(
+        {
+            viewport: { width: 1100, height: 900 },
+            ignoreHTTPSErrors: true,
+            locale: 'ru-RU',
+        });
+        const page = await context.newPage();
+        await page.goto(address + '/library/ru/%D0%94%D1%80%D1%83%D0%B3%D0%BE%D0%B5/%D0%9F%D0%B5%D1%80%D0%B2%D0%B0%D1%8F%20%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0.yut');
+        await page.waitForTimeout(6000);
+        expect(page.url()).toBe(address + '/library/ru/%D0%94%D1%80%D1%83%D0%B3%D0%BE%D0%B5/%D0%9F%D0%B5%D1%80%D0%B2%D0%B0%D1%8F%20%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0.yut');
+        expect(await utils.getDocumentName(page)).toBe('/Другое/Первая страница.yut');
+        expect(await utils.documentNotEmpty(page)).toBe(true);
+        await context.close();
+    });
+
+    test('open English first page by url with clean cookies', async ({ browser }) =>
+    {
+        const context = await browser.newContext(
+        {
+            viewport: { width: 1100, height: 900 },
+            ignoreHTTPSErrors: true,
+            locale: 'en-US',
+        });
+        const page = await context.newPage();
+        await page.goto(address + '/library/en/Others/First%20page.yut');
+        await page.waitForTimeout(6000);
+        expect(page.url()).toBe(address + '/library/en/Others/First%20page.yut');
+        expect(await utils.getDocumentName(page)).toBe('/Others/First page.yut');
+        expect(await utils.documentNotEmpty(page)).toBe(true);
+        await context.close();
+    });
+
+    test('open Spanish first page by url with clean cookies', async ({ browser }) =>
+    {
+        const context = await browser.newContext(
+        {
+            viewport: { width: 1100, height: 900 },
+            ignoreHTTPSErrors: true,
+            locale: 'es-ES',
+        });
+        const page = await context.newPage();
+        await page.goto(address + '/library/es/Otros/Primera%20p%C3%A1gina.yut');
+        await page.waitForTimeout(6000);
+        expect(page.url()).toBe(address + '/library/es/Otros/Primera%20p%C3%A1gina.yut');
+        expect(await utils.getDocumentName(page)).toBe('/Otros/Primera página.yut');
+        expect(await utils.documentNotEmpty(page)).toBe(true);
+        await context.close();
+    });
+
+    test('open Portuguese first page by url with clean cookies', async ({ browser }) =>
+    {
+        const context = await browser.newContext(
+        {
+            viewport: { width: 1100, height: 900 },
+            ignoreHTTPSErrors: true,
+            locale: 'pt-BR',
+        });
+        const page = await context.newPage();
+        await page.goto(address + '/library/pt_BR/Outros/Primeira%20p%C3%A1gina.yut');
+        await page.waitForTimeout(6000);
+        expect(page.url()).toBe(address + '/library/pt_BR/Outros/Primeira%20p%C3%A1gina.yut');
+        expect(await utils.getDocumentName(page)).toBe('/Outros/Primeira página.yut');
+        expect(await utils.documentNotEmpty(page)).toBe(true);
+        await context.close();
+    });
+
+    test('open first page on root url with clean cookies', async ({ browser }) =>
+    {
+        const context = await browser.newContext(
+        {
+            viewport: { width: 1100, height: 900 },
+            ignoreHTTPSErrors: true,
+            locale: 'ru-RU',
+        });
+        const page = await context.newPage();
+        await page.goto(address + '/');
+        await page.waitForTimeout(6000);
+        expect(await utils.getDocumentName(page)).toBe('/Другое/Первая страница.yut');
+        expect(await utils.documentNotEmpty(page)).toBe(true);
+        await context.close();
+    });
+
     test('load a library document from Help Yutovo by url', async ({ page }) =>
     {
         await utils.login(page, 'test1', '11');

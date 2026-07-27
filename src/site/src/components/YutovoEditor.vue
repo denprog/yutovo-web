@@ -1886,7 +1886,7 @@ function initModule()
                 }
                 else if (route.path.substring(0, 9) != '/document')
                 {
-                    if (q.config.production && !Cookies.has('app_initialized'))
+                    if (!Cookies.has('app_initialized'))
                     {
                         let lang = 'en';
                         if (navigator.language.startsWith('ru'))

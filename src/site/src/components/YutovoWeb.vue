@@ -198,6 +198,15 @@
             <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onDerivative();" icon="img:/images/calculus/derivative.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onSecondDerivative();" icon="img:/images/calculus/derivative2.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second derivative') }}</q-tooltip>
+            </q-btn>
+            <q-btn size="14px" square dense @click="onPartialDerivative();" icon="img:/images/calculus/partial_derivative.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Partial derivative') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" square dense @click="onInfinity();">
                 ∞
@@ -1036,6 +1045,21 @@ export default defineComponent(
         onIndefiniteIntegral()
         {
             Module.cwrap('OnIndefiniteIntegral', 'void', [])()
+        },
+
+        onDerivative()
+        {
+            Module.cwrap('OnDerivative', 'void', [])()
+        },
+
+        onSecondDerivative()
+        {
+            Module.cwrap('OnSecondDerivative', 'void', [])()
+        },
+
+        onPartialDerivative()
+        {
+            Module.cwrap('OnPartialDerivative', 'void', [])()
         },
 
         onInfinity()

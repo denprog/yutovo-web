@@ -1716,6 +1716,27 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnIndefiniteIntegral()
     document->InsertIndefiniteIntegral(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDerivative()
+{
+    if (!document)
+        return;
+    document->InsertDerivative(U"d", 1, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSecondDerivative()
+{
+    if (!document)
+        return;
+    document->InsertDerivative(U"d", 2, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPartialDerivative()
+{
+    if (!document)
+        return;
+    document->InsertDerivative(U"\u2202", 1, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
 {
     if (!document)
@@ -2062,7 +2083,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
         {"sum", &Document::InsertSum},
         {"prod", &Document::InsertProduct},
         {"definite_integral", &Document::InsertDefiniteIntegral},
-        {"indefinite_integral", &Document::InsertIndefiniteIntegral}
+        {"indefinite_integral", &Document::InsertIndefiniteIntegral},
+        {"derivative", &Document::InsertDerivative}
     };
 
     auto it = insert_map.find(prompt);

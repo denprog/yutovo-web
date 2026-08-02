@@ -111,5 +111,9 @@ export default {
         We do not warrant that our website or its functioning or the content and material of the services made available thereby will be timely, secure, \
         uninterrupted or error-free, that defects will be corrected, or that our websites or the servers that make our website available are free of viruses \
         or other harmful components. The use of our website is at your sole risk and you assume full responsibility for any costs associated with \
-        your use of the website. We will not be liable for any damages of any kind related to the use of our website.'
+        your use of the website. We will not be liable for any damages of any kind related to the use of our website.',
+
+    'Derivative': 'Derivative',
+    'Second derivative': 'Second derivative',
+    'Partial derivative': 'Partial derivative'
 };

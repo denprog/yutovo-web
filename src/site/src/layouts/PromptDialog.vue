@@ -52,7 +52,8 @@ export default
             sum: '/images/algebra/sum.png',
             prod: '/images/algebra/product.png',
             definite_integral: '/images/calculus/definite_integral.png',
-            indefinite_integral: '/images/calculus/indefinite_integral.png'
+            indefinite_integral: '/images/calculus/indefinite_integral.png',
+            derivative: '/images/calculus/derivative.png'
         };
 
         const getIcon = (item: string) => iconMap[item] ?? '';

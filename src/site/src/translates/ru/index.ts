@@ -154,6 +154,8 @@ export default {
     'Derivative': 'Производная',
     'Second derivative': 'Производная второго порядка',
     'Partial derivative': 'Частная производная',
+    'Derivative at point': 'Производная в точке',
+    'Evaluate at point': 'Вычислить в точке',
     'Infinity': 'Бесконечность',
     'Assignment': 'Присваивание',
     'Unit': 'Размерность',

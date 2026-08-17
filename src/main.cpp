@@ -1737,6 +1737,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPartialDerivative()
     document->InsertDerivative(U"\u2202", 1, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDerivativeAtPoint()
+{
+    if (!document)
+        return;
+    document->InsertDerivativeAtPoint(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnEvalutionBar()
+{
+    if (!document)
+        return;
+    document->InsertEvalutionBarSubscript(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
 {
     if (!document)

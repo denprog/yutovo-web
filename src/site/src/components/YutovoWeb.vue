@@ -207,6 +207,13 @@
             <q-btn size="14px" square dense @click="onPartialDerivative();" icon="img:/images/calculus/partial_derivative.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Partial derivative') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onDerivativeAtPoint();" icon="img:/images/calculus/derivative_at_point.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative at point') }}</q-tooltip>
+            </q-btn>
+            <q-separator vertical/>
+            <q-btn size="14px" square dense @click="onEvalutionBar();" icon="img:/images/algebra/evalution_bar.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Evaluate at point') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" square dense @click="onInfinity();">
                 ∞
@@ -1060,6 +1067,16 @@ export default defineComponent(
         onPartialDerivative()
         {
             Module.cwrap('OnPartialDerivative', 'void', [])()
+        },
+
+        onDerivativeAtPoint()
+        {
+            Module.cwrap('OnDerivativeAtPoint', 'void', [])()
+        },
+
+        onEvalutionBar()
+        {
+            Module.cwrap('OnEvalutionBar', 'void', [])()
         },
 
         onInfinity()

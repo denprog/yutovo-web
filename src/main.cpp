@@ -1744,11 +1744,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDerivativeAtPoint()
     document->InsertDerivativeAtPoint(true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnEvalutionBar()
+extern "C" EMSCRIPTEN_KEEPALIVE void OnEvaluationBar()
 {
     if (!document)
         return;
-    document->InsertEvalutionBarSubscript(true);
+    document->InsertEvaluationBarSubscript(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()

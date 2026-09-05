@@ -91,6 +91,7 @@ export default {
     'Copy': 'Copiar',
     'Paste': 'Colar',
     'Insert calculator': 'Inserir calculadora',
+    'Insert text block': 'Inserir bloco de texto',
     'Recalculate the document': 'Recalcular documento',
     'Paragraph format': 'Formato de parágrafo',
     'Font family': 'Fonte',

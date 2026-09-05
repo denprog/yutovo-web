@@ -142,6 +142,11 @@ async function insertCode(page)
     await page.locator('#insert-calculator-button').click({ timeout: 2000, force: true });
 }
 
+async function insertTextBlock(page)
+{
+    await page.locator('#insert-text-block-button').click({ timeout: 2000, force: true });
+}
+
 async function insertGraphLine(page)
 {
     await page.locator('#graph-line-button').first().evaluate((el) => el.click());
@@ -437,6 +442,7 @@ module.exports =
     clearTestUser,
     fileContains,
     fileNotContains,
+    insertTextBlock,
     documentContains,
     documentNotEmpty,
     getCookie,

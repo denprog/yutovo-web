@@ -91,6 +91,7 @@ export default {
     'Copy': 'Скопировать',
     'Paste': 'Вставить',
     'Insert calculator': 'Вставить калькулятор',
+    'Insert text block': 'Вставить текстовый блок',
     'Recalculate the document': 'Пересчитать документ',
     'Paragraph format': 'Формат параграфа',
     'Font family': 'Шрифт',

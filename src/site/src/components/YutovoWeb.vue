@@ -70,6 +70,9 @@
             <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert calculator') }} (Ctrl+Shift+C)</q-tooltip>
             </q-btn>
+            <q-btn size="14px" id="insert-text-block-button" square dense @click="onInsertTextBlock();" icon="img:/images/format/text_block.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert text block') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
@@ -611,6 +614,12 @@ export default defineComponent(
         onInsertCalculator()
         {
             Module.cwrap('OnInsertCalculator', 'void', [])()
+            canvas.focus()
+        },
+
+        onInsertTextBlock()
+        {
+            Module.cwrap('OnInsertTextBlock', 'void', [])()
             canvas.focus()
         },
 

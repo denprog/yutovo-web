@@ -1611,6 +1611,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnInsertCalculator()
     document->InsertCode(false, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnInsertTextBlock()
+{
+    if (!document)
+        return;
+    document->InsertTextBlock(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnRecalculate()
 {
     if (!document)

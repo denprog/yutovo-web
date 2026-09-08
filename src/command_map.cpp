@@ -92,7 +92,15 @@ void ShortcutsMap::Init(Document* _document)
         CommandContext::Formula);
     Add(KeySequence(DOM_VK_R, true, true, false), "\\nth", std::function<void ()>(std::bind(&Document::InsertNthRoot, document, true, false)));
     Add(KeySequence(DOM_VK_Q, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document, true, false)));
-    Add(KeySequence(), '=', "\\equal", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::AUTO, true)), 
+    Add(KeySequence(), '=', "\\equal",
+        std::function<void ()>(
+            [document]()
+            {
+                if (document->GetParentId(document->GetEditorState().caret_state.id, ElementType::PYTHON_CODE_BLOCK) != ElementId{})
+                    document->InsertString("=", true); //a plain assignment text inside python code
+                else
+                    document->InsertEquation(ResultType::AUTO, true);
+            }),
         CommandContext::Formula);
     Add(KeySequence(), "\\eq_real", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::REAL, true)), 
         CommandContext::Formula);
@@ -110,7 +118,16 @@ void ShortcutsMap::Init(Document* _document)
         CommandContext::Formula);
     Add(KeySequence(), ']', "", std::function<void ()>(std::bind(&Document::InsertCloseSquareBracket, document, true)), 
         CommandContext::Formula);
-    Add(KeySequence(), ':', "\\assign", std::function<void ()>(std::bind(&Document::InsertAssignment, document, true)), CommandContext::Formula);
+    Add(KeySequence(), ':', "\\assign",
+        std::function<void ()>(
+            [document]()
+            {
+                if (document->GetParentId(document->GetEditorState().caret_state.id, ElementType::PYTHON_CODE_BLOCK) != ElementId{})
+                    document->InsertColon(true);
+                else
+                    document->InsertAssignment(true);
+            }),
+        CommandContext::Formula);
     Add(KeySequence(), '~', "\\unit", std::function<void ()>(std::bind(static_cast<uint(Document::*)(bool)>(&Document::InsertUnit), 
         document, true)), CommandContext::Formula);
 }
@@ -136,12 +153,14 @@ bool ShortcutsMap::Call(const KeySequence& shortcut, char32_t symbol, const Edit
                 {
                 case CommandContext::Formula:
                     if (document->GetParentId(editor_state.caret_state.id, ElementType::CODE_BLOCK) == ElementId{} &&
-                        document->GetParentId(editor_state.caret_state.id, ElementType::TEXT_BLOCK) == ElementId{})
+                        document->GetParentId(editor_state.caret_state.id, ElementType::TEXT_BLOCK) == ElementId{} &&
+                        document->GetParentId(editor_state.caret_state.id, ElementType::PYTHON_CODE_BLOCK) == ElementId{})
                         return;
                     break;
                 case CommandContext::Text:
                     if (document->GetParentId(editor_state.caret_state.id, ElementType::CODE_BLOCK) != ElementId{} ||
-                        document->GetParentId(editor_state.caret_state.id, ElementType::TEXT_BLOCK) != ElementId{})
+                        document->GetParentId(editor_state.caret_state.id, ElementType::TEXT_BLOCK) != ElementId{} ||
+                        document->GetParentId(editor_state.caret_state.id, ElementType::PYTHON_CODE_BLOCK) != ElementId{})
                         return;
                     break;
                 case CommandContext::Everywhere:

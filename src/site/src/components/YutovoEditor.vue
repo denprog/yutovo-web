@@ -12,26 +12,29 @@
         <div id="scroll-container">
             <q-menu ref="contextMenuRef" touch-position square fit context-menu @hide="onCloseContextMenu()" @show="onShowContextMenu()">
                 <q-list dense style="min-width: 100px">
-                    <q-item id="copy-menu" clickable @click="onCopy()">
+                    <q-item id="copy-menu" clickable :class="{ disabled: contextMenuDisabled.copy }" @click="onCopy()">
                         <q-item-section>{{ $t('Copy') }}</q-item-section>
                     </q-item>
-                    <q-item id="paste-menu" clickable @click="onPaste()">
+                    <q-item id="paste-menu" clickable :class="{ disabled: contextMenuDisabled.paste }" @click="onPaste()">
                         <q-item-section>{{ $t('Paste') }}</q-item-section>
                     </q-item>
-                    <q-item id="cut-menu" clickable @click="onCut()">
+                    <q-item id="cut-menu" clickable :class="{ disabled: contextMenuDisabled.cut }" @click="onCut()">
                         <q-item-section>{{ $t('Cut') }}</q-item-section>
                     </q-item>
 
                     <q-separator />
 
-                     <q-item auto-close id="present-as-menu" clickable style="display:none;">
+                     <q-item auto-close id="present-as-menu" clickable :style="{ display: contextMenuItems.presentAs ? '' : 'none' }"
+                        @mouseenter="openSubmenu('presentAs')"
+                        @mouseleave="scheduleSubmenuClose('presentAs')"
+                        @click="openSubmenu('presentAs')">
                         <q-item-section square>{{ $t('Present as') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.presentAs" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('presentAs')" @mouseleave="scheduleSubmenuClose('presentAs')">
                                 <q-item id="present-as-auto-menu" dense clickable @click="onPresentAsAuto()">
                                     <div v-if="autoMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Auto') }}</q-item-section>
@@ -53,16 +56,19 @@
                                     <q-item-section>{{ $t('Complex') }}</q-item-section>
                                 </q-item>
 
-                                <q-item id="symbolic-as-menu" clickable>
-                                    <q-item-section @click.stop="symbolicMenuOpen = !symbolicMenuOpen">
+                                <q-item id="symbolic-as-menu" clickable
+                                    @mouseenter="openSubmenu('symbolic')"
+                                    @mouseleave="scheduleSubmenuClose('symbolic')"
+                                    @click="openSubmenu('symbolic')">
+                                    <q-item-section>
                                         {{ $t('Symbolic') }}
                                     </q-item-section>
-                                    <q-item-section side @click.stop="symbolicMenuOpen = !symbolicMenuOpen">
+                                    <q-item-section side>
                                         <q-icon name="keyboard_arrow_right" />
                                     </q-item-section>
 
-                                    <q-menu v-model="symbolicMenuOpen" anchor="top end" self="top start">
-                                        <q-list>
+                                    <q-menu v-model="submenuOpen.symbolic" no-parent-event anchor="top end" self="top start">
+                                        <q-list @mouseenter="cancelSubmenuClose('symbolic')" @mouseleave="scheduleSubmenuClose('symbolic')">
                                             <q-item id="symbolic-as-real-menu" dense clickable @click.stop="onPresentAsSymbolicReal()">
                                                 <div v-if="symbolicRealMenuChecked">&check;</div>
                                                 <q-item-section>{{ $t('Real') }}</q-item-section>
@@ -82,22 +88,25 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-precision-menu" clickable style="display:none;" @click="onSetPrecision()">
+                    <q-item id="set-precision-menu" clickable :style="{ display: contextMenuItems.precision ? '' : 'none' }" @click="onSetPrecision()">
                         <q-item-section>{{ $t('Precision') }}</q-item-section>
                     </q-item>
 
-                    <q-item id="set-exp-menu" clickable style="display:none;" @click="onSetExp()">
+                    <q-item id="set-exp-menu" clickable :style="{ display: contextMenuItems.exp ? '' : 'none' }" @click="onSetExp()">
                         <q-item-section>{{ $t('Exponent order') }}</q-item-section>
                     </q-item>
 
-                    <q-item auto-close id="set-default-angle-measure-menu" clickable style="display:none;">
+                    <q-item auto-close id="set-default-angle-measure-menu" clickable :style="{ display: contextMenuItems.defaultAngleMeasure ? '' : 'none' }"
+                        @mouseenter="openSubmenu('defaultAngleMeasure')"
+                        @mouseleave="scheduleSubmenuClose('defaultAngleMeasure')"
+                        @click="openSubmenu('defaultAngleMeasure')">
                         <q-item-section square>{{ $t('Default angle measure') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.defaultAngleMeasure" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('defaultAngleMeasure')" @mouseleave="scheduleSubmenuClose('defaultAngleMeasure')">
                                 <q-item id="set-default-radian-angle-measure-menu" dense clickable @click="onSetDefaultRadianAngleMeasure()">
                                     <div v-if="defaultRadianMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Radian') }}</q-item-section>
@@ -114,14 +123,17 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item auto-close id="set-result-angle-measure-menu" clickable style="display:none;">
+                    <q-item auto-close id="set-result-angle-measure-menu" clickable :style="{ display: contextMenuItems.resultAngleMeasure ? '' : 'none' }"
+                        @mouseenter="openSubmenu('resultAngleMeasure')"
+                        @mouseleave="scheduleSubmenuClose('resultAngleMeasure')"
+                        @click="openSubmenu('resultAngleMeasure')">
                         <q-item-section square>{{ $t('Result angle measure') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.resultAngleMeasure" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('resultAngleMeasure')" @mouseleave="scheduleSubmenuClose('resultAngleMeasure')">
                                 <q-item id="set-result-radian-angle-measure-menu" dense clickable @click="onSetResultRadianAngleMeasure()">
                                     <div v-if="resultRadianMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Radian') }}</q-item-section>
@@ -138,14 +150,17 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-default-notation-menu" clickable style="display:none;">
+                    <q-item id="set-default-notation-menu" clickable :style="{ display: contextMenuItems.defaultNotation ? '' : 'none' }"
+                        @mouseenter="openSubmenu('defaultNotation')"
+                        @mouseleave="scheduleSubmenuClose('defaultNotation')"
+                        @click="openSubmenu('defaultNotation')">
                         <q-item-section>{{ $t('Default notation') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.defaultNotation" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('defaultNotation')" @mouseleave="scheduleSubmenuClose('defaultNotation')">
                                 <q-item id="set-default-binary-notation-menu" dense clickable @click="onSetDefaultBinaryNotation()">
                                     <div v-if="defaultBinaryMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Binary') }}</q-item-section>
@@ -166,14 +181,17 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-result-notation-menu" clickable style="display:none;">
+                    <q-item id="set-result-notation-menu" clickable :style="{ display: contextMenuItems.resultNotation ? '' : 'none' }"
+                        @mouseenter="openSubmenu('resultNotation')"
+                        @mouseleave="scheduleSubmenuClose('resultNotation')"
+                        @click="openSubmenu('resultNotation')">
                         <q-item-section>{{ $t('Result notation') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.resultNotation" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('resultNotation')" @mouseleave="scheduleSubmenuClose('resultNotation')">
                                 <q-item id="set-result-binary-notation-menu" dense clickable @click="onSetResultBinaryNotation()">
                                     <div v-if="resultBinaryMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Binary') }}</q-item-section>
@@ -194,14 +212,17 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-fraction-form-menu" clickable style="display:none;">
+                    <q-item id="set-fraction-form-menu" clickable :style="{ display: contextMenuItems.fractionForm ? '' : 'none' }"
+                        @mouseenter="openSubmenu('fractionForm')"
+                        @mouseleave="scheduleSubmenuClose('fractionForm')"
+                        @click="openSubmenu('fractionForm')">
                         <q-item-section>{{ $t('Fraction form') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.fractionForm" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('fractionForm')" @mouseleave="scheduleSubmenuClose('fractionForm')">
                                 <q-item id="set-fraction-form-proper-menu" dense clickable @click="onProperFractionForm()">
                                     <div v-if="properMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Proper') }}</q-item-section>
@@ -214,14 +235,17 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-complex-form-menu" clickable style="display:none;">
+                    <q-item id="set-complex-form-menu" clickable :style="{ display: contextMenuItems.complexForm ? '' : 'none' }"
+                        @mouseenter="openSubmenu('complexForm')"
+                        @mouseleave="scheduleSubmenuClose('complexForm')"
+                        @click="openSubmenu('complexForm')">
                         <q-item-section>{{ $t('Complex form') }}</q-item-section>
                         <q-item-section side>
                             <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
 
-                        <q-menu auto-close anchor="top end" self="top start">
-                            <q-list>
+                        <q-menu v-model="submenuOpen.complexForm" no-parent-event auto-close anchor="top end" self="top start">
+                            <q-list @mouseenter="cancelSubmenuClose('complexForm')" @mouseleave="scheduleSubmenuClose('complexForm')">
                                 <q-item id="set-arithmetic-complex-form-menu" dense clickable @click="onArithmeticComplexForm()">
                                     <div v-if="arithmeticMenuChecked">&check;</div>
                                     <q-item-section>{{ $t('Arithmetic') }}</q-item-section>
@@ -238,15 +262,15 @@
                         </q-menu>
                     </q-item>
 
-                    <q-item id="set-unit-menu" clickable style="display:none;" @click="onSetUnit()">
+                    <q-item id="set-unit-menu" clickable :style="{ display: contextMenuItems.setUnit ? '' : 'none' }" @click="onSetUnit()">
                         <q-item-section>{{ $t('Unit') }}</q-item-section>
                     </q-item>
 
-                    <q-item id="graph-format" clickable style="display:none;" @click="onGraphFormat()">
+                    <q-item id="graph-format" clickable :style="{ display: contextMenuItems.graphFormat ? '' : 'none' }" @click="onGraphFormat()">
                         <q-item-section>{{ $t('Graph format') }}</q-item-section>
                     </q-item>
 
-                    <q-item id="copy-graph-image" clickable style="display:none;" @click="onCopyGraphImage()">
+                    <q-item id="copy-graph-image" clickable :style="{ display: contextMenuItems.copyGraphImage ? '' : 'none' }" @click="onCopyGraphImage()">
                         <q-item-section>{{ $t('Copy image') }}</q-item-section>
                     </q-item>
                 </q-list>
@@ -263,7 +287,7 @@
 
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unused-vars */
-import { ref, computed, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -293,7 +317,111 @@ const { t } = useI18n();
 
 //refs
 const contextMenuRef = ref<QMenu | null>(null);
-const symbolicMenuOpen = ref(false);
+
+//context menu submenus opened by hover
+type SubmenuName = 'presentAs' | 'symbolic' | 'defaultAngleMeasure' | 'resultAngleMeasure'
+    | 'defaultNotation' | 'resultNotation' | 'fractionForm' | 'complexForm';
+
+const submenuOpen = reactive<Record<SubmenuName, boolean>>({
+    presentAs: false,
+    symbolic: false,
+    defaultAngleMeasure: false,
+    resultAngleMeasure: false,
+    defaultNotation: false,
+    resultNotation: false,
+    fractionForm: false,
+    complexForm: false
+});
+
+//submenus that must stay open when the given submenu opens or is entered
+const submenuParents: Record<SubmenuName, SubmenuName[]> = {
+    presentAs: [],
+    symbolic: ['presentAs'],
+    defaultAngleMeasure: [],
+    resultAngleMeasure: [],
+    defaultNotation: [],
+    resultNotation: [],
+    fractionForm: [],
+    complexForm: []
+};
+
+const submenuCloseTimers: Partial<Record<SubmenuName, ReturnType<typeof setTimeout>>> = {};
+
+const SUBMENU_CLOSE_DELAY = 300;
+
+function cancelSubmenuClose(name: SubmenuName)
+{
+    for (const key of [name, ...submenuParents[name]])
+    {
+        const timer = submenuCloseTimers[key];
+        if (timer)
+        {
+            clearTimeout(timer);
+            delete submenuCloseTimers[key];
+        }
+    }
+}
+
+function openSubmenu(name: SubmenuName)
+{
+    const keep = submenuParents[name];
+    for (const key of Object.keys(submenuOpen) as SubmenuName[])
+    {
+        if (key !== name && !keep.includes(key))
+        {
+            cancelSubmenuClose(key);
+            submenuOpen[key] = false;
+        }
+    }
+    cancelSubmenuClose(name);
+    submenuOpen[name] = true;
+}
+
+function scheduleSubmenuClose(name: SubmenuName)
+{
+    cancelSubmenuClose(name);
+    submenuCloseTimers[name] = setTimeout(() =>
+    {
+        delete submenuCloseTimers[name];
+        submenuOpen[name] = false;
+
+        //the pointer may have left the whole chain, close the parents too
+        for (const parent of submenuParents[name])
+            scheduleSubmenuClose(parent);
+    }, SUBMENU_CLOSE_DELAY);
+}
+
+function closeAllSubmenus()
+{
+    for (const key of Object.keys(submenuOpen) as SubmenuName[])
+    {
+        cancelSubmenuClose(key);
+        submenuOpen[key] = false;
+    }
+}
+
+//context menu items visible for the current right-click target;
+//reactive so that re-renders while the menu is open cannot reset their visibility
+const contextMenuItems = reactive({
+    presentAs: false,
+    precision: false,
+    exp: false,
+    defaultAngleMeasure: false,
+    resultAngleMeasure: false,
+    defaultNotation: false,
+    resultNotation: false,
+    fractionForm: false,
+    complexForm: false,
+    setUnit: false,
+    graphFormat: false,
+    copyGraphImage: false
+});
+
+const contextMenuDisabled = reactive({
+    copy: false,
+    paste: false,
+    cut: false
+});
 
 const promptVisible = ref(false);
 const promptItems = ref<string[]>([]);
@@ -559,14 +687,11 @@ async function onPaste()
 
 async function onShowContextMenu()
 {
-    const copy_menu = document.getElementById('copy-menu');
-    const can_copy = Module.cwrap('CanCopy', 'bool', [])();
-    if (can_copy)
-        copy_menu!.classList.remove('disabled');
-    else
-        copy_menu!.classList.add('disabled');
+    for (const key of Object.keys(contextMenuItems) as (keyof typeof contextMenuItems)[])
+        contextMenuItems[key] = false;
 
-    const paste_menu = document.getElementById('paste-menu');
+    contextMenuDisabled.copy = !Module.cwrap('CanCopy', 'bool', [])();
+
     let can_paste = Module.cwrap('CanPaste', 'bool', [])();
     if (can_paste)
     {
@@ -594,23 +719,13 @@ async function onShowContextMenu()
             can_paste = (jsonClipboard.value != '');
         }
     }
-    if (can_paste)
-        paste_menu!.classList.remove('disabled');
-    else
-        paste_menu!.classList.add('disabled');
-
-    const cut_menu = document.getElementById('cut-menu');
-    const can_cut = Module.cwrap('CanCut', 'bool', [])();
-    if (can_cut)
-        cut_menu!.classList.remove('disabled');
-    else
-        cut_menu!.classList.add('disabled');
+    contextMenuDisabled.paste = !can_paste;
+    contextMenuDisabled.cut = !Module.cwrap('CanCut', 'bool', [])();
 
     const p = Module.cwrap('GetPresentAsMenu', 'int', [])();
     if (p != 0)
     {
-        let m = document.getElementById('present-as-menu');
-        m!.style.display = '';
+        contextMenuItems.presentAs = true;
         autoMenuChecked.value = p == 1;
         realMenuChecked.value = p == 2;
         integerMenuChecked.value = p == 3;
@@ -621,18 +736,14 @@ async function onShowContextMenu()
         symbolicComplexMenuChecked.value = p == 8;
         if (p == 1 || p == 2 || p == 5 || p == 6 || p == 8)
         {
-            m = document.getElementById('set-precision-menu');
-            m!.style.display = '';
-            m = document.getElementById('set-exp-menu');
-            m!.style.display = '';
-            m = document.getElementById('set-default-angle-measure-menu');
-            m!.style.display = '';
+            contextMenuItems.precision = true;
+            contextMenuItems.exp = true;
+            contextMenuItems.defaultAngleMeasure = true;
             const r = Module.cwrap('GetDefaultAngleMeasure', 'int', [])();
             defaultRadianMenuChecked.value = r == 0;
             defaultDegreeMenuChecked.value = r == 1;
             defaultGradMenuChecked.value = r == 2;
-            m = document.getElementById('set-result-angle-measure-menu');
-            m!.style.display = '';
+            contextMenuItems.resultAngleMeasure = true;
             const r2 = Module.cwrap('GetResultAngleMeasure', 'int', [])();
             resultRadianMenuChecked.value = r2 == 0;
             resultDegreeMenuChecked.value = r2 == 1;
@@ -640,8 +751,7 @@ async function onShowContextMenu()
             const r3 = Module.cwrap('GetResultType', 'int', [])();
             if (r3 == 4 || r3 == 9)
             {
-                m = document.getElementById('set-complex-form-menu');
-                m!.style.display = '';
+                contextMenuItems.complexForm = true;
                 const r4 = Module.cwrap('GetComplexForm', 'int', [])();
                 arithmeticMenuChecked.value = r4 == 0;
                 trigonometricMenuChecked.value = r4 == 1;
@@ -650,15 +760,13 @@ async function onShowContextMenu()
         }
         if (p == 3)
         {
-            let m = document.getElementById('set-default-notation-menu');
-            m!.style.display = '';
+            contextMenuItems.defaultNotation = true;
             const r = Module.cwrap('GetDefaultNotation', 'int', [])();
             defaultBinaryMenuChecked.value = r == 0;
             defaultOctalMenuChecked.value = r == 1;
             defaultDecimalMenuChecked.value = r == 2;
             defaultHexadecimalMenuChecked.value = r == 3;
-            m = document.getElementById('set-result-notation-menu');
-            m!.style.display = '';
+            contextMenuItems.resultNotation = true;
             const r2 = Module.cwrap('GetResultNotation', 'int', [])();
             resultBinaryMenuChecked.value = r2 == 0;
             resultOctalMenuChecked.value = r2 == 1;
@@ -667,31 +775,26 @@ async function onShowContextMenu()
         }
         if (p == 4 || p == 7)
         {
-            const m = document.getElementById('set-fraction-form-menu');
-            m!.style.display = '';
+            contextMenuItems.fractionForm = true;
             const r = Module.cwrap('GetFractionForm', 'int', [])();
             properMenuChecked.value = r == 0;
             improperMenuChecked.value = r == 1;
         }
         if (p == 5 || p == 8)
         {
-            const m = document.getElementById('set-complex-form-menu');
-            m!.style.display = '';
+            contextMenuItems.complexForm = true;
             const r = Module.cwrap('GetComplexForm', 'int', [])();
             arithmeticMenuChecked.value = r == 0;
             trigonometricMenuChecked.value = r == 1;
             exponentialMenuChecked.value = r == 2;
         }
     }
-    const m_unit = document.getElementById('set-unit-menu');
     if (Module.cwrap('HasUnit', 'int', [])())
-        m_unit!.style.display = '';
-    const graph = document.getElementById('graph-format');
-    const copy_graph = document.getElementById('copy-graph-image');
+        contextMenuItems.setUnit = true;
     if (Module.cwrap('IsGraph', 'int', [])())
     {
-        graph!.style.display = '';
-        copy_graph!.style.display = '';
+        contextMenuItems.graphFormat = true;
+        contextMenuItems.copyGraphImage = true;
     }
     if (contextMenuRef.value)
         contextMenuRef.value.updatePosition();
@@ -699,6 +802,7 @@ async function onShowContextMenu()
 
 function onCloseContextMenu()
 {
+    closeAllSubmenus();
     canvasFocus();
 }
 
@@ -730,21 +834,18 @@ function onPresentAsComplex()
 function onPresentAsSymbolicReal()
 {
     Module.cwrap('OnPresentAsSymbolicReal', 'void', [])();
-    symbolicMenuOpen.value = false;
     contextMenuRef.value?.hide();
 }
 
 function onPresentAsSymbolicRational()
 {
     Module.cwrap('OnPresentAsSymbolicRational', 'void', [])();
-    symbolicMenuOpen.value = false;
     contextMenuRef.value?.hide();
 }
 
 function onPresentAsSymbolicComplex()
 {
     Module.cwrap('OnPresentAsSymbolicComplex', 'void', [])();
-    symbolicMenuOpen.value = false;
     contextMenuRef.value?.hide();
 }
 

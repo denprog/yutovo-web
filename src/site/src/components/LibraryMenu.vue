@@ -73,8 +73,12 @@ function updateLibrary(obj, t, path)
     }
 }
 
+let libraryRequestId = 0;
+
 function loadLibrary()
 {
+    const requestId = ++libraryRequestId;
+
     api.post('/service/get-library-documents',
         {
             language: store.state.editor.language === '' ? 'en' : store.state.editor.language
@@ -82,6 +86,9 @@ function loadLibrary()
     ).
     then(response =>
     {
+        if (requestId !== libraryRequestId)
+            return;
+
         const result = [];
         const data = response.data;
 
@@ -179,7 +186,12 @@ function FocusCanvas()
 
 onMounted(() =>
 {
-    loadLibrary();
+    // MainLayout sets the language after the children are mounted; the watch
+    // below then loads the library with the correct language. Requesting it
+    // here with the '' fallback would fetch the English tree first and the
+    // two racing responses can leave the English one on the screen.
+    if (store.state.editor.language !== '')
+        loadLibrary();
 })
 
 onBeforeUnmount(() =>

@@ -117,5 +117,6 @@ export default {
     'Second derivative': 'Second derivative',
     'Partial derivative': 'Partial derivative',
     'Derivative at point': 'Derivative at point',
+    'Function at point': 'Function at point',
     'Evaluate at point': 'Evaluate at point'
 };

@@ -217,6 +217,9 @@
             <q-btn size="14px" square dense @click="onEvalutionBar();" icon="img:/images/algebra/evalution_bar.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Evaluate at point') }}</q-tooltip>
             </q-btn>
+            <q-btn size="14px" square dense @click="onFunctionAtPoint();" icon="img:/images/algebra/function_at_point.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function at point') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" square dense @click="onInfinity();">
                 ∞
@@ -1083,9 +1086,14 @@ export default defineComponent(
             Module.cwrap('OnDerivativeAtPoint', 'void', [])()
         },
 
+        onFunctionAtPoint()
+        {
+            Module.cwrap('OnFunctionAtPoint', 'void', [])()
+        },
+
         onEvalutionBar()
         {
-            Module.cwrap('OnEvalutionBar', 'void', [])()
+            Module.cwrap('OnEvaluationBar', 'void', [])()
         },
 
         onInfinity()

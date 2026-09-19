@@ -1751,6 +1751,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDerivativeAtPoint()
     document->InsertDerivativeAtPoint(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFunctionAtPoint()
+{
+    if (!document)
+        return;
+    document->InsertFunctionAtPoint(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnEvaluationBar()
 {
     if (!document)

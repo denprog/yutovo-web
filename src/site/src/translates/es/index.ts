@@ -156,6 +156,7 @@ export default {
     'Second derivative': 'Derivada segunda',
     'Partial derivative': 'Derivada parcial',
     'Derivative at point': 'Derivada en un punto',
+    'Function at point': 'Función en un punto',
     'Evaluate at point': 'Evaluar en un punto',
     'Infinity': 'Infinito',
     'Assignment': 'Asignación',

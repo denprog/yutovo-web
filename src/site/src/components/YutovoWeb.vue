@@ -319,6 +319,9 @@
             <q-btn id="graph-line-button" size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
             </q-btn>
+            <q-btn id="graph-surface-button" size="14px" square dense @click="onGraphSurface();" icon="img:/images/graphs/graph_surface.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Surface graph') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
@@ -1149,6 +1152,11 @@ export default defineComponent(
         onGraphLine()
         {
             Module.cwrap('OnGraphLine', 'void', [])()
+        },
+
+        onGraphSurface()
+        {
+            Module.cwrap('OnGraphSurface', 'void', [])()
         },
 
         onCurrency(currency: string)

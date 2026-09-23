@@ -152,6 +152,11 @@ async function insertGraphLine(page)
     await page.locator('#graph-line-button').first().evaluate((el) => el.click());
 }
 
+async function insertGraphSurface(page)
+{
+    await page.locator('#graph-surface-button').first().evaluate((el) => el.click());
+}
+
 async function copyGraphImage(page)
 {
     await jsClick(page, '#copy-graph-image');
@@ -426,6 +431,7 @@ module.exports =
     writeText,
     insertCode,
     insertGraphLine,
+    insertGraphSurface,
     copyGraphImage,
     clickIdentifier,
     getDocumentName,

@@ -7,6 +7,7 @@
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ $t('Plot format') }}</div>
                         <q-input ref="widthRef" square v-model="width" :rules="[this.intRequired]" v-bind:label="$t('Thickness')" />
+                        <q-select v-if="surface" square v-model="style" :options="styleOptions" v-bind:label="$t('Style')" />
                         <div>{{ $t('Color') }}
                             <q-btn :style="{ 'background-color': color }" @click='onColor();'></q-btn>
                         </div>
@@ -34,14 +35,19 @@ export default {
     props:
     [
         'width_prop',
-        'color_prop'
+        'color_prop',
+        'style_prop',
+        'surface_prop'
     ],
 
     data()
     {
         return {
             width_val: this.width_prop,
-            color_val: this.color_prop
+            color_val: this.color_prop,
+            style_val: this.style_prop,
+            surface_val: this.surface_prop,
+            styleOptions: [this.$t('Color by height'), this.$t('Solid color'), this.$t('Color by height with mesh'), this.$t('Wireframe'), this.$t('Points')]
         }
     },
 
@@ -68,6 +74,26 @@ export default {
             set(value)
             {
                 this.color_val = value;
+            }
+        },
+
+        style:
+        {
+            get()
+            {
+                return this.styleOptions[this.style_val];
+            },
+            set(value)
+            {
+                this.style_val = this.styleOptions.indexOf(value);
+            }
+        },
+
+        surface:
+        {
+            get()
+            {
+                return this.surface_val;
             }
         }
     },
@@ -117,7 +143,7 @@ export default {
 
         onSubmit()
         {
-            Module.cwrap('OnPlotFormat', 'void', ['string', 'int'])(this.color, this.width);
+            Module.cwrap('OnPlotFormat', 'void', ['string', 'int', 'int'])(this.color, this.width, this.style_val);
             this.plotFormatDialog.hide();
         }
     }

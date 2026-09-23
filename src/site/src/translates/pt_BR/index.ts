@@ -106,6 +106,13 @@ export default {
     'Graph format': 'Formato do gráfico',
     'Copy image': 'Copiar imagem',
     'Plot format': 'Formato do gráfico',
+    'Thickness': 'Espessura',
+    'Style': 'Estilo',
+    'Color by height': 'Preenchimento por altura',
+    'Solid color': 'Cor sólida',
+    'Color by height with mesh': 'Preenchimento por altura com malha',
+    'Wireframe': 'Wireframe',
+    'Points': 'Pontos',
 
     'Present as': 'Apresentar como',
     'Auto': 'Automático',

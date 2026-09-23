@@ -106,6 +106,13 @@ export default {
     'Graph format': 'Формат графика',
     'Copy image': 'Копировать изображение',
     'Plot format': 'Формат графика',
+    'Thickness': 'Толщина',
+    'Style': 'Стиль',
+    'Color by height': 'Заливка по высоте',
+    'Solid color': 'Однотонная заливка',
+    'Color by height with mesh': 'Заливка по высоте с сеткой',
+    'Wireframe': 'Каркас',
+    'Points': 'Точки',
 
     'Present as': 'Представить как',
     'Auto': 'Автоподбор',

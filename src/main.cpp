@@ -58,6 +58,7 @@ WebPdfWindowPtr web_pdf_window;
 
 std::string res_json;
 ElementId mouse_capture_id;
+ElementId plot_format_id; //the graph whose marker opened the plot format dialog
 std::atomic_bool resize{false};
 
 std::atomic_bool create_document{false};
@@ -285,14 +286,16 @@ EM_JS(void, DocumentChanged, (const int changed),
             }));
     });
 
-EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width),
+EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width, const int style, const int surface),
     {
-        window.dispatchEvent(new CustomEvent('plotFormatDialog', 
+        window.dispatchEvent(new CustomEvent('plotFormatDialog',
             {
-                'detail': 
+                'detail':
                 {
                     'color': UTF8ToString(color, color_size),
-                    'width': width
+                    'width': width,
+                    'style': style,
+                    'surface': surface
                 }
             }));
     });
@@ -727,7 +730,7 @@ EM_BOOL OnMouseMove(int event_type, const EmscriptenMouseEvent* mouse_event, voi
         return true;
     }
 
-    if (args->document->MouseMove(x, y))
+    if (args->document->MouseMove(x, y, mouse_event->shiftKey))
         return true;
     
     if (args->document->GetElementAtCoords(x, y, 0, id))
@@ -800,8 +803,10 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
                     yutovo::PlotFormat f;
                     if (!document->GetPlotFormat(hold_id, f))
                         return true;
+                    plot_format_id = hold_id;
                     std::string color = f.color.ToHex();
-                    PlotFormatDialog(color.c_str(), color.size(), f.width);
+                    PlotFormatDialog(color.c_str(), color.size(), f.width, (int)f.style,
+                        document->GetElementType(hold_id) == ElementType::GRAPH_SURFACE);
                 }
                 return true;
             default:
@@ -1444,9 +1449,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
 {
-    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE)
+    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE || document->GetCurrentElementType() == ElementType::GRAPH_SURFACE)
         return 1;
-    return document->FindCurrentParentByType(ElementType::GRAPH_LINE) != ElementId{};
+    return document->FindCurrentParentByType(ElementType::GRAPH_LINE) != ElementId{} ||
+        document->FindCurrentParentByType(ElementType::GRAPH_SURFACE) != ElementId{};
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
@@ -1479,11 +1485,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
 {
     res_json = "";
-    EditorState s = document->GetEditorState();
+    ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
     GraphFormat f;
-    if (document->GetGraphFormat(yutovo::GetParent(s.caret_state.id), f))
+    if (!id.empty() && document->GetGraphFormat(id, f))
     {
-        res_json = "{\"width\":" + std::to_string(f.size.width) + ",\"height\":" + std::to_string(f.size.height) + 
+        res_json = "{\"width\":" + std::to_string(f.size.width) + ",\"height\":" + std::to_string(f.size.height) +
             ",\"color\":\"" + f.color.ToHex() + "\",\"grid_width\":" + std::to_string(f.grid_width) + "}";
     }
     return (char*)res_json.c_str();
@@ -1494,6 +1502,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphImage()
     res_json = "";
     EditorState s = document->GetEditorState();
     ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
     if (id.empty())
         id = yutovo::GetParent(s.caret_state.id);
     std::vector<unsigned char> png;
@@ -1790,7 +1800,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphLine()
 {
     if (!document)
         return;
-    document->InsertGraph(true);
+    document->InsertGraphLine(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphSurface()
+{
+    if (!document)
+        return;
+    document->InsertGraphSurface(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
@@ -2076,19 +2093,30 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int width, const int height, const char* color, const int grid_width)
 {
-    EditorState s = document->GetEditorState();
-    if (s.caret_state.IsEmpty())
+    //the graph must be found among the caret ancestors - GetParent(caret) is only the nearest element and fails for rows inside the graph
+    ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
+    if (id.empty())
         return;
-    document->SetGraphFormat(yutovo::GetParent(s.caret_state.id), GraphFormat{Size{width, height}, Color::FromHex(color), (uint)grid_width}, true);
+    document->SetGraphFormat(id, GraphFormat{Size{width, height}, Color::FromHex(color), (uint)grid_width}, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int width)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int width, const int style)
 {
-    EditorState s = document->GetEditorState();
-    if (s.caret_state.IsEmpty())
+    //the dialog is opened by a marker click which does not move the caret - use the stored graph id
+    ElementId id = plot_format_id;
+    if (id.empty())
+    {
+        id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
+        if (id.empty())
+            id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
+    }
+    if (id.empty())
         return;
-    yutovo::PlotFormat f{Color::FromHex(color), (uint)width};
-    document->SetPlotFormat(yutovo::GetParent(s.caret_state.id), f, true);
+    yutovo::PlotFormat f{Color::FromHex(color), (uint)width, (yutovo::SurfaceStyle)style};
+    document->SetPlotFormat(id, f, true);
+    plot_format_id = ElementId{};
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)

@@ -7,7 +7,7 @@
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ $t('Plot format') }}</div>
                         <q-input ref="widthRef" square v-model="width" :rules="[this.intRequired]" v-bind:label="$t('Thickness')" />
-                        <q-select v-if="surface" square v-model="style" :options="styleOptions" v-bind:label="$t('Style')" />
+                        <q-select v-if="surface || histogram" square v-model="style" :options="styleOptions" v-bind:label="$t('Style')" />
                         <div>{{ $t('Color') }}
                             <q-btn :style="{ 'background-color': color }" @click='onColor();'></q-btn>
                         </div>
@@ -37,17 +37,22 @@ export default {
         'width_prop',
         'color_prop',
         'style_prop',
-        'surface_prop'
+        'surface_prop',
+        'histogram_prop'
     ],
 
     data()
     {
+        const histogram = this.histogram_prop;
         return {
             width_val: this.width_prop,
             color_val: this.color_prop,
             style_val: this.style_prop,
             surface_val: this.surface_prop,
-            styleOptions: [this.$t('Color by height'), this.$t('Solid color'), this.$t('Color by height with mesh'), this.$t('Wireframe'), this.$t('Points')]
+            histogram_val: histogram,
+            styleOptions: histogram ?
+                [this.$t('Bars'), this.$t('Bars with line'), this.$t('Bars without gaps'), this.$t('Stems'), this.$t('Area'), this.$t('Step'), this.$t('Marks')] :
+                [this.$t('Color by height'), this.$t('Solid color'), this.$t('Color by height with mesh'), this.$t('Wireframe'), this.$t('Points')]
         }
     },
 
@@ -94,6 +99,14 @@ export default {
             get()
             {
                 return this.surface_val;
+            }
+        },
+
+        histogram:
+        {
+            get()
+            {
+                return this.histogram_val;
             }
         }
     },

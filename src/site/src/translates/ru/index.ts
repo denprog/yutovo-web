@@ -113,6 +113,13 @@ export default {
     'Color by height with mesh': 'Заливка по высоте с сеткой',
     'Wireframe': 'Каркас',
     'Points': 'Точки',
+    'Bars': 'Столбики',
+    'Bars with line': 'Столбики с линией',
+    'Bars without gaps': 'Столбики без промежутков',
+    'Stems': 'Линии спектрограммы',
+    'Area': 'Область под линией',
+    'Step': 'Ступени',
+    'Marks': 'Метки',
 
     'Present as': 'Представить как',
     'Auto': 'Автоподбор',
@@ -274,6 +281,7 @@ export default {
     'Others': 'Другие',
 
     'Line graph': 'Линейный график',
+    'Histogram': 'Гистограмма',
     'Width': 'Ширина',
     'Height': 'Высота',
     'Plot color': 'Цвет графика',

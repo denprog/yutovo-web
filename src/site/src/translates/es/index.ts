@@ -112,6 +112,14 @@ export default {
     'Color by height with mesh': 'Relleno por altura con malla',
     'Wireframe': 'Wireframe',
     'Points': 'Puntos',
+    'Histogram': 'Histograma',
+    'Bars': 'Barras',
+    'Bars with line': 'Barras con línea',
+    'Bars without gaps': 'Barras sin huecos',
+    'Stems': 'Líneas de espectrograma',
+    'Area': 'Área bajo la línea',
+    'Step': 'Escalones',
+    'Marks': 'Marcas',
 
     'Present as': 'Presentar como',
     'Auto': 'Selección automática',
@@ -366,6 +374,7 @@ export default {
     'Background selection': 'Fondo de selección',
 
     'Line graph': 'Gráfica lineal',
+    'Histogram': 'Histograma',
     'Width': 'Ancho',
     'Height': 'Altura',
     'Grid thickness': 'Grosor de cuadrícula',

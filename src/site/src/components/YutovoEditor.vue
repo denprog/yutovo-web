@@ -1083,11 +1083,12 @@ function plotFormatDialog(event: any)
     const width = event.detail.width;
     const style = event.detail.style;
     const surface = event.detail.surface;
+    const histogram = event.detail.histogram;
     $q.dialog({
         component: PlotFormatDialog,
         parent: instance!.proxy,
         apiResponse: (instance!.proxy as any).resp,
-        componentProps: { width_prop: width, color_prop: color, style_prop: style, surface_prop: surface }
+        componentProps: { width_prop: width, color_prop: color, style_prop: style, surface_prop: surface, histogram_prop: histogram }
     });
     canvasFocus();
 }

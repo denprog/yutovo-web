@@ -286,7 +286,7 @@ EM_JS(void, DocumentChanged, (const int changed),
             }));
     });
 
-EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width, const int style, const int surface),
+EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width, const int style, const int surface, const int histogram),
     {
         window.dispatchEvent(new CustomEvent('plotFormatDialog',
             {
@@ -295,7 +295,8 @@ EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int w
                     'color': UTF8ToString(color, color_size),
                     'width': width,
                     'style': style,
-                    'surface': surface
+                    'surface': surface,
+                    'histogram': histogram
                 }
             }));
     });
@@ -805,8 +806,10 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
                         return true;
                     plot_format_id = hold_id;
                     std::string color = f.color.ToHex();
-                    PlotFormatDialog(color.c_str(), color.size(), f.width, (int)f.style,
-                        document->GetElementType(hold_id) == ElementType::GRAPH_SURFACE);
+                    const ElementType type = document->GetElementType(hold_id);
+                    PlotFormatDialog(color.c_str(), color.size(), f.width,
+                        type == ElementType::GRAPH_HISTOGRAM ? (int)f.histogram_style : (int)f.style,
+                        type == ElementType::GRAPH_SURFACE, type == ElementType::GRAPH_HISTOGRAM);
                 }
                 return true;
             default:
@@ -1449,10 +1452,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
 {
-    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE || document->GetCurrentElementType() == ElementType::GRAPH_SURFACE)
+    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE || document->GetCurrentElementType() == ElementType::GRAPH_SURFACE ||
+        document->GetCurrentElementType() == ElementType::GRAPH_HISTOGRAM)
         return 1;
     return document->FindCurrentParentByType(ElementType::GRAPH_LINE) != ElementId{} ||
-        document->FindCurrentParentByType(ElementType::GRAPH_SURFACE) != ElementId{};
+        document->FindCurrentParentByType(ElementType::GRAPH_SURFACE) != ElementId{} ||
+        document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM) != ElementId{};
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
@@ -1488,6 +1493,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
     ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
     GraphFormat f;
     if (!id.empty() && document->GetGraphFormat(id, f))
     {
@@ -1504,6 +1511,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphImage()
     ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
     if (id.empty())
         id = yutovo::GetParent(s.caret_state.id);
     std::vector<unsigned char> png;
@@ -1810,6 +1819,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphSurface()
     document->InsertGraphSurface(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphHistogram()
+{
+    if (!document)
+        return;
+    document->InsertGraphHistogram(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
 {
     if (!document)
@@ -2098,6 +2114,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int width, const int he
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
     if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
+    if (id.empty())
         return;
     document->SetGraphFormat(id, GraphFormat{Size{width, height}, Color::FromHex(color), (uint)grid_width}, true);
 }
@@ -2111,10 +2129,18 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int w
         id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
         if (id.empty())
             id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
+        if (id.empty())
+            id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
     }
     if (id.empty())
         return;
-    yutovo::PlotFormat f{Color::FromHex(color), (uint)width, (yutovo::SurfaceStyle)style};
+    yutovo::PlotFormat f;
+    f.color = Color::FromHex(color);
+    f.width = (uint)width;
+    if (document->GetElementType(id) == ElementType::GRAPH_HISTOGRAM)
+        f.histogram_style = (yutovo::HistogramStyle)style;
+    else
+        f.style = (yutovo::SurfaceStyle)style;
     document->SetPlotFormat(id, f, true);
     plot_format_id = ElementId{};
 }

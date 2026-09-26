@@ -1452,12 +1452,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
 {
-    if (document->GetCurrentElementType() == ElementType::GRAPH_LINE || document->GetCurrentElementType() == ElementType::GRAPH_SURFACE ||
-        document->GetCurrentElementType() == ElementType::GRAPH_HISTOGRAM)
-        return 1;
-    return document->FindCurrentParentByType(ElementType::GRAPH_LINE) != ElementId{} ||
-        document->FindCurrentParentByType(ElementType::GRAPH_SURFACE) != ElementId{} ||
-        document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM) != ElementId{};
+    return document->FindCurrentGraph() != ElementId{};
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
@@ -1490,11 +1485,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
 {
     res_json = "";
-    ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
+    ElementId id = document->FindCurrentGraph();
     GraphFormat f;
     if (!id.empty() && document->GetGraphFormat(id, f))
     {
@@ -1508,11 +1499,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphImage()
 {
     res_json = "";
     EditorState s = document->GetEditorState();
-    ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
+    ElementId id = document->FindCurrentGraph();
     if (id.empty())
         id = yutovo::GetParent(s.caret_state.id);
     std::vector<unsigned char> png;
@@ -2109,12 +2096,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int width, const int height, const char* color, const int grid_width)
 {
-    //the graph must be found among the caret ancestors - GetParent(caret) is only the nearest element and fails for rows inside the graph
-    ElementId id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
+    //FindCurrentGraph also covers the caret standing on the graph picture itself
+    ElementId id = document->FindCurrentGraph();
     if (id.empty())
         return;
     document->SetGraphFormat(id, GraphFormat{Size{width, height}, Color::FromHex(color), (uint)grid_width}, true);
@@ -2125,13 +2108,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int w
     //the dialog is opened by a marker click which does not move the caret - use the stored graph id
     ElementId id = plot_format_id;
     if (id.empty())
-    {
-        id = document->FindCurrentParentByType(ElementType::GRAPH_LINE);
-        if (id.empty())
-            id = document->FindCurrentParentByType(ElementType::GRAPH_SURFACE);
-        if (id.empty())
-            id = document->FindCurrentParentByType(ElementType::GRAPH_HISTOGRAM);
-    }
+        id = document->FindCurrentGraph();
     if (id.empty())
         return;
     yutovo::PlotFormat f;

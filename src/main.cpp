@@ -1490,7 +1490,9 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
     if (!id.empty() && document->GetGraphFormat(id, f))
     {
         res_json = "{\"width\":" + std::to_string(f.size.width) + ",\"height\":" + std::to_string(f.size.height) +
-            ",\"color\":\"" + f.color.ToHex() + "\",\"grid_width\":" + std::to_string(f.grid_width) + "}";
+            ",\"color\":\"" + f.color.ToHex() + "\",\"grid_width\":" + std::to_string(f.grid_width) +
+            ",\"axis\":{\"color\":\"" + f.axis.color.ToHex() + "\",\"width\":" + std::to_string(f.axis.width) +
+            ",\"ticks\":" + (f.axis.ticks ? "1" : "0") + "}}";
     }
     return (char*)res_json.c_str();
 }
@@ -2094,13 +2096,21 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
         document->SetComplexForm(_id, (ComplexForm)complex_form, true);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int width, const int height, const char* color, const int grid_width)
+extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphFormat(const int width, const int height, const char* color, const int grid_width,
+    const char* axis_color, const int axis_width, const int axis_ticks)
 {
     //FindCurrentGraph also covers the caret standing on the graph picture itself
     ElementId id = document->FindCurrentGraph();
     if (id.empty())
         return;
-    document->SetGraphFormat(id, GraphFormat{Size{width, height}, Color::FromHex(color), (uint)grid_width}, true);
+    GraphFormat f;
+    f.size = Size{width, height};
+    f.color = Color::FromHex(color);
+    f.grid_width = (uint)grid_width;
+    f.axis.color = Color::FromHex(axis_color);
+    f.axis.width = (uint)axis_width;
+    f.axis.ticks = axis_ticks != 0;
+    document->SetGraphFormat(id, f, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPlotFormat(const char* color, const int width, const int style)

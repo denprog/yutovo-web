@@ -1012,7 +1012,10 @@ function onGraphFormat()
             width_prop: json.width,
             height_prop: json.height,
             color_prop: json.color,
-            grid_width_prop: json.grid_width
+            grid_width_prop: json.grid_width,
+            axis_color_prop: json.axis.color,
+            axis_width_prop: json.axis.width,
+            axis_ticks_prop: json.axis.ticks == 1
         }
     });
     canvasFocus();

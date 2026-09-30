@@ -147,4 +147,62 @@ test.describe('Graphs', () =>
         const text = await page.evaluate(() => window.getText());
         expect(text).toContain('graph_line(');
     });
+
+    test('set the axis format of a graph', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+        await utils.setLanguage(page, 'English');
+        await page.waitForTimeout(1000);
+
+        const canvas = await page.locator('#canvas');
+        const box = await canvas.boundingBox();
+        await page.mouse.click(box.x + 50, box.y + 50);
+        await page.waitForTimeout(500);
+        await utils.insertCode(page);
+        await page.waitForTimeout(1000);
+        await utils.insertGraphLine(page);
+        await page.waitForTimeout(2000);
+
+        //fill in the graph: y_top=100, expression=x, y_bottom=1, x_left=1, variable=x, x_right=10
+        await page.keyboard.type('100');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('x');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('1');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('1');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('x');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('10');
+        await page.waitForTimeout(3000);
+
+        //open the graph format dialog from the context menu
+        const box2 = await canvas.boundingBox();
+        await page.mouse.click(box2.x + 120, box2.y + 120, { button: 'right' });
+        await page.waitForTimeout(800);
+        await expect(page.locator('#graph-format')).toBeVisible({ timeout: 2000 });
+        await page.locator('#graph-format').evaluate((el) => el.click());
+        await page.locator('.q-dialog').first().waitFor({ state: 'visible', timeout: 5000 });
+
+        //check the initial axis format
+        let format = await page.evaluate(() => JSON.parse(UTF8ToString(Module.cwrap('GetGraphFormat', 'number', [])())));
+        expect(format.axis.ticks).toBe(1);
+        expect(format.axis.width).toBe(1);
+
+        //set a zero axis thickness (the axis lines disappear) and hide the tick marks
+        await page.getByRole('textbox', { name: 'Axis thickness' }).fill('0');
+        await page.locator('.q-dialog .q-checkbox', { hasText: 'Show ticks' }).first().click();
+        await page.waitForTimeout(500);
+        await page.locator('.q-dialog #submit').first().evaluate((el) => el.click());
+        await page.waitForTimeout(1000);
+
+        //the format is stored on the graph
+        format = await page.evaluate(() => JSON.parse(UTF8ToString(Module.cwrap('GetGraphFormat', 'number', [])())));
+        expect(format.axis.ticks).toBe(0);
+        expect(format.axis.width).toBe(0);
+        expect(format.width).toBe(400);
+        expect(format.height).toBe(400);
+    });
 });

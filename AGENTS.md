@@ -5,6 +5,7 @@
 - **Never change test semantics.** Tests document expected behavior. If a test fails, fix the application code, not the test assertion.
 - All Playwright tests run against `https://www.yutovo.ru` with Chrome `--host-resolver-rules=MAP www.yutovo.ru 127.0.0.1` so the browser resolves the domain to the local nginx instance.
 - Do not replace assertions, expected values, or test URLs to make a test pass.
+- **Do not create a new spec file per feature or task.** Add new tests to the existing topical spec file (`graph.spec.js` for graphs, `solve.spec.js` for solving, `documents.spec.js` for documents, and so on). Create a new spec file only for a genuinely new test area.
 
 ## URL Behavior
 

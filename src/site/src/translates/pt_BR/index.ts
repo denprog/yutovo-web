@@ -113,7 +113,6 @@ export default {
     'Color by height with mesh': 'Preenchimento por altura com malha',
     'Wireframe': 'Wireframe',
     'Points': 'Pontos',
-    'Histogram': 'Histograma',
     'Bars': 'Barras',
     'Bars with line': 'Barras com linha',
     'Bars without gaps': 'Barras sem espaços',
@@ -381,6 +380,10 @@ export default {
     'Plot color': 'Cor do gráfico',
     'Plot width': 'Espessura do gráfico',
     'Grid thickness': 'Espessura da grade',
+    'Grid color': 'Cor da grade',
+    'Axis color': 'Cor dos eixos',
+    'Axis thickness': 'Espessura dos eixos',
+    'Show ticks': 'Mostrar marcações',
     'Color': 'Cor',
 
     'This document was created with ': 'Este documento foi criado com ',

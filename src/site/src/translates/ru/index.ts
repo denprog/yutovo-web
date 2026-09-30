@@ -287,6 +287,10 @@ export default {
     'Plot color': 'Цвет графика',
     'Plot width': 'Толщина графика',
     'Grid thickness': 'Толщина сетки',
+    'Grid color': 'Цвет сетки',
+    'Axis color': 'Цвет осей',
+    'Axis thickness': 'Толщина осей',
+    'Show ticks': 'Показать деления',
     'Color': 'Цвет',
 
     'Page settings': 'Настройки страницы',

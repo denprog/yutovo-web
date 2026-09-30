@@ -112,7 +112,6 @@ export default {
     'Color by height with mesh': 'Relleno por altura con malla',
     'Wireframe': 'Wireframe',
     'Points': 'Puntos',
-    'Histogram': 'Histograma',
     'Bars': 'Barras',
     'Bars with line': 'Barras con línea',
     'Bars without gaps': 'Barras sin huecos',
@@ -378,6 +377,10 @@ export default {
     'Width': 'Ancho',
     'Height': 'Altura',
     'Grid thickness': 'Grosor de cuadrícula',
+    'Grid color': 'Color de cuadrícula',
+    'Axis color': 'Color de ejes',
+    'Axis thickness': 'Grosor de ejes',
+    'Show ticks': 'Mostrar marcas',
     'Thickness': 'Grosor',
     'Color': 'Color',
 

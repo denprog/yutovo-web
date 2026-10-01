@@ -535,6 +535,7 @@ async function onCopy()
     Module.cwrap('OnCopy', 'void', [])();
     const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
     const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
+    const clipboard_image = UTF8ToString(Module.cwrap('GetClipboardImage', 'number', [])());
     try
     {
         if (navigator.userAgent.toLowerCase().includes('firefox'))
@@ -548,12 +549,20 @@ async function onCopy()
         }
         else
         {
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    'text/plain': new Blob([clipboard_text], { type: 'text/plain' }),
-                    'web yutovo/elements': new Blob([clipboard_json], { type: 'web yutovo/elements' })
-                })
-            ]);
+            const items = {
+                'text/plain': new Blob([clipboard_text], { type: 'text/plain' }),
+                'web yutovo/elements': new Blob([clipboard_json], { type: 'web yutovo/elements' })
+            };
+            //a single copied picture also goes to the clipboard as a PNG image
+            if (clipboard_image !== '')
+            {
+                const binary = atob(clipboard_image.substring(clipboard_image.indexOf(',') + 1));
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++)
+                    bytes[i] = binary.charCodeAt(i);
+                items['image/png'] = new Blob([bytes], { type: 'image/png' });
+            }
+            await navigator.clipboard.write([new ClipboardItem(items)]);
             jsonClipboard.value = '';
         }
     }
@@ -571,6 +580,7 @@ async function onCut()
     Module.cwrap('OnCut', 'void', [])();
     const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
     const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
+    const clipboard_image = UTF8ToString(Module.cwrap('GetClipboardImage', 'number', [])());
     try
     {
         if (navigator.userAgent.toLowerCase().includes('firefox'))
@@ -584,12 +594,20 @@ async function onCut()
         }
         else
         {
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    'text/plain': new Blob([clipboard_text], { type: 'text/plain' }),
-                    'web yutovo/elements': new Blob([clipboard_json], { type: 'web yutovo/elements' })
-                })
-            ]);
+            const items = {
+                'text/plain': new Blob([clipboard_text], { type: 'text/plain' }),
+                'web yutovo/elements': new Blob([clipboard_json], { type: 'web yutovo/elements' })
+            };
+            //a single copied picture also goes to the clipboard as a PNG image
+            if (clipboard_image !== '')
+            {
+                const binary = atob(clipboard_image.substring(clipboard_image.indexOf(',') + 1));
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++)
+                    bytes[i] = binary.charCodeAt(i);
+                items['image/png'] = new Blob([bytes], { type: 'image/png' });
+            }
+            await navigator.clipboard.write([new ClipboardItem(items)]);
             jsonClipboard.value = '';
         }
     }

@@ -37,6 +37,7 @@ yutovo::Point left_click_pos;
 
 std::u32string clipboard_json, clipboard_text;
 std::string clipboard_image;
+std::vector<unsigned char> clipboard_png;
 
 std::string save_json;
 
@@ -1158,7 +1159,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnCut()
 {
     if (!document)
         return;
-    uint t = document->Cut(clipboard_json, clipboard_text);
+    uint t = document->Cut(clipboard_json, clipboard_text, clipboard_png);
     document->WaitTask(t);
 }
 
@@ -1166,7 +1167,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnCopy()
 {
     if (!document)
         return;
-    uint t = document->Copy(clipboard_json, clipboard_text);
+    uint t = document->Copy(clipboard_json, clipboard_text, clipboard_png);
     document->WaitTask(t);
 }
 
@@ -1199,6 +1200,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardText()
 extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardJson()
 {
     return (char*)clipboard_json.c_str();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardImage()
+{
+    res_json = "";
+    if (!clipboard_png.empty())
+        res_json = "data:image/png;base64," + Base64Encode(clipboard_png);
+    return (char*)res_json.c_str();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardText(const char* value)

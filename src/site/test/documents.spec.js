@@ -454,6 +454,95 @@ test.describe('Documents', () =>
         expect(await utils.documentContains(page, 'test_1document_')).toBe(true);
     });
 
+    test('copy an image into the system clipboard as PNG', async ({ page, context }) =>
+    {
+        await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+
+        await page.waitForSelector('#canvas', { timeout: 10000 });
+        await page.waitForTimeout(2000);
+
+        //make a small PNG and insert it into the document through the paste pipeline
+        const dataUrl = await page.evaluate(() =>
+        {
+            const c = document.createElement('canvas');
+            c.width = 8;
+            c.height = 8;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(0, 0, 8, 8);
+            return c.toDataURL('image/png');
+        });
+
+        await utils.writeText(page, 'a');
+        await page.evaluate((url) =>
+        {
+            Module.cwrap('SetClipboardImage', 'void', ['string'])(url);
+            Module.cwrap('OnPaste', 'void', [])();
+        }, dataUrl);
+        await page.waitForTimeout(1000);
+
+        //the caret stands after the image, select it
+        await page.locator('#canvas').evaluate((el) => el.focus());
+        await page.keyboard.press('Shift+ArrowLeft');
+        await page.waitForTimeout(500);
+
+        await utils.copy(page);
+        await page.waitForTimeout(1000);
+
+        //the system clipboard carries the PNG image next to the internal format
+        const clipboard = await page.evaluate(async () =>
+        {
+            const items = await navigator.clipboard.read();
+            const types = items.flatMap((item) => item.types);
+            let png = null;
+            for (const item of items)
+            {
+                if (item.types.includes('image/png'))
+                {
+                    const blob = await item.getType('image/png');
+                    const buffer = new Uint8Array(await blob.arrayBuffer());
+                    let binary = '';
+                    for (let i = 0; i < buffer.length; i++)
+                        binary += String.fromCharCode(buffer[i]);
+                    png = btoa(binary);
+                }
+            }
+            return { types, png };
+        });
+        expect(clipboard.types).toContain('image/png');
+        expect(clipboard.types).toContain('web yutovo/elements');
+
+        //the browser re-encodes PNG on the clipboard, so compare the decoded image, not the bytes
+        const imgInfo = await page.evaluate(async (b64) =>
+        {
+            const img = new Image();
+            img.src = 'data:image/png;base64,' + b64;
+            await new Promise((resolve) => { img.onload = resolve; });
+            const c = document.createElement('canvas');
+            c.width = img.width;
+            c.height = img.height;
+            const ctx = c.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            const d = ctx.getImageData(0, 0, 1, 1).data;
+            return { width: img.width, height: img.height, r: d[0], g: d[1], b: d[2] };
+        }, clipboard.png);
+        expect(imgInfo.width).toBe(8);
+        expect(imgInfo.height).toBe(8);
+        expect(imgInfo.r).toBeGreaterThan(200);
+        expect(imgInfo.g).toBe(0);
+        expect(imgInfo.b).toBe(0);
+
+        //the internal paste still inserts the image into the document
+        await page.keyboard.press('ArrowRight');
+        await page.waitForTimeout(300);
+        await utils.paste(page);
+        await page.waitForTimeout(1000);
+        const html = await page.evaluate(() => window.getHtml());
+        expect((html.match(/data:image\/png;base64,/g) || []).length).toBe(2);
+    });
+
     test('context menu copy and paste items', async ({ page }) =>
     {
         await utils.login(page, 'test1', '11');

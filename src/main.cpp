@@ -364,14 +364,7 @@ void MainLoop(void* arg)
             return;
         ElementId _id = GetParent(c.id);
         int code_block = document->GetParentId(c.id, ElementType::CODE_BLOCK) != ElementId{};
-        if (!document->IsString(document->GetElement(_id)) && !document->IsRow(document->GetElement(_id)))
-        {
-            format.Reset();
-
-            UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block);
-        }
-        else if (document->GetStringFormat(_id, format))
+        if (document->GetStringFormat(c.id, format))
         {
             auto text_color = format.text_color.ToHex();
             auto text_bg_color = format.text_bg_color.ToHex();
@@ -397,11 +390,19 @@ void MainLoop(void* arg)
                 }
             }
 
-            UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(), 
-                format.size, format.bold, format.italic, format.underline, format.strikethrough, format.subscript, format.superscript, text_color.c_str(), 
-                text_color.size(), text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left, 
-                paragraph_format.alignment == ParagraphFormat::Alignment::Center, paragraph_format.alignment == ParagraphFormat::Alignment::Right, 
+            UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(),
+                format.size, format.bold, format.italic, format.underline, format.strikethrough, format.subscript, format.superscript, text_color.c_str(),
+                text_color.size(), text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left,
+                paragraph_format.alignment == ParagraphFormat::Alignment::Center, paragraph_format.alignment == ParagraphFormat::Alignment::Right,
                 paragraph_format.alignment == ParagraphFormat::Alignment::Justify, code_block);
+        }
+        else
+        {
+            //no single format under the caret
+            format.Reset();
+
+            UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(),
+                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block);
         }
         
         static uint last_code_id = 0;
@@ -1775,6 +1776,20 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFunctionAtPoint()
     document->InsertFunctionAtPoint(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFunctionX()
+{
+    if (!document)
+        return;
+    document->InsertFunctionDefinition("f", {"x"}, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFunctionXY()
+{
+    if (!document)
+        return;
+    document->InsertFunctionDefinition("f", {"x", "y"}, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnEvaluationBar()
 {
     if (!document)
@@ -1851,6 +1866,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFontSize(const char* font_size)
     {
         return;
     }
+    if (s <= 0)
+        return;
     document->SetFontSize(s);
 }
 

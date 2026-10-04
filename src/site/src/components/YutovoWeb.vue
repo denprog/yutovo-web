@@ -220,6 +220,12 @@
             <q-btn size="14px" square dense @click="onFunctionAtPoint();" icon="img:/images/algebra/function_at_point.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function at point') }}</q-tooltip>
             </q-btn>
+            <q-btn id="function-x-button" size="14px" square dense @click="onFunctionX();" icon="img:/images/algebra/function_x.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function f(x)') }}</q-tooltip>
+            </q-btn>
+            <q-btn id="function-xy-button" size="14px" square dense @click="onFunctionXY();" icon="img:/images/algebra/function_xy.png">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function f(x,y)') }}</q-tooltip>
+            </q-btn>
             <q-separator vertical/>
             <q-btn size="14px" square dense @click="onInfinity();">
                 ∞
@@ -1095,6 +1101,16 @@ export default defineComponent(
         onFunctionAtPoint()
         {
             Module.cwrap('OnFunctionAtPoint', 'void', [])()
+        },
+
+        onFunctionX()
+        {
+            Module.cwrap('OnFunctionX', 'void', [])()
+        },
+
+        onFunctionXY()
+        {
+            Module.cwrap('OnFunctionXY', 'void', [])()
         },
 
         onEvalutionBar()

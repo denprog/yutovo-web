@@ -170,6 +170,8 @@ export default {
     'Partial derivative': 'Derivada parcial',
     'Derivative at point': 'Derivada en un punto',
     'Function at point': 'Función en un punto',
+    'Function f(x)': 'Función f(x)',
+    'Function f(x,y)': 'Función f(x,y)',
     'Evaluate at point': 'Evaluar en un punto',
     'Infinity': 'Infinito',
     'Assignment': 'Asignación',

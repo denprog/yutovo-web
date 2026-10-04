@@ -118,5 +118,7 @@ export default {
     'Partial derivative': 'Partial derivative',
     'Derivative at point': 'Derivative at point',
     'Function at point': 'Function at point',
+    'Function f(x)': 'Function f(x)',
+    'Function f(x,y)': 'Function f(x,y)',
     'Evaluate at point': 'Evaluate at point'
 };

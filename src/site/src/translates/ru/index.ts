@@ -171,6 +171,8 @@ export default {
     'Partial derivative': 'Частная производная',
     'Derivative at point': 'Производная в точке',
     'Function at point': 'Функция в точке',
+    'Function f(x)': 'Функция f(x)',
+    'Function f(x,y)': 'Функция f(x,y)',
     'Evaluate at point': 'Вычислить в точке',
     'Infinity': 'Бесконечность',
     'Assignment': 'Присваивание',

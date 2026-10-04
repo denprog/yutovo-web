@@ -64,4 +64,34 @@ test.describe('Functions', () =>
         const text = await page.evaluate(() => window.getText());
         expect(text).toContain('func(y)[y=3]=9');
     });
+
+    test('function button inserts the definition template', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+
+        const button = page.locator('img[src="/images/algebra/function_x.png"]').first();
+        await expect(button).toBeVisible();
+        await button.click(); //the f(x)= template with the caret after the assignment
+        await page.waitForTimeout(200);
+        await utils.writeText(page, 'x*x');
+        await page.waitForTimeout(500);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('f(x)=x*x');
+    });
+
+    test('function of two variables button inserts the definition template', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+
+        const button = page.locator('img[src="/images/algebra/function_xy.png"]').first();
+        await expect(button).toBeVisible();
+        await button.click(); //the f(x,y)= template with the caret after the assignment
+        await page.waitForTimeout(200);
+        await utils.writeText(page, 'x*y');
+        await page.waitForTimeout(500);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('f(x,y)=x*y');
+    });
 });

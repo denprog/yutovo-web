@@ -1647,7 +1647,7 @@ function includeDocument(event: any)
         .catch(
         function()
         {
-            alert('Error loading the include document');
+            alert(t('Error loading the include document') + ': ' + name);
         });
 }
 

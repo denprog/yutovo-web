@@ -319,12 +319,13 @@ void WebWindow::OnLoadResult(const uint task_id, IOResult result, const int docu
     load_ready = true;
 }
 
-void WebWindow::OnLoadInclude(const std::string& file_name, const int document_id)
+uint WebWindow::OnLoadInclude(const std::string& file_name, const int document_id)
 {
     printf("OnLoadInclude: %s\n", file_name.c_str());
     std::lock_guard<std::recursive_mutex> lock(results_mutex);
     include_documents.emplace_back(file_name, document_id);
     include_documents_ready = true;
+    return 0; //the include document will be loaded by a task created from JS, its id is not known here
 }
 
 void WebWindow::OnIdentifiersReceived(std::string json)

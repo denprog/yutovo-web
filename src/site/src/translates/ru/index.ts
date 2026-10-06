@@ -255,6 +255,7 @@ export default {
     'Locale': 'Язык',
     'Language': 'Язык',
     'Include documents' : 'Подключенные документы',
+    'Error loading the include document': 'Ошибка загрузки подключенного документа',
     'Exponential threshold': 'Порядок экспоненты',
     'Default angle measure': 'Мера угла по умолчанию',
     'Result angle measure': 'Мера угла результата',

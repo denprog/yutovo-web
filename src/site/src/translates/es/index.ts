@@ -254,6 +254,7 @@ export default {
     'Locale': 'Idioma',
     'Language': 'Idioma',
     'Include documents' : 'Documentos incluidos',
+    'Error loading the include document': 'Error al cargar el documento incluido',
     'Exponential threshold': 'Orden del exponente',
     'Default angle measure': 'Unidad de ángulo por defecto',
     'Result angle measure': 'Unidad de ángulo del resultado',

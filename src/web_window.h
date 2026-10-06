@@ -83,7 +83,7 @@ public:
     virtual void OnSaveResult(const uint task_id, IOResult result, const int document_id);
     virtual void OnLoadResult(const uint task_id, IOResult result, const int document_id);
 
-    virtual void OnLoadInclude(const std::string& file_name, const int document_id);
+    virtual uint OnLoadInclude(const std::string& file_name, const int document_id);
 
     virtual void OnIdentifiersReceived(std::string json);
 

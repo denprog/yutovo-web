@@ -1739,4 +1739,39 @@ test.describe('Documents', () =>
         await page.waitForTimeout(3000);
         expect(await utils.documentContains(page, 'user2_addition')).toBe(true);
     });
+
+    test('show an error when an include document is found by a correct path but its file is corrupted', async ({ page }) =>
+    {
+        //plant a corrupted include document for the test user: valid json, but not a valid document
+        await conn.query(`insert into user_documents (user_id, name, document)
+             values ((select user_id from users where login='test1'), 'broken.yut', '{"corrupted": true}'::jsonb)`);
+        await page.waitForSelector('#canvas', { timeout: 10000 });
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(2000);
+
+        //add the include document in the document properties
+        await page.locator('#settings-button').first().evaluate((el) => el.click());
+        await page.waitForTimeout(1000);
+        await page.getByRole('tab', { name: 'Include documents' }).click();
+        await page.waitForTimeout(1000);
+        await page.getByPlaceholder('Add...').fill('broken.yut');
+        await page.keyboard.press('Enter');
+        await page.waitForTimeout(500);
+
+        const dialogPromise = new Promise((resolve) =>
+            {
+                page.once('dialog', (dialog) => resolve(dialog));
+            });
+        await utils.clickOk(page, 'config-dialog');
+
+        //the include document is found by the correct path, but its content is not a valid document: an error must be shown
+        const dialog = await Promise.race(
+            [
+                dialogPromise,
+                new Promise((resolve, reject) => setTimeout(() => reject(new Error('no alert dialog was shown')), 30000))
+            ]);
+        expect(dialog.type()).toBe('alert');
+        expect(dialog.message()).toBe('Error loading the document');
+        await dialog.accept();
+    });
 });

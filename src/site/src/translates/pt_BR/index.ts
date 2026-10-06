@@ -255,6 +255,7 @@ export default {
     'Locale': 'Idioma',
     'Language': 'Idioma',
     'Include documents' : 'Documentos incluídos',
+    'Error loading the include document': 'Erro ao carregar o documento incluído',
     'Exponential threshold': 'Limite exponencial',
     'Default angle measure': 'Unidade de ângulo padrão',
     'Result angle measure': 'Unidade de ângulo do resultado',

@@ -68,6 +68,15 @@ test.describe('Solve', () =>
         expect(await utils.documentContains(page, 'Erro de sintaxe')).toBe(true);
     });
 
+    test('syntax error for 234 & 456= in German', async ({ page }) =>
+    {
+        await utils.setLanguage(page, 'Deutsch');
+        await utils.insertCode(page);
+        await utils.writeText(page, '234 & 456=');
+        await page.waitForTimeout(3000);
+        expect(await utils.documentContains(page, 'Syntaxfehler')).toBe(true);
+    });
+
     test('interrupt long definite integral', async ({ page }) =>
     {
         page.on('pageerror', err => console.log('PAGEERROR:', err.message));

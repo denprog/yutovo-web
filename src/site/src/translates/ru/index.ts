@@ -270,6 +270,7 @@ export default {
     'English_male': 'Английский',
     'Spanish_male': 'Испанский',
     'Portuguese_male': 'Бразильский португальский',
+    'German_male': 'Немецкий',
     'Indentation': 'Табуляция',
     'Tabs': 'Табуляция',
     'Spaces': 'Пробелы',

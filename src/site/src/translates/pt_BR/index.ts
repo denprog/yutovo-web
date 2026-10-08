@@ -271,6 +271,7 @@ export default {
     'Spanish_male': 'Espanhol',
     'Portuguese_male': 'Português brasileiro',
     'German_male': 'Alemão',
+    'French_male': 'Francês',
     'Indentation': 'Recuo',
     'Tabs': 'Tabulações',
     'Spaces': 'Espaços',

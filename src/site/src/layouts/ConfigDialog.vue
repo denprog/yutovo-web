@@ -327,7 +327,8 @@ export default
             { value: 'Russian',  label: tr.t('Russian_male') },
             { value: 'Spanish',  label: tr.t('Spanish_male') },
             { value: 'Portuguese',  label: tr.t('Portuguese_male') },
-            { value: 'German',  label: tr.t('German_male') }
+            { value: 'German',  label: tr.t('German_male') },
+            { value: 'French',  label: tr.t('French_male') }
         ]);
 
         const languageToInt = language =>
@@ -335,7 +336,8 @@ export default
             language === 'ru' ? 2 :
             language === 'es' ? 3 :
             language === 'pt_BR' ? 4 :
-            language === 'de' ? 5 : 0;
+            language === 'de' ? 5 :
+            language === 'fr' ? 6 : 0;
 
         const language = ref(
             typeof store.state.editor.config.language === 'undefined' ? 

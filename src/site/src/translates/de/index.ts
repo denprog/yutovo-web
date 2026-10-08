@@ -271,6 +271,7 @@ export default {
     'Spanish_male': 'Spanisch',
     'Portuguese_male': 'Brasilianisches Portugiesisch',
     'German_male': 'Deutsch',
+    'French_male': 'Französisch',
     'Indentation': 'Einrückung',
     'Tabs': 'Tabulatoren',
     'Spaces': 'Leerzeichen',

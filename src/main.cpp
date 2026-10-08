@@ -2318,6 +2318,8 @@ EM_JS(int, GetLanguage, (),
                     return 4;
                 if (lang.startsWith("de"))
                     return 5;
+                if (lang.startsWith("fr"))
+                    return 6;
                 return 0;
             }
         }

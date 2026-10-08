@@ -20,6 +20,7 @@ export default {
     'Spanish_male': 'Spanish',
     'Portuguese_male': 'Brazilian Portuguese',
     'German_male': 'German',
+    'French_male': 'French',
 
     'Send Feedback': 'Send Feedback',
     'Your name': 'Your name',

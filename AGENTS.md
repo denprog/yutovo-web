@@ -1,5 +1,9 @@
 # Agent Instructions
 
+## Agent Rules
+
+- **Never commit without explicit user permission.** Do not run `git commit`, `git push`, `git reset`, `git rebase`, or any other git mutations unless explicitly asked to do so. Ask for confirmation each time when git mutations are needed.
+
 ## Testing Rules
 
 - **Never change test semantics.** Tests document expected behavior. If a test fails, fix the application code, not the test assertion.

@@ -138,6 +138,23 @@
                 icon="img:/images/format/align_justify.png">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Justify align') }}</q-tooltip>
             </q-btn>
+            <q-separator vertical/>
+            <div class="unordered-list-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Unordered list') }}</q-tooltip>
+                <q-btn-dropdown id="unordered-list-button" flat size="14px" square dense no-caps :disable="!unordered_list_enable"
+                    icon="img:/images/format/unordered_list.png" @hide="onLettersHide();">
+                    <div class="q-pt-sm q-pb-sm column q-gutter-xs">
+                        <q-btn id="unordered-list-small-circle-item" class="unordered-list-item" align="left" flat square dense no-caps v-close-popup
+                            icon="img:/images/format/list_small_circle.png" :label="$t('Small circle')" @click="onUnorderedList(1);"/>
+                        <q-btn id="unordered-list-large-circle-item" class="unordered-list-item" align="left" flat square dense no-caps v-close-popup
+                            icon="img:/images/format/list_large_circle.png" :label="$t('Large circle')" @click="onUnorderedList(2);"/>
+                        <q-btn id="unordered-list-diamond-item" class="unordered-list-item" align="left" flat square dense no-caps v-close-popup
+                            icon="img:/images/format/list_diamond.png" :label="$t('Diamond')" @click="onUnorderedList(3);"/>
+                        <q-btn id="unordered-list-square-item" class="unordered-list-item" align="left" flat square dense no-caps v-close-popup
+                            icon="img:/images/format/list_square.png" :label="$t('Square')" @click="onUnorderedList(4);"/>
+                    </div>
+                </q-btn-dropdown>
+            </div>
         </q-btn-group>
     </div>
 
@@ -447,6 +464,7 @@ export default defineComponent(
             center_align_button_color: 'white',
             right_align_button_color: 'white',
             justify_align_button_color: 'white',
+            unordered_list_enable: false,
             scale: 100
         }
     },
@@ -599,6 +617,7 @@ export default defineComponent(
             this.center_align_button_color = (event.detail.center_align == 1 && !event.detail.code_block ? 'blue' : 'white')
             this.right_align_button_color = (event.detail.right_align == 1 && !event.detail.code_block ? 'blue' : 'white')
             this.justify_align_button_color = (event.detail.justify_align == 1 && !event.detail.code_block ? 'blue' : 'white')
+            this.unordered_list_enable = event.detail.unordered_list_enable == 1
 
             document.title = this.$t('Yutovo - visual online calculator')
         },
@@ -647,6 +666,12 @@ export default defineComponent(
         onParagraphFormat()
         {
             Module.cwrap('OnParagraphFormat', 'void', ['string'])(this.paragraph_format_model)
+            canvas.focus()
+        },
+
+        onUnorderedList(marker: number)
+        {
+            Module.cwrap('OnUnorderedList', 'void', ['number'])(marker)
             canvas.focus()
         },
 
@@ -1209,6 +1234,19 @@ export default defineComponent(
 
 .greek-letter-block
 {
+    border: 0px none;
+    overflow: hidden;
+}
+
+.unordered-list-block
+{
+    border: 0px none;
+    overflow: hidden;
+}
+
+.unordered-list-item
+{
+    width: 150px;
     border: 0px none;
     overflow: hidden;
 }

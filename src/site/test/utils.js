@@ -20,7 +20,8 @@ async function registerUser(page, username, password, email)
 async function login(page, username, password)
 {
     await page.waitForTimeout(1000);
-    await page.locator("xpath=//*[contains(text(), 'Login')] | //*[contains(text(), 'Войти')] | //*[contains(text(), 'Acceder')]").first().evaluate((el) => el.click());
+    await page.locator(
+        "xpath=//*[contains(text(), 'Login')] | //*[contains(text(), 'Войти')] | //*[contains(text(), 'Acceder')]").first().evaluate((el) => el.click());
     await page.waitForTimeout(1000);
     await page.locator("xpath=//input[contains(@class, 'login-username')]").fill(username);
     await page.locator("xpath=//input[contains(@class, 'login-password')]").fill(password);
@@ -145,6 +146,20 @@ async function insertCode(page)
 async function insertTextBlock(page)
 {
     await page.locator('#insert-text-block-button').click({ timeout: 2000, force: true });
+}
+
+async function insertUnorderedList(page, marker)
+{
+    const items = 
+        {
+            1: '#unordered-list-small-circle-item',
+            2: '#unordered-list-large-circle-item',
+            3: '#unordered-list-diamond-item',
+            4: '#unordered-list-square-item'
+        };
+    await page.locator('#unordered-list-button').first().evaluate((el) => el.click());
+    await page.waitForTimeout(300);
+    await page.locator(items[marker]).first().evaluate((el) => el.click());
 }
 
 async function insertGraphLine(page)
@@ -455,6 +470,7 @@ module.exports =
     fileContains,
     fileNotContains,
     insertTextBlock,
+    insertUnorderedList,
     documentContains,
     documentNotEmpty,
     getCookie,

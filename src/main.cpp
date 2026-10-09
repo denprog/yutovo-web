@@ -12,6 +12,7 @@
 #include <emscripten/html5.h>
 #include <emscripten/key_codes.h>
 #include <yutovo-editor/document.h>
+#include <yutovo-editor/style.h>
 #include "web_window.h"
 #include "web_pdf_window.h"
 #include "command_map.h"
@@ -98,19 +99,20 @@ EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value)
         scroll_container.scrollTop = v_value;
     });
 
-EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size, 
-    unsigned int font_size, int bold, int italic, int underline, int strikethrough, int subscript, int superscript, const char* text_color, size_t text_color_size, 
-    const char* text_bg_color, size_t text_bg_color_size, int left_align, int center_align, int right_align, int justify_align, int code_block),
+EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size,
+    unsigned int font_size, int bold, int italic, int underline, int strikethrough, int subscript, int superscript, const char* text_color, size_t text_color_size,
+    const char* text_bg_color, size_t text_bg_color_size, int left_align, int center_align, int right_align, int justify_align, int code_block,
+    int unordered_list_enable),
     {
-        window.dispatchEvent(new CustomEvent('setStandardToolbar', 
+        window.dispatchEvent(new CustomEvent('setStandardToolbar',
             {
-                'detail': 
+                'detail':
                 {
                     'paragraph_format': UTF8ToString(paragraph_format, paragraph_format_size),
                     'font_family': UTF8ToString(font_family, font_family_size),
                     'font_size': font_size,
-                    'bold': bold, 
-                    'italic': italic, 
+                    'bold': bold,
+                    'italic': italic,
                     'underline': underline,
                     'strikethrough': strikethrough,
                     'subscript': subscript,
@@ -122,6 +124,7 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'right_align': right_align,
                     'justify_align': justify_align,
                     'code_block': code_block,
+                    'unordered_list_enable': unordered_list_enable,
                 }
             }));
     });
@@ -364,6 +367,9 @@ void MainLoop(void* arg)
             return;
         ElementId _id = GetParent(c.id);
         int code_block = document->GetParentId(c.id, ElementType::CODE_BLOCK) != ElementId{};
+        //list markers live on plain text paragraphs only - not inside code or text blocks
+        auto list_paragraph = document->FindParentParagraph(c.id);
+        int unordered_list_enable = list_paragraph && list_paragraph->type == ElementType::PARAGRAPH;
         if (document->GetStringFormat(c.id, format))
         {
             auto text_color = format.text_color.ToHex();
@@ -394,7 +400,7 @@ void MainLoop(void* arg)
                 format.size, format.bold, format.italic, format.underline, format.strikethrough, format.subscript, format.superscript, text_color.c_str(),
                 text_color.size(), text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left,
                 paragraph_format.alignment == ParagraphFormat::Alignment::Center, paragraph_format.alignment == ParagraphFormat::Alignment::Right,
-                paragraph_format.alignment == ParagraphFormat::Alignment::Justify, code_block);
+                paragraph_format.alignment == ParagraphFormat::Alignment::Justify, code_block, unordered_list_enable);
         }
         else
         {
@@ -402,7 +408,7 @@ void MainLoop(void* arg)
             format.Reset();
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(),
-                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block);
+                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block, unordered_list_enable);
         }
         
         static uint last_code_id = 0;
@@ -1844,6 +1850,17 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_for
     if (!document)
         return;
     document->SetCurrentParagraphFormat(paragraph_format);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnUnorderedList(int marker)
+{
+    if (!document)
+        return;
+    static const std::u32string markers[4] = {ParagraphFormat::small_circle_marker, ParagraphFormat::large_circle_marker, ParagraphFormat::diamond_marker,
+        ParagraphFormat::square_marker};
+    if (marker < 1 || marker > 4)
+        return;
+    document->SetCurrentParagraphMarker(markers[marker - 1], true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnFontFamily(const char* font_family)

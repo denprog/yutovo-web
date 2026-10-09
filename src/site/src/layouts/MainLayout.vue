@@ -133,6 +133,11 @@ export default
                 lang = 'fr_FR';
                 this.locale = 'fr';
             }
+            else if (navigator.language.startsWith('it'))
+            {
+                lang = 'it_IT';
+                this.locale = 'it';
+            }
 
             const store = useStore();
             store.commit('editor/setLanguage', this.locale);
@@ -165,6 +170,8 @@ export default
                 this.locale = 'de';
             else if (lang == 'fr_FR')
                 this.locale = 'fr';
+            else if (lang == 'it_IT')
+                this.locale = 'it';
             else
                 this.locale = 'en';
             const store = useStore();
@@ -333,7 +340,8 @@ export default
                 { value: 'es', label: 'Español' },
                 { value: 'pt_BR', label: 'Português brasileiro' },
                 { value: 'de', label: 'Deutsch' },
-                { value: 'fr', label: 'Français' }
+                { value: 'fr', label: 'Français' },
+                { value: 'it', label: 'Italiano' }
             ]
         }
     },
@@ -439,6 +447,9 @@ export default
                 break;
             case 'fr':
                 lang = 'fr_FR';
+                break;
+            case 'it':
+                lang = 'it_IT';
                 break;
             }
             Cookies.set('language', lang, {path: '/', expires: '30d'});

@@ -272,6 +272,7 @@ export default {
     'Portuguese_male': 'Бразильский португальский',
     'German_male': 'Немецкий',
     'French_male': 'Французский',
+    'Italian_male': 'Итальянский',
     'Indentation': 'Табуляция',
     'Tabs': 'Табуляция',
     'Spaces': 'Пробелы',

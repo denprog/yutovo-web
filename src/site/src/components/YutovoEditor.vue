@@ -1195,6 +1195,8 @@ function newDocument(event: any)
                 return 5;
             if (l === 'fr')
                 return 6;
+            if (l === 'it')
+                return 7;
             return 0;
         };
         api.post('/service/new-document',
@@ -2002,7 +2004,7 @@ function initModule()
                         doc += route.params.dir3 + '/';
                     doc += route.params.filename;
                     doc = doc.replaceAll(/\\/g, '/');
-                    if (['en', 'ru', 'es', 'pt_BR', 'de', 'fr'].includes(route.params.language))
+                    if (['en', 'ru', 'es', 'pt_BR', 'de', 'fr', 'it'].includes(route.params.language))
                         s.commit('editor/setLanguage', route.params.language);
                     window.dispatchEvent(new CustomEvent('loadLibraryDocument',
                         {
@@ -2028,6 +2030,8 @@ function initModule()
                             lang = 'de';
                         else if (navigator.language.startsWith('fr'))
                             lang = 'fr';
+                        else if (navigator.language.startsWith('it'))
+                            lang = 'it';
                         let fp = '/Others/First page.yut';
                         if (lang == 'ru')
                             fp = '/Другое/Первая страница.yut';
@@ -2039,6 +2043,8 @@ function initModule()
                             fp = '/Sonstiges/Erste Seite.yut';
                         else if (lang == 'fr')
                             fp = '/Divers/Première page.yut';
+                        else if (lang == 'it')
+                            fp = '/Altro/Prima pagina.yut';
                         window.dispatchEvent(new CustomEvent('loadLibraryDocument',
                             {
                                 detail:

@@ -2320,6 +2320,8 @@ EM_JS(int, GetLanguage, (),
                     return 5;
                 if (lang.startsWith("fr"))
                     return 6;
+                if (lang.startsWith("it"))
+                    return 7;
                 return 0;
             }
         }

@@ -271,6 +271,7 @@ export default {
     'Portuguese_male': 'Portugués brasileño',
     'German_male': 'Alemán',
     'French_male': 'Francés',
+    'Italian_male': 'Italiano',
     'Indentation': 'Indentación',
     'Tabs': 'Tabulaciones',
     'Spaces': 'Espacios',

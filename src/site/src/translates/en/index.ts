@@ -21,6 +21,7 @@ export default {
     'Portuguese_male': 'Brazilian Portuguese',
     'German_male': 'German',
     'French_male': 'French',
+    'Italian_male': 'Italian',
 
     'Send Feedback': 'Send Feedback',
     'Your name': 'Your name',

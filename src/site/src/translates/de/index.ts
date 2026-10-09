@@ -272,6 +272,7 @@ export default {
     'Portuguese_male': 'Brasilianisches Portugiesisch',
     'German_male': 'Deutsch',
     'French_male': 'Französisch',
+    'Italian_male': 'Italienisch',
     'Indentation': 'Einrückung',
     'Tabs': 'Tabulatoren',
     'Spaces': 'Leerzeichen',

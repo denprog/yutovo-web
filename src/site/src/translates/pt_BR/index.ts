@@ -272,6 +272,7 @@ export default {
     'Portuguese_male': 'Português brasileiro',
     'German_male': 'Alemão',
     'French_male': 'Francês',
+    'Italian_male': 'Italiano',
     'Indentation': 'Recuo',
     'Tabs': 'Tabulações',
     'Spaces': 'Espaços',

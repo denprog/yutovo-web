@@ -21,7 +21,7 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import LibraryMenuItem from './LibraryMenuItem.vue'
-import api from 'axios'
+import { api } from 'boot/boot'
 
 const menuBar = ref(null);
 const activeMenu = ref(null);

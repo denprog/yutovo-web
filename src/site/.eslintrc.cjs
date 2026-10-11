@@ -15,8 +15,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    node: true,
-    'vue/setup-compiler-macros': true
+    node: true
   },
 
   // Rules order is important, please avoid shuffling them
@@ -31,9 +30,10 @@ module.exports = {
     // Uncomment any of the lines below to choose desired strictness,
     // but leave only one uncommented!
     // See https://eslint.vuejs.org/rules/#available-rules
-    'plugin:vue/vue3-essential', // Priority A: Essential (Error Prevention)
-    // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
-    // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
+    // (eslint-plugin-vue v10 dropped the "vue3-" prefix; Vue 3 configs are the default)
+    'plugin:vue/essential', // Priority A: Essential (Error Prevention)
+    // 'plugin:vue/strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
+    // 'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
     // https://github.com/prettier/eslint-config-prettier#installation
     // usage with Prettier, provided by 'eslint-config-prettier'.
@@ -80,11 +80,26 @@ module.exports = {
     // in plain CommonJS modules, you can't use `import foo = require('foo')` to pass this rule, so it has to be disabled
     '@typescript-eslint/no-var-requires': 'off',
 
+    // successor of no-var-requires (added to the recommended set in @typescript-eslint v8);
+    // the project legitimately uses CommonJS require() in tests and root scripts
+    '@typescript-eslint/no-require-imports': 'off',
+
     // The core 'no-unused-vars' rules (in the eslint:recommended ruleset)
     // does not work with type definitions
     'no-unused-vars': 'off',
 
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
-  }
+  },
+
+  overrides: [
+    {
+      // Playwright tests and helper scripts keep unused fixture parameters
+      // and diagnostic variables on purpose; do not flag them
+      files: [ 'test/**', 'check_storage.js' ],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off'
+      }
+    }
+  ]
 }

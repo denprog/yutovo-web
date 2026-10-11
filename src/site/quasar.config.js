@@ -8,19 +8,10 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-const { configure } = require('quasar/wrappers');
+import { configure } from 'quasar/wrappers';
 
-module.exports = configure(function (/* ctx */) {
+export default configure(function (/* ctx */) {
   return {
-    eslint: {
-      // fix: true,
-      // include: [],
-      // exclude: [],
-      // rawOptions: {},
-      warnings: true,
-      errors: true
-    },
-
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
 
@@ -28,8 +19,9 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      'locale.ts',
-      'boot.ts'
+        'store.ts',
+        'locale.ts',
+        'boot.ts'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -55,7 +47,11 @@ module.exports = configure(function (/* ctx */) {
     build: {
       target: {
         browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
-        node: 'node16'
+        node: 'node22'
+      },
+
+      typescript: {
+        strict: true
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
@@ -89,9 +85,7 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
-      https: true,
-
-      options: {
+      https: {
         // Use ABSOLUTE paths or path.join(__dirname, 'root/relative/path')
         key: "/home/denis/programs/Math/yutovo/yutovo_server/keys/yutovo_server.key",
         cert: "/home/denis/programs/Math/yutovo/yutovo_server/keys/yutovo_server.crt"

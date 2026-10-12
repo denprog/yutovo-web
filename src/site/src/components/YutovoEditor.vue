@@ -1387,6 +1387,10 @@ function saveDocument(event: any)
             doc += route.params.dir2 + '/';
         if (typeof route.params.dir3 !== 'undefined')
             doc += route.params.dir3 + '/';
+        if (typeof route.params.dir4 !== 'undefined')
+            doc += route.params.dir4 + '/';
+        if (typeof route.params.dir5 !== 'undefined')
+            doc += route.params.dir5 + '/';
         doc += route.params.filename;
         doc = doc.replaceAll(/\\/g, '/');
         doc = doc.substring(2);
@@ -2010,6 +2014,10 @@ function initModule()
                         doc += route.params.dir2 + '/';
                     if (route.params.dir3)
                         doc += route.params.dir3 + '/';
+                    if (route.params.dir4)
+                        doc += route.params.dir4 + '/';
+                    if (route.params.dir5)
+                        doc += route.params.dir5 + '/';
                     doc += route.params.filename;
                     doc = doc.replaceAll(/\\/g, '/');
                     if (['en', 'ru', 'es', 'pt_BR', 'de', 'fr', 'it'].includes(route.params.language))

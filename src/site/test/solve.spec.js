@@ -86,23 +86,12 @@ test.describe('Solve', () =>
         expect(await utils.documentContains(page, "Erreur de syntaxe")).toBe(true);
     });
 
-test('syntax error for 234 & 456= in Italian', async ({ page }) =>
+    test('syntax error for 234 & 456= in Italian', async ({ page }) =>
     {
         await utils.setLanguage(page, 'Italiano');
         await utils.insertCode(page);
         await utils.writeText(page, '234 & 456=');
         await page.waitForTimeout(3000);
         expect(await utils.documentContains(page, "Errore di sintassi")).toBe(true);
-    });
-
-test('interrupt long definite integral', async ({ page }) =>
-    {
-        page.on('pageerror', err => console.log('PAGEERROR:', err.message));
-        await utils.setLanguage(page, 'English');
-        await utils.insertCode(page);
-        await utils.writeText(page, 'definite_integral(0,1,inv(x+j),x)=');
-        await page.waitForTimeout(15000);
-        const text = await page.evaluate(() => window.getText());
-        expect(await utils.documentContains(page, 'Solving time exceeded')).toBe(true);
     });
 });

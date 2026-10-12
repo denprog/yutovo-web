@@ -1,64 +1,68 @@
 <template>
     <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
         <q-file style="display: none" v-model="yutovo_file_model" @update:model-value="onFileSelected" accept=".yut" ref="yutovo_file"></q-file>
-        <q-btn-group id="editor-toolbar" flat square unelevated stretch>
-            <q-btn size="14px" id="new-button" square dense @click="onNew();" icon="img:/images/standard/new.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('New document') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="upload-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onUpload();"
-                icon="img:/images/standard/open.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Upload document') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="save-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();"
-                icon="img:/images/standard/save.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Save document') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="save-as-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSaveAs();"
-                icon="img:/images/standard/save_as.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Save document as') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="download-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDownload();"
-                icon="img:/images/standard/download.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Download document') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="export-html-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onExportHtml();"
-                icon="img:/images/standard/export_html.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Export to HTML') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="export-pdf-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onExportPdf();"
-                icon="img:/images/standard/export_pdf.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Export to PDF') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="rename-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onRename();"
-                icon="img:/images/standard/rename.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Rename document') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="delete-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDelete();"
-                icon="img:/images/standard/delete.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Delete document') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" id="settings-button" square dense no-caps @click="onConfig();" icon="img:/images/standard/settings.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Document properties') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Undo') }} (Ctrl+Z)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Redo') }} (Ctrl+Y)</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" id="cut-button" square dense @click="onCut();" icon="img:/images/standard/cut.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Cut') }} (Shift+Del)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="copy-button" square dense @click="onCopy();" icon="img:/images/standard/copy.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Copy') }} (Ctrl+Ins)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="paste-button" square dense @click="onPaste();" icon="img:/images/standard/paste.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paste') }} (Shift+Ins)</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
+        <div id="editor-toolbar" class="toolbar-row">
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="new-button" square dense @click="onNew();" icon="img:/images/standard/new.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('New document') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="upload-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onUpload();"
+                    icon="img:/images/standard/open.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Upload document') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="save-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSave();"
+                    icon="img:/images/standard/save.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Save document') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="save-as-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onSaveAs();"
+                    icon="img:/images/standard/save_as.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Save document as') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="download-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDownload();"
+                    icon="img:/images/standard/download.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Download document') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="export-html-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onExportHtml();"
+                    icon="img:/images/standard/export_html.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Export to HTML') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="export-pdf-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onExportPdf();"
+                    icon="img:/images/standard/export_pdf.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Export to PDF') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="rename-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onRename();"
+                    icon="img:/images/standard/rename.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Rename document') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="delete-button" :disabled="store.state.login.login == ''" square dense no-caps @click="onDelete();"
+                    icon="img:/images/standard/delete.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Delete document') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="settings-button" square dense no-caps @click="onConfig();" icon="img:/images/standard/settings.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Document properties') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Undo') }} (Ctrl+Z)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Redo') }} (Ctrl+Y)</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="cut-button" square dense @click="onCut();" icon="img:/images/standard/cut.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Cut') }} (Shift+Del)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="copy-button" square dense @click="onCopy();" icon="img:/images/standard/copy.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Copy') }} (Ctrl+Ins)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="paste-button" square dense @click="onPaste();" icon="img:/images/standard/paste.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paste') }} (Shift+Ins)</q-tooltip>
+                </q-btn>
+            </q-btn-group>
             <div class="scale-control row items-center no-wrap">
                 <q-btn dense flat square icon="img:/images/format/dec_scale.png" size="14px" @click="onScaleDec" :disable="scale <= 50"/>
                 <div class="scale-value" @click="onResetScale">
@@ -66,79 +70,83 @@
                 </div>
                 <q-btn dense flat square icon="img:/images/format/inc_scale.png" size="14px" @click="onScaleInc" :disable="scale >= 500"/>
             </div>
-            <q-separator vertical/>
-            <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert calculator') }} (Ctrl+Shift+C)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="insert-text-block-button" square dense @click="onInsertTextBlock();" icon="img:/images/format/text_block.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert text block') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert calculator') }} (Ctrl+Shift+C)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="insert-text-block-button" square dense @click="onInsertTextBlock();" icon="img:/images/format/text_block.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert text block') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
             <q-select class="toolbar-select" style="white-space: nowrap;" v-model="paragraph_format_model" :options="paragraph_format"
                 @update:model-value="onParagraphFormat();" dense options-dense borderless>
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paragraph format') }}</q-tooltip>
             </q-select>
-            <q-separator vertical/>
-            <q-select class="toolbar-select" style="white-space: nowrap;" v-model="font_family_model" :options="font_family" @update:model-value="onFontFamily();"
-                dense options-dense borderless>
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Font family') }}</q-tooltip>
-            </q-select>
-            <q-select class="toolbar-select" style="white-space: nowrap;" v-model="font_size_model" :options="font_size" @update:model-value="onFontSize();"
-                dense options-dense borderless>
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Font size') }}</q-tooltip>
-            </q-select>
-            <q-btn size="14px" id="bold-button" square dense :color="bold_button_color" @click="onBold();" icon="img:/images/format/bold.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Bold') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="italic-button" square dense :color="italic_button_color" @click="onItalic();" icon="img:/images/format/italic.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Italic') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="underline-button" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Underline') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="strikethrough-button" square dense :color="strikethrough_button_color" @click="onStrikethrough();"
-                icon="img:/images/format/strikethrough.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Strikethrough') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="subscript-button" square dense :color="subscript_button_color" @click="onTextSubscript();"
-                icon="img:/images/format/subscript.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Subscript') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="superscript-button" square dense :color="superscript_button_color" @click="onTextSuperscript();"
-                icon="img:/images/format/superscript.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Superscript') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="text-color-button" square dense @click="onTextColor();" icon="img:/images/format/text_color.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text color') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="text-bg-color-button" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text background color') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="link-button" square dense @click="onLink();" icon="img:/images/format/link.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Link') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" id="left-align-button" square dense :color="left_align_button_color" @click="onLeftAlign();"
-                icon="img:/images/format/align_left.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Left align') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="center-align-button" square dense :color="center_align_button_color" @click="onCenterAlign();"
-                icon="img:/images/format/align_center.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Center align') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="right-align-button" square dense :color="right_align_button_color" @click="onRightAlign();"
-                icon="img:/images/format/align_right.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Right align') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" id="justify-align-button" square dense :color="justify_align_button_color" @click="onJustifyAlign();"
-                icon="img:/images/format/align_justify.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Justify align') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
+            <q-btn-group flat square unelevated stretch>
+                <q-select class="toolbar-select" style="white-space: nowrap;" v-model="font_family_model" :options="font_family" @update:model-value="onFontFamily();"
+                    dense options-dense borderless>
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Font family') }}</q-tooltip>
+                </q-select>
+                <q-select class="toolbar-select" style="white-space: nowrap;" v-model="font_size_model" :options="font_size" @update:model-value="onFontSize();"
+                    dense options-dense borderless>
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Font size') }}</q-tooltip>
+                </q-select>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="bold-button" square dense :color="bold_button_color" @click="onBold();" icon="img:/images/format/bold.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Bold') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="italic-button" square dense :color="italic_button_color" @click="onItalic();" icon="img:/images/format/italic.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Italic') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="underline-button" square dense :color="underline_button_color" @click="onUnderline();" icon="img:/images/format/underline.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Underline') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="strikethrough-button" square dense :color="strikethrough_button_color" @click="onStrikethrough();"
+                    icon="img:/images/format/strikethrough.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Strikethrough') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="subscript-button" square dense :color="subscript_button_color" @click="onTextSubscript();"
+                    icon="img:/images/format/subscript.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Subscript') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="superscript-button" square dense :color="superscript_button_color" @click="onTextSuperscript();"
+                    icon="img:/images/format/superscript.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Superscript') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="text-color-button" square dense @click="onTextColor();" icon="img:/images/format/text_color.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text color') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="text-bg-color-button" square dense @click="onTextBgColor();" icon="img:/images/format/bg_text_color.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Text background color') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="link-button" square dense @click="onLink();" icon="img:/images/format/link.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Link') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="left-align-button" square dense :color="left_align_button_color" @click="onLeftAlign();"
+                    icon="img:/images/format/align_left.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Left align') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="center-align-button" square dense :color="center_align_button_color" @click="onCenterAlign();"
+                    icon="img:/images/format/align_center.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Center align') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="right-align-button" square dense :color="right_align_button_color" @click="onRightAlign();"
+                    icon="img:/images/format/align_right.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Right align') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="justify-align-button" square dense :color="justify_align_button_color" @click="onJustifyAlign();"
+                    icon="img:/images/format/align_justify.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Justify align') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
             <div class="unordered-list-block">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Unordered list') }}</q-tooltip>
                 <q-btn-dropdown id="unordered-list-button" flat size="14px" square dense no-caps :disable="!unordered_list_enable"
@@ -155,122 +163,127 @@
                     </div>
                 </q-btn-dropdown>
             </div>
-        </q-btn-group>
+        </div>
     </div>
 
     <div class="q-pa-md q-gutter-y-md column items-start" id="algebra-toolbar">
-        <q-btn-group flat square unelevated stretch>
-            <q-btn size="14px" square dense @click="onPlus();" icon="img:/images/algebra/plus.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Plus') }} (+)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onMinus();" icon="img:/images/algebra/minus.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Minus') }} (-)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onMultiply();" icon="img:/images/algebra/multiply.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Multiply') }} (*)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onDivision();" icon="img:/images/algebra/division.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Division') }} (/)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onPower();" icon="img:/images/algebra/power.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Power') }} (Ctrl+Shift+P)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onSqrt();" icon="img:/images/algebra/sqrt.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Square root') }} (Ctrl+Shift+Q)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onNthRoot();" icon="img:/images/algebra/nth_root.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Root of degree') }} (Ctrl+Shift+N)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onSubscript();" icon="img:/images/algebra/subscript.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Subscript') }} (Ctrl+Shift+S)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onRoundBrackets();" icon="img:/images/algebra/round_brackets.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Round brackets') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onSquareBrackets();" icon="img:/images/algebra/square_brackets.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Square brackets') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onRadian();" icon="img:/images/algebra/radian.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Radian') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onDegree();" icon="img:/images/algebra/degree.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Degree') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onMinute();" icon="img:/images/algebra/minute.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Minute') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onSecond();" icon="img:/images/algebra/second.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onGrad();" icon="img:/images/algebra/grad.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Grad') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onSum();" icon="img:/images/algebra/sum.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Sum') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onProduct();" icon="img:/images/algebra/product.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Product') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onDefiniteIntegral();" icon="img:/images/calculus/definite_integral.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Definite integral') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onDerivative();" icon="img:/images/calculus/derivative.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onSecondDerivative();" icon="img:/images/calculus/derivative2.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second derivative') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onPartialDerivative();" icon="img:/images/calculus/partial_derivative.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Partial derivative') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onDerivativeAtPoint();" icon="img:/images/calculus/derivative_at_point.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative at point') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onEvalutionBar();" icon="img:/images/algebra/evalution_bar.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Evaluate at point') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onFunctionAtPoint();" icon="img:/images/algebra/function_at_point.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function at point') }}</q-tooltip>
-            </q-btn>
-            <q-btn id="function-x-button" size="14px" square dense @click="onFunctionX();" icon="img:/images/algebra/function_x.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function f(x)') }}</q-tooltip>
-            </q-btn>
-            <q-btn id="function-xy-button" size="14px" square dense @click="onFunctionXY();" icon="img:/images/algebra/function_xy.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function f(x,y)') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onInfinity();">
-                ∞
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Infinity') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onAssignment();" icon="img:/images/algebra/assignment.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Assignment') }} (:)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onUnit();" icon="img:/images/algebra/unit.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Unit') }} (~)</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }} (=)</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
-            <q-btn size="14px" square dense @click="onAnd();" icon="img:/images/logical/and.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical AND') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onOr();" icon="img:/images/logical/or.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical OR') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onXor();" icon="img:/images/logical/xor.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical XOR') }}</q-tooltip>
-            </q-btn>
-            <q-btn size="14px" square dense @click="onNot();" icon="img:/images/logical/not.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical NOT') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
+        <div class="toolbar-row">
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onPlus();" icon="img:/images/algebra/plus.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Plus') }} (+)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onMinus();" icon="img:/images/algebra/minus.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Minus') }} (-)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onMultiply();" icon="img:/images/algebra/multiply.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Multiply') }} (*)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onDivision();" icon="img:/images/algebra/division.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Division') }} (/)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onPower();" icon="img:/images/algebra/power.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Power') }} (Ctrl+Shift+P)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSqrt();" icon="img:/images/algebra/sqrt.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Square root') }} (Ctrl+Shift+Q)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onNthRoot();" icon="img:/images/algebra/nth_root.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Root of degree') }} (Ctrl+Shift+N)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSubscript();" icon="img:/images/algebra/subscript.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Subscript') }} (Ctrl+Shift+S)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onRoundBrackets();" icon="img:/images/algebra/round_brackets.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Round brackets') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSquareBrackets();" icon="img:/images/algebra/square_brackets.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Square brackets') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onRadian();" icon="img:/images/algebra/radian.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Radian') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onDegree();" icon="img:/images/algebra/degree.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Degree') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onMinute();" icon="img:/images/algebra/minute.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Minute') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSecond();" icon="img:/images/algebra/second.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onGrad();" icon="img:/images/algebra/grad.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Grad') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSum();" icon="img:/images/algebra/sum.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Sum') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onProduct();" icon="img:/images/algebra/product.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Product') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onDefiniteIntegral();" icon="img:/images/calculus/definite_integral.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Definite integral') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onDerivative();" icon="img:/images/calculus/derivative.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSecondDerivative();" icon="img:/images/calculus/derivative2.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second derivative') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onPartialDerivative();" icon="img:/images/calculus/partial_derivative.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Partial derivative') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onDerivativeAtPoint();" icon="img:/images/calculus/derivative_at_point.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative at point') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onEvalutionBar();" icon="img:/images/algebra/evalution_bar.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Evaluate at point') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onFunctionAtPoint();" icon="img:/images/algebra/function_at_point.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function at point') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="function-x-button" size="14px" square dense @click="onFunctionX();" icon="img:/images/algebra/function_x.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function f(x)') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="function-xy-button" size="14px" square dense @click="onFunctionXY();" icon="img:/images/algebra/function_xy.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Function f(x,y)') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onInfinity();">
+                    ∞
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Infinity') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onAssignment();" icon="img:/images/algebra/assignment.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Assignment') }} (:)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onUnit();" icon="img:/images/algebra/unit.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Unit') }} (~)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }} (=)</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onAnd();" icon="img:/images/logical/and.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical AND') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onOr();" icon="img:/images/logical/or.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical OR') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onXor();" icon="img:/images/logical/xor.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical XOR') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onNot();" icon="img:/images/logical/not.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical NOT') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
             <div class="greek-letter-block">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Greek letters') }}</q-tooltip>
                 <q-btn-dropdown class="greek-letter-block" square dense no-caps label="α" @hide="onLettersHide()">
@@ -338,17 +351,17 @@
                     </table>
                 </q-btn-dropdown>
             </div>
-            <q-separator vertical/>
-            <q-btn id="graph-line-button" size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
-            </q-btn>
-            <q-btn id="graph-surface-button" size="14px" square dense @click="onGraphSurface();" icon="img:/images/graphs/graph_surface.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Surface graph') }}</q-tooltip>
-            </q-btn>
-            <q-btn id="graph-histogram-button" size="14px" square dense @click="onGraphHistogram();" icon="img:/images/graphs/graph_histogram.png">
-                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Histogram') }}</q-tooltip>
-            </q-btn>
-            <q-separator vertical/>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn id="graph-line-button" size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="graph-surface-button" size="14px" square dense @click="onGraphSurface();" icon="img:/images/graphs/graph_surface.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Surface graph') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="graph-histogram-button" size="14px" square dense @click="onGraphHistogram();" icon="img:/images/graphs/graph_histogram.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Histogram') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
                     R$
@@ -375,7 +388,7 @@
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('US dollar') }}</q-tooltip>
                 </q-btn>
             </q-btn-group>
-        </q-btn-group>
+        </div>
     </div>
 
     <YutovoEditor ref="editorRef" />
@@ -539,7 +552,7 @@ export default defineComponent(
                     const footerRect = footer.getBoundingClientRect()
                     availableHeight = footerRect.top - editorRect.top
                 }
-                editor.style.height = Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT) + 'px'
+                editor.style.height = Math.round(Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT)) + 'px'
             }
 
             const scroll = document.getElementById('scroll-container')
@@ -1220,6 +1233,16 @@ export default defineComponent(
 .q-pa-md
 {
     padding: 0em 0 0 1em;
+}
+
+.toolbar-row
+{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 4px;
+    max-width: 100%;
 }
 
 .toolbar-select

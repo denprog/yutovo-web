@@ -13,3 +13,4 @@ src/site/downloads
 yutovo-server.env
 .qwen
 test-results
+.zcode

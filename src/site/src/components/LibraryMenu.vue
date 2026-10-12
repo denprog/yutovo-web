@@ -222,6 +222,7 @@ watch(activeMenu, (val) =>
 <style scoped>
 .menu-bar {
     display:flex;
+    flex-wrap:wrap;
     background:#f0f0f0;
     border-bottom:1px solid #ccc;
     user-select:none;

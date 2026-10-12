@@ -131,4 +131,48 @@ test.describe('Editor resize', () =>
         //make sure the paste actually happened
         expect(await utils.documentContains(page, 'pasted_text')).toBe(true);
     });
+
+    test('toolbars wrap instead of overflowing on narrow viewport', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+
+        const getOverflow = () => page.evaluate(() =>
+        {
+            const standard = document.getElementById('standard-toolbar');
+            const algebra = document.getElementById('algebra-toolbar');
+            return {
+                standardOverflow: standard ? standard.scrollWidth - standard.clientWidth : 0,
+                algebraOverflow: algebra ? algebra.scrollWidth - algebra.clientWidth : 0,
+                pageOverflow: document.documentElement.scrollWidth - window.innerWidth
+            };
+        });
+
+        for (const width of [900, 700])
+        {
+            await page.setViewportSize({ width: width, height: 900 });
+            await page.waitForTimeout(1000);
+            const state = await getOverflow();
+            expect(state.standardOverflow).toBeLessThanOrEqual(1);
+            expect(state.algebraOverflow).toBeLessThanOrEqual(1);
+            expect(state.pageOverflow).toBeLessThanOrEqual(1);
+        }
+
+        //the buttons must stay reachable without page-level horizontal scrolling
+        await expect(page.locator('#bold-button')).toBeVisible();
+        await expect(page.locator('#graph-line-button')).toBeVisible();
+    });
+
+    test('header fits on narrow viewport', async ({ page }) =>
+    {
+        await page.setViewportSize({ width: 500, height: 600 });
+        await page.waitForTimeout(1000);
+
+        const headerOverflow = await page.evaluate(() =>
+        {
+            const header = document.getElementById('header');
+            return header ? header.scrollWidth - header.clientWidth : 0;
+        });
+        expect(headerOverflow).toBeLessThanOrEqual(1);
+    });
 });

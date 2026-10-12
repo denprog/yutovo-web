@@ -497,7 +497,7 @@ function onResize()
             const footerRect = footer.getBoundingClientRect();
             availableHeight = footerRect.top - editorRect.top;
         }
-        editor.style.height = Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT) + 'px';
+        editor.style.height = Math.round(Math.max(availableHeight - 4, MIN_EDITOR_HEIGHT)) + 'px';
     }
 
     const scroll = document.getElementById('scroll-container');

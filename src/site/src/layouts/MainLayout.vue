@@ -12,13 +12,13 @@
                                     <img src="/yutovo.png">
                                 </q-avatar>
                             </q-btn>
-                            <q-btn no-caps dense flat size="15pt" @click="clickCaption();">
+                            <q-btn no-caps dense flat size="15pt" v-if="!$q.screen.lt.md" @click="clickCaption();">
                                 {{ $t('yutovo_caption') }}
                             </q-btn>
                         </q-toolbar-title>
                     </div>
 
-                    <div class="text-white text-h6 q-pl-lg" id='document-name' v-if="documentName != ''">{{ documentName }}</div>
+                    <div class="text-white text-h6 q-pl-lg ellipsis" id='document-name' style="max-width: 20vw;" v-if="documentName != ''">{{ documentName }}</div>
                     
                     <q-space />
 
@@ -29,11 +29,32 @@
                         </template>
                     </q-select>
 
-                    <q-btn dense no-caps flat @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>
-                    <q-btn id="login" dense no-caps flat v-if="loginStr != ''" @click="showUserAccountDialog">{{ loginStr }}</q-btn>
-                    <q-btn dense no-caps flat v-if="loginState" @click="showLoginDialog">{{ $t('Login') }}</q-btn>
-                    <q-btn id="register" dense no-caps flat v-if="loginState" @click="showRegisterDialog">{{ $t('Register') }}</q-btn>
-                    <q-btn id="logout" dense no-caps flat v-if="logoutState" @click="logout">{{ $t('Logout') }}</q-btn>
+                    <q-btn dense no-caps flat v-if="!$q.screen.lt.md" @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>
+                    <q-btn id="login" dense no-caps flat v-if="loginStr != '' && !$q.screen.lt.md" @click="showUserAccountDialog">{{ loginStr }}</q-btn>
+                    <q-btn dense no-caps flat v-if="loginState && !$q.screen.lt.md" @click="showLoginDialog">{{ $t('Login') }}</q-btn>
+                    <q-btn id="register" dense no-caps flat v-if="loginState && !$q.screen.lt.md" @click="showRegisterDialog">{{ $t('Register') }}</q-btn>
+                    <q-btn id="logout" dense no-caps flat v-if="logoutState && !$q.screen.lt.md" @click="logout">{{ $t('Logout') }}</q-btn>
+                    <q-btn dense flat round icon="more_vert" v-if="$q.screen.lt.md">
+                        <q-menu>
+                            <q-list style="min-width: 180px">
+                                <q-item clickable v-close-popup @click="showSettingsDialog">
+                                    <q-item-section>{{ $t('Settings') }}</q-item-section>
+                                </q-item>
+                                <q-item clickable v-close-popup v-if="loginStr != ''" @click="showUserAccountDialog">
+                                    <q-item-section>{{ loginStr }}</q-item-section>
+                                </q-item>
+                                <q-item clickable v-close-popup v-if="loginState" @click="showLoginDialog">
+                                    <q-item-section>{{ $t('Login') }}</q-item-section>
+                                </q-item>
+                                <q-item clickable v-close-popup v-if="loginState" @click="showRegisterDialog">
+                                    <q-item-section>{{ $t('Register') }}</q-item-section>
+                                </q-item>
+                                <q-item clickable v-close-popup v-if="logoutState" @click="logout">
+                                    <q-item-section>{{ $t('Logout') }}</q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-menu>
+                    </q-btn>
                     <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
                 </q-toolbar>
             </q-header>
@@ -64,7 +85,7 @@
             </q-page-container>
 
             <q-footer id="footer" class="bg-blue-9 q-pa-none text-white">
-                <div style="float:right;">
+                <div class="row wrap justify-end items-center q-gutter-y-xs q-pr-sm">
                     <q-btn class="q-pl-sm text-white" size="1em" id='source' dense no-caps flat target="_blank" 
                         href="https://github.com/denprog/yutovo-web">{{$t('Source code')}}</q-btn>
                     <q-btn class="q-pl-sm text-white" size="1em" id='feedback' dense no-caps flat @click="showFeedbackDialog">{{$t('Send Feedback')}}</q-btn>
@@ -94,7 +115,7 @@ import DownloadDialog from 'layouts/DownloadDialog.vue';
 import FeedbackDialog from 'layouts/FeedbackDialog.vue';
 import SettingsDialog from 'layouts/SettingsDialog.vue';
 import UserAccountDialog from 'layouts/UserAccountDialog.vue';
-import { Cookies } from 'quasar'
+import { Cookies, useQuasar } from 'quasar'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { api } from 'boot/boot'
@@ -323,6 +344,8 @@ export default
             {
                 rightDrawerOpen.value = !rightDrawerOpen.value
             },
+
+            $q: useQuasar(),
 
             store,
 

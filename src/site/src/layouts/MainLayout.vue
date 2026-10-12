@@ -22,8 +22,12 @@
                     
                     <q-space />
 
-                    <q-select v-model="locale" class="language-select" id="language" :options="localeOptions" @update:model-value="onLanguage();" 
-                        dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;" />
+                    <q-select v-model="locale" class="language-select" :options="localeOptions" @update:model-value="onLanguage();"
+                        dense borderless no-caps flat emit-value map-options options-dense style="padding-left:10px;padding-right:10px;">
+                        <template v-slot:selected-item="scope">
+                            <span id="language" class="q-select__selected-value ellipsis">{{ scope.opt.label }}</span>
+                        </template>
+                    </q-select>
 
                     <q-btn dense no-caps flat @click="showSettingsDialog">{{ $t('Settings') }}</q-btn>
                     <q-btn id="login" dense no-caps flat v-if="loginStr != ''" @click="showUserAccountDialog">{{ loginStr }}</q-btn>

@@ -70,8 +70,12 @@
                         </q-tab-panel>
 
                         <q-tab-panel name="document">
-                            <q-select v-model="language" id="config-language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense 
-                                v-bind:label="$t('Language')" />
+                            <q-select v-model="language" :options="languages" dense borderless no-caps flat emit-value map-options options-dense
+                                v-bind:label="$t('Language')">
+                                <template v-slot:selected-item="scope">
+                                    <span id="config-language" class="q-select__selected-value ellipsis">{{ scope.opt.label }}</span>
+                                </template>
+                            </q-select>
                             <q-separator class="q-my-md" />
 
                             <div class="text-body q-mb-sm">

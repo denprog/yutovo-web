@@ -1858,18 +1858,26 @@ function initModule()
         canvas: (function()
         {
             const canvas = document.getElementById('canvas');
-            canvas.addEventListener('webglcontextlost', 
+            canvas.addEventListener('webglcontextlost',
                 function(e: any)
                 {
                     alert('WebGL context lost. You will need to reload the page.');
                     e.preventDefault();
-                }, 
+                },
                 false);
             return canvas;
         })(),
 
+        onAbort: function(what: any)
+        {
+            console.error('WASM ABORT:', what);
+            if (typeof Error !== 'undefined')
+                console.error(new Error().stack);
+        },
+
         onRuntimeInitialized: function()
         {
+            console.log('WASM RUNTIME INITIALIZED');
             const on_scroll = Module.cwrap('OnScroll', 'number', ['number', 'number']);
             const scroll = document.getElementById('scroll-container');
             scroll.addEventListener('scroll', 

@@ -584,7 +584,7 @@ export default defineComponent(
                         }
                     }))
                 }
-                catch (err)
+                catch
                 {
                     const text = new TextDecoder().decode(reader.result)
                     window.dispatchEvent(new CustomEvent('newDocument',

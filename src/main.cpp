@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <thread>
 #include <emscripten.h>
+#include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <emscripten/html5.h>
 #include <emscripten/key_codes.h>
@@ -58,7 +59,6 @@ std::u32string cast_unit_system;
 
 WebPdfWindowPtr web_pdf_window;
 
-std::string res_json;
 ElementId mouse_capture_id;
 ElementId plot_format_id; //the graph whose marker opened the plot format dialog
 std::atomic_bool resize{false};
@@ -1199,22 +1199,22 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()
     }
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardText()
+std::string GetClipboardText()
 {
-    return (char*)clipboard_text.c_str();
+    return ToBasicString(clipboard_text);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardJson()
+std::string GetClipboardJson()
 {
-    return (char*)clipboard_json.c_str();
+    return ToBasicString(clipboard_json);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetClipboardImage()
+std::string GetClipboardImage()
 {
-    res_json = "";
+    std::string res;
     if (!clipboard_png.empty())
-        res_json = "data:image/png;base64," + Base64Encode(clipboard_png);
-    return (char*)res_json.c_str();
+        res = "data:image/png;base64," + Base64Encode(clipboard_png);
+    return res;
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void SetClipboardText(const char* value)
@@ -1471,13 +1471,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
     return document->FindCurrentGraph() != ElementId{};
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
+std::string GetLink()
 {
-    res_json = "";
+    std::string res;
     EditorState s = document->GetEditorState();
     std::u32string link_str, link_url;
     if (document->GetLink(s.caret_state.id, link_str, link_url))
-        res_json = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
+        res = "{\"text\":\"" + ToBasicString(link_str) + "\",\"url\":\"" + ToBasicString(link_url) + "\"}";
     else
     {
         if (s.selection_state.state.size() == 1)
@@ -1490,49 +1490,48 @@ extern "C" EMSCRIPTEN_KEEPALIVE char* GetLink()
                 if (str.length() >= el_s.start + el_s.size)
                 {
                     str = str.substr(el_s.start, el_s.size);
-                    res_json = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
+                    res = "{\"text\":\"" + ToBasicString(str) + "\",\"url\":\"\"}";
                 }
             }
         }
     }
-    return (char*)res_json.c_str();
+    return res;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphFormat()
+std::string GetGraphFormat()
 {
-    res_json = "";
+    std::string res;
     ElementId id = document->FindCurrentGraph();
     GraphFormat f;
     if (!id.empty() && document->GetGraphFormat(id, f))
     {
-        res_json = "{\"width\":" + std::to_string(f.size.width) + ",\"height\":" + std::to_string(f.size.height) +
+        res = "{\"width\":" + std::to_string(f.size.width) + ",\"height\":" + std::to_string(f.size.height) +
             ",\"color\":\"" + f.color.ToHex() + "\",\"grid_width\":" + std::to_string(f.grid_width) +
             ",\"axis\":{\"color\":\"" + f.axis.color.ToHex() + "\",\"width\":" + std::to_string(f.axis.width) +
             ",\"ticks\":" + (f.axis.ticks ? "1" : "0") + "}}";
     }
-    return (char*)res_json.c_str();
+    return res;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetGraphImage()
+std::string GetGraphImage()
 {
-    res_json = "";
+    std::string res;
     EditorState s = document->GetEditorState();
     ElementId id = document->FindCurrentGraph();
     if (id.empty())
         id = yutovo::GetParent(s.caret_state.id);
     std::vector<unsigned char> png;
     if (document->GetGraphImage(id, png))
-        res_json = "data:image/png;base64," + Base64Encode(png);
-    return (char*)res_json.c_str();
+        res = "data:image/png;base64," + Base64Encode(png);
+    return res;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetMargins()
+std::string GetMargins()
 {
     TextFormat f;
     document->GetTextFormat(f);
-    res_json = "{\"left\":\"" + std::to_string(f.left_indent) + "\",\"top\":\"" + std::to_string(f.top_indent) + 
+    return "{\"left\":\"" + std::to_string(f.left_indent) + "\",\"top\":\"" + std::to_string(f.top_indent) +
         "\",\"right\":\"" + std::to_string(f.right_indent) + "\",\"bottom\":\"" + std::to_string(f.bottom_indent) + "\"}";
-    return (char*)res_json.c_str();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
@@ -2209,19 +2208,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
     }
 }
 
-std::u32string document_text;
-std::string document_html;
-
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetText()
+std::string GetText()
 {
-    document_text = document->ToText();
-    return (char*)document_text.c_str();
+    return ToBasicString(document->ToText());
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE char* GetHtml()
+std::string GetHtml()
 {
-    document_html = document->ToHtml();
-    return (char*)document_html.c_str();
+    return document->ToHtml();
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void ListIdentifiers(int code_id)
@@ -2453,4 +2447,17 @@ int main(int argc, char* argv[])
 
     printf("Finish\n");
     return 0;
+}
+
+EMSCRIPTEN_BINDINGS(yutovo_string_getters)
+{
+    emscripten::function("GetClipboardText", &GetClipboardText);
+    emscripten::function("GetClipboardJson", &GetClipboardJson);
+    emscripten::function("GetClipboardImage", &GetClipboardImage);
+    emscripten::function("GetLink", &GetLink);
+    emscripten::function("GetGraphFormat", &GetGraphFormat);
+    emscripten::function("GetGraphImage", &GetGraphImage);
+    emscripten::function("GetMargins", &GetMargins);
+    emscripten::function("GetText", &GetText);
+    emscripten::function("GetHtml", &GetHtml);
 }

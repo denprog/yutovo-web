@@ -412,8 +412,6 @@ import LinkDialog from 'layouts/LinkDialog.vue'
 import ExportPdfDialog from 'layouts/ExportPdfDialog.vue'
 import YutovoEditor from './YutovoEditor.vue'
 
-declare function UTF8ToString(ptr: number): string
-
 export default defineComponent(
 {
     name: 'YutovoWeb',
@@ -794,7 +792,7 @@ export default defineComponent(
 
         onLink()
         {
-            const link_json = UTF8ToString(Module.cwrap('GetLink', 'number')())
+            const link_json = Module.GetLink()
             if (link_json == '')
             {
                 this.$q.dialog({ component: LinkDialog, parent: this, apiResponse: (this as any).resp })

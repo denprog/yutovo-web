@@ -82,7 +82,7 @@ test.describe('Graphs', () =>
         const originalImageInfo = await page.evaluate(
             async () =>
             {
-                const dataUrl = UTF8ToString(Module.cwrap('GetGraphImage', 'number', [])());
+                const dataUrl = Module.GetGraphImage();
                 const img = new Image();
                 img.src = dataUrl;
                 await new Promise((resolve) => { img.onload = resolve; });
@@ -187,7 +187,7 @@ test.describe('Graphs', () =>
         await page.locator('.q-dialog').first().waitFor({ state: 'visible', timeout: 5000 });
 
         //check the initial axis format
-        let format = await page.evaluate(() => JSON.parse(UTF8ToString(Module.cwrap('GetGraphFormat', 'number', [])())));
+        let format = await page.evaluate(() => JSON.parse(Module.GetGraphFormat()));
         expect(format.axis.ticks).toBe(1);
         expect(format.axis.width).toBe(1);
 
@@ -199,7 +199,7 @@ test.describe('Graphs', () =>
         await page.waitForTimeout(1000);
 
         //the format is stored on the graph
-        format = await page.evaluate(() => JSON.parse(UTF8ToString(Module.cwrap('GetGraphFormat', 'number', [])())));
+        format = await page.evaluate(() => JSON.parse(Module.GetGraphFormat()));
         expect(format.axis.ticks).toBe(0);
         expect(format.axis.width).toBe(0);
         expect(format.width).toBe(400);

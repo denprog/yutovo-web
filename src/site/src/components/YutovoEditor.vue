@@ -299,8 +299,6 @@ import GraphFormatDialog from 'layouts/GraphFormatDialog.vue'
 import PlotFormatDialog from 'layouts/PlotFormatDialog.vue'
 import PromptDialog from 'layouts/PromptDialog.vue'
 
-declare function UTF8ToString(ptr: number): string;
-declare function UTF32ToString(ptr: number): string;
 declare var Module: any;
 
 interface PromptPos
@@ -533,9 +531,9 @@ async function onCopy()
     if (contextMenuRef.value)
         contextMenuRef.value.hide();
     Module.cwrap('OnCopy', 'void', [])();
-    const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
-    const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
-    const clipboard_image = UTF8ToString(Module.cwrap('GetClipboardImage', 'number', [])());
+    const clipboard_text = Module.GetClipboardText();
+    const clipboard_json = Module.GetClipboardJson();
+    const clipboard_image = Module.GetClipboardImage();
     try
     {
         if (navigator.userAgent.toLowerCase().includes('firefox'))
@@ -578,9 +576,9 @@ async function onCut()
     if (contextMenuRef.value)
         contextMenuRef.value.hide();
     Module.cwrap('OnCut', 'void', [])();
-    const clipboard_text = UTF32ToString(Module.cwrap('GetClipboardText', 'number', [])());
-    const clipboard_json = UTF32ToString(Module.cwrap('GetClipboardJson', 'number', [])());
-    const clipboard_image = UTF8ToString(Module.cwrap('GetClipboardImage', 'number', [])());
+    const clipboard_text = Module.GetClipboardText();
+    const clipboard_json = Module.GetClipboardJson();
+    const clipboard_image = Module.GetClipboardImage();
     try
     {
         if (navigator.userAgent.toLowerCase().includes('firefox'))
@@ -1018,7 +1016,7 @@ function onGraphFormat()
 {
     if (contextMenuRef.value)
         contextMenuRef.value.hide();
-    const format_json = UTF8ToString(Module.cwrap('GetGraphFormat', 'number')());
+    const format_json = Module.GetGraphFormat();
     if (format_json == '')
         return;
     const json = JSON.parse(format_json);
@@ -1044,7 +1042,7 @@ async function onCopyGraphImage()
     if (contextMenuRef.value)
         contextMenuRef.value.hide();
 
-    const dataUrl = UTF8ToString(Module.cwrap('GetGraphImage', 'number', [])());
+    const dataUrl = Module.GetGraphImage();
     if (!dataUrl)
     {
         canvasFocus();
@@ -2126,13 +2124,13 @@ function initModule()
     window.getText = 
         function()
         {
-            return UTF32ToString(Module.cwrap('GetText', 'number', [])());
+            return Module.GetText();
         };
 
     window.getHtml = 
         function()
         {
-            return UTF8ToString(Module.cwrap('GetHtml', 'number', [])());
+            return Module.GetHtml();
         };
 }
 

@@ -10,7 +10,7 @@
 
 import { configure } from 'quasar/wrappers';
 
-export default configure(function (/* ctx */) {
+export default configure(function (ctx) {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -96,9 +96,11 @@ export default configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
-      config: {
-        production: false
-      },
+        config: {
+            // `quasar build` produces a production build (captcha enabled);
+            // test builds opt out with YUTOVO_PRODUCTION=false (see README).
+            production: ctx.prod && process.env.YUTOVO_PRODUCTION !== 'false'
+        },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack

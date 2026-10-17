@@ -76,12 +76,15 @@ cd ../../site
 quasar build
 ```
 
-Test the project. Firstly, in quasar.config.js change 
+Test the project. A regular `quasar build` produces a production build with captcha
+enabled. For tests, build the frontend without captcha:
 
 ```
-production: false
+YUTOVO_PRODUCTION=false quasar build
 ```
-to remove capcha. The server must be built with "-DCMAKE_BUILD_TYPE=Debug" option for the same reason.
+
+The server skips captcha verification when built with the default `TEST` option on
+(see the yutovo-server README); build it with `-DTEST=OFF` to enable verification.
 
 Then run tests from the `src/site` directory:
 

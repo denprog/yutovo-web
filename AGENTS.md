@@ -34,7 +34,7 @@
 
 ## Test Environment
 
-- The frontend must be built with `production: false` in `src/site/quasar.config.js` so that captcha fields are hidden and login/register flows work without manual captcha input.
+- The frontend must be built for tests with `YUTOVO_PRODUCTION=false npx quasar build` (or `npm run build:test`) in `src/site` so that captcha fields are hidden and login/register flows work without manual captcha input. Do not edit `production` in `quasar.config.js`: a plain build is a production build with captcha enabled.
 - DB credentials are read from `yutovo-server.env`. Run tests with:
   ```bash
   cd src/site && set -a && source ../../yutovo-server.env && set +a && npx playwright test --workers=1

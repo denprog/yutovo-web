@@ -26,5 +26,5 @@ steps:
       - npm i -g @quasar/cli
       - cd ../src/site
       - npm install
-      - quasar build
+      - YUTOVO_PRODUCTION=true quasar build
       - cp -r dist/spa $YUTOVO_DEPLOY

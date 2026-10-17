@@ -11,7 +11,8 @@
     "test": "echo \"No test specified\" && exit 0",
     "test:e2e": "playwright test",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build",
+    "build:test": "YUTOVO_PRODUCTION=false quasar build"
   },
   "dependencies": {
     "@quasar/extras": "^1.18.0",

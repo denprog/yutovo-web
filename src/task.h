@@ -24,6 +24,8 @@ struct Task
     virtual ~Task() = default;
 
     virtual void Execute() = 0;
+    
+    virtual void Cancel();
 
     void DrawPixelWeight(const int x, const int y, const Color& color, const int weight);
     void DrawPixel(const int x, const int y, const Color& color);
@@ -168,6 +170,7 @@ struct ConnectTask : Task
     ConnectTask(const std::string& _addr, std::atomic_int32_t& _socket_id);
 
     virtual void Execute();
+    virtual void Cancel();
 
     std::string addr;
     std::atomic_int32_t& socket_id;
@@ -178,6 +181,7 @@ struct IsOpenTask : Task
     IsOpenTask(const int _socket_id, std::atomic_int8_t& _is_open);
 
     virtual void Execute();
+    virtual void Cancel();
 
     const int socket_id;
     std::atomic_int8_t& is_open;
@@ -188,6 +192,7 @@ struct SendTask : Task
     SendTask(const int _socket_id, const std::string& _message, std::atomic_int8_t& _res);
 
     virtual void Execute();
+    virtual void Cancel();
 
     const int socket_id;
     const std::string message;
@@ -199,6 +204,7 @@ struct ReceiveTask : Task
     ReceiveTask(const int _socket_id, std::string& _message, std::atomic_int8_t& _res);
 
     virtual void Execute();
+    virtual void Cancel();
 
     const int socket_id;
     std::string& message;
@@ -210,6 +216,7 @@ struct ResetTask : Task
     ResetTask(const int _socket_id, std::atomic_int8_t& _res);
 
     virtual void Execute();
+    virtual void Cancel();
 
     const int socket_id;
     std::atomic_int8_t& res;
@@ -220,6 +227,7 @@ struct CloseTask : Task
     CloseTask(const int _socket_id, std::atomic_int8_t& _res);
 
     virtual void Execute();
+    virtual void Cancel();
 
     const int socket_id;
     std::atomic_int8_t& res;

@@ -531,6 +531,11 @@ async function onCopy()
     if (contextMenuRef.value)
         contextMenuRef.value.hide();
     Module.cwrap('OnCopy', 'void', [])();
+    //the copy task runs on the document thread, wait for its completion event
+    await new Promise<void>((resolve) =>
+        {
+            window.addEventListener('onCopyResult', () => resolve(), { once: true });
+        });
     const clipboard_text = Module.GetClipboardText();
     const clipboard_json = Module.GetClipboardJson();
     const clipboard_image = Module.GetClipboardImage();
@@ -576,6 +581,11 @@ async function onCut()
     if (contextMenuRef.value)
         contextMenuRef.value.hide();
     Module.cwrap('OnCut', 'void', [])();
+    //the cut task runs on the document thread, wait for its completion event
+    await new Promise<void>((resolve) =>
+    {
+        window.addEventListener('onCopyResult', () => resolve(), { once: true });
+    });
     const clipboard_text = Module.GetClipboardText();
     const clipboard_json = Module.GetClipboardJson();
     const clipboard_image = Module.GetClipboardImage();

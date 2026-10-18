@@ -8,6 +8,7 @@
 #include "web_window.h"
 #include <web_utils.h>
 #include <emscripten/em_js.h>
+#include <emscripten/threading.h>
 #include <SDL2/SDL_image.h>
 #include <chrono>
 #include <thread>
@@ -354,75 +355,134 @@ void WebWindow::OnSetConfig()
     set_config = true;
 }
 
+void WebWindow::OnCopyResult(CopyResult result)
+{
+    copy_results++;
+}
+
 int WebWindow::Connect(const std::string& addr)
 {
     std::atomic_int32_t socket_id = -1;
+    TaskPtr task(new ConnectTask("wss://" + addr, socket_id));
+    if (emscripten_is_main_runtime_thread())
     {
-        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new ConnectTask("wss://" + addr, socket_id));
+        //SocketTasks() cannot run while the main thread is here
+        task->Execute();
     }
-    while (socket_id == -1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    else
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+            socket_tasks.emplace_back(task);
+        }
+        std::unique_lock<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.wait(lock, [&socket_id]{ return socket_id != -1; });
+    }
     return socket_id;
 }
 
 bool WebWindow::Send(const int socket_id, const std::string& message)
 {
     std::atomic_int8_t res{-1};
+    TaskPtr task(new SendTask(socket_id, message, res));
+    if (emscripten_is_main_runtime_thread())
     {
-        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new SendTask(socket_id, message, res));
+        //SocketTasks() cannot run while the main thread is here
+        task->Execute();
     }
-    while (res == -1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    else
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+            socket_tasks.emplace_back(task);
+        }
+        std::unique_lock<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.wait(lock, [&res]{ return res != -1; });
+    }
     return res > 0;
 }
 
 bool WebWindow::Receive(const int socket_id, std::string& message)
 {
     std::atomic_int8_t res{-1};
+    TaskPtr task(new ReceiveTask(socket_id, message, res));
+    if (emscripten_is_main_runtime_thread())
     {
-        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new ReceiveTask(socket_id, message, res));
+        //SocketTasks() cannot run while the main thread is here
+        task->Execute();
     }
-    while (res == -1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    else
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+            socket_tasks.emplace_back(task);
+        }
+        std::unique_lock<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.wait(lock, [&res]{ return res != -1; });
+    }
     return res > 0;
 }
 
 bool WebWindow::Reset(const int socket_id)
 {
     std::atomic_int8_t res{-1};
+    TaskPtr task(new ResetTask(socket_id, res));
+    if (emscripten_is_main_runtime_thread())
     {
-        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new ResetTask(socket_id, res));
+        //SocketTasks() cannot run while the main thread is here
+        task->Execute();
     }
-    while (res == -1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    else
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+            socket_tasks.emplace_back(task);
+        }
+        std::unique_lock<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.wait(lock, [&res]{ return res != -1; });
+    }
     return res > 0;
 }
 
 bool WebWindow::IsOpen(const int socket_id)
 {
     std::atomic_int8_t is_open{-1};
+    TaskPtr task(new IsOpenTask(socket_id, is_open));
+    if (emscripten_is_main_runtime_thread())
     {
-        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new IsOpenTask(socket_id, is_open));
+        //SocketTasks() cannot run while the main thread is here
+        task->Execute();
     }
-    while (is_open == -1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    else
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+            socket_tasks.emplace_back(task);
+        }
+        std::unique_lock<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.wait(lock, [&is_open]{ return is_open != -1; });
+    }
     return is_open > 0;
 }
 
 bool WebWindow::Close(const int socket_id)
 {
     std::atomic_int8_t res{-1};
+    TaskPtr task(new CloseTask(socket_id, res));
+    if (emscripten_is_main_runtime_thread())
     {
-        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-        socket_tasks.emplace_back(new CloseTask(socket_id, res));
+        //SocketTasks() cannot run while the main thread is here
+        task->Execute();
     }
-    while (res == -1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    else
+    {
+        {
+            std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+            socket_tasks.emplace_back(task);
+        }
+        std::unique_lock<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.wait(lock, [&res]{ return res != -1; });
+    }
     return res > 0;
 }
 
@@ -440,7 +500,14 @@ void WebWindow::Reset()
     }
     {
         std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+        for (auto& t : socket_tasks)
+            t->Cancel();
         socket_tasks.clear();
+    }
+    {
+        //wake up threads waiting for the cancelled tasks
+        std::lock_guard<std::mutex> lock(socket_done_mutex);
+        socket_done_cv.notify_all();
     }
     {
         std::lock_guard<std::recursive_mutex> lock(translate_mutex);
@@ -509,10 +576,20 @@ void WebWindow::Render(std::vector<unsigned char>& picture)
 
 void WebWindow::SocketTasks()
 {
-    std::lock_guard<std::recursive_mutex> lock(socket_mutex);
-    for (auto& t : socket_tasks)
+    std::vector<TaskPtr> tasks;
+    {
+        std::lock_guard<std::recursive_mutex> lock(socket_mutex);
+        tasks.swap(socket_tasks);
+    }
+    for (auto& t : tasks)
+    {
         t->Execute();
-    socket_tasks.clear();
+        {
+            //notify under the mutex so a waiter cannot miss the wakeup
+            std::lock_guard<std::mutex> lock(socket_done_mutex);
+            socket_done_cv.notify_all();
+        }
+    }
 }
 
 void WebWindow::GetTranslateTasks(std::vector<std::pair<yutovo::ElementId, std::string>>& _translate_tasks)

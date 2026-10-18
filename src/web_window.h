@@ -15,6 +15,7 @@
 #include <emscripten/val.h>
 #include <vector>
 #include <queue>
+#include <condition_variable>
 #include "fonts.h"
 #include "task.h"
 
@@ -93,6 +94,8 @@ public:
 
     virtual void OnSetConfig();
 
+    virtual void OnCopyResult(CopyResult result);
+
     virtual int Connect(const std::string& addr);
     virtual bool Send(const int socket_id, const std::string& message);
     virtual bool Receive(const int socket_id, std::string& message);
@@ -135,6 +138,8 @@ public:
     std::atomic_bool document_changed{false};
     std::atomic_bool set_config{false};
 
+    std::atomic_int copy_results{0}; //pending OnCopyResult notifications to dispatch to js
+
     SDL_Renderer* renderer = nullptr;
 
     SDL_Rect view_port{0, 0, 0, 0};
@@ -173,6 +178,9 @@ private:
 
     std::recursive_mutex socket_mutex;
     std::vector<TaskPtr> socket_tasks;
+
+    std::mutex socket_done_mutex;
+    std::condition_variable socket_done_cv; //wakes threads waiting for their socket tasks executed by SocketTasks
 
     std::vector<TaskPtr> cache_tasks;
 

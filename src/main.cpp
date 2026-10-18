@@ -290,6 +290,11 @@ EM_JS(void, DocumentChanged, (const int changed),
             }));
     });
 
+EM_JS(void, CopyResultJs, (),
+    {
+        window.dispatchEvent(new CustomEvent('onCopyResult', {}));
+    });
+
 EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int width, const int style, const int surface, const int histogram),
     {
         window.dispatchEvent(new CustomEvent('plotFormatDialog',
@@ -560,6 +565,12 @@ void MainLoop(void* arg)
         window->GetSolverActions(solver_actions);
         for (auto& s : solver_actions)
             SolverAction(s.c_str(), s.size());
+    }
+
+    while (window->copy_results > 0)
+    {
+        window->copy_results--;
+        CopyResultJs();
     }
 
     if (create_document)
@@ -1165,17 +1176,21 @@ void HidePrompt()
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCut()
 {
     if (!document)
+    {
+        CopyResultJs(); //the js side waits for the result event
         return;
-    uint t = document->Cut(clipboard_json, clipboard_text, clipboard_png);
-    document->WaitTask(t);
+    }
+    document->Cut(clipboard_json, clipboard_text, clipboard_png);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnCopy()
 {
     if (!document)
+    {
+        CopyResultJs(); //the js side waits for the result event
         return;
-    uint t = document->Copy(clipboard_json, clipboard_text, clipboard_png);
-    document->WaitTask(t);
+    }
+    document->Copy(clipboard_json, clipboard_text, clipboard_png);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPaste()

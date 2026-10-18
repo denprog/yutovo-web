@@ -23,6 +23,10 @@ Task::Task(WebWindow* _web_window, bool _draw_doc) :
 {
 }
 
+void Task::Cancel()
+{
+}
+
 void Task::DrawPixelWeight(const int x, const int y, const Color& color, const int weight)
 {
 	uint8_t ax = color.a;
@@ -979,6 +983,11 @@ void ConnectTask::Execute()
     socket_id = ConnectJs(addr.c_str(), addr.size());
 }
 
+void ConnectTask::Cancel()
+{
+    socket_id = 0; //socket ids start from 1 on the js side
+}
+
 //IsOpenTask
 
 EM_JS(int, IsOpenJs, (const int socket_id),
@@ -998,6 +1007,11 @@ IsOpenTask::IsOpenTask(const int _socket_id, std::atomic_int8_t& _is_open) :
 void IsOpenTask::Execute()
 {
     is_open = IsOpenJs(socket_id);
+}
+
+void IsOpenTask::Cancel()
+{
+    is_open = 0;
 }
 
 //SendTask
@@ -1028,6 +1042,11 @@ SendTask::SendTask(const int _socket_id, const std::string& _message, std::atomi
 void SendTask::Execute()
 {
     res = SendJs(socket_id, message.c_str(), message.size());
+}
+
+void SendTask::Cancel()
+{
+    res = 0;
 }
 
 //ReceiveTask
@@ -1084,6 +1103,11 @@ void ReceiveTask::Execute()
     res = 1;
 }
 
+void ReceiveTask::Cancel()
+{
+    res = 0;
+}
+
 //ResetTask
 
 EM_JS(void, ResetJs, (const int socket_id),
@@ -1105,6 +1129,11 @@ void ResetTask::Execute()
 {
     ResetJs(socket_id);
     res = 1;
+}
+
+void ResetTask::Cancel()
+{
+    res = 0;
 }
 
 //CloseTask
@@ -1134,6 +1163,11 @@ CloseTask::CloseTask(const int _socket_id, std::atomic_int8_t& _res) :
 void CloseTask::Execute()
 {
     res = CloseJs(socket_id);
+}
+
+void CloseTask::Cancel()
+{
+    res = 0;
 }
 
 //FillSizesCacheTask

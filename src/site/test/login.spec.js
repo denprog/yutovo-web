@@ -102,6 +102,39 @@ test.describe('Login', () =>
         expect(await utils.getLanguage(page)).toBe('Русский');
     });
 
+    test('anonymous keeps the last document after reload', async ({ page, context }) =>
+    {
+        await page.waitForTimeout(1000);
+        await utils.login(page, 'test1', '11');
+        await page.waitForSelector('#canvas', { state: 'attached', timeout: 10000 });
+        await page.waitForTimeout(2000);
+        await utils.writeText(page, 'anon_reload_doc');
+        await utils.save(page);
+        await page.waitForTimeout(3000);
+        const c1 = await utils.getCookie(context, 'document_id');
+        expect(c1).not.toBeNull();
+
+        //become anonymous: logout clears cookies and storage
+        await utils.logout(page);
+
+        //return as an anonymous visitor with the last document remembered
+        await context.addCookies([
+            { name: 'app_initialized', value: 'true', path: '/', domain: 'www.yutovo.ru' },
+            { name: 'document_id', value: c1.value, path: '/', domain: 'www.yutovo.ru' }
+        ]);
+        await page.goto(address);
+        await page.waitForTimeout(6000);
+        expect(await utils.documentContains(page, 'anon_reload_doc')).toBe(true);
+
+        //the anonymous auto-login attempt fails with 400, the document must stay
+        await page.reload();
+        await page.waitForSelector('#canvas', { state: 'attached', timeout: 30000 });
+        await page.waitForTimeout(6000);
+        expect(await utils.documentContains(page, 'anon_reload_doc')).toBe(true);
+        const c2 = await utils.getCookie(context, 'document_id');
+        expect(c2).not.toBeNull();
+    });
+
     test('paste into password field goes to password field', async ({ page, context }) =>
     {
         await context.grantPermissions(['clipboard-read', 'clipboard-write']);

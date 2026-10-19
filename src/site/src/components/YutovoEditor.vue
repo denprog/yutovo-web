@@ -2091,32 +2091,32 @@ function initModule()
 
             (function doAuthThenDocumentLoad()
             {
-                if (Cookies.has('refresh_token'))
-                {
-                    return api.post('/auth/refresh-token', {})
-                        .then(
-                        function(resp: any)
-                        {
-                            s.dispatch('login/updateAccessToken', resp.headers['access_token']);
-                            s.commit('login/setLastError', '');
-                            if (s.state.login.access_token)
-                                return api.post('/service/get-user-settings', {}, { headers: { access_token: s.state.login.access_token } });
-                        })
-                        .then(
-                        function(r2: any)
-                        {
-                            if (r2)
-                                s.commit('editor/setSettings', r2.data.settings);
-                        })
-                        .catch(
-                        function(error: any)
-                        {
-                            console.error('Auto-login failed:', error);
-                            s.dispatch('login/updateAccessToken', '');
-                            Cookies.remove('document_id');
-                        });
-                }
-                return Promise.resolve();
+                //the refresh cookie is HttpOnly, so its presence cannot be checked here
+                return api.post('/auth/refresh-token', {})
+                    .then(
+                    function(resp: any)
+                    {
+                        s.dispatch('login/updateAccessToken', resp.headers['access_token']);
+                        s.commit('login/setLastError', '');
+                        if (s.state.login.access_token)
+                            return api.post('/service/get-user-settings', {}, { headers: { access_token: s.state.login.access_token } });
+                    })
+                    .then(
+                    function(r2: any)
+                    {
+                        if (r2)
+                            s.commit('editor/setSettings', r2.data.settings);
+                    })
+                    .catch(
+                    function(error: any)
+                    {
+                        //400 means there is no refresh cookie: an anonymous user, keep the last document
+                        if (error.response && error.response.status == 400)
+                            return;
+                        console.error('Auto-login failed:', error);
+                        s.dispatch('login/updateAccessToken', '');
+                        Cookies.remove('document_id');
+                    });
             })().finally(
                 function()
                 {

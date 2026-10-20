@@ -60,7 +60,6 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Cookies } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import verificationTemplate from '../templates/VerificationEmail.html?raw'
 import welcomeTemplate from '../templates/WelcomeEmail.html?raw'
 
 export default
@@ -185,26 +184,14 @@ export default
             if (!validateAllFields())
                 return;
 
-            const t = tr.t;
-            const htmlMessage = verificationTemplate
-                .replace(/{{subject}}/g, t('register_verification_email.subject'))
-                .replace(/{{greeting}}/g, t('register_verification_email.greeting'))
-                .replace(/{{body1}}/g, t('register_verification_email.body1'))
-                .replace(/{{body2}}/g, t('register_verification_email.body2'))
-                .replace(/{{code}}/g, 'EMAIL_CODE')
-                .replace(/{{code_valid}}/g, t('register_verification_email.code_valid'))
-                .replace(/{{ignore}}/g, t('register_verification_email.ignore'))
-                .replace(/{{sign}}/g, t('register_verification_email.sign'));
-
-            api.post('/auth/send-email-code', 
+            api.post('/auth/send-email-code',
                 {
                     login: login.value,
                     name: name.value,
                     email: email.value,
-                    subject: t('register_verification_email.subject'),
-                    message: htmlMessage,
                     captcha: captcha.value,
-                    action: 'register'
+                    action: 'register',
+                    language: tr.locale.value
                 }
                 ).then(
                     function()

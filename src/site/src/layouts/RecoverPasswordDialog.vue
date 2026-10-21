@@ -19,7 +19,8 @@
                         </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" :disabled="captcha == ''" v-bind:label="$t('Send code')" />
+                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" :disabled="login == '' || (isProduction && captcha == '')" 
+                                v-bind:label="$t('Send code')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
                         </div>
                         <q-input ref="emailCodeRef" v-model="emailCode" square v-if="emailCodeSent == true" v-bind:label="$t('Enter code from the e-mail')" />
@@ -166,9 +167,10 @@ export default
             store.commit('login/setLastError', '');
             repasswordRef.value.validate();
 
-            api.post('/service/recover-password', 
+            api.post('/service/recover-password',
                 {
                     password: newPassword.value,
+                    captcha: captcha.value,
                     email_code: emailCode.value
                 }
                 ).then(

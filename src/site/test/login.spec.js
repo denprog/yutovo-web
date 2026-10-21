@@ -40,6 +40,34 @@ test.describe('Login', () =>
         expect(count).toBe(0);
     });
 
+    test('recover password', async ({ page }) =>
+    {
+        await page.waitForTimeout(1000);
+
+        //open the login dialog and switch to the password recovery dialog
+        await page.locator(
+            "xpath=//*[contains(text(), 'Login')] | //*[contains(text(), 'Войти')] | //*[contains(text(), 'Acceder')]").first().evaluate((el) => el.click());
+        await page.waitForTimeout(1000);
+        await page.locator("xpath=//a[contains(text(), 'Recover password')]").first().evaluate((el) => el.click());
+        await page.waitForTimeout(1000);
+
+        await page.locator("xpath=//input[@aria-label='login or e-mail']").fill('test1');
+        await page.locator("xpath=//button[contains(., 'Send code')]").first().click();
+        await page.waitForSelector("xpath=//input[@aria-label='Enter code from the e-mail']", { timeout: 10000 });
+
+        await page.locator("xpath=//input[@aria-label='Enter code from the e-mail']").fill('123456');
+        await page.locator("xpath=//input[@aria-label='new password']").fill('22');
+        await page.locator("xpath=//input[@aria-label='repeate password']").fill('22');
+        await page.locator("xpath=//button[contains(., 'Change password')]").first().click();
+        await page.locator('.q-dialog').waitFor({ state: 'hidden', timeout: 10000 });
+
+        //the password was reset in the database, the new one must log in
+        await utils.login(page, 'test1', '22');
+        const c = await page.locator('#login').textContent({ timeout: 10000 });
+        expect(c).toBe('test1');
+        await utils.logout(page);
+    });
+
     test('login and logout two users', async ({ page, context }) =>
     {
         await page.waitForTimeout(1000);

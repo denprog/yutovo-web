@@ -19,7 +19,8 @@
                         </template>
                         <p class="text-grey-6" v-if="lastErrorState != ''">{{ lastErrorState }}</p>
                         <div class="q-pa-md q-gutter-sm">
-                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" :disabled="captcha == ''" v-bind:label="$t('Send code')" />
+                            <q-btn unelevated class="bg-primary text-white" @click="onSendCode" :disabled="login == '' || (isProduction && captcha == '')" 
+                                v-bind:label="$t('Send code')" />
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')" v-close-popup />
                         </div>
                         <q-input ref="emailCodeRef" v-model="emailCode" square v-if="emailCodeSent == true" v-bind:label="$t('Enter code from the e-mail')" />
@@ -45,7 +46,6 @@ import { api } from 'boot/boot'
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import verificationTemplate from '../templates/VerificationEmail.html?raw'
 
 export default
 {
@@ -137,25 +137,13 @@ export default
         {
             store.commit('login/setLastError', '');
 
-            const t = tr.t;
-            const htmlMessage = verificationTemplate
-                .replace(/{{subject}}/g, t('password_verification_email.subject'))
-                .replace(/{{greeting}}/g, t('password_verification_email.greeting'))
-                .replace(/{{body1}}/g, t('password_verification_email.body1'))
-                .replace(/{{body2}}/g, t('password_verification_email.body2'))
-                .replace(/{{code}}/g, 'EMAIL_CODE')
-                .replace(/{{code_valid}}/g, t('password_verification_email.code_valid'))
-                .replace(/{{ignore}}/g, t('password_verification_email.ignore'))
-                .replace(/{{sign}}/g, t('password_verification_email.sign'));
-
-            api.post('/auth/send-email-code', 
+            api.post('/auth/send-email-code',
                 {
                     login: login.value,
-                    subject: t('password_verification_email.subject'),
-                    message: htmlMessage,
                     captcha: captcha.value,
                     recover: true,
-                    action: 'recover_password'
+                    action: 'recover_password',
+                    language: tr.locale.value
                 }
                 ).then(
                     function()
@@ -179,9 +167,10 @@ export default
             store.commit('login/setLastError', '');
             repasswordRef.value.validate();
 
-            api.post('/service/recover-password', 
+            api.post('/service/recover-password',
                 {
                     password: newPassword.value,
+                    captcha: captcha.value,
                     email_code: emailCode.value
                 }
                 ).then(

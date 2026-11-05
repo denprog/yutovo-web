@@ -1486,6 +1486,49 @@ extern "C" EMSCRIPTEN_KEEPALIVE int IsGraph()
     return document->FindCurrentGraph() != ElementId{};
 }
 
+ElementId FindCurrentMatrix()
+{
+    EditorState s = document->GetEditorState();
+    ElementPtr el = document->GetElement(s.caret_state.id);
+    while (el)
+    {
+        if (el->type == ElementType::MATRIX || el->type == ElementType::DETERMINANT)
+            return el->id;
+        el = document->GetParent(el->id);
+    }
+    return ElementId{};
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE int IsMatrix()
+{
+    return FindCurrentMatrix() != ElementId{};
+}
+
+std::string GetMatrixSize()
+{
+    std::string res;
+    ElementId id = FindCurrentMatrix();
+    uint rows = 0, columns = 0;
+    if (!id.empty() && document->GetMatrixSize(id, rows, columns))
+    {
+        res = "{\"rows\":" + std::to_string(rows) + ",\"columns\":" + std::to_string(columns) +
+            ",\"determinant\":" + (document->GetElementType(id) == ElementType::DETERMINANT ? "1" : "0") + "}";
+    }
+    return res;
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnMatrixSize(const int rows, const int columns)
+{
+    if (!document)
+        return;
+    if (rows < 1 || columns < 1)
+        return;
+    ElementId id = FindCurrentMatrix();
+    if (id.empty())
+        return;
+    document->SetMatrixSize(id, (uint)rows, (uint)columns, true);
+}
+
 std::string GetLink()
 {
     std::string res;
@@ -1859,6 +1902,24 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnGraphHistogram()
     document->InsertGraphHistogram(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnMatrix(const int rows, const int columns)
+{
+    if (!document)
+        return;
+    if (rows < 1 || columns < 1)
+        return;
+    document->InsertMatrix(true, (uint)rows, (uint)columns);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnDeterminant(const int rows, const int columns)
+{
+    if (!document)
+        return;
+    if (rows < 1 || columns < 1)
+        return;
+    document->InsertDeterminant(true, (uint)rows, (uint)columns);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
 {
     if (!document)
@@ -1870,8 +1931,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnUnorderedList(int marker)
 {
     if (!document)
         return;
-    static const std::u32string markers[4] = {ParagraphFormat::small_circle_marker, ParagraphFormat::large_circle_marker, ParagraphFormat::diamond_marker,
-        ParagraphFormat::square_marker};
+    static const std::u32string markers[4] = {ParagraphFormat::small_circle_marker, ParagraphFormat::large_circle_marker, 
+        ParagraphFormat::diamond_marker, ParagraphFormat::square_marker};
     if (marker < 1 || marker > 4)
         return;
     document->SetCurrentParagraphMarker(markers[marker - 1], true);
@@ -2472,6 +2533,7 @@ EMSCRIPTEN_BINDINGS(yutovo_string_getters)
     emscripten::function("GetLink", &GetLink);
     emscripten::function("GetGraphFormat", &GetGraphFormat);
     emscripten::function("GetGraphImage", &GetGraphImage);
+    emscripten::function("GetMatrixSize", &GetMatrixSize);
     emscripten::function("GetMargins", &GetMargins);
     emscripten::function("GetText", &GetText);
     emscripten::function("GetHtml", &GetHtml);

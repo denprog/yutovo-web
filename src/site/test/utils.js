@@ -177,6 +177,27 @@ async function insertGraphHistogram(page)
     await page.locator('#graph-histogram-button').first().evaluate((el) => el.click());
 }
 
+async function fillMatrixSizeDialog(page, rows, columns)
+{
+    await page.locator("xpath=//input[@aria-label='Rows']").fill(String(rows));
+    await page.locator("xpath=//input[@aria-label='Columns']").fill(String(columns));
+    await page.locator('.q-dialog button[type=submit]').click();
+}
+
+async function insertMatrix(page, rows, columns)
+{
+    await page.locator('#matrix-button').first().evaluate((el) => el.click());
+    await page.waitForTimeout(300);
+    await fillMatrixSizeDialog(page, rows, columns);
+}
+
+async function insertDeterminant(page, rows, columns)
+{
+    await page.locator('#determinant-button').first().evaluate((el) => el.click());
+    await page.waitForTimeout(300);
+    await fillMatrixSizeDialog(page, rows, columns);
+}
+
 async function copyGraphImage(page)
 {
     await jsClick(page, '#copy-graph-image');
@@ -453,6 +474,9 @@ module.exports =
     insertGraphLine,
     insertGraphSurface,
     insertGraphHistogram,
+    fillMatrixSizeDialog,
+    insertMatrix,
+    insertDeterminant,
     copyGraphImage,
     clickIdentifier,
     getDocumentName,

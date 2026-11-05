@@ -455,5 +455,13 @@ export default {
         sowie die Inhalte und Materialien der über sie bereitgestellten Dienste rechtzeitig, sicher, unterbrechungsfrei und fehlerfrei sein werden, \
         dass Fehler behoben werden oder dass unsere Websites oder Server, die den Zugang zu unserer Website ermöglichen, frei von Viren \
         oder anderen schädlichen Komponenten sind. Sie nutzen unsere Website auf eigenes Risiko und übernehmen die volle Verantwortung für alle Kosten, die mit \
-        der Nutzung der Website verbunden sind. Wir haften nicht für Schäden im Zusammenhang mit der Nutzung unserer Website.'
+        der Nutzung der Website verbunden sind. Wir haften nicht für Schäden im Zusammenhang mit der Nutzung unserer Website.',
+
+    //Matrix and determinant
+    'Insert matrix': 'Matrix einfügen',
+    'Insert determinant': 'Determinante einfügen',
+    'Matrix size': 'Matrixgröße',
+    'Determinant size': 'Determinantengröße',
+    'Rows': 'Zeilen',
+    'Columns': 'Spalten',
 };

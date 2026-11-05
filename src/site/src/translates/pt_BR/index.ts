@@ -452,5 +452,13 @@ export default {
         bem como o conteúdo e os materiais dos serviços disponibilizados por meio dele, sejam oportunos, seguros, ininterruptos ou livres de erros, \
         que defeitos sejam corrigidos ou que nossos sites ou servidores que disponibilizam acesso ao nosso site estejam livres de vírus \
         ou outros componentes prejudiciais. O uso do nosso site é por sua conta e risco, e você assume total responsabilidade por quaisquer custos associados ao \
-        uso do site. Não nos responsabilizamos por quaisquer danos de qualquer tipo relacionados ao uso do nosso site.'
+        uso do site. Não nos responsabilizamos por quaisquer danos de qualquer tipo relacionados ao uso do nosso site.',
+
+    //Matrix and determinant
+    'Insert matrix': 'Inserir matriz',
+    'Insert determinant': 'Inserir determinante',
+    'Matrix size': 'Tamanho da matriz',
+    'Determinant size': 'Tamanho do determinante',
+    'Rows': 'Linhas',
+    'Columns': 'Colunas',
 };

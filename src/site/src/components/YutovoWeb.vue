@@ -363,6 +363,14 @@
                 </q-btn>
             </q-btn-group>
             <q-btn-group flat square unelevated stretch>
+                <q-btn id="matrix-button" size="14px" square dense @click="onMatrix();" icon="img:/images/algebra/matrix.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert matrix') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="determinant-button" size="14px" square dense @click="onDeterminant();" icon="img:/images/algebra/determinant.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert determinant') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+            <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
                     R$
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Brazilian real') }}</q-tooltip>
@@ -410,6 +418,7 @@ import RenameDialog from 'layouts/RenameDialog.vue'
 import ConfigDialog from 'layouts/ConfigDialog.vue'
 import LinkDialog from 'layouts/LinkDialog.vue'
 import ExportPdfDialog from 'layouts/ExportPdfDialog.vue'
+import MatrixSizeDialog from 'layouts/MatrixSizeDialog.vue'
 import YutovoEditor from './YutovoEditor.vue'
 
 export default defineComponent(
@@ -1217,6 +1226,38 @@ export default defineComponent(
         onGraphHistogram()
         {
             Module.cwrap('OnGraphHistogram', 'void', [])()
+        },
+
+        onMatrix()
+        {
+            this.$q.dialog(
+            {
+                component: MatrixSizeDialog,
+                componentProps:
+                {
+                    title_prop: this.$t('Insert matrix'),
+                    rows_prop: 2,
+                    columns_prop: 2,
+                    command_prop: 'OnMatrix'
+                }
+            })
+            canvas.focus()
+        },
+
+        onDeterminant()
+        {
+            this.$q.dialog(
+            {
+                component: MatrixSizeDialog,
+                componentProps:
+                {
+                    title_prop: this.$t('Insert determinant'),
+                    rows_prop: 2,
+                    columns_prop: 2,
+                    command_prop: 'OnDeterminant'
+                }
+            })
+            canvas.focus()
         },
 
         onCurrency(currency: string)

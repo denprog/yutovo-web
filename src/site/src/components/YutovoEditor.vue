@@ -273,6 +273,10 @@
                     <q-item id="copy-graph-image" clickable :style="{ display: contextMenuItems.copyGraphImage ? '' : 'none' }" @click="onCopyGraphImage()">
                         <q-item-section>{{ $t('Copy image') }}</q-item-section>
                     </q-item>
+
+                    <q-item auto-close id="matrix-size-menu" clickable :style="{ display: contextMenuItems.matrixSize ? '' : 'none' }" @click="onMatrixSize()">
+                        <q-item-section>{{ contextMenuItems.matrixSizeDeterminant ? $t('Determinant size') : $t('Matrix size') }}</q-item-section>
+                    </q-item>
                 </q-list>
             </q-menu>
 
@@ -297,6 +301,7 @@ import SetUnitDialog from 'layouts/SetUnitDialog.vue'
 import ConfirmDialog from 'layouts/ConfirmDialog.vue'
 import GraphFormatDialog from 'layouts/GraphFormatDialog.vue'
 import PlotFormatDialog from 'layouts/PlotFormatDialog.vue'
+import MatrixSizeDialog from 'layouts/MatrixSizeDialog.vue'
 import PromptDialog from 'layouts/PromptDialog.vue'
 
 declare var Module: any;
@@ -412,7 +417,9 @@ const contextMenuItems = reactive({
     complexForm: false,
     setUnit: false,
     graphFormat: false,
-    copyGraphImage: false
+    copyGraphImage: false,
+    matrixSize: false,
+    matrixSizeDeterminant: false
 });
 
 const contextMenuDisabled = reactive({
@@ -822,6 +829,13 @@ async function onShowContextMenu()
         contextMenuItems.graphFormat = true;
         contextMenuItems.copyGraphImage = true;
     }
+    if (Module.cwrap('IsMatrix', 'int', [])())
+    {
+        contextMenuItems.matrixSize = true;
+        const size_json = Module.GetMatrixSize();
+        if (size_json != '')
+            contextMenuItems.matrixSizeDeterminant = JSON.parse(size_json).determinant == 1;
+    }
     if (contextMenuRef.value)
         contextMenuRef.value.updatePosition();
 }
@@ -1042,6 +1056,28 @@ function onGraphFormat()
             axis_color_prop: json.axis.color,
             axis_width_prop: json.axis.width,
             axis_ticks_prop: json.axis.ticks == 1
+        }
+    });
+    canvasFocus();
+}
+
+function onMatrixSize()
+{
+    if (contextMenuRef.value)
+        contextMenuRef.value.hide();
+    const size_json = Module.GetMatrixSize();
+    if (size_json == '')
+        return;
+    const json = JSON.parse(size_json);
+    $q.dialog({
+        component: MatrixSizeDialog,
+        parent: instance!.proxy,
+        apiResponse: (instance!.proxy as any).resp,
+        componentProps: {
+            title_prop: json.determinant == 1 ? t('Determinant size') : t('Matrix size'),
+            rows_prop: json.rows,
+            columns_prop: json.columns,
+            command_prop: 'OnMatrixSize'
         }
     });
     canvasFocus();

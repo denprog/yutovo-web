@@ -455,5 +455,13 @@ export default {
         né i contenuti e i materiali dei servizi forniti tramite esso, saranno tempestivi, sicuri, ininterrotti e privi di errori, \
         che i difetti saranno corretti o che i nostri siti web o i server che danno accesso al nostro sito non contengano virus \
         o altri componenti dannosi. Utilizzate il nostro sito web a vostro rischio e pericolo, e vi assumete la piena responsabilità di tutte le spese connesse \
-        all\'utilizzo del sito web. Non siamo responsabili per eventuali danni legati all\'utilizzo del nostro sito web.'
+        all\'utilizzo del sito web. Non siamo responsabili per eventuali danni legati all\'utilizzo del nostro sito web.',
+
+    //Matrix and determinant
+    'Insert matrix': 'Inserisci matrice',
+    'Insert determinant': 'Inserisci determinante',
+    'Matrix size': 'Dimensione della matrice',
+    'Determinant size': 'Dimensione del determinante',
+    'Rows': 'Righe',
+    'Columns': 'Colonne',
 };

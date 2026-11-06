@@ -177,6 +177,11 @@ async function insertGraphHistogram(page)
     await page.locator('#graph-histogram-button').first().evaluate((el) => el.click());
 }
 
+async function insertLimit(page)
+{
+    await page.locator('#limit-button').first().evaluate((el) => el.click());
+}
+
 async function fillMatrixSizeDialog(page, rows, columns)
 {
     await page.locator("xpath=//input[@aria-label='Rows']").fill(String(rows));
@@ -474,6 +479,7 @@ module.exports =
     insertGraphLine,
     insertGraphSurface,
     insertGraphHistogram,
+    insertLimit,
     fillMatrixSizeDialog,
     insertMatrix,
     insertDeterminant,

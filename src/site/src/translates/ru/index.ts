@@ -171,6 +171,7 @@ export default {
     'Product': 'Произведение',
     'Definite integral': 'Определенный интеграл',
     'Indefinite integral': 'Неопределённый интеграл',
+    'Limit': 'Предел',
     'Derivative': 'Производная',
     'Second derivative': 'Производная второго порядка',
     'Partial derivative': 'Частная производная',

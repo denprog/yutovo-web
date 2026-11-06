@@ -32,6 +32,46 @@ test.describe('Solve', () =>
         expect(await utils.documentContains(page, '2*x')).toBe(true);
     });
 
+    test('solve the limit of sin(x)/x at zero', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+        await utils.insertLimit(page);
+        await page.waitForTimeout(500);
+        //the caret starts in the variable row: fill the variable, cross the arrow into the value row,
+        //leave the limit into the containing row and type the function
+        await page.keyboard.type('x');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('0');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('sin(x)/x');
+        await page.keyboard.press('ArrowRight'); //leave the denominator of the fraction
+        await page.keyboard.type('=');
+        await page.waitForTimeout(3000);
+        const text = await page.evaluate(() => window.getText());
+        expect(String(text)).toContain('lim[x\u21920]');
+        expect(String(text)).toContain('=1.');
+    });
+
+    test('solve the one-sided limit of 1/x at zero plus', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+        await utils.insertLimit(page);
+        await page.waitForTimeout(500);
+        //the direction is a power of the value: 0^+
+        await page.keyboard.type('x');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('0^+');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('1/x');
+        await page.keyboard.press('ArrowRight'); //leave the denominator of the fraction
+        await page.keyboard.type('=');
+        await page.waitForTimeout(3000);
+        const text = await page.evaluate(() => window.getText());
+        expect(String(text)).toContain('lim[x\u2192pow(0,+)]');
+        expect(String(text)).toContain('\u221e');
+    });
+
     test('syntax error for 234 & 456= in English', async ({ page }) =>
     {
         await utils.setLanguage(page, 'English');

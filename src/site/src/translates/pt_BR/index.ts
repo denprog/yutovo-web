@@ -171,6 +171,7 @@ export default {
     'Product': 'Produto',
     'Definite integral': 'Integral definida',
     'Indefinite integral': 'Integral indefinida',
+    'Limit': 'Limite',
     'Derivative': 'Derivada',
     'Second derivative': 'Derivada segunda',
     'Partial derivative': 'Derivada parcial',

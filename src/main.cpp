@@ -1804,6 +1804,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnIndefiniteIntegral()
     document->InsertIndefiniteIntegral(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnLimit()
+{
+    if (!document)
+        return;
+    document->InsertLimit(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnDerivative()
 {
     if (!document)
@@ -2271,6 +2278,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPromptSelected(const char* prompt)
         {"prod", &Document::InsertProduct},
         {"definite_integral", &Document::InsertDefiniteIntegral},
         {"indefinite_integral", &Document::InsertIndefiniteIntegral},
+        {"limit", &Document::InsertLimit},
         {"derivative", &Document::InsertDerivative}
     };
 

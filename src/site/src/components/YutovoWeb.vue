@@ -228,6 +228,9 @@
                 <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
                 </q-btn>
+                <q-btn id="limit-button" size="14px" square dense @click="onLimit();" icon="img:/images/calculus/limit.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Limit') }}</q-tooltip>
+                </q-btn>
                 <q-btn size="14px" square dense @click="onDerivative();" icon="img:/images/calculus/derivative.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative') }}</q-tooltip>
                 </q-btn>
@@ -1121,6 +1124,11 @@ export default defineComponent(
         onIndefiniteIntegral()
         {
             Module.cwrap('OnIndefiniteIntegral', 'void', [])()
+        },
+
+        onLimit()
+        {
+            Module.cwrap('OnLimit', 'void', [])()
         },
 
         onDerivative()

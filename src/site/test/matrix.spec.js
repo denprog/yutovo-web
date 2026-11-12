@@ -143,4 +143,24 @@ test.describe('Matrices', () =>
         const commas = text.split(',').length - 1;
         expect(commas).toBe(399);
     });
+
+    test('insert and fill a vector', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+        await page.waitForTimeout(500);
+        await utils.insertVector(page, 3);
+        await page.waitForTimeout(1000);
+
+        //fill the cells in reading order: the caret starts in the first cell
+        await page.keyboard.type('1');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('2');
+        await page.keyboard.press('ArrowRight');
+        await page.keyboard.type('3');
+        await page.waitForTimeout(500);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('[[1],[2],[3]]');
+    });
+
 });

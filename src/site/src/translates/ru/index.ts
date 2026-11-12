@@ -133,6 +133,9 @@ export default {
     'Rational': 'Дробные',
     'Complex': 'Комплексные',
     'Symbolic': 'Символьные',
+    'Vector': 'Векторы',
+    'Insert vector': 'Вставить вектор',
+    'Number of elements': 'Количество элементов',
 
     'Precision': 'Точность',
     'Exponent order': 'Порядок экспоненты',

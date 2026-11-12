@@ -6,8 +6,8 @@
                 <q-card-section>
                     <q-form @submit="onSubmit" @reset="onReset">
                         <div class="text-blue text-h5">{{ title }}</div>
-                        <q-input ref="rowsRef" square v-model="rows" :rules="[this.intInRange]" v-bind:label="$t('Rows')"/>
-                        <q-input ref="columnsRef" square v-model="columns" :rules="[this.intInRange]" v-bind:label="$t('Columns')"/>
+                        <q-input ref="rowsRef" square v-model="rows" :rules="[this.intInRange]" v-bind:label="vector ? $t('Number of elements') : $t('Rows')"/>
+                        <q-input v-if="!vector" ref="columnsRef" square v-model="columns" :rules="[this.intInRange]" v-bind:label="$t('Columns')"/>
                         <div class="q-pa-md q-gutter-sm">
                             <q-btn unelevated class="bg-primary text-white" type="submit" v-bind:label="$t('OK')"/>
                             <q-btn unelevated class="text-blue" type="reset" v-bind:label="$t('Cancel')"/>
@@ -34,7 +34,8 @@ export default {
         'title_prop',
         'rows_prop',
         'columns_prop',
-        'command_prop'
+        'command_prop',
+        'vector_prop'
     ],
 
     data()
@@ -50,6 +51,11 @@ export default {
         title()
         {
             return this.title_prop;
+        },
+
+        vector()
+        {
+            return this.vector_prop === true;
         },
 
         rows:
@@ -109,7 +115,8 @@ export default {
     {
         onSubmit()
         {
-            Module.cwrap(this.command_prop, 'void', ['int', 'int'])(parseInt(this.rows), parseInt(this.columns));
+            const columns = this.vector ? 1 : parseInt(this.columns);
+            Module.cwrap(this.command_prop, 'void', ['int', 'int'])(parseInt(this.rows), columns);
             this.matrixSizeDialog.hide();
         }
     }

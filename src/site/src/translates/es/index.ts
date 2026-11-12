@@ -132,6 +132,9 @@ export default {
     'Rational': 'Fraccionarios',
     'Complex': 'Complejos',
     'Symbolic': 'Simbólicos',
+    'Vector': 'Vectores',
+    'Insert vector': 'Insertar vector',
+    'Number of elements': 'Número de elementos',
 
     'Precision': 'Precisión',
     'Exponent order': 'Orden del exponente',

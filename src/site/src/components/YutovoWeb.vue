@@ -372,6 +372,9 @@
                 <q-btn id="determinant-button" size="14px" square dense @click="onDeterminant();" icon="img:/images/algebra/determinant.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert determinant') }}</q-tooltip>
                 </q-btn>
+                <q-btn id="vector-button" size="14px" square dense @click="onVector();" icon="img:/images/algebra/vector.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector') }}</q-tooltip>
+                </q-btn>
             </q-btn-group>
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
@@ -1263,6 +1266,23 @@ export default defineComponent(
                     rows_prop: 2,
                     columns_prop: 2,
                     command_prop: 'OnDeterminant'
+                }
+            })
+            canvas.focus()
+        },
+
+        onVector()
+        {
+            this.$q.dialog(
+            {
+                component: MatrixSizeDialog,
+                componentProps:
+                {
+                    title_prop: this.$t('Insert vector'),
+                    rows_prop: 3,
+                    columns_prop: 1,
+                    command_prop: 'OnVector',
+                    vector_prop: true
                 }
             })
             canvas.focus()

@@ -1360,6 +1360,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetPresentAsMenu()
     id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
     if (!id.empty())
         return 8;
+    id = document->FindCurrentParentByType(ElementType::VECTOR_REAL_RESULT);
+    if (!id.empty())
+        return 9;
+    id = document->FindCurrentParentByType(ElementType::VECTOR_RATIONAL_RESULT);
+    if (!id.empty())
+        return 10;
+    id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
+    if (!id.empty())
+        return 11;
     return 0;
 }
 
@@ -1433,6 +1442,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
     if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_RATIONAL_RESULT);
+    if (id.empty())
         return -1;
     return (int)document->GetFractionForm(id);
 }
@@ -1442,6 +1453,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
     ElementId id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
     if (id.empty())
         return -1;
     return (int)document->GetComplexForm(id);
@@ -1464,6 +1477,12 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetResultType()
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_RATIONAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
     if (id.empty())
         return -1;
     return (int)document->GetResultType(id);
@@ -1927,6 +1946,15 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnDeterminant(const int rows, const int col
     document->InsertDeterminant(true, (uint)rows, (uint)columns);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnVector(const int rows, const int columns)
+{
+    if (!document)
+        return;
+    if (rows < 1 || columns < 1)
+        return;
+    document->InsertVector(true, (uint)rows);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)
 {
     if (!document)
@@ -2149,6 +2177,27 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsSymbolicComplex()
         document->SetResultType(s.caret_state.id, ResultType::SYMBOLIC_COMPLEX, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsVectorReal()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResultType(s.caret_state.id, ResultType::VECTOR_REAL, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsVectorRational()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResultType(s.caret_state.id, ResultType::VECTOR_RATIONAL, true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsVectorComplex()
+{
+    EditorState s = document->GetEditorState();
+    if (!s.caret_state.IsEmpty())
+        document->SetResultType(s.caret_state.id, ResultType::VECTOR_COMPLEX, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSetPrecision(int precision)
 {
     EditorState s = document->GetEditorState();
@@ -2207,6 +2256,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnFractionForm(int fraction_form)
     if (s.caret_state.IsEmpty())
         return;
     auto _id = document->GetParentId(s.caret_state.id, ElementType::RATIONAL_RESULT);
+    if (_id.empty())
+        _id = document->GetParentId(s.caret_state.id, ElementType::SYMBOLIC_RATIONAL_RESULT);
+    if (_id.empty())
+        _id = document->GetParentId(s.caret_state.id, ElementType::VECTOR_RATIONAL_RESULT);
     if (!_id.empty())
         document->SetFractionForm(_id, (FractionForm)fraction_form, true);
 }
@@ -2217,6 +2270,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnComplexForm(int complex_form)
     if (s.caret_state.IsEmpty())
         return;
     auto _id = document->GetParentId(s.caret_state.id, ElementType::COMPLEX_RESULT);
+    if (_id.empty())
+        _id = document->GetParentId(s.caret_state.id, ElementType::SYMBOLIC_COMPLEX_RESULT);
+    if (_id.empty())
+        _id = document->GetParentId(s.caret_state.id, ElementType::VECTOR_COMPLEX_RESULT);
     if (!_id.empty())
         document->SetComplexForm(_id, (ComplexForm)complex_form, true);
 }
@@ -2383,6 +2440,10 @@ ElementId GetRealResultId()
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
     if (id.empty())
         id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_REAL_RESULT);
+    if (id.empty())
+        id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
     return id;
 }
 

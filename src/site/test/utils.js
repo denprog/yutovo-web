@@ -203,6 +203,15 @@ async function insertDeterminant(page, rows, columns)
     await fillMatrixSizeDialog(page, rows, columns);
 }
 
+async function insertVector(page, rows)
+{
+    await page.locator('#vector-button').first().evaluate((el) => el.click());
+    await page.waitForTimeout(300);
+    //the vector dialog has a single size field
+    await page.locator("xpath=//input[@aria-label='Number of elements']").fill(String(rows));
+    await page.locator('.q-dialog button[type=submit]').click();
+}
+
 async function copyGraphImage(page)
 {
     await jsClick(page, '#copy-graph-image');
@@ -483,6 +492,7 @@ module.exports =
     fillMatrixSizeDialog,
     insertMatrix,
     insertDeterminant,
+    insertVector,
     copyGraphImage,
     clickIdentifier,
     getDocumentName,

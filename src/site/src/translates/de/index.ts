@@ -133,6 +133,9 @@ export default {
     'Rational': 'Rational',
     'Complex': 'Komplex',
     'Symbolic': 'Symbolisch',
+    'Vector': 'Vektoren',
+    'Insert vector': 'Vektor einfügen',
+    'Number of elements': 'Anzahl der Elemente',
 
     'Precision': 'Genauigkeit',
     'Exponent order': 'Exponentenordnung',

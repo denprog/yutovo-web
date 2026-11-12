@@ -84,6 +84,35 @@
                                         </q-list>
                                     </q-menu>
                                 </q-item>
+
+                                <q-item id="vector-as-menu" clickable
+                                    @mouseenter="openSubmenu('vector')"
+                                    @mouseleave="scheduleSubmenuClose('vector')"
+                                    @click="openSubmenu('vector')">
+                                    <q-item-section>
+                                        {{ $t('Vector') }}
+                                    </q-item-section>
+                                    <q-item-section side>
+                                        <q-icon name="keyboard_arrow_right" />
+                                    </q-item-section>
+
+                                    <q-menu v-model="submenuOpen.vector" no-parent-event anchor="top end" self="top start">
+                                        <q-list @mouseenter="cancelSubmenuClose('vector')" @mouseleave="scheduleSubmenuClose('vector')">
+                                            <q-item id="vector-as-real-menu" dense clickable @click.stop="onPresentAsVectorReal()">
+                                                <div v-if="vectorRealMenuChecked">&check;</div>
+                                                <q-item-section>{{ $t('Real') }}</q-item-section>
+                                            </q-item>
+                                            <q-item id="vector-as-rational-menu" dense clickable @click.stop="onPresentAsVectorRational()">
+                                                <div v-if="vectorRationalMenuChecked">&check;</div>
+                                                <q-item-section>{{ $t('Rational') }}</q-item-section>
+                                            </q-item>
+                                            <q-item id="vector-as-complex-menu" dense clickable @click.stop="onPresentAsVectorComplex()">
+                                                <div v-if="vectorComplexMenuChecked">&check;</div>
+                                                <q-item-section>{{ $t('Complex') }}</q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </q-menu>
+                                </q-item>
                             </q-list>
                         </q-menu>
                     </q-item>
@@ -322,12 +351,13 @@ const { t } = useI18n();
 const contextMenuRef = ref<QMenu | null>(null);
 
 //context menu submenus opened by hover
-type SubmenuName = 'presentAs' | 'symbolic' | 'defaultAngleMeasure' | 'resultAngleMeasure'
+type SubmenuName = 'presentAs' | 'symbolic' | 'vector' | 'defaultAngleMeasure' | 'resultAngleMeasure'
     | 'defaultNotation' | 'resultNotation' | 'fractionForm' | 'complexForm';
 
 const submenuOpen = reactive<Record<SubmenuName, boolean>>({
     presentAs: false,
     symbolic: false,
+    vector: false,
     defaultAngleMeasure: false,
     resultAngleMeasure: false,
     defaultNotation: false,
@@ -340,6 +370,7 @@ const submenuOpen = reactive<Record<SubmenuName, boolean>>({
 const submenuParents: Record<SubmenuName, SubmenuName[]> = {
     presentAs: [],
     symbolic: ['presentAs'],
+    vector: ['presentAs'],
     defaultAngleMeasure: [],
     resultAngleMeasure: [],
     defaultNotation: [],
@@ -466,6 +497,9 @@ const exponentialMenuChecked = ref(false);
 const symbolicRealMenuChecked = ref(false);
 const symbolicRationalMenuChecked = ref(false);
 const symbolicComplexMenuChecked = ref(false);
+const vectorRealMenuChecked = ref(false);
+const vectorRationalMenuChecked = ref(false);
+const vectorComplexMenuChecked = ref(false);
 
 const loading = computed(() => store.state.editor.loading);
 
@@ -767,7 +801,10 @@ async function onShowContextMenu()
         symbolicRealMenuChecked.value = p == 6;
         symbolicRationalMenuChecked.value = p == 7;
         symbolicComplexMenuChecked.value = p == 8;
-        if (p == 1 || p == 2 || p == 5 || p == 6 || p == 8)
+        vectorRealMenuChecked.value = p == 9;
+        vectorRationalMenuChecked.value = p == 10;
+        vectorComplexMenuChecked.value = p == 11;
+        if (p == 1 || p == 2 || p == 5 || p == 6 || p == 8 || p == 9 || p == 11)
         {
             contextMenuItems.precision = true;
             contextMenuItems.exp = true;
@@ -782,7 +819,7 @@ async function onShowContextMenu()
             resultDegreeMenuChecked.value = r2 == 1;
             resultGradMenuChecked.value = r2 == 2;
             const r3 = Module.cwrap('GetResultType', 'int', [])();
-            if (r3 == 4 || r3 == 9)
+            if (r3 == 4 || r3 == 9 || r3 == 12)
             {
                 contextMenuItems.complexForm = true;
                 const r4 = Module.cwrap('GetComplexForm', 'int', [])();
@@ -806,7 +843,7 @@ async function onShowContextMenu()
             resultDecimalMenuChecked.value = r2 == 2;
             resultHexadecimalMenuChecked.value = r2 == 3;
         }
-        if (p == 4 || p == 7)
+        if (p == 4 || p == 7 || p == 10)
         {
             contextMenuItems.fractionForm = true;
             const r = Module.cwrap('GetFractionForm', 'int', [])();
@@ -886,6 +923,24 @@ function onPresentAsSymbolicRational()
 function onPresentAsSymbolicComplex()
 {
     Module.cwrap('OnPresentAsSymbolicComplex', 'void', [])();
+    contextMenuRef.value?.hide();
+}
+
+function onPresentAsVectorReal()
+{
+    Module.cwrap('OnPresentAsVectorReal', 'void', [])();
+    contextMenuRef.value?.hide();
+}
+
+function onPresentAsVectorRational()
+{
+    Module.cwrap('OnPresentAsVectorRational', 'void', [])();
+    contextMenuRef.value?.hide();
+}
+
+function onPresentAsVectorComplex()
+{
+    Module.cwrap('OnPresentAsVectorComplex', 'void', [])();
     contextMenuRef.value?.hide();
 }
 

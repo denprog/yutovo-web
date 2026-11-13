@@ -10,7 +10,7 @@
         />
 
         <div id="scroll-container">
-            <q-menu ref="contextMenuRef" touch-position square fit context-menu @hide="onCloseContextMenu()" @show="onShowContextMenu()">
+            <q-menu ref="contextMenuRef" touch-position square context-menu @hide="onCloseContextMenu()" @show="onShowContextMenu()">
                 <q-list dense style="min-width: 100px">
                     <q-item id="copy-menu" clickable :class="{ disabled: contextMenuDisabled.copy }" @click="onCopy()">
                         <q-item-section>{{ $t('Copy') }}</q-item-section>
@@ -1099,6 +1099,8 @@ function onSetUnit()
 
 function onHideResult()
 {
+    if (contextMenuRef.value)
+        contextMenuRef.value.hide();
     Module.cwrap('OnHideResult', 'void', [])();
     canvasFocus();
 }

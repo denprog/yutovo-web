@@ -46,9 +46,10 @@ test.describe('Hidden result', () =>
         await page.mouse.click(box.x + resultX, box.y + resultY, { button: 'right' });
         await page.locator('#hide-result-menu').waitFor({ state: 'visible', timeout: 5000 });
 
-        //the click collapses the result into the "Show result" box
+        //the click collapses the result into the "Show result" box and closes the menu
         await page.locator('#hide-result-menu').click();
         await page.waitForTimeout(500);
+        await expect(page.locator('#copy-menu')).toBeHidden();
         const hidden_html = await page.evaluate(() => window.getHtml());
         expect(String(hidden_html).includes('<mtext>Show result</mtext>')).toBe(true);
         expect(await utils.documentContains(page, '1+2=3.')).toBe(true); //the document text keeps the value

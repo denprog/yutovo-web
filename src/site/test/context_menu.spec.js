@@ -46,6 +46,11 @@ test.describe('Result context menu', () =>
         await page.mouse.click(box.x + resultX, box.y + resultY, { button: 'right' });
         await page.locator('#present-as-menu').waitFor({ state: 'visible', timeout: 5000 });
 
+        //the menu sizes to its items, not to the width of the page
+        const menu_width = await page.locator('#copy-menu').evaluate((el) => el.closest('.q-menu').offsetWidth);
+        const viewport = page.viewportSize();
+        expect(menu_width).toBeLessThan(viewport.width / 2);
+
         //the submenu opens on hover, without any click
         await page.locator('#present-as-menu').hover();
         await page.locator('#present-as-real-menu').waitFor({ state: 'visible', timeout: 2000 });

@@ -32,6 +32,19 @@
 - Leave uncommitted changes in the current branch; the user will handle commits and branch switching.
 - If a commit is required, ask the user which branch to use.
 
+## Build Rules
+
+- **Build only with `make`, never `ninja`** — even if a `build.ninja` exists in a build directory, do not run ninja.
+- Limit parallel jobs to the number of **physical** cores, not `nproc` (which counts hyperthreads and makes the build slower and the machine unresponsive):
+  ```bash
+  make -j$(lscpu -p=Core,Socket | grep -v '^#' | sort -u | wc -l) <target>
+  ```
+  (16 on this machine, where `nproc` says 32.)
+- Export `YUTOVO_DEPLOY` (the **native** deploy root, `/home/denis/programs/Math/yutovo/deploy`) for every cmake/make invocation, including wasm builds: headers come from `deploy/include`, the wasm packages from `deploy/wasm/cmake`.
+- Native projects (yutovo-editor) are built and tested in `build/debug/`; wasm builds live in `build_web/release` (emcmake; a debug wasm exceeds Chrome's maximum module size).
+- Run editor tests from `build/debug`, not from `build/debug/test` (`./test/yutovo-editor_tests --gtest_filter=...`) — tests load documents by paths relative to the build dir.
+- After `make install` of a library (calculator/solver/editor), delete the dependant build artifacts to force relinking (stale links show up as `Syntax error`/`Parser error` results).
+
 ## Test Environment
 
 - The frontend must be built for tests with `YUTOVO_PRODUCTION=false npx quasar build` (or `npm run build:test`) in `src/site` so that captcha fields are hidden and login/register flows work without manual captcha input. Do not edit `production` in `quasar.config.js`: a plain build is a production build with captcha enabled.

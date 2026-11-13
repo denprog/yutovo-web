@@ -1339,53 +1339,45 @@ extern "C" EMSCRIPTEN_KEEPALIVE bool IsEmpty()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetPresentAsMenu()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (!id.empty())
+    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::INTEGER_RESULT, ElementType::RATIONAL_RESULT, ElementType::COMPLEX_RESULT,
+        ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_RATIONAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT,
+        ElementType::VECTOR_REAL_RESULT, ElementType::VECTOR_RATIONAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT});
+    if (id.empty())
+        return 0;
+    switch (document->GetElementType(id))
+    {
+    case ElementType::AUTO_RESULT:
         return 1;
-    id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (!id.empty())
+    case ElementType::REAL_RESULT:
         return 2;
-    id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
-    if (!id.empty())
+    case ElementType::INTEGER_RESULT:
         return 3;
-    id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
-    if (!id.empty())
+    case ElementType::RATIONAL_RESULT:
         return 4;
-    id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (!id.empty())
+    case ElementType::COMPLEX_RESULT:
         return 5;
-    id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
-    if (!id.empty())
+    case ElementType::SYMBOLIC_REAL_RESULT:
         return 6;
-    id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
-    if (!id.empty())
+    case ElementType::SYMBOLIC_RATIONAL_RESULT:
         return 7;
-    id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
-    if (!id.empty())
+    case ElementType::SYMBOLIC_COMPLEX_RESULT:
         return 8;
-    id = document->FindCurrentParentByType(ElementType::VECTOR_REAL_RESULT);
-    if (!id.empty())
+    case ElementType::VECTOR_REAL_RESULT:
         return 9;
-    id = document->FindCurrentParentByType(ElementType::VECTOR_RATIONAL_RESULT);
-    if (!id.empty())
+    case ElementType::VECTOR_RATIONAL_RESULT:
         return 10;
-    id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
-    if (!id.empty())
+    case ElementType::VECTOR_COMPLEX_RESULT:
         return 11;
-    return 0;
+    default:
+        return 0;
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetPrecision()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
+    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::COMPLEX_RESULT, ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT});
     if (id.empty())
         return -1;
     return document->GetPrecision(id);
@@ -1393,15 +1385,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetPrecision()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetExp()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
+    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::COMPLEX_RESULT, ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT});
     if (id.empty())
         return -1;
     return document->GetExp(id);
@@ -1441,11 +1426,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetResultNotation()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_RATIONAL_RESULT);
+    ElementId id = document->FindCurrentParentByTypes({ElementType::RATIONAL_RESULT, ElementType::SYMBOLIC_RATIONAL_RESULT,
+        ElementType::VECTOR_RATIONAL_RESULT});
     if (id.empty())
         return -1;
     return (int)document->GetFractionForm(id);
@@ -1453,11 +1435,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetFractionForm()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
+    ElementId id = document->FindCurrentParentByTypes({ElementType::COMPLEX_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT,
+        ElementType::VECTOR_COMPLEX_RESULT});
     if (id.empty())
         return -1;
     return (int)document->GetComplexForm(id);
@@ -1465,27 +1444,10 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetComplexForm()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int GetResultType()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::INTEGER_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_RATIONAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_RATIONAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
+    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::INTEGER_RESULT, ElementType::RATIONAL_RESULT, ElementType::COMPLEX_RESULT,
+        ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_RATIONAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT,
+        ElementType::VECTOR_REAL_RESULT, ElementType::VECTOR_RATIONAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT});
     if (id.empty())
         return -1;
     return (int)document->GetResultType(id);
@@ -1493,11 +1455,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE int GetResultType()
 
 extern "C" EMSCRIPTEN_KEEPALIVE int HasUnit()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::RATIONAL_RESULT});
     if (id.empty())
         return 0;
     return document->HasUnit(id);
@@ -1616,11 +1575,8 @@ std::string GetMargins()
 
 extern "C" EMSCRIPTEN_KEEPALIVE void GetCastUnitsSystems()
 {
-    cast_unit_id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (cast_unit_id.empty())
-        cast_unit_id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (cast_unit_id.empty())
-        cast_unit_id = document->FindCurrentParentByType(ElementType::RATIONAL_RESULT);
+    cast_unit_id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::RATIONAL_RESULT});
     if (cast_unit_id.empty())
         return;
 
@@ -2133,20 +2089,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnHideResult()
 {
-    //the result chain of the present-as menu resolves the result under the caret
-    const ElementType result_types[] = {ElementType::AUTO_RESULT, ElementType::REAL_RESULT, ElementType::INTEGER_RESULT,
-        ElementType::RATIONAL_RESULT, ElementType::COMPLEX_RESULT, ElementType::SYMBOLIC_REAL_RESULT,
-        ElementType::SYMBOLIC_RATIONAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT, ElementType::VECTOR_REAL_RESULT,
-        ElementType::VECTOR_RATIONAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT};
-    for (ElementType type : result_types)
-    {
-        ElementId id = document->FindCurrentParentByType(type);
-        if (!id.empty())
-        {
-            document->HideResult(id, true);
-            return;
-        }
-    }
+    //the result types of the present-as menu resolve the result under the caret
+    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::INTEGER_RESULT, ElementType::RATIONAL_RESULT, ElementType::COMPLEX_RESULT,
+        ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_RATIONAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT,
+        ElementType::VECTOR_REAL_RESULT, ElementType::VECTOR_RATIONAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT});
+    if (!id.empty())
+        document->HideResult(id, true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsAuto()
@@ -2459,20 +2408,9 @@ void FillUnits(const std::string system)
 
 ElementId GetRealResultId()
 {
-    ElementId id = document->FindCurrentParentByType(ElementType::AUTO_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::SYMBOLIC_COMPLEX_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_REAL_RESULT);
-    if (id.empty())
-        id = document->FindCurrentParentByType(ElementType::VECTOR_COMPLEX_RESULT);
-    return id;
+    return document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
+        ElementType::COMPLEX_RESULT, ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT,
+        ElementType::VECTOR_REAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT});
 }
 
 EM_JS(int, GetLanguage, (),

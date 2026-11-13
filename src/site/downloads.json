@@ -1,11 +1,16 @@
 [
     {
         "system": "Ubuntu 24",
-        "link": "/downloads/yutovo-desktop_1.5.2-1_ubuntu24_amd64.deb"
+        "version": "1.8.1",
+        "link": "/downloads/yutovo-desktop_1.8.1-1_ubuntu24_amd64.deb"
     },
     {
         "system": "Flatpak",
         "link": "https://flathub.org/apps/com.yutovo.yutovo"
+    },
+    {
+        "system": "Fedora",
+        "link": "https://software.opensuse.org/download.html?project=home:denprog&package=yutovo"
     },
     {
         "system": "Arch",
@@ -17,6 +22,7 @@
     },
     {
         "system": "Windows",
-        "link": "/downloads/yutovo-desktop_1.5.2-1_win10_amd64.exe"
+        "version": "1.6.1",
+        "link": "/downloads/yutovo-desktop_1.6.1-1_win10_amd64.exe"
     }
 ]

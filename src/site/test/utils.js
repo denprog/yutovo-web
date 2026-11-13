@@ -212,6 +212,12 @@ async function insertVector(page, rows)
     await page.locator('.q-dialog button[type=submit]').click();
 }
 
+async function insertVectorElement(page)
+{
+    await page.locator('#vector-element-button').first().evaluate((el) => el.click());
+    await page.waitForTimeout(300);
+}
+
 async function copyGraphImage(page)
 {
     await jsClick(page, '#copy-graph-image');
@@ -493,6 +499,7 @@ module.exports =
     insertMatrix,
     insertDeterminant,
     insertVector,
+    insertVectorElement,
     copyGraphImage,
     clickIdentifier,
     getDocumentName,

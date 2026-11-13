@@ -375,6 +375,9 @@
                 <q-btn id="vector-button" size="14px" square dense @click="onVector();" icon="img:/images/algebra/vector.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector') }}</q-tooltip>
                 </q-btn>
+                <q-btn id="vector-element-button" size="14px" square dense @click="onVectorElement();" icon="img:/images/algebra/vector_element.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector with arrow') }}</q-tooltip>
+                </q-btn>
             </q-btn-group>
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
@@ -1286,6 +1289,11 @@ export default defineComponent(
                 }
             })
             canvas.focus()
+        },
+
+        onVectorElement()
+        {
+            Module.cwrap('OnVectorElement', 'void', [])()
         },
 
         onCurrency(currency: string)

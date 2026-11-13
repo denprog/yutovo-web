@@ -135,6 +135,7 @@ export default {
     'Symbolic': 'Символьные',
     'Vector': 'Векторы',
     'Insert vector': 'Вставить вектор',
+    'Insert vector with arrow': 'Вставить вектор со стрелкой',
     'Number of elements': 'Количество элементов',
 
     'Precision': 'Точность',

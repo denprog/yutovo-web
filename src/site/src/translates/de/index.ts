@@ -135,6 +135,7 @@ export default {
     'Symbolic': 'Symbolisch',
     'Vector': 'Vektoren',
     'Insert vector': 'Vektor einfügen',
+    'Insert vector with arrow': 'Vektor mit Pfeil einfügen',
     'Number of elements': 'Anzahl der Elemente',
 
     'Precision': 'Genauigkeit',

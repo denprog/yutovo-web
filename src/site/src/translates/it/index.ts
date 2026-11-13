@@ -135,6 +135,7 @@ export default {
     'Symbolic': 'Simbolici',
     'Vector': 'Vettori',
     'Insert vector': 'Inserisci vettore',
+    'Insert vector with arrow': 'Inserisci vettore con freccia',
     'Number of elements': 'Numero di elementi',
 
     'Precision': 'Precisione',

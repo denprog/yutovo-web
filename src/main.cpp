@@ -1952,7 +1952,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnVector(const int rows, const int columns)
         return;
     if (rows < 1 || columns < 1)
         return;
-    document->InsertVector(true, (uint)rows);
+    document->InsertVectorColumn(true, (uint)rows);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnVectorElement()
+{
+    if (!document)
+        return;
+    document->InsertVectorElement(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnParagraphFormat(const char* paragraph_format)

@@ -295,6 +295,10 @@
                         <q-item-section>{{ $t('Unit') }}</q-item-section>
                     </q-item>
 
+                    <q-item auto-close id="hide-result-menu" clickable :style="{ display: contextMenuItems.hideResult ? '' : 'none' }" @click="onHideResult()">
+                        <q-item-section>{{ $t('Hide result') }}</q-item-section>
+                    </q-item>
+
                     <q-item id="graph-format" clickable :style="{ display: contextMenuItems.graphFormat ? '' : 'none' }" @click="onGraphFormat()">
                         <q-item-section>{{ $t('Graph format') }}</q-item-section>
                     </q-item>
@@ -447,6 +451,7 @@ const contextMenuItems = reactive({
     fractionForm: false,
     complexForm: false,
     setUnit: false,
+    hideResult: false,
     graphFormat: false,
     copyGraphImage: false,
     matrixSize: false,
@@ -850,6 +855,7 @@ async function onShowContextMenu()
             properMenuChecked.value = r == 0;
             improperMenuChecked.value = r == 1;
         }
+        contextMenuItems.hideResult = true;
         if (p == 5 || p == 8)
         {
             contextMenuItems.complexForm = true;
@@ -1088,6 +1094,12 @@ function onSetUnit()
         parent: instance!.proxy,
         apiResponse: (instance!.proxy as any).resp
     });
+    canvasFocus();
+}
+
+function onHideResult()
+{
+    Module.cwrap('OnHideResult', 'void', [])();
     canvasFocus();
 }
 

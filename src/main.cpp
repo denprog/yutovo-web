@@ -831,6 +831,9 @@ EM_BOOL OnMouseDown(int event_type, const EmscriptenMouseEvent* mouse_event, voi
                         type == ElementType::GRAPH_SURFACE, type == ElementType::GRAPH_HISTOGRAM);
                 }
                 return true;
+            case MouseHoldType::SHOW_HIDDEN_RESULT:
+                document->ShowHiddenResult(hold_id, true);
+                return true;
             default:
                 return true;
             }
@@ -2126,6 +2129,24 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
         return;
     document->InsertString(str, translate_tasks.front(), false);
     translate_tasks.pop();
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnHideResult()
+{
+    //the result chain of the present-as menu resolves the result under the caret
+    const ElementType result_types[] = {ElementType::AUTO_RESULT, ElementType::REAL_RESULT, ElementType::INTEGER_RESULT,
+        ElementType::RATIONAL_RESULT, ElementType::COMPLEX_RESULT, ElementType::SYMBOLIC_REAL_RESULT,
+        ElementType::SYMBOLIC_RATIONAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT, ElementType::VECTOR_REAL_RESULT,
+        ElementType::VECTOR_RATIONAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT};
+    for (ElementType type : result_types)
+    {
+        ElementId id = document->FindCurrentParentByType(type);
+        if (!id.empty())
+        {
+            document->HideResult(id, true);
+            return;
+        }
+    }
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsAuto()

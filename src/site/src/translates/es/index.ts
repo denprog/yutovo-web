@@ -186,6 +186,7 @@ export default {
     'Infinity': 'Infinito',
     'Assignment': 'Asignación',
     'Unit': 'Unidad',
+    'Hide result': 'Ocultar resultado',
     'Equation': 'Igualdad',
     'rad': 'rad',
     'grad': 'grad',

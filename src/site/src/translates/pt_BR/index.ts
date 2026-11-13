@@ -187,6 +187,7 @@ export default {
     'Infinity': 'Infinito',
     'Assignment': 'Atribuição',
     'Unit': 'Unidade',
+    'Hide result': 'Ocultar resultado',
     'Equation': 'Equação',
     'rad': 'rad',
     'grad': 'grad',

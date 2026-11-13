@@ -187,6 +187,7 @@ export default {
     'Infinity': 'Бесконечность',
     'Assignment': 'Присваивание',
     'Unit': 'Размерность',
+    'Hide result': 'Спрятать результат',
     'Equation': 'Равенство',
     'rad': 'рад',
     'grad': 'град',

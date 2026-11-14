@@ -2091,13 +2091,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnTranslate(const char* str)
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnHideResult()
 {
-    //the result types of the present-as menu resolve the result under the caret
-    ElementId id = document->FindCurrentParentByTypes({ElementType::AUTO_RESULT, ElementType::REAL_RESULT,
-        ElementType::INTEGER_RESULT, ElementType::RATIONAL_RESULT, ElementType::COMPLEX_RESULT,
-        ElementType::SYMBOLIC_REAL_RESULT, ElementType::SYMBOLIC_RATIONAL_RESULT, ElementType::SYMBOLIC_COMPLEX_RESULT,
-        ElementType::VECTOR_REAL_RESULT, ElementType::VECTOR_RATIONAL_RESULT, ElementType::VECTOR_COMPLEX_RESULT});
-    if (!id.empty())
-        document->HideResult(id, true);
+    document->HideResult(true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnPresentAsAuto()

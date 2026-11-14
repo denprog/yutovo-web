@@ -71,5 +71,11 @@ test.describe('Hidden result', () =>
         expect(revealed).toBe(true);
         const shown_html = await page.evaluate(() => window.getHtml());
         expect(String(shown_html).includes('3.')).toBe(true);
+
+        //the undo of the reveal returns the collapsed box, not the shown result
+        await page.locator('#undo-button').click();
+        await page.waitForTimeout(1000);
+        const undone_html = await page.evaluate(() => window.getHtml());
+        expect(String(undone_html).includes('<mtext>Show result</mtext>')).toBe(true);
     });
 });

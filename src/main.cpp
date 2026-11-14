@@ -102,7 +102,7 @@ EM_JS(void, UpdateScrollBars, (int h_size, int v_size, int h_value, int v_value)
 EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragraph_format_size, const char* font_family, size_t font_family_size,
     unsigned int font_size, int bold, int italic, int underline, int strikethrough, int subscript, int superscript, const char* text_color, size_t text_color_size,
     const char* text_bg_color, size_t text_bg_color_size, int left_align, int center_align, int right_align, int justify_align, int code_block,
-    int unordered_list_enable),
+    int unordered_list_enable, int can_undo, int can_redo),
     {
         window.dispatchEvent(new CustomEvent('setStandardToolbar',
             {
@@ -125,6 +125,8 @@ EM_JS(void, UpdateStantardToolbar, (const char* paragraph_format, size_t paragra
                     'justify_align': justify_align,
                     'code_block': code_block,
                     'unordered_list_enable': unordered_list_enable,
+                    'can_undo': can_undo,
+                    'can_redo': can_redo,
                 }
             }));
     });
@@ -405,7 +407,7 @@ void MainLoop(void* arg)
                 format.size, format.bold, format.italic, format.underline, format.strikethrough, format.subscript, format.superscript, text_color.c_str(),
                 text_color.size(), text_bg_color.c_str(), text_bg_color.size(), paragraph_format.alignment == ParagraphFormat::Alignment::Left,
                 paragraph_format.alignment == ParagraphFormat::Alignment::Center, paragraph_format.alignment == ParagraphFormat::Alignment::Right,
-                paragraph_format.alignment == ParagraphFormat::Alignment::Justify, code_block, unordered_list_enable);
+                paragraph_format.alignment == ParagraphFormat::Alignment::Justify, code_block, unordered_list_enable, document->CanUndo(), document->CanRedo());
         }
         else
         {
@@ -413,7 +415,7 @@ void MainLoop(void* arg)
             format.Reset();
 
             UpdateStantardToolbar(paragraph_format.name.c_str(), paragraph_format.name.size(), format.family.c_str(), format.family.size(),
-                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block, unordered_list_enable);
+                format.size, -1, -1, -1, -1, -1, -1, "", 0, "", 0, -1, -1, -1, -1, code_block, unordered_list_enable, document->CanUndo(), document->CanRedo());
         }
         
         static uint last_code_id = 0;

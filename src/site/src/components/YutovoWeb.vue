@@ -45,10 +45,10 @@
                 </q-btn>
             </q-btn-group>
             <q-btn-group flat square unelevated stretch>
-                <q-btn size="14px" id="undo-button" square dense @click="onUndo();" icon="img:/images/standard/undo.png">
+                <q-btn size="14px" id="undo-button" square dense :disable="!can_undo" @click="onUndo();" icon="img:/images/standard/undo.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Undo') }} (Ctrl+Z)</q-tooltip>
                 </q-btn>
-                <q-btn size="14px" id="redo-button" square dense @click="onRedo();" icon="img:/images/standard/redo.png">
+                <q-btn size="14px" id="redo-button" square dense :disable="!can_redo" @click="onRedo();" icon="img:/images/standard/redo.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Redo') }} (Ctrl+Y)</q-tooltip>
                 </q-btn>
             </q-btn-group>
@@ -494,6 +494,8 @@ export default defineComponent(
             right_align_button_color: 'white',
             justify_align_button_color: 'white',
             unordered_list_enable: false,
+            can_undo: false,
+            can_redo: false,
             scale: 100
         }
     },
@@ -647,6 +649,8 @@ export default defineComponent(
             this.right_align_button_color = (event.detail.right_align == 1 && !event.detail.code_block ? 'blue' : 'white')
             this.justify_align_button_color = (event.detail.justify_align == 1 && !event.detail.code_block ? 'blue' : 'white')
             this.unordered_list_enable = event.detail.unordered_list_enable == 1
+            this.can_undo = event.detail.can_undo == 1
+            this.can_redo = event.detail.can_redo == 1
 
             document.title = this.$t('Yutovo - visual online calculator')
         },

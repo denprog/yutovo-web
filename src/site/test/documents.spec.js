@@ -70,6 +70,35 @@ test.describe('Documents', () =>
         expect(page.url()).toBe(address + '/document/' + c2.value);
     });
 
+    test('undo and redo buttons state', async ({ page }) =>
+    {
+        await page.waitForSelector('#canvas', { timeout: 10000 });
+        await page.waitForTimeout(2000);
+        //a new document has nothing to undo or redo
+        await expect(page.locator('#undo-button')).toBeDisabled();
+        await expect(page.locator('#redo-button')).toBeDisabled();
+
+        //typing a single symbol enables undo only
+        await utils.writeText(page, '1');
+        await page.waitForTimeout(2000);
+        await expect(page.locator('#undo-button')).toBeEnabled();
+        await expect(page.locator('#redo-button')).toBeDisabled();
+
+        //undo removes the symbol and disables undo, redo becomes available
+        await page.locator('#undo-button').click();
+        await page.waitForTimeout(2000);
+        await expect(page.locator('#undo-button')).toBeDisabled();
+        await expect(page.locator('#redo-button')).toBeEnabled();
+        expect(await utils.documentContains(page, '1')).toBe(false);
+
+        //redo restores the symbol
+        await page.locator('#redo-button').click();
+        await page.waitForTimeout(2000);
+        await expect(page.locator('#undo-button')).toBeEnabled();
+        await expect(page.locator('#redo-button')).toBeDisabled();
+        expect(await utils.documentContains(page, '1')).toBe(true);
+    });
+
     test('delete a document', async ({ page, context }) =>
     {
         await utils.login(page, 'test1', '11');

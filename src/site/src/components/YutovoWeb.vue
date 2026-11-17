@@ -1,7 +1,70 @@
 <template>
-    <div class="q-pa-md q-gutter-y-md column items-start" id="standard-toolbar">
+    <div class="toolbar-area" id="toolbars" @dragover.prevent="onToolbarsDragOver($event);" @drop.prevent="onToolbarsDrop($event);">
+        <q-menu context-menu touch-position square>
+            <q-list class="toolbar-menu">
+                <q-item clickable v-close-popup id="standard-toolbar-item" @click="onToolbarToggle('standard');">
+                    <q-item-section>{{ $t('Standard') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.standard" v-close-popup @click="onToolbarToggle('standard');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="format-toolbar-item" @click="onToolbarToggle('format');">
+                    <q-item-section>{{ $t('Format') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.format" v-close-popup @click="onToolbarToggle('format');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="algebra-toolbar-item" @click="onToolbarToggle('algebra');">
+                    <q-item-section>{{ $t('Algebraic functions') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.algebra" v-close-popup @click="onToolbarToggle('algebra');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="greek-toolbar-item" @click="onToolbarToggle('greek');">
+                    <q-item-section>{{ $t('Greek letters') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.greek" v-close-popup @click="onToolbarToggle('greek');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="currency-toolbar-item" @click="onToolbarToggle('currency');">
+                    <q-item-section>{{ $t('Currencies') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.currency" v-close-popup @click="onToolbarToggle('currency');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="graphs-toolbar-item" @click="onToolbarToggle('graphs');">
+                    <q-item-section>{{ $t('Graphs') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.graphs" v-close-popup @click="onToolbarToggle('graphs');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="matrix-toolbar-item" @click="onToolbarToggle('matrix');">
+                    <q-item-section>{{ $t('Matrices') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.matrix" v-close-popup @click="onToolbarToggle('matrix');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="logical-toolbar-item" @click="onToolbarToggle('logical');">
+                    <q-item-section>{{ $t('Logical operations') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.logical" v-close-popup @click="onToolbarToggle('logical');"/>
+                    </q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup id="calculus-toolbar-item" @click="onToolbarToggle('calculus');">
+                    <q-item-section>{{ $t('Calculus') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.calculus" v-close-popup @click="onToolbarToggle('calculus');"/>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+        </q-menu>
         <q-file style="display: none" v-model="yutovo_file_model" @update:model-value="onFileSelected" accept=".yut" ref="yutovo_file"></q-file>
-        <div id="editor-toolbar" class="toolbar-row">
+        <div v-for="n in toolbar_rows.length - 1" :key="'toolbar-line-break-' + n" class="toolbar-line-break" :style="{ order: n * 100 - 1 }"></div>
+        <div class="toolbar-panel" id="standard-toolbar" v-show="toolbars.standard" draggable="true"
+            :style="{ order: panelOrder('standard') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'standard', 'toolbar-panel-insert-before': drag_over_panel === 'standard' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'standard' && drag_over_after }"
+            @dragstart="onPanelDragStart('standard', $event);"
+            @dragend="onPanelDragEnd();">
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" id="new-button" square dense @click="onNew();" icon="img:/images/standard/new.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('New document') }}</q-tooltip>
@@ -63,13 +126,18 @@
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paste') }} (Shift+Ins)</q-tooltip>
                 </q-btn>
             </q-btn-group>
-            <div class="scale-control row items-center no-wrap">
-                <q-btn dense flat square icon="img:/images/format/dec_scale.png" size="14px" @click="onScaleDec" :disable="scale <= 50"/>
-                <div class="scale-value" @click="onResetScale">
-                    {{ scale }}%
-                </div>
-                <q-btn dense flat square icon="img:/images/format/inc_scale.png" size="14px" @click="onScaleInc" :disable="scale >= 500"/>
-            </div>
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+        </div>
+
+        <div class="toolbar-panel" id="format-toolbar" v-show="toolbars.format" draggable="true"
+            :style="{ order: panelOrder('format') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'format', 'toolbar-panel-insert-before': drag_over_panel === 'format' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'format' && drag_over_after }"
+            @dragstart="onPanelDragStart('format', $event);"
+            @dragend="onPanelDragEnd();">
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" id="insert-calculator-button" square dense @click="onInsertCalculator();" icon="img:/images/format/code.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert calculator') }} (Ctrl+Shift+C)</q-tooltip>
@@ -78,11 +146,13 @@
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert text block') }}</q-tooltip>
                 </q-btn>
             </q-btn-group>
-            <q-btn-group flat square unelevated stretch>
-                <q-btn size="14px" id="recalculate-button" square dense @click="onRecalculate();" icon="img:/images/format/recalculate.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Recalculate the document') }}</q-tooltip>
-                </q-btn>
-            </q-btn-group>
+            <div class="scale-control row items-center no-wrap">
+                <q-btn dense flat square icon="img:/images/format/dec_scale.png" size="14px" @click="onScaleDec" :disable="scale <= 50"/>
+                <div class="scale-value" @click="onResetScale">
+                    {{ scale }}%
+                </div>
+                <q-btn dense flat square icon="img:/images/format/inc_scale.png" size="14px" @click="onScaleInc" :disable="scale >= 500"/>
+            </div>
             <q-select class="toolbar-select" style="white-space: nowrap;" v-model="paragraph_format_model" :options="paragraph_format"
                 @update:model-value="onParagraphFormat();" dense options-dense borderless>
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Paragraph format') }}</q-tooltip>
@@ -164,10 +234,12 @@
                 </q-btn-dropdown>
             </div>
         </div>
-    </div>
 
-    <div class="q-pa-md q-gutter-y-md column items-start" id="algebra-toolbar">
-        <div class="toolbar-row">
+        <div class="toolbar-panel" id="algebra-toolbar" v-show="toolbars.algebra" draggable="true"
+            :style="{ order: panelOrder('algebra') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'algebra', 'toolbar-panel-insert-before': drag_over_panel === 'algebra' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'algebra' && drag_over_after }"
+            @dragstart="onPanelDragStart('algebra', $event);"
+            @dragend="onPanelDragEnd();">
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" square dense @click="onPlus();" icon="img:/images/algebra/plus.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Plus') }} (+)</q-tooltip>
@@ -222,29 +294,6 @@
                 </q-btn>
             </q-btn-group>
             <q-btn-group flat square unelevated stretch>
-                <q-btn size="14px" square dense @click="onDefiniteIntegral();" icon="img:/images/calculus/definite_integral.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Definite integral') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
-                </q-btn>
-                <q-btn id="limit-button" size="14px" square dense @click="onLimit();" icon="img:/images/calculus/limit.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Limit') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onDerivative();" icon="img:/images/calculus/derivative.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onSecondDerivative();" icon="img:/images/calculus/derivative2.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second derivative') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onPartialDerivative();" icon="img:/images/calculus/partial_derivative.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Partial derivative') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onDerivativeAtPoint();" icon="img:/images/calculus/derivative_at_point.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative at point') }}</q-tooltip>
-                </q-btn>
-            </q-btn-group>
-            <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" square dense @click="onEvalutionBar();" icon="img:/images/algebra/evalution_bar.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Evaluate at point') }}</q-tooltip>
                 </q-btn>
@@ -273,20 +322,13 @@
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }} (=)</q-tooltip>
                 </q-btn>
             </q-btn-group>
-            <q-btn-group flat square unelevated stretch>
-                <q-btn size="14px" square dense @click="onAnd();" icon="img:/images/logical/and.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical AND') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onOr();" icon="img:/images/logical/or.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical OR') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onXor();" icon="img:/images/logical/xor.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical XOR') }}</q-tooltip>
-                </q-btn>
-                <q-btn size="14px" square dense @click="onNot();" icon="img:/images/logical/not.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical NOT') }}</q-tooltip>
-                </q-btn>
-            </q-btn-group>
+        </div>
+
+        <div class="toolbar-panel" id="greek-toolbar" v-show="toolbars.greek" draggable="true"
+            :style="{ order: panelOrder('greek') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'greek', 'toolbar-panel-insert-before': drag_over_panel === 'greek' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'greek' && drag_over_after }"
+            @dragstart="onPanelDragStart('greek', $event);"
+            @dragend="onPanelDragEnd();">
             <div class="greek-letter-block">
                 <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Greek letters') }}</q-tooltip>
                 <q-btn-dropdown class="greek-letter-block" square dense no-caps label="α" @hide="onLettersHide()">
@@ -354,31 +396,13 @@
                     </table>
                 </q-btn-dropdown>
             </div>
-            <q-btn-group flat square unelevated stretch>
-                <q-btn id="graph-line-button" size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
-                </q-btn>
-                <q-btn id="graph-surface-button" size="14px" square dense @click="onGraphSurface();" icon="img:/images/graphs/graph_surface.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Surface graph') }}</q-tooltip>
-                </q-btn>
-                <q-btn id="graph-histogram-button" size="14px" square dense @click="onGraphHistogram();" icon="img:/images/graphs/graph_histogram.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Histogram') }}</q-tooltip>
-                </q-btn>
-            </q-btn-group>
-            <q-btn-group flat square unelevated stretch>
-                <q-btn id="matrix-button" size="14px" square dense @click="onMatrix();" icon="img:/images/algebra/matrix.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert matrix') }}</q-tooltip>
-                </q-btn>
-                <q-btn id="determinant-button" size="14px" square dense @click="onDeterminant();" icon="img:/images/algebra/determinant.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert determinant') }}</q-tooltip>
-                </q-btn>
-                <q-btn id="vector-button" size="14px" square dense @click="onVector();" icon="img:/images/algebra/vector.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector') }}</q-tooltip>
-                </q-btn>
-                <q-btn id="vector-element-button" size="14px" square dense @click="onVectorElement();" icon="img:/images/algebra/vector_element.png">
-                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector with arrow') }}</q-tooltip>
-                </q-btn>
-            </q-btn-group>
+        </div>
+
+        <div class="toolbar-panel" id="currency-toolbar" v-show="toolbars.currency" draggable="true"
+            :style="{ order: panelOrder('currency') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'currency', 'toolbar-panel-insert-before': drag_over_panel === 'currency' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'currency' && drag_over_after }"
+            @dragstart="onPanelDragStart('currency', $event);"
+            @dragend="onPanelDragEnd();">
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" class="currency-button" square dense @click="onCurrency('R$');">
                     R$
@@ -406,6 +430,96 @@
                 </q-btn>
             </q-btn-group>
         </div>
+
+        <div class="toolbar-panel" id="graphs-toolbar" v-show="toolbars.graphs" draggable="true"
+            :style="{ order: panelOrder('graphs') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'graphs', 'toolbar-panel-insert-before': drag_over_panel === 'graphs' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'graphs' && drag_over_after }"
+            @dragstart="onPanelDragStart('graphs', $event);"
+            @dragend="onPanelDragEnd();">
+            <q-btn-group flat square unelevated stretch>
+                <q-btn id="graph-line-button" size="14px" square dense @click="onGraphLine();" icon="img:/images/graphs/graph_line.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Line graph') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="graph-surface-button" size="14px" square dense @click="onGraphSurface();" icon="img:/images/graphs/graph_surface.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Surface graph') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="graph-histogram-button" size="14px" square dense @click="onGraphHistogram();" icon="img:/images/graphs/graph_histogram.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Histogram') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+        </div>
+
+        <div class="toolbar-panel" id="matrix-toolbar" v-show="toolbars.matrix" draggable="true"
+            :style="{ order: panelOrder('matrix') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'matrix', 'toolbar-panel-insert-before': drag_over_panel === 'matrix' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'matrix' && drag_over_after }"
+            @dragstart="onPanelDragStart('matrix', $event);"
+            @dragend="onPanelDragEnd();">
+            <q-btn-group flat square unelevated stretch>
+                <q-btn id="matrix-button" size="14px" square dense @click="onMatrix();" icon="img:/images/algebra/matrix.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert matrix') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="determinant-button" size="14px" square dense @click="onDeterminant();" icon="img:/images/algebra/determinant.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert determinant') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="vector-button" size="14px" square dense @click="onVector();" icon="img:/images/algebra/vector.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="vector-element-button" size="14px" square dense @click="onVectorElement();" icon="img:/images/algebra/vector_element.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Insert vector with arrow') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+        </div>
+
+        <div class="toolbar-panel" id="logical-toolbar" v-show="toolbars.logical" draggable="true"
+            :style="{ order: panelOrder('logical') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'logical', 'toolbar-panel-insert-before': drag_over_panel === 'logical' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'logical' && drag_over_after }"
+            @dragstart="onPanelDragStart('logical', $event);"
+            @dragend="onPanelDragEnd();">
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onAnd();" icon="img:/images/logical/and.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical AND') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onOr();" icon="img:/images/logical/or.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical OR') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onXor();" icon="img:/images/logical/xor.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical XOR') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onNot();" icon="img:/images/logical/not.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logical NOT') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+        </div>
+
+        <div class="toolbar-panel" id="calculus-toolbar" v-show="toolbars.calculus" draggable="true"
+            :style="{ order: panelOrder('calculus') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'calculus', 'toolbar-panel-insert-before': drag_over_panel === 'calculus' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'calculus' && drag_over_after }"
+            @dragstart="onPanelDragStart('calculus', $event);"
+            @dragend="onPanelDragEnd();">
+            <q-btn-group flat square unelevated stretch>
+                <q-btn size="14px" square dense @click="onDefiniteIntegral();" icon="img:/images/calculus/definite_integral.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Definite integral') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onIndefiniteIntegral();" icon="img:/images/calculus/indefinite_integral.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Indefinite integral') }}</q-tooltip>
+                </q-btn>
+                <q-btn id="limit-button" size="14px" square dense @click="onLimit();" icon="img:/images/calculus/limit.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Limit') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onDerivative();" icon="img:/images/calculus/derivative.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onSecondDerivative();" icon="img:/images/calculus/derivative2.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Second derivative') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onPartialDerivative();" icon="img:/images/calculus/partial_derivative.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Partial derivative') }}</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" square dense @click="onDerivativeAtPoint();" icon="img:/images/calculus/derivative_at_point.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Derivative at point') }}</q-tooltip>
+                </q-btn>
+            </q-btn-group>
+        </div>
     </div>
 
     <YutovoEditor ref="editorRef" />
@@ -429,6 +543,68 @@ import LinkDialog from 'layouts/LinkDialog.vue'
 import ExportPdfDialog from 'layouts/ExportPdfDialog.vue'
 import MatrixSizeDialog from 'layouts/MatrixSizeDialog.vue'
 import YutovoEditor from './YutovoEditor.vue'
+
+const TOOLBAR_VISIBILITY_KEY = 'yutovo-toolbar-visibility'
+const TOOLBAR_ORDER_KEY = 'yutovo-toolbar-order'
+
+const default_toolbars =
+{
+    standard: true,
+    format: true,
+    algebra: true,
+    greek: true,
+    currency: true,
+    graphs: true,
+    matrix: true,
+    logical: true,
+    calculus: true
+}
+
+const default_toolbar_order =
+[
+    'standard', 'format', 'algebra', 'greek', 'currency', 'graphs', 'matrix', 'logical', 'calculus'
+]
+
+function loadToolbarVisibility()
+{
+    const toolbars = { ...default_toolbars }
+    try
+    {
+        const saved = JSON.parse(window.localStorage.getItem(TOOLBAR_VISIBILITY_KEY) || '{}')
+        for (const name of Object.keys(toolbars))
+        {
+            if (saved[name] === false)
+                toolbars[name] = false
+        }
+    }
+    catch (e)
+    {
+        // storage unavailable or corrupted - keep defaults
+    }
+    return toolbars
+}
+
+function loadToolbarOrder()
+{
+    try
+    {
+        const saved = JSON.parse(window.localStorage.getItem(TOOLBAR_ORDER_KEY) || '[]')
+        if (Array.isArray(saved) && saved.length > 0 && Array.isArray(saved[0]))
+        {
+            const flat = saved.reduce((all, row) => all.concat(row), [])
+            if (flat.length === default_toolbar_order.length && default_toolbar_order.every(name => flat.includes(name)))
+                return saved
+        }
+        else if (Array.isArray(saved) && saved.length === default_toolbar_order.length
+            && default_toolbar_order.every(name => saved.includes(name)))
+            return [saved]
+    }
+    catch (e)
+    {
+        // storage unavailable or corrupted - keep the default order
+    }
+    return [[...default_toolbar_order]]
+}
 
 export default defineComponent(
 {
@@ -496,7 +672,12 @@ export default defineComponent(
             unordered_list_enable: false,
             can_undo: false,
             can_redo: false,
-            scale: 100
+            scale: 100,
+            toolbars: loadToolbarVisibility(),
+            toolbar_rows: loadToolbarOrder(),
+            dragged_panel: null,
+            drag_over_panel: null,
+            drag_over_after: false
         }
     },
 
@@ -1303,18 +1484,181 @@ export default defineComponent(
         onCurrency(currency: string)
         {
             Module.cwrap('InsertString', 'void', ['string'])(currency)
+        },
+
+        onToolbarToggle(name: string)
+        {
+            this.toolbars[name] = !this.toolbars[name]
+            try
+            {
+                window.localStorage.setItem(TOOLBAR_VISIBILITY_KEY, JSON.stringify(this.toolbars))
+            }
+            catch (e)
+            {
+                // storage unavailable - keep the state for the current page only
+            }
+        },
+
+        panelOrder(name: string)
+        {
+            for (let row = 0; row < this.toolbar_rows.length; ++row)
+            {
+                const col = this.toolbar_rows[row].indexOf(name)
+                if (col >= 0)
+                    return row * 100 + col
+            }
+            return 0
+        },
+
+        onPanelDragStart(name: string, event: DragEvent)
+        {
+            this.dragged_panel = name
+            if (event.dataTransfer)
+            {
+                event.dataTransfer.effectAllowed = 'move'
+                event.dataTransfer.setData('text/plain', name)
+            }
+        },
+
+        nearestPanelSlot(x: number, y: number)
+        {
+            let best = null
+            let best_distance = Infinity
+            for (const row of this.toolbar_rows)
+            {
+                for (const name of row)
+                {
+                    if (name === this.dragged_panel || !this.toolbars[name])
+                        continue
+                    const element = document.getElementById(name + '-toolbar')
+                    if (!element)
+                        continue
+                    const rect = element.getBoundingClientRect()
+                    const cy = rect.top + rect.height / 2
+                    const slots =
+                    [
+                        { name: name, after: false, x: rect.left, y: cy },
+                        { name: name, after: true, x: rect.right, y: cy }
+                    ]
+                    for (const slot of slots)
+                    {
+                        const distance = (slot.x - x) * (slot.x - x) + (slot.y - y) * (slot.y - y)
+                        if (distance < best_distance)
+                        {
+                            best_distance = distance
+                            best = slot
+                        }
+                    }
+                }
+            }
+            return best
+        },
+
+        //Rebuild toolbar_rows from the actual on-screen rows; the dragged and hidden
+        //panels keep their previous row because they have no geometry
+        splitIntoRows()
+        {
+            const panels = []
+            for (const row of this.toolbar_rows)
+            {
+                for (const name of row)
+                {
+                    if (name === this.dragged_panel || !this.toolbars[name])
+                        continue
+                    const element = document.getElementById(name + '-toolbar')
+                    if (!element)
+                        continue
+                    panels.push({ name: name, order: this.panelOrder(name), top: element.getBoundingClientRect().top })
+                }
+            }
+            panels.sort((a, b) => a.order - b.order)
+
+            const rows = [[]]
+            let top = null
+            for (const panel of panels)
+            {
+                if (top !== null && Math.abs(panel.top - top) > 3)
+                    rows.push([])
+                top = panel.top
+                rows[rows.length - 1].push(panel.name)
+            }
+
+            for (const row of this.toolbar_rows)
+            {
+                for (const name of row)
+                {
+                    if (name === this.dragged_panel || this.toolbars[name])
+                        continue
+                    const old_row = this.toolbar_rows.indexOf(row)
+                    const old_col = row.indexOf(name)
+                    if (old_row < rows.length)
+                        rows[old_row].splice(Math.min(old_col, rows[old_row].length), 0, name)
+                    else
+                        rows[rows.length - 1].push(name)
+                }
+            }
+            return rows
+        },
+
+        onToolbarsDragOver(event: DragEvent)
+        {
+            const slot = this.nearestPanelSlot(event.clientX, event.clientY)
+            this.drag_over_panel = slot ? slot.name : null
+            this.drag_over_after = slot ? slot.after : false
+        },
+
+        onToolbarsDrop(event: DragEvent)
+        {
+            const slot = this.nearestPanelSlot(event.clientX, event.clientY)
+            if (this.dragged_panel && slot)
+            {
+                this.toolbar_rows = this.splitIntoRows()
+                for (const row of this.toolbar_rows)
+                {
+                    const col = row.indexOf(slot.name)
+                    if (col >= 0)
+                    {
+                        row.splice(slot.after ? col + 1 : col, 0, this.dragged_panel)
+                        break
+                    }
+                }
+                try
+                {
+                    window.localStorage.setItem(TOOLBAR_ORDER_KEY, JSON.stringify(this.toolbar_rows))
+                }
+                catch (e)
+                {
+                    // storage unavailable - keep the order for the current page only
+                }
+            }
+            this.dragged_panel = null
+            this.drag_over_panel = null
+            this.drag_over_after = false
+        },
+
+        onPanelDragEnd()
+        {
+            this.dragged_panel = null
+            this.drag_over_panel = null
+            this.drag_over_after = false
         }
     }
 })
 </script>
 
 <style scoped>
-.q-pa-md
+.toolbar-area
 {
-    padding: 0em 0 0 1em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    column-gap: 6px;
+    max-width: 100%;
+    margin: 0 0 0 1em;
+    min-height: 40px;
 }
 
-.toolbar-row
+.toolbar-panel
 {
     display: flex;
     flex-wrap: wrap;
@@ -1322,6 +1666,42 @@ export default defineComponent(
     column-gap: 10px;
     row-gap: 4px;
     max-width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 3px 6px;
+    margin-top: 6px;
+    cursor: move;
+    user-select: none;
+}
+
+.toolbar-panel img
+{
+    -webkit-user-drag: none;
+}
+
+.toolbar-panel-dragged
+{
+    opacity: 0.4;
+}
+
+.toolbar-panel-insert-before
+{
+    box-shadow: -3px 0 0 0 #1976d2;
+}
+
+.toolbar-panel-insert-after
+{
+    box-shadow: 3px 0 0 0 #1976d2;
+}
+
+.toolbar-line-break
+{
+    flex-basis: 100%;
+    height: 0;
+}
+
+.toolbar-menu
+{
+    min-width: 220px;
 }
 
 .toolbar-select

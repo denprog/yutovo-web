@@ -195,6 +195,13 @@ export default {
     'Logical XOR': 'XOR lógico',
     'Logical NOT': 'Lógico NO',
     'Greek letters': 'Letras griegas',
+    'Standard': 'Estándar',
+    'Algebraic functions': 'Funciones algebraicas',
+    'Logical operations': 'Operaciones lógicas',
+    'Graphs': 'Gráficos',
+    'Matrices': 'Matrices',
+    'Currencies': 'Monedas',
+    'Calculus': 'Cálculo',
 
     'Brazilian real': 'Real brasileño',
     'Chinese yuan': 'Yuan chino',

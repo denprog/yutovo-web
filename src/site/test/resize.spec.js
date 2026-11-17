@@ -139,11 +139,12 @@ test.describe('Editor resize', () =>
 
         const getOverflow = () => page.evaluate(() =>
         {
-            const standard = document.getElementById('standard-toolbar');
-            const algebra = document.getElementById('algebra-toolbar');
+            const panels = Array.from(document.querySelectorAll('.toolbar-panel'));
+            const panelsOverflow = panels.reduce((max, panel) => Math.max(max, panel.scrollWidth - panel.clientWidth), 0);
+            const toolbars = document.getElementById('toolbars');
             return {
-                standardOverflow: standard ? standard.scrollWidth - standard.clientWidth : 0,
-                algebraOverflow: algebra ? algebra.scrollWidth - algebra.clientWidth : 0,
+                panelsOverflow: panelsOverflow,
+                toolbarsOverflow: toolbars ? toolbars.scrollWidth - toolbars.clientWidth : 0,
                 pageOverflow: document.documentElement.scrollWidth - window.innerWidth
             };
         });
@@ -153,14 +154,176 @@ test.describe('Editor resize', () =>
             await page.setViewportSize({ width: width, height: 900 });
             await page.waitForTimeout(1000);
             const state = await getOverflow();
-            expect(state.standardOverflow).toBeLessThanOrEqual(1);
-            expect(state.algebraOverflow).toBeLessThanOrEqual(1);
+            expect(state.panelsOverflow).toBeLessThanOrEqual(1);
+            expect(state.toolbarsOverflow).toBeLessThanOrEqual(1);
             expect(state.pageOverflow).toBeLessThanOrEqual(1);
         }
 
         //the buttons must stay reachable without page-level horizontal scrolling
         await expect(page.locator('#bold-button')).toBeVisible();
         await expect(page.locator('#graph-line-button')).toBeVisible();
+    });
+
+    test('toolbars can be toggled from the context menu and the state persists', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+
+        await expect(page.locator('#calculus-toolbar')).toBeVisible();
+        await expect(page.locator('#logical-toolbar')).toBeVisible();
+
+        //the menu closes after every click - open it again for the second panel
+        await page.locator('#toolbars').click({ button: 'right' });
+        await page.locator('#calculus-toolbar-item').click();
+        await expect(page.locator('#calculus-toolbar-item')).toBeHidden();
+        await expect(page.locator('#calculus-toolbar')).toBeHidden();
+
+        await page.locator('#toolbars').click({ button: 'right' });
+        await page.locator('#logical-toolbar-item').click();
+        await expect(page.locator('#logical-toolbar')).toBeHidden();
+
+        const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yutovo-toolbar-visibility')));
+        expect(saved['calculus']).toBe(false);
+        expect(saved['logical']).toBe(false);
+        expect(saved['standard']).toBe(true);
+
+        //the state survives a page reload
+        await page.reload();
+        await page.waitForTimeout(6000);
+
+        await expect(page.locator('#calculus-toolbar')).toBeHidden();
+        await expect(page.locator('#logical-toolbar')).toBeHidden();
+
+        //clicking the toggle itself also toggles the panel and closes the menu
+        await page.locator('#toolbars').click({ button: 'right' });
+        await page.locator('#calculus-toolbar-item .q-toggle').click();
+        await expect(page.locator('#calculus-toolbar-item')).toBeHidden();
+        await expect(page.locator('#calculus-toolbar')).toBeVisible();
+
+        await page.locator('#toolbars').click({ button: 'right' });
+        await page.locator('#logical-toolbar-item .q-toggle').click();
+        await expect(page.locator('#logical-toolbar')).toBeVisible();
+    });
+
+    test('toolbars can be reordered by dragging and the order persists', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+
+        const panelOrder = () => page.evaluate(() =>
+            Array.from(document.querySelectorAll('.toolbar-panel'))
+                .map(el => ({ id: el.id, order: parseInt(getComputedStyle(el).order, 10) }))
+                .sort((a, b) => a.order - b.order)
+                .map(panel => panel.id.replace('-toolbar', '')));
+
+        const dragPanel = (dragId, targetId, half) => page.evaluate(([dragId, targetId, half]) =>
+        {
+            const drag = document.getElementById(dragId);
+            const target = document.getElementById(targetId);
+            const rect = target.getBoundingClientRect();
+            const dt = new DataTransfer();
+            const toolbars = document.getElementById('toolbars');
+            const point =
+            {
+                clientX: rect.left + rect.width * half,
+                clientY: rect.top + rect.height / 2
+            };
+            drag.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }));
+            toolbars.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt, ...point }));
+            toolbars.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt, ...point }));
+            drag.dispatchEvent(new DragEvent('dragend', { bubbles: true }));
+        }, [dragId, targetId, half]);
+
+        expect((await panelOrder())[0]).toBe('standard');
+
+        //the panel shows the move cursor - it can be grabbed and dragged -
+        //while the buttons keep the pointer cursor
+        const cursors = await page.evaluate(() =>
+        {
+            return {
+                panel: getComputedStyle(document.getElementById('standard-toolbar')).cursor,
+                button: getComputedStyle(document.getElementById('bold-button')).cursor
+            };
+        });
+        expect(cursors.panel).toBe('move');
+        expect(cursors.button).toBe('pointer');
+
+        //drop on the left edge of the standard panel - the dragged panel goes first
+        await dragPanel('calculus-toolbar', 'standard-toolbar', 0.01);
+        const order = await panelOrder();
+        expect(order[0]).toBe('calculus');
+        expect(order[1]).toBe('standard');
+
+        //drop on the right edge of the calculus panel - the graphs panel goes right after it
+        await dragPanel('graphs-toolbar', 'calculus-toolbar', 0.99);
+        const orderAfterRightEdge = await panelOrder();
+        expect(orderAfterRightEdge[0]).toBe('calculus');
+        expect(orderAfterRightEdge[1]).toBe('graphs');
+        expect(orderAfterRightEdge[2]).toBe('standard');
+
+        const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('yutovo-toolbar-order')).flat());
+        expect(saved[1]).toBe('graphs');
+
+        //the order survives a page reload
+        await page.reload();
+        await page.waitForTimeout(6000);
+        expect((await panelOrder())[1]).toBe('graphs');
+
+        //the panels really moved on the screen - the graphs panel follows the calculus one
+        const calculus = await page.locator('#calculus-toolbar').boundingBox();
+        const graphs = await page.locator('#graphs-toolbar').boundingBox();
+        expect(Math.abs(calculus.y - graphs.y)).toBeLessThan(3);
+        expect(calculus.x).toBeLessThan(graphs.x);
+
+        await page.evaluate(() => localStorage.removeItem('yutovo-toolbar-order'));
+    });
+
+    test('a panel can be dropped in front of the first panel of a row', async ({ page }) =>
+    {
+        await utils.login(page, 'test1', '11');
+        await page.waitForTimeout(4000);
+
+        //find the first panel of the second on-screen row
+        const target = await page.evaluate(() =>
+        {
+            const panels = Array.from(document.querySelectorAll('.toolbar-panel')).map(el =>
+            {
+                const r = el.getBoundingClientRect();
+                return { id: el.id, left: r.left, top: r.top };
+            });
+            const top = Math.min(...panels.map(p => p.top));
+            const row2 = panels.filter(p => p.top > top + 3);
+            return row2.length > 0 ? row2[0] : null;
+        });
+        expect(target).not.toBeNull();
+
+        //drop the calculus panel just in front of that panel
+        await page.evaluate((targetId) =>
+        {
+            const drag = document.getElementById('calculus-toolbar');
+            const target = document.getElementById(targetId);
+            const rect = target.getBoundingClientRect();
+            const dt = new DataTransfer();
+            const toolbars = document.getElementById('toolbars');
+            const point =
+            {
+                clientX: rect.left - 5,
+                clientY: rect.top + rect.height / 2
+            };
+            drag.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }));
+            toolbars.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt, ...point }));
+            toolbars.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt, ...point }));
+            drag.dispatchEvent(new DragEvent('dragend', { bubbles: true }));
+        }, target.id);
+        await page.waitForTimeout(300);
+
+        //the dragged panel must take the exact place where the row started -
+        //not join the tail of the row above
+        const calculus = await page.locator('#calculus-toolbar').boundingBox();
+        expect(Math.abs(calculus.y - target.top)).toBeLessThan(3);
+        expect(Math.abs(calculus.x - target.left)).toBeLessThan(3);
+
+        await page.evaluate(() => localStorage.removeItem('yutovo-toolbar-order'));
     });
 
     test('header fits on narrow viewport', async ({ page }) =>

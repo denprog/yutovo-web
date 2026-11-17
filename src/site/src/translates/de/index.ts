@@ -196,6 +196,13 @@ export default {
     'Logical XOR': 'Logisches XOR',
     'Logical NOT': 'Logisches NICHT',
     'Greek letters': 'Griechische Buchstaben',
+    'Standard': 'Standard',
+    'Algebraic functions': 'Algebraische Funktionen',
+    'Logical operations': 'Logische Operationen',
+    'Graphs': 'Diagramme',
+    'Matrices': 'Matrizen',
+    'Currencies': 'Währungen',
+    'Calculus': 'Analysis',
 
     'Brazilian real': 'Brasilianischer Real',
     'Chinese yuan': 'Chinesischer Yuan',

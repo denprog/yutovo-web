@@ -20,6 +20,12 @@
                         <q-toggle :model-value="toolbars.algebra" v-close-popup @click="onToolbarToggle('algebra');"/>
                     </q-item-section>
                 </q-item>
+                <q-item clickable v-close-popup id="functions-toolbar-item" @click="onToolbarToggle('functions');">
+                    <q-item-section>{{ $t('Math functions') }}</q-item-section>
+                    <q-item-section side>
+                        <q-toggle :model-value="toolbars.functions" v-close-popup @click="onToolbarToggle('functions');"/>
+                    </q-item-section>
+                </q-item>
                 <q-item clickable v-close-popup id="greek-toolbar-item" @click="onToolbarToggle('greek');">
                     <q-item-section>{{ $t('Greek letters') }}</q-item-section>
                     <q-item-section side>
@@ -324,6 +330,177 @@
             </q-btn-group>
         </div>
 
+        <div class="toolbar-panel" id="functions-toolbar" v-show="toolbars.functions" draggable="true"
+            :style="{ order: panelOrder('functions') }"
+            :class="{ 'toolbar-panel-dragged': dragged_panel === 'functions', 'toolbar-panel-insert-before': drag_over_panel === 'functions' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'functions' && drag_over_after }"
+            @dragstart="onPanelDragStart('functions', $event);"
+            @dragend="onPanelDragEnd();">
+            <div class="function-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Trigonometric functions') }}</q-tooltip>
+                <q-btn-dropdown id="trigonometric-functions-button" flat size="14px" square dense no-caps
+                    label="sin" @hide="onLettersHide();">
+                    <div class="q-pt-sm q-pb-sm row q-gutter-xs justify-center">
+                        <q-btn id="sin-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="sin" @click="onInsertFunction('sin');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Sine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="cos-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="cos" @click="onInsertFunction('cos');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Cosine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="tg-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="tg" @click="onInsertFunction('tg');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Tangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="ctg-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="ctg" @click="onInsertFunction('ctg');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Cotangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="sec-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="sec" @click="onInsertFunction('sec');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Secans') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="csc-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="csc" @click="onInsertFunction('csc');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Cosecans') }}</q-tooltip>
+                        </q-btn>
+                    </div>
+                </q-btn-dropdown>
+            </div>
+            <div class="function-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Inverse trigonometric functions') }}</q-tooltip>
+                <q-btn-dropdown id="inverse-trigonometric-functions-button" flat size="14px" square dense no-caps
+                    label="arcsin" @hide="onLettersHide();">
+                    <div class="q-pt-sm q-pb-sm row q-gutter-xs justify-center">
+                        <q-btn id="arcsin-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arcsin" @click="onInsertFunction('arcsin');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Arcsine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arccos-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arccos" @click="onInsertFunction('arccos');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Arccosine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arctg-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arctg" @click="onInsertFunction('arctg');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Arctangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arcctg-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arcctg" @click="onInsertFunction('arcctg');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Arccotangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arcsec-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arcsec" @click="onInsertFunction('arcsec');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Arcsecans') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arccsc-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arccsc" @click="onInsertFunction('arccsc');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Arccosecans') }}</q-tooltip>
+                        </q-btn>
+                    </div>
+                </q-btn-dropdown>
+            </div>
+            <div class="function-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic functions') }}</q-tooltip>
+                <q-btn-dropdown id="hyperbolic-functions-button" flat size="14px" square dense no-caps
+                    label="sinh" @hide="onLettersHide();">
+                    <div class="q-pt-sm q-pb-sm row q-gutter-xs justify-center">
+                        <q-btn id="sinh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="sinh" @click="onInsertFunction('sinh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic sine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="cosh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="cosh" @click="onInsertFunction('cosh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic cosine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="tgh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="tgh" @click="onInsertFunction('tgh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic tangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="ctgh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="ctgh" @click="onInsertFunction('ctgh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic cotangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="sech-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="sech" @click="onInsertFunction('sech');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic secans') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="csch-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="csch" @click="onInsertFunction('csch');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic cosecans') }}</q-tooltip>
+                        </q-btn>
+                    </div>
+                </q-btn-dropdown>
+            </div>
+            <div class="function-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Inverse hyperbolic functions') }}</q-tooltip>
+                <q-btn-dropdown id="inverse-hyperbolic-functions-button" flat size="14px" square dense no-caps
+                    label="arsinh" @hide="onLettersHide();">
+                    <div class="q-pt-sm q-pb-sm row q-gutter-xs justify-center">
+                        <q-btn id="arsinh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arsinh" @click="onInsertFunction('arsinh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic arsine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arcosh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arcosh" @click="onInsertFunction('arcosh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic arcosine') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="artgh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="artgh" @click="onInsertFunction('artgh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic artangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arctgh-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arctgh" @click="onInsertFunction('arctgh');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic arcotangens') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arsech-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arsech" @click="onInsertFunction('arsech');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic arsecans') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="arcsch-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="arcsch" @click="onInsertFunction('arcsch');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Hyperbolic arcosecans') }}</q-tooltip>
+                        </q-btn>
+                    </div>
+                </q-btn-dropdown>
+            </div>
+            <div class="function-block">
+                <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Elementary functions') }}</q-tooltip>
+                <q-btn-dropdown id="elementary-functions-button" flat size="14px" square dense no-caps
+                    label="exp" @hide="onLettersHide();">
+                    <div class="q-pt-sm q-pb-sm row q-gutter-xs justify-center">
+                        <q-btn id="exp-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="exp" @click="onInsertFunction('exp');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Exponent') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="ln-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="ln" @click="onInsertFunction('ln');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Natural logarithm') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="lg-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="lg" @click="onInsertFunction('lg');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Decimal logarithm') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="log-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="log" @click="onInsertSubscriptFunction('log');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Logarithm') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="int-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="int" @click="onInsertFunction('int');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Integer part') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="fract-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="fract" @click="onInsertFunction('fract');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Fraction part') }}</q-tooltip>
+                        </q-btn>
+                        <q-btn id="round-button" class="function-item" flat square dense no-caps v-close-popup
+                            label="round" @click="onInsertFunction('round');">
+                            <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Round') }}</q-tooltip>
+                        </q-btn>
+                    </div>
+                </q-btn-dropdown>
+            </div>
+        </div>
+
         <div class="toolbar-panel" id="greek-toolbar" v-show="toolbars.greek" draggable="true"
             :style="{ order: panelOrder('greek') }"
             :class="{ 'toolbar-panel-dragged': dragged_panel === 'greek', 'toolbar-panel-insert-before': drag_over_panel === 'greek' && !drag_over_after, 'toolbar-panel-insert-after': drag_over_panel === 'greek' && drag_over_after }"
@@ -552,6 +729,7 @@ const default_toolbars =
     standard: true,
     format: true,
     algebra: true,
+    functions: true,
     greek: true,
     currency: true,
     graphs: true,
@@ -562,7 +740,7 @@ const default_toolbars =
 
 const default_toolbar_order =
 [
-    'standard', 'format', 'algebra', 'greek', 'currency', 'graphs', 'matrix', 'logical', 'calculus'
+    'standard', 'format', 'algebra', 'functions', 'greek', 'currency', 'graphs', 'matrix', 'logical', 'calculus'
 ]
 
 function loadToolbarVisibility()
@@ -1362,6 +1540,16 @@ export default defineComponent(
             Module.cwrap('OnEvaluationBar', 'void', [])()
         },
 
+        onInsertFunction(name: string)
+        {
+            Module.cwrap('InsertFunction', 'void', ['string'])(name)
+        },
+
+        onInsertSubscriptFunction(name: string)
+        {
+            Module.cwrap('InsertSubscriptFunction', 'void', ['string'])(name)
+        },
+
         onInfinity()
         {
             Module.cwrap('InsertString', 'void', ['string'])('∞')
@@ -1722,6 +1910,19 @@ export default defineComponent(
 
 .unordered-list-block
 {
+    border: 0px none;
+    overflow: hidden;
+}
+
+.function-block
+{
+    border: 0px none;
+    overflow: hidden;
+}
+
+.function-item
+{
+    min-width: 54px;
     border: 0px none;
     overflow: hidden;
 }

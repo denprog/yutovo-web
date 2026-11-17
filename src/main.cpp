@@ -1259,6 +1259,11 @@ extern "C" EMSCRIPTEN_KEEPALIVE void InsertFunction(const char* str)
     document->InsertFunction(str, true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertSubscriptFunction(const char* str)
+{
+    document->InsertSubscriptFunction(str, true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void InsertString(const char* str)
 {
     document->InsertString(str, true);

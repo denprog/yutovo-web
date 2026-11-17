@@ -94,4 +94,88 @@ test.describe('Functions', () =>
         const text = await page.evaluate(() => window.getText());
         expect(text).toContain('f(x,y)=x*y');
     });
+
+    test('sine button inserts the function and solves', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+
+        const combo = page.locator('#trigonometric-functions-button');
+        await expect(combo).toBeVisible();
+        await combo.click(); //open the trigonometric functions dropdown
+        const button = page.locator('#sin-button');
+        await expect(button).toBeVisible();
+        await button.click(); //the sin() template with the caret inside the brackets
+        await page.waitForTimeout(200);
+        await utils.writeText(page, '0');
+        await page.keyboard.press('ArrowRight'); //step over the closing bracket
+        await page.keyboard.press('ArrowRight');
+        await utils.writeText(page, '=');
+        await page.waitForTimeout(3000);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('sin(0)=0');
+    });
+
+    test('hyperbolic sine button inserts the function and solves', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+
+        const combo = page.locator('#hyperbolic-functions-button');
+        await expect(combo).toBeVisible();
+        await combo.click(); //open the hyperbolic functions dropdown
+        const button = page.locator('#sinh-button');
+        await expect(button).toBeVisible();
+        await button.click(); //the sinh() template with the caret inside the brackets
+        await page.waitForTimeout(200);
+        await utils.writeText(page, '0');
+        await page.keyboard.press('ArrowRight'); //step over the closing bracket
+        await page.keyboard.press('ArrowRight');
+        await utils.writeText(page, '=');
+        await page.waitForTimeout(3000);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('sinh(0)=0');
+    });
+
+    test('exponent button inserts the function and solves', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+
+        const combo = page.locator('#elementary-functions-button');
+        await expect(combo).toBeVisible();
+        await combo.click(); //open the elementary functions dropdown
+        const button = page.locator('#exp-button');
+        await expect(button).toBeVisible();
+        await button.click(); //the exp() template with the caret inside the brackets
+        await page.waitForTimeout(200);
+        await utils.writeText(page, '1');
+        await page.keyboard.press('ArrowRight'); //step over the closing bracket
+        await page.keyboard.press('ArrowRight');
+        await utils.writeText(page, '=');
+        await page.waitForTimeout(3000);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('exp(1)=2.71'); //e rounded
+    });
+
+    test('logarithm button inserts the base template and solves', async ({ page }) =>
+    {
+        await utils.insertCode(page);
+
+        const combo = page.locator('#elementary-functions-button');
+        await expect(combo).toBeVisible();
+        await combo.click(); //open the elementary functions dropdown
+        const button = page.locator('#log-button');
+        await expect(button).toBeVisible();
+        await button.click(); //the log with the caret in the base subscript
+        await page.waitForTimeout(200);
+        await utils.writeText(page, '2');
+        await page.keyboard.press('ArrowRight'); //step out of the base
+        await utils.writeText(page, '8');
+        await utils.writeText(page, '=');
+        await page.waitForTimeout(3000);
+
+        const text = await page.evaluate(() => window.getText());
+        expect(text).toContain('log:2,8=3');
+    });
 });

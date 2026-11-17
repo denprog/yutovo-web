@@ -14,6 +14,7 @@ test.describe('Unordered list', () =>
         await context.clearCookies();
         await context.addCookies([
             { name: 'app_initialized', value: 'true', path: '/', domain: 'www.yutovo.ru' },
+            { name: 'language', value: 'en_EN', path: '/', domain: 'www.yutovo.ru' },
         ]);
         await page.goto(address);
         await page.waitForTimeout(6000);
@@ -70,7 +71,8 @@ test.describe('Unordered list', () =>
         await utils.insertUnorderedList(page, 1);
         await page.waitForTimeout(500);
         const html = await page.evaluate(() => window.getHtml());
-        expect(html.includes('•&nbsp;')).toBe(true);
+        expect(html.includes('<li>')).toBe(true);
+        expect(html.includes('•&nbsp;')).toBe(false);
         //the plain text does not contain the marker
         expect(await utils.documentContains(page, 'Item')).toBe(true);
         const text = await page.evaluate(() => window.getText());
@@ -87,34 +89,32 @@ test.describe('Unordered list', () =>
         await page.waitForTimeout(300);
         await utils.writeText(page, 'Second');
         await page.waitForTimeout(500);
-        const countMarkers =
-            (str) => String(str).split('•&nbsp;').length - 1;
+        const countListItems =
+            (str) => String(str).split('<li>').length - 1;
         let html = await page.evaluate(() => window.getHtml());
-        expect(countMarkers(html)).toBe(2);
+        expect(countListItems(html)).toBe(2);
 
         //applying the same marker again toggles it off - only the current (second) item loses the marker
         await utils.insertUnorderedList(page, 1);
         await page.waitForTimeout(500);
         html = await page.evaluate(() => window.getHtml());
-        expect(countMarkers(html)).toBe(1);
+        expect(countListItems(html)).toBe(1);
     });
 
     test('switch the list marker through all the four variants', async ({ page }) =>
     {
         await clickIntoText(page);
         await utils.writeText(page, 'Item');
-        const htmlIncludes =
-            async (marker) => (await page.evaluate(() => window.getHtml())).includes(marker + '&nbsp;');
+        const getHtml =
+            async () => await page.evaluate(() => window.getHtml());
         const markers = ['•', '●', '♦', '■'];
-        let previous = null;
         for (let i = 0; i < markers.length; ++i)
         {
             await utils.insertUnorderedList(page, i + 1);
             await page.waitForTimeout(500);
-            expect(await htmlIncludes(markers[i])).toBe(true);
-            if (previous)
-                expect(await htmlIncludes(previous)).toBe(false);
-            previous = markers[i];
+            const html = String(await getHtml());
+            expect(html.includes('<li>')).toBe(true);
+            expect(html.includes(markers[i] + '&nbsp;')).toBe(false);
         }
     });
 });

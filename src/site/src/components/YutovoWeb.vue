@@ -327,6 +327,24 @@
                 <q-btn size="14px" square dense @click="onEquation();" icon="img:/images/algebra/equation.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equation') }} (=)</q-tooltip>
                 </q-btn>
+                <q-btn id="equal-button" size="14px" square dense @click="onEqual();" icon="img:/images/algebra/equal.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Equal') }} (Ctrl+=)</q-tooltip>
+                </q-btn>
+                <q-btn id="greater-button" size="14px" square dense @click="onGreater();" icon="img:/images/algebra/greater.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Greater') }} (>)</q-tooltip>
+                </q-btn>
+                <q-btn id="less-button" size="14px" square dense @click="onLess();" icon="img:/images/algebra/less.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Less') }} (&lt;)</q-tooltip>
+                </q-btn>
+                <q-btn id="greater-equal-button" size="14px" square dense @click="onGreaterEqual();" icon="img:/images/algebra/greater_equal.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Greater or equal') }} (Ctrl+Shift+>)</q-tooltip>
+                </q-btn>
+                <q-btn id="less-equal-button" size="14px" square dense @click="onLessEqual();" icon="img:/images/algebra/less_equal.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Less or equal') }} (Ctrl+Shift+&lt;)</q-tooltip>
+                </q-btn>
+                <q-btn id="not-equal-button" size="14px" square dense @click="onNotEqual();" icon="img:/images/algebra/not_equal.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Not equal') }} (Ctrl+Shift+=)</q-tooltip>
+                </q-btn>
             </q-btn-group>
         </div>
 
@@ -1588,6 +1606,36 @@ export default defineComponent(
         onNot()
         {
             Module.cwrap('InsertNot', 'void', [])()
+        },
+
+        onEqual()
+        {
+            Module.cwrap('InsertEqual', 'void', [])()
+        },
+
+        onGreater()
+        {
+            Module.cwrap('InsertGreater', 'void', [])()
+        },
+
+        onLess()
+        {
+            Module.cwrap('InsertLess', 'void', [])()
+        },
+
+        onGreaterEqual()
+        {
+            Module.cwrap('InsertGreaterEqual', 'void', [])()
+        },
+
+        onLessEqual()
+        {
+            Module.cwrap('InsertLessEqual', 'void', [])()
+        },
+
+        onNotEqual()
+        {
+            Module.cwrap('InsertNotEqual', 'void', [])()
         },
 
         onLettersHide()

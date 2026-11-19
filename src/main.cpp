@@ -1294,6 +1294,36 @@ extern "C" EMSCRIPTEN_KEEPALIVE void InsertNot()
     document->InsertNot(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertEqual()
+{
+    document->InsertEqual(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertGreater()
+{
+    document->InsertGreater(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertLess()
+{
+    document->InsertLess(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertGreaterEqual()
+{
+    document->InsertGreaterEqual(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertLessEqual()
+{
+    document->InsertLessEqual(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void InsertNotEqual()
+{
+    document->InsertNotEqual(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE bool CanUndo()
 {
     return document->CanUndo();

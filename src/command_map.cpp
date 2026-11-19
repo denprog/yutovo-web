@@ -64,8 +64,8 @@ void ShortcutsMap::Init(Document* _document)
     Add(KeySequence(DOM_VK_BACK_SPACE), "", std::function<void ()>(std::bind(&Document::DeleteElements, document, true, true)));
     Add(KeySequence(DOM_VK_RETURN), "", std::function<void ()>(std::bind(&Document::InsertParagraph, document, true)));
 
-    Add(KeySequence(DOM_VK_TAB), "", std::function<void ()>(std::bind(static_cast<uint(Document::*)(const std::u32string&, bool)>(&Document::InsertString), 
-        document, U"	", true)));
+    Add(KeySequence(DOM_VK_TAB), "", std::function<void ()>(std::bind(static_cast<uint(Document::*)(const std::u32string&, bool)>
+        (&Document::InsertString), document, U"	", true)));
     
     Add(KeySequence(DOM_VK_INSERT), "", std::function<void ()>(std::bind(&Document::SwitchInsertMode, document)));
 
@@ -79,6 +79,22 @@ void ShortcutsMap::Init(Document* _document)
     Add(KeySequence(DOM_VK_P, true, false, false), "", std::function<void ()>(std::bind(&ShowPrompt)));
 
     //edit code
+    Add(KeySequence(0xBB, true, false, false), "\\cmp_equal", std::function<void ()>(std::bind(&Document::InsertEqual, document, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(DOM_VK_EQUALS, true, false, false), "\\cmp_equal", std::function<void ()>(std::bind(&Document::InsertEqual, document, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(0xBB, true, true, false), "\\cmp_not_equal", std::function<void ()>(std::bind(&Document::InsertNotEqual, document, true)), 
+        CommandContext::Formula);
+    Add(KeySequence(DOM_VK_EQUALS, true, true, false), "\\cmp_not_equal", std::function<void ()>(std::bind(&Document::InsertNotEqual, document, 
+        true)), CommandContext::Formula);
+    Add(KeySequence(DOM_VK_GREATER_THAN, true, true, false), "\\cmp_greater_equal", std::function<void ()>(std::bind(&Document::InsertGreaterEqual, 
+        document, true)), CommandContext::Formula);
+    Add(KeySequence(DOM_VK_PERIOD, true, true, false), "\\cmp_greater_equal", std::function<void ()>(std::bind(&Document::InsertGreaterEqual, 
+        document, true)), CommandContext::Formula);
+    Add(KeySequence(DOM_VK_LESS_THAN, true, true, false), "\\cmp_less_equal", std::function<void ()>(std::bind(&Document::InsertLessEqual, document, 
+        true)), CommandContext::Formula);
+    Add(KeySequence(DOM_VK_COMMA, true, true, false), "\\cmp_less_equal", std::function<void ()>(std::bind(&Document::InsertLessEqual, document, 
+        true)), CommandContext::Formula);
     Add(KeySequence(DOM_VK_C, true, true, false), "\\code", std::function<void ()>(std::bind(&Document::InsertCode, document, false, true)));
     Add(KeySequence(DOM_VK_D, true, true, false), "\\div", std::function<void ()>(std::bind(&Document::InsertDivision, document, true, false)));
     Add(KeySequence(), '+', "\\plus", std::function<void ()>(std::bind(&Document::InsertPlus, document, true, false)), CommandContext::Formula);
@@ -94,6 +110,9 @@ void ShortcutsMap::Init(Document* _document)
     Add(KeySequence(DOM_VK_Q, true, true, false), "\\sqrt", std::function<void ()>(std::bind(&Document::InsertSquareRoot, document, true, false)));
     Add(KeySequence(), '=', "\\equal", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::AUTO, true)), 
         CommandContext::Formula);
+    Add(KeySequence(), ',', "\\comma", std::function<void ()>(std::bind(&Document::InsertComma, document, true)), CommandContext::Formula);
+    Add(KeySequence(), '>', "\\cmp_greater", std::function<void ()>(std::bind(&Document::InsertGreater, document, true)), CommandContext::Formula);
+    Add(KeySequence(), '<', "\\cmp_less", std::function<void ()>(std::bind(&Document::InsertLess, document, true)), CommandContext::Formula);
     Add(KeySequence(), "\\eq_real", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::REAL, true)), 
         CommandContext::Formula);
     Add(KeySequence(), "\\eq_int", std::function<void ()>(std::bind(&Document::InsertEquation, document, ResultType::INTEGER, true)), 

@@ -22,6 +22,11 @@ std::map<std::string, std::string> Fonts::font_files =
         {"DejaVu Serif", "DejaVuSerif.ttf"}
     };
 
+std::map<std::string, std::string> Fonts::bold_font_files = 
+    {
+        {"FreeMono", "FreeMonoBold.ttf"}
+    };
+
 Fonts::~Fonts()
 {
     for (auto& f : fonts)
@@ -49,7 +54,10 @@ TTF_Font* Fonts::Get(const yutovo::StringFormat& format)
     if (it == fonts.end())
     {
         //printf("Opening font: %s, size: %d\n", file_name.c_str(), format.size);
-        auto file_name = base_dir + font_file->second;
+        //a real bold face thickens all the strokes, prefer it over the synthetic style
+        auto bold_file = bold_font_files.find(format.family);
+        const bool real_bold = format.bold && bold_file != bold_font_files.end();
+        auto file_name = base_dir + (real_bold ? bold_file->second : font_file->second);
         TTF_Font* font = TTF_OpenFont(file_name.c_str(), size);
         if (!font)
         {
@@ -58,7 +66,7 @@ TTF_Font* Fonts::Get(const yutovo::StringFormat& format)
         }
 
         int style = 0;
-        if (format.bold)
+        if (format.bold && !real_bold)
             style |= TTF_STYLE_BOLD;
         if (format.italic)
             style |= TTF_STYLE_ITALIC;

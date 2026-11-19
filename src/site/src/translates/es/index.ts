@@ -45,6 +45,7 @@ export default {
     'Failed to send feedback': 'No se pudo enviar la opinión',
 
     'Functions': 'Funciones',
+    'Statements': 'Instrucciones',
     'Variables': 'Variables',
 
     'length': 'longitud',

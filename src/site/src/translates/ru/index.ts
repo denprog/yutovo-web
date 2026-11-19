@@ -45,6 +45,7 @@ export default {
     'Failed to send feedback': 'Не удалось отправить отзыв',
 
     'Functions': 'Функции',
+    'Statements': 'Инструкции',
     'Variables': 'Переменные',
 
     'length': 'длина',

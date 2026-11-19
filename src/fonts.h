@@ -28,6 +28,7 @@ public:
 private:
     const std::string base_dir = "./fonts/";
     static std::map<std::string, std::string> font_files;
+    static std::map<std::string, std::string> bold_font_files;
 
     struct Font
     {

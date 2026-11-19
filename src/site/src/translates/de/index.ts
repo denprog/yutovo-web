@@ -45,6 +45,7 @@ export default {
     'Failed to send feedback': 'Feedback konnte nicht gesendet werden',
 
     'Functions': 'Funktionen',
+    'Statements': 'Anweisungen',
     'Variables': 'Variablen',
 
     'length': 'Länge',

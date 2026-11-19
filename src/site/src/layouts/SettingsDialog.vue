@@ -27,6 +27,9 @@
                                 <div>{{ $t('Functions') }}
                                     <q-btn :style="{ 'background-color': functionsColor }" @click='onFunctionsColor();'></q-btn>
                                 </div>
+                                <div>{{ $t('Statements') }}
+                                    <q-btn :style="{ 'background-color': statementsColor }" @click='onStatementsColor();'></q-btn>
+                                </div>
                                 <div>{{ $t('Units') }}
                                     <q-btn :style="{ 'background-color': unitsColor }" @click='onUnitsColor();'></q-btn>
                                 </div>
@@ -100,6 +103,8 @@ export default
             colorToHex(store.state.editor.settings.variables_color));
         const functionsColor = ref(typeof store.state.editor.settings.functions_color === 'undefined' ? '#ff5500' : 
             colorToHex(store.state.editor.settings.functions_color));
+        const statementsColor = ref(typeof store.state.editor.settings.statements_color === 'undefined' ? '#0000ff' : 
+            colorToHex(store.state.editor.settings.statements_color));
         const unitsColor = ref(typeof store.state.editor.settings.units_color === 'undefined' ? '#005500' : 
             colorToHex(store.state.editor.settings.units_color));
         const shapesColor = ref(typeof store.state.editor.settings.shapes_color === 'undefined' ? '#000000' : 
@@ -129,6 +134,7 @@ export default
                     '"numbers_color":' + colorToInt(numbersColor.value) + ',' +
                     '"variables_color":' + colorToInt(variablesColor.value) + ',' +
                     '"functions_color":' + colorToInt(functionsColor.value) + ',' +
+                    '"statements_color":' + colorToInt(statementsColor.value) + ',' +
                     '"units_color":' + colorToInt(unitsColor.value) + ',' +
                     '"shapes_color":' + colorToInt(shapesColor.value) + ',' +
                     '"error_marks_color":' + colorToInt(errorMarksColor.value) + ',' +
@@ -171,6 +177,7 @@ export default
             numbersColor,
             variablesColor,
             functionsColor,
+            statementsColor,
             unitsColor,
             shapesColor,
             errorMarksColor,
@@ -227,6 +234,17 @@ export default
             })
         },
         
+        onStatementsColor()
+        {
+            this.store.commit('editor/setDialogColor', this.statementsColor);
+            this.$q.dialog({
+                component: ColorPickerDialog
+            })
+            .onOk(() => {
+                this.statementsColor = this.store.state.editor.dialog_color;
+            })
+        },
+
         onUnitsColor()
         {
             this.store.commit('editor/setDialogColor', this.unitsColor);

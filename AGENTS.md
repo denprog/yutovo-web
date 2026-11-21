@@ -16,6 +16,11 @@
 - Opening a library document must keep the URL as `/library/<lang>/<path>/<filename>.yut`.
 - Saving a user document changes the URL to `/document/<id>`.
 
+## Nginx Configuration
+
+- The canonical nginx config lives in the server project: `../yutovo-server/src/nginx.conf`. `deploy/bin/nginx.conf` is only a deployed copy — make changes in the canonical file and sync the copy, not the other way round.
+- `/etc/nginx/nginx.conf` is the local test instance; it differs from the canonical config (active COOP/COEP/CORP headers, `www.yutovo.ru` server name) and is managed manually — do not edit it unless explicitly asked.
+
 ## JavaScript Code Style
 
 - Opening braces `{` go on a new line.

@@ -8,6 +8,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { configure } from 'quasar/wrappers';
 
 export default configure(function (ctx) {
@@ -39,7 +42,7 @@ export default configure(function (ctx) {
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
+      // Roboto is self-hosted in src/css/app.scss (font-display: swap + preload).
       'material-icons', // optional, you are not bound to it
     ],
 
@@ -58,6 +61,36 @@ export default configure(function (ctx) {
 
       extendViteConf(viteConf) {
         viteConf.build.chunkSizeWarningLimit = 1000;
+
+        // Injects <link rel="preload"> for the render-critical Roboto weights (400, 500) into the built index.html. The hashed asset
+        // names are final only after the bundle is written to disk, so the file is edited in the writeBundle hook.
+        let outDir = null;
+
+        viteConf.plugins.push(
+        {
+            name: 'roboto-font-preload',
+
+            configResolved(config)
+            {
+                outDir = config.build.outDir;
+            },
+
+            writeBundle(_, bundle)
+            {
+                const names = Object.keys(bundle)
+                    .filter(name => /^assets\/roboto-(400|500)-[A-Za-z0-9_-]+\.woff$/.test(name))
+                    .sort();
+                if (names.length === 0 || outDir === null)
+                    return;
+                const htmlPath = path.join(outDir, 'index.html');
+                let html = fs.readFileSync(htmlPath, 'utf8');
+                if (html.includes('roboto-') && html.includes('preload'))
+                    return;
+                const tags = names.map(name => `<link rel="preload" href="/${name}" as="font" type="font/woff" crossorigin>`).join('\n    ');
+                html = html.replace('</head>', `    ${tags}\n</head>`);
+                fs.writeFileSync(htmlPath, html);
+            }
+        });
       },
       // vueRouterBase,
       // vueDevtools,

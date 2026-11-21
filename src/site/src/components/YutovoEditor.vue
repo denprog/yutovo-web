@@ -1994,7 +1994,6 @@ function initModule()
 
         onRuntimeInitialized: function()
         {
-            console.log('WASM RUNTIME INITIALIZED');
             const on_scroll = Module.cwrap('OnScroll', 'number', ['number', 'number']);
             const scroll = document.getElementById('scroll-container');
             scroll.addEventListener('scroll', 

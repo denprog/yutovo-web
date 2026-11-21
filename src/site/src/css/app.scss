@@ -1,1 +1,57 @@
 // app global css in SCSS form
+
+// Roboto is self-hosted (replaces the 'roboto-font' quasar extra) so that
+// font-display: swap can be set; Vite gives the files content-hash names.
+@font-face
+{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 100;
+    src: url('../assets/fonts/roboto-100.woff') format('woff');
+    font-display: swap;
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    src: url('../assets/fonts/roboto-300.woff') format('woff');
+    font-display: swap;
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../assets/fonts/roboto-400.woff') format('woff');
+    font-display: swap;
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    src: url('../assets/fonts/roboto-500.woff') format('woff');
+    font-display: swap;
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('../assets/fonts/roboto-700.woff') format('woff');
+    font-display: swap;
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 900;
+    src: url('../assets/fonts/roboto-900.woff') format('woff');
+    font-display: swap;
+}

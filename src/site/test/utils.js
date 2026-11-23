@@ -143,6 +143,16 @@ async function insertCode(page)
     await page.locator('#insert-calculator-button').click({ timeout: 2000, force: true });
 }
 
+async function openFind(page)
+{
+    await page.locator('#find-button').click({ timeout: 2000, force: true });
+}
+
+async function openReplace(page)
+{
+    await page.locator('#replace-button').click({ timeout: 2000, force: true });
+}
+
 async function insertTextBlock(page)
 {
     await page.locator('#insert-text-block-button').click({ timeout: 2000, force: true });
@@ -491,6 +501,8 @@ module.exports =
     loginCaption,
     writeText,
     insertCode,
+    openFind,
+    openReplace,
     insertGraphLine,
     insertGraphSurface,
     insertGraphHistogram,

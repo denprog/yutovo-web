@@ -79,6 +79,8 @@ public:
     
     virtual void OnCaretMoved(const EditorState editor_state);
 
+    virtual void OnSearchState(const uint count, const uint current);
+
     virtual void OnLanguageChanged(const yutovo_calculator::Language language);
 
     virtual void OnSaveResult(const uint task_id, IOResult result, const int document_id);
@@ -128,6 +130,9 @@ public:
     std::atomic_bool save_ready{false};
     std::atomic_bool needs_translate{false};
     std::atomic_bool update_language{false};
+    std::atomic_bool update_search_state{false};
+    uint search_count = 0;
+    uint search_current = 0;
     std::atomic_bool fill_cache{false};
     std::atomic_bool load_ready{false};
     std::atomic_bool update_identifiers{false};

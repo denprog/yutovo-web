@@ -45,6 +45,9 @@
                                 <div>{{ $t('Background selection') }}
                                     <q-btn :style="{ 'background-color': bgSelectionColor }" @click='onBgSelectionColor();'></q-btn>
                                 </div>
+                                <div>{{ $t('Search highlight') }}
+                                    <q-btn :style="{ 'background-color': searchHighlightColor }" @click='onSearchHighlightColor();'></q-btn>
+                                </div>
                             </q-card>
                         </q-tab-panel>
                     </q-tab-panels>
@@ -115,6 +118,8 @@ export default
             colorToHex(store.state.editor.settings.formula_bg_color));
         const bgSelectionColor = ref(typeof store.state.editor.settings.bg_selection_color === 'undefined' ? '#0000ff' : 
             colorToHex(store.state.editor.settings.bg_selection_color));
+        const searchHighlightColor = ref(typeof store.state.editor.settings.search_highlight_color === 'undefined' ? '#ffb84d' : 
+            colorToHex(store.state.editor.settings.search_highlight_color));
 
         const required = (val) =>
         {
@@ -139,7 +144,8 @@ export default
                     '"shapes_color":' + colorToInt(shapesColor.value) + ',' +
                     '"error_marks_color":' + colorToInt(errorMarksColor.value) + ',' +
                     '"formula_bg_color":' + colorToInt(formulaBgColor.value) + ',' +
-                    '"bg_selection_color":' + colorToInt(bgSelectionColor.value) + 
+                    '"bg_selection_color":' + colorToInt(bgSelectionColor.value) + ',' +
+                    '"search_highlight_color":' + colorToInt(searchHighlightColor.value) + 
                 '}';
 
             store.commit('editor/setSettings', JSON.parse(json));
@@ -183,6 +189,7 @@ export default
             errorMarksColor,
             formulaBgColor,
             bgSelectionColor,
+            searchHighlightColor,
             colorToInt,
             tr
         }
@@ -297,6 +304,17 @@ export default
             })
             .onOk(() => {
                 this.bgSelectionColor = this.store.state.editor.dialog_color;
+            })
+        },
+
+        onSearchHighlightColor()
+        {
+            this.store.commit('editor/setDialogColor', this.searchHighlightColor);
+            this.$q.dialog({
+                component: ColorPickerDialog
+            })
+            .onOk(() => {
+                this.searchHighlightColor = this.store.state.editor.dialog_color;
             })
         }
     }

@@ -312,6 +312,18 @@ EM_JS(void, PlotFormatDialog, (const char* color, size_t color_size, const int w
             }));
     });
 
+EM_JS(void, SearchState, (const int count, const int current),
+    {
+        window.dispatchEvent(new CustomEvent('searchState',
+            {
+                'detail':
+                {
+                    'count': count,
+                    'current': current
+                }
+            }));
+    });
+
 EM_JS(void, ExportHtml, (const char* html, size_t html_size),
     {
         window.dispatchEvent(new CustomEvent('exportHtml', 
@@ -343,6 +355,12 @@ void MainLoop(void* arg)
     {
         window->document_point = document_point;
         set_document_point = false;
+    }
+
+    if (window->update_search_state)
+    {
+        window->update_search_state = false;
+        SearchState((int)window->search_count, (int)window->search_current);
     }
 
     if (window->update_toolbar)
@@ -1535,6 +1553,15 @@ std::string GetMatrixSize()
     return res;
 }
 
+//The plain text of the selection - the find panel prefills its input with it
+std::string GetSelectedText()
+{
+    std::u32string text;
+    if (document->GetSelectedText(text))
+        return ToBasicString(text);
+    return std::string();
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnMatrixSize(const int rows, const int columns)
 {
     if (!document)
@@ -1880,6 +1907,34 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnEvaluationBar()
     if (!document)
         return;
     document->InsertEvaluationBarSubscript(true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnSearch(const char* text, int match_case, int whole_word)
+{
+    if (!document)
+        return;
+    document->Search(ToUtfString(std::string(text)), match_case != 0, whole_word != 0);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnFindNext(int backward)
+{
+    if (!document)
+        return;
+    document->FindNext(backward != 0);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnReplace(const char* text)
+{
+    if (!document)
+        return;
+    document->Replace(ToUtfString(std::string(text)), true);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void OnReplaceAll(const char* text)
+{
+    if (!document)
+        return;
+    document->ReplaceAll(ToUtfString(std::string(text)), true);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void OnAssignment()
@@ -2600,6 +2655,7 @@ EMSCRIPTEN_BINDINGS(yutovo_string_getters)
     emscripten::function("GetGraphFormat", &GetGraphFormat);
     emscripten::function("GetGraphImage", &GetGraphImage);
     emscripten::function("GetMatrixSize", &GetMatrixSize);
+    emscripten::function("GetSelectedText", &GetSelectedText);
     emscripten::function("GetMargins", &GetMargins);
     emscripten::function("GetText", &GetText);
     emscripten::function("GetHtml", &GetHtml);

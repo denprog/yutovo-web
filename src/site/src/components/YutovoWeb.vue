@@ -120,6 +120,12 @@
                 <q-btn size="14px" id="redo-button" square dense :disable="!can_redo" @click="onRedo();" icon="img:/images/standard/redo.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Redo') }} (Ctrl+Y)</q-tooltip>
                 </q-btn>
+                <q-btn size="14px" id="find-button" square dense @click="onFind();" icon="img:/images/standard/find.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Find') }} (Ctrl+F)</q-tooltip>
+                </q-btn>
+                <q-btn size="14px" id="replace-button" square dense @click="onReplace();" icon="img:/images/standard/find_replace.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Replace') }} (Ctrl+H)</q-tooltip>
+                </q-btn>
             </q-btn-group>
             <q-btn-group flat square unelevated stretch>
                 <q-btn size="14px" id="cut-button" square dense @click="onCut();" icon="img:/images/standard/cut.png">
@@ -1393,6 +1399,18 @@ export default defineComponent(
         onUndo()
         {
             Module.cwrap('OnUndo', 'void', [])()
+        },
+
+        onFind()
+        {
+            if (this.editorRef)
+                (this.editorRef as any).openFind()
+        },
+
+        onReplace()
+        {
+            if (this.editorRef)
+                (this.editorRef as any).openReplace()
         },
 
         onRedo()

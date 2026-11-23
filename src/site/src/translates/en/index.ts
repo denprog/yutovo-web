@@ -123,5 +123,19 @@ export default {
     'Function at point': 'Function at point',
     'Function f(x)': 'Function f(x)',
     'Function f(x,y)': 'Function f(x,y)',
-    'Evaluate at point': 'Evaluate at point'
+    'Evaluate at point': 'Evaluate at point',
+
+    'Find': 'Find',
+    'Not found': 'Not found',
+    'Match case': 'Match case',
+    'Match whole word': 'Match whole word',
+    'Close the dialog (Esc)': 'Close the dialog (Esc)',
+    'Search highlight': 'Search highlight',
+    'Previous match': 'Previous match',
+    'Next match': 'Next match',
+    'Replace with': 'Replace with',
+    'Replace': 'Replace',
+    'Replace all': 'Replace all',
+    'Replace the current match': 'Replace the current match and find the next one',
+    'Replace every match': 'Replace every match in the document',
 };

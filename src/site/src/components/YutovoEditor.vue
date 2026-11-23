@@ -9,6 +9,8 @@
             @select="onPromptSelect"
         />
 
+        <find-panel v-model="findVisible" :replace-mode="findReplaceMode" />
+
         <div id="scroll-container">
             <q-menu ref="contextMenuRef" touch-position square context-menu @hide="onCloseContextMenu()" @show="onShowContextMenu()">
                 <q-list dense style="min-width: 100px">
@@ -336,6 +338,7 @@ import GraphFormatDialog from 'layouts/GraphFormatDialog.vue'
 import PlotFormatDialog from 'layouts/PlotFormatDialog.vue'
 import MatrixSizeDialog from 'layouts/MatrixSizeDialog.vue'
 import PromptDialog from 'layouts/PromptDialog.vue'
+import FindPanel from 'layouts/FindPanel.vue'
 
 declare var Module: any;
 
@@ -465,6 +468,8 @@ const contextMenuDisabled = reactive({
 });
 
 const promptVisible = ref(false);
+const findVisible = ref(false);
+const findReplaceMode = ref(false);
 const promptItems = ref<string[]>([]);
 const promptPos = ref<PromptPos>({ x: 0, y: 0 });
 const jsonClipboard = ref('');
@@ -1936,12 +1941,23 @@ function showPrompt(event: any)
     promptItems.value = data.items;
     promptPos.value = { x: data.x, y: data.y };
     promptVisible.value = true;
-    canvasFocus();
+    promptFocusCanvas();
 }
 
 function hidePrompt()
 {
     promptVisible.value = false;
+    promptFocusCanvas();
+}
+
+//the prompt show/hide comes from the editor asynchronously - a selection change fires it too,
+//e.g. while the user types in the find panel input (the search selects its match); never steal
+//the focus from an input
+function promptFocusCanvas()
+{
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA'))
+        return;
     canvasFocus();
 }
 
@@ -2101,6 +2117,22 @@ function initModule()
                     const activeEl = document.activeElement;
                     if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'))
                         return;
+
+                    //e.code is layout independent - the physical F/H keys work on any keyboard layout
+                    if (e.ctrlKey && e.code === 'KeyF')
+                    {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        findReplaceMode.value = false;
+                        findVisible.value = true;
+                    }
+                    else if (e.ctrlKey && e.code === 'KeyH')
+                    {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        findReplaceMode.value = true;
+                        findVisible.value = true;
+                    }
 
                     if (e.shiftKey && e.key === 'Insert')
                     {
@@ -2330,7 +2362,22 @@ onBeforeUnmount(function()
         document.removeEventListener('keydown', handleKeydown, true);
 });
 
+const openFind = () =>
+{
+    findReplaceMode.value = false;
+    findVisible.value = true;
+};
+
+const openReplace = () =>
+{
+    //an open find panel turns into the replace panel - the search state is kept
+    findReplaceMode.value = true;
+    findVisible.value = true;
+};
+
 defineExpose({
+    openFind,
+    openReplace,
     last_documents,
     downloading,
     onResize,

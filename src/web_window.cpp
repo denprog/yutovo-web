@@ -300,6 +300,14 @@ void WebWindow::OnCaretMoved(const EditorState editor_state)
     update_toolbar = true;
 }
 
+void WebWindow::OnSearchState(const uint count, const uint current)
+{
+    std::lock_guard<std::recursive_mutex> lock(draw_mutex);
+    search_count = count;
+    search_current = current;
+    update_search_state = true;
+}
+
 void WebWindow::OnLanguageChanged(const yutovo_calculator::Language language)
 {
     update_language = true;

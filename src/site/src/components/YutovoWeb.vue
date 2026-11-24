@@ -283,6 +283,9 @@
                 <q-btn size="14px" square dense @click="onSquareBrackets();" icon="img:/images/algebra/square_brackets.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Square brackets') }}</q-tooltip>
                 </q-btn>
+                <q-btn id="module-brackets-button" size="14px" square dense @click="onModuleBrackets();" icon="img:/images/algebra/module_brackets.png">
+                    <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Module brackets') }}</q-tooltip>
+                </q-btn>
                 <q-btn size="14px" square dense @click="onRadian();" icon="img:/images/algebra/radian.png">
                     <q-tooltip class="bg-blue-7 no-border-radius text-body2" :delay="1000" square dense no-caps>{{ $t('Radian') }}</q-tooltip>
                 </q-btn>
@@ -1484,6 +1487,10 @@ export default defineComponent(
         onSquareBrackets()
         {
             Module.cwrap('OnSquareBrackets', 'void', [])()
+        },
+        onModuleBrackets()
+        {
+            Module.cwrap('OnModuleBrackets', 'void', [])()
         },
 
         onRadian()

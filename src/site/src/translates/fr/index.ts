@@ -180,6 +180,7 @@ export default {
     'Superscript': 'Exposant',
     'Round brackets': 'Parentèses',
     'Square brackets': 'Crochets',
+    'Module brackets': 'Barres de module',
     'Radian': 'Radian',
     'Degree': 'Degré',
     'Minute': 'Minute',

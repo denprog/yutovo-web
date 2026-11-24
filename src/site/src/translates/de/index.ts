@@ -180,6 +180,7 @@ export default {
     'Superscript': 'Hochgestellt',
     'Round brackets': 'Runde Klammern',
     'Square brackets': 'Eckige Klammern',
+    'Module brackets': 'Betragsstriche',
     'Radian': 'Radiant',
     'Degree': 'Grad',
     'Minute': 'Minute',

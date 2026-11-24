@@ -180,6 +180,7 @@ export default {
     'Superscript': 'Верхний индекс',
     'Round brackets': 'Круглые скобки',
     'Square brackets': 'Квадратные скобки',
+    'Module brackets': 'Прямые скобки',
     'Radian': 'Радиан',
     'Degree': 'Градус',
     'Minute': 'Минута',

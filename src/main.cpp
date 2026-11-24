@@ -1818,6 +1818,13 @@ extern "C" EMSCRIPTEN_KEEPALIVE void OnSquareBrackets()
     document->InsertSquareBrackets(true);
 }
 
+extern "C" EMSCRIPTEN_KEEPALIVE void OnModuleBrackets()
+{
+    if (!document)
+        return;
+    document->InsertModuleBrackets(true);
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE void OnSum()
 {
     if (!document)

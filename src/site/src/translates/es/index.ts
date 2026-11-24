@@ -179,6 +179,7 @@ export default {
     'Superscript': 'Superíndice',
     'Round brackets': 'Paréntesis',
     'Square brackets': 'Corchetes',
+    'Module brackets': 'Barras de módulo',
     'Radian': 'Radián',
     'Degree': 'Grado',
     'Minute': 'Minuto',

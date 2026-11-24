@@ -180,6 +180,7 @@ export default {
     'Superscript': 'Apice',
     'Round brackets': 'Parentesi tonde',
     'Square brackets': 'Parentesi quadre',
+    'Module brackets': 'Barre di modulo',
     'Radian': 'Radiante',
     'Degree': 'Grado',
     'Minute': 'Primo',

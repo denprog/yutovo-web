@@ -222,6 +222,12 @@ async function insertVector(page, rows)
     await page.locator('.q-dialog button[type=submit]').click();
 }
 
+async function insertModuleBrackets(page)
+{
+    await page.locator('#module-brackets-button').first().evaluate((el) => el.click());
+    await page.waitForTimeout(300);
+}
+
 async function insertVectorElement(page)
 {
     await page.locator('#vector-element-button').first().evaluate((el) => el.click());
@@ -512,6 +518,7 @@ module.exports =
     insertDeterminant,
     insertVector,
     insertVectorElement,
+    insertModuleBrackets,
     copyGraphImage,
     clickIdentifier,
     getDocumentName,
